@@ -9,7 +9,7 @@ const NotFoundPage = () => {
     }
 
   return (
-    <Container className="text-center my-5" style={{ paddingTop: '50px' }}>
+    <Container className="text-center my-5" style={{ paddingTop: '50px'}}>
       <Row>
         <Col>
           <h1 className="display-3">404 網站沒有找到</h1>
