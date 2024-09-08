@@ -8,25 +8,21 @@ import logo from 'assets/ICbaby.png'; // 請替換為你的 logo 圖片路徑
  * @returns html
  */
 function UserNav() {
-
-    // 串接邏輯
-    
     return (
-
-        <Container fluid >
+        <Container fluid>
             <Navbar bg="light" expand="lg">
-                <Navbar.Brand href="/" className="d-flex align-items-center mx-5">
+                <Navbar.Brand href="/" className="d-flex align-items-center mx-3">
                     <img
                         src={logo}
+                        className="d-inline-block align-top logo-img"
+                        alt="My Brand Logo"
                         width="50"
                         height="60"
-                        className="d-inline-block align-top"
-                        alt="My Brand Logo"
                     />
-                    &nbsp; 高科大智慧商務系｜系友會
+                    <span className="brand-title">高科大智慧商務系｜系友會</span>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav" className='justify-content-end' >
+                <Navbar.Collapse id="basic-navbar-nav" className='justify-content-end'>
                     <Nav className="ml-auto">
                         <NavDropdown title="系友會介紹" id="basic-nav-dropdown" className='mr-auto'>
                             <NavDropdown.Item href="/IC/intro">簡介</NavDropdown.Item>
@@ -45,7 +41,6 @@ function UserNav() {
                 </Navbar.Collapse>
             </Navbar>
         </Container>
-
     );
 }
 
