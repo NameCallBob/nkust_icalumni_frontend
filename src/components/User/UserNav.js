@@ -30,7 +30,7 @@ function UserNav() {
                             <NavDropdown.Item href="/IC/member">組織</NavDropdown.Item>
                             <NavDropdown.Item href="/IC/joinUs">入會方式</NavDropdown.Item>
                         </NavDropdown>
-                        <Nav.Link href="/alumni" className="mx-3">系友們</Nav.Link>
+                        <Nav.Link href="/alumniList" className="mx-3">系友們</Nav.Link>
                         <Nav.Link href="/search" className="mx-3">公司查詢</Nav.Link>
                         <Nav.Link href="/Recruitment" className="mx-3">徵才啟示</Nav.Link>
                         <NavDropdown title="系友專區" id="basic-nav-dropdown" className='mr-auto'>

@@ -1,0 +1,39 @@
+/* 簡單的淡入效果 */
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 1s forwards ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 縮小圖片 */
+.card-img-top {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+
+/* 卡片置中 */
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center; /* 文字也置中 */
+    height: 100%; /* 確保卡片高度一致 */
+}
+
+/* 調整 Col 使其內容置中 */
+.col {
+    display: flex;
+    justify-content: center; /* 讓 Col 內的卡片容器水平置中 */
+}
