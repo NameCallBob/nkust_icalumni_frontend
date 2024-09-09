@@ -1,0 +1,51 @@
+/* 基本動畫 */
+.fade-in {
+    animation: fadeIn 2s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.bounce-in {
+    animation: bounceIn 1.5s ease;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.slide-in {
+    animation: slideIn 1.5s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* RWD設定 */
+@media (max-width: 768px) {
+    .product-carousel img {
+        height: 300px;
+        object-fit: cover;
+    }
+}

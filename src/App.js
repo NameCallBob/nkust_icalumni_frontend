@@ -14,6 +14,9 @@ import MemberManagement from 'pages/Manager/UserManagePage';
 // import Contact from 'pages/User/ContactPage';
 import Search from 'pages/User/SearchPage';
 import CompanyIntro from './pages/User/CompanyDetailPage';
+import ProductPage from 'pages/User/ProductPage';
+import AlumniDetailPage from 'pages/User/AlumniIntroPage';
+import AlumniListPage from 'pages/User/AlumniListPage';
 
 function App() {
   return (
@@ -47,8 +50,24 @@ function App() {
           <UserNav />
           <Login />
           </>          } />
-        <Route path="/alumni/:memberId"></Route>
-
+        <Route path="/alumni/:memberId" element={
+          <>
+          <UserNav />
+          <AlumniDetailPage/>
+          </>
+        }></Route>
+        <Route path="/alumniList" element={
+          <>
+          <UserNav />
+          <AlumniListPage/>
+          </>
+        }></Route>
+        <Route path="/product/:id" element={
+          <>
+          <UserNav />
+          <ProductPage />
+          </>          } />
+        
         {/* 管理者端 */}
         <Route path='/alumni/manage/' element={
           <>
