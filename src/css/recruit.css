@@ -1,0 +1,16 @@
+/* 調整表格行高 */
+.job-row {
+    height: 60px; /* 增加行高 */
+    cursor: pointer;
+  }
+
+  .job-table th, .job-table td {
+    vertical-align: middle;
+  }
+
+  /* 調整小螢幕時表格的樣式 */
+  @media (max-width: 768px) {
+    .job-row {
+      height: 80px; /* 小螢幕行高調整 */
+    }
+  }
