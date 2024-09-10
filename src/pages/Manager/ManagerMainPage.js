@@ -1,7 +1,8 @@
-import React from 'react';
 import { Container, Row, Col, Card, Button, ListGroup, ListGroupItem, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 function MemberCenter() {
+    const navigator = useNavigate()
     return (
         <Container className="mt-5 my-5">
             <Row>
@@ -12,14 +13,14 @@ function MemberCenter() {
                         <Card.Body>
                             <Card.Title>John Doe</Card.Title>
                             <Card.Text>johndoe@example.com</Card.Text>
-                            <Button variant="primary">編輯個人資料</Button>
+                            <Button variant="primary" onClick={() =>{navigator("/alumni/")}}>編輯個人資料</Button>
                         </Card.Body>
                     </Card>
                 </Col>
 
                 {/* 右邊的會員資訊 */}
-                <Col md={8}>
-                    <Card className="shadow-sm mb-4">
+                <Col md={8} className="d-flex flex-column">
+                    <Card className="shadow-sm mb-4 flex-grow-1">
                         <Card.Header as="h5">歡迎系友</Card.Header>
                         <Card.Body>
                             <Card.Text>
@@ -28,7 +29,7 @@ function MemberCenter() {
                         </Card.Body>
                     </Card>
 
-                    <Card className="shadow-sm mb-4">
+                    <Card className="shadow-sm mb-4 flex-grow-1">
                         <Card.Header as="h5">系友最新消息</Card.Header>
                         <ListGroup variant="flush">
                             <ListGroupItem>8月25日：年度系友聚會通知</ListGroupItem>
@@ -37,7 +38,7 @@ function MemberCenter() {
                         </ListGroup>
                     </Card>
 
-                    <Card className="shadow-sm mb-4">
+                    <Card className="shadow-sm mb-4 flex-grow-1">
                         <Card.Header as="h5">現有推廣</Card.Header>
                         <Card.Body>
                             <Card.Text>
@@ -47,16 +48,16 @@ function MemberCenter() {
                         </Card.Body>
                     </Card>
 
-                    <Card className="shadow-sm">
+                    <Card className="shadow-sm flex-grow-1">
                         <Card.Header as="h5">通知設定</Card.Header>
                         <Card.Body>
                             <Form>
-                                <Form.Check 
+                                <Form.Check
                                     type="switch"
                                     id="email-notifications"
                                     label="登入通知"
                                 />
-                                <Form.Check 
+                                <Form.Check
                                     type="switch"
                                     id="sms-notifications"
                                     label="系友最新消息"

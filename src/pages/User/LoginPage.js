@@ -3,13 +3,14 @@ import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import ReCAPTCHA from 'react-google-recaptcha';
 // 變更網站head
 import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [error, setError] = useState('');
-
+  const navigator = useNavigate()
 
   const handleCaptchaChange = (value) => {
     setCaptchaVerified(!!value);
@@ -58,7 +59,7 @@ const Login = () => {
               />
             </Form.Group>
             <br></br>
-            
+
             <ReCAPTCHA
               sitekey="6LdbOi8qAAAAAAsuFDxSve8uJCUxjL-8eY9wVpb8"
               onChange={handleCaptchaChange}
@@ -69,7 +70,7 @@ const Login = () => {
             </Button>
           </Form>
 
-          <Button variant="link" className="mt-2" onClick={() => console.log('Forgot password clicked')}>
+          <Button variant="link" className="mt-2" onClick={() => (navigator("/forgot"))}>
             Forgot Password?
           </Button>
         </Col>
