@@ -17,6 +17,10 @@ import CompanyIntro from './pages/User/CompanyDetailPage';
 import ProductPage from 'pages/User/ProductPage';
 import AlumniDetailPage from 'pages/User/AlumniIntroPage';
 import AlumniListPage from 'pages/User/AlumniListPage';
+import RecruitPage from 'pages/User/RecruitPage';
+import ForgotPasswordFlow from 'pages/User/func_forgot/ForgotStep';
+import RecruitManaPage from 'pages/Manager/RecruitManaPage';
+import ProductList from 'pages/Manager/ProductListManaPage';
 
 function App() {
   return (
@@ -33,6 +37,7 @@ function App() {
         {/* <Route path="/about" element={<About />} /> */}
         {/* <Route path="/news" element={<News />} /> */}
         {/* <Route path="/contact" element={<Contact />} /> */}
+        {/* 查詢 */}
         <Route path="/search" element={
           <>
           <UserNav />
@@ -45,11 +50,19 @@ function App() {
           <CompanyIntro />
           </>
           } />
+          {/* 登入 */}
         <Route path="/login" element={
           <>
           <UserNav />
           <Login />
           </>          } />
+          {/* 忘記密碼 */}
+          <Route path="/forgot" element={
+          <>
+          <UserNav />
+          <ForgotPasswordFlow />
+          </>          } />
+          {/* 系友 */}
         <Route path="/alumni/:memberId" element={
           <>
           <UserNav />
@@ -62,12 +75,21 @@ function App() {
           <AlumniListPage/>
           </>
         }></Route>
+        {/* 產品 */}
         <Route path="/product/:id" element={
           <>
           <UserNav />
           <ProductPage />
           </>          } />
-        
+          {/* 招募 */}
+        <Route path="/Recruitment" element={
+          <>
+          <UserNav />
+          <RecruitPage/>
+          </>
+        }></Route>
+
+
         {/* 管理者端 */}
         <Route path='/alumni/manage/' element={
           <>
@@ -83,6 +105,19 @@ function App() {
           </>
         }>
         </Route>
+
+        <Route path='/alumni/manage/RecruitManage/' element={
+          <>
+          <ManagerNav />
+          <RecruitManaPage />
+          </>
+        }></Route>
+          <Route path='/alumni/manage/ProductManage/' element={
+          <>
+          <ManagerNav />
+          <ProductList />
+          </>
+        }></Route>
         {/* <Route path='/alumni/manage/' element={
           <>
           <ManagerNav />

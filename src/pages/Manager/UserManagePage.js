@@ -1,17 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Form,
-  Button,
-  Card,
-  Table,
-  Modal,
-  Alert,
-  Image,
-  Pagination,
-} from 'react-bootstrap';
+import { Container, Row, Col, Button, Card, Alert, Pagination } from 'react-bootstrap';
+import FilterForm from 'components/Manage/UserManage/filterForm';
+import MemberTable from 'components/Manage/UserManage/MemberTable';
+import MemberModal from 'components/Manage/UserManage/MemberModal';
+import PaginationControls from 'components/Manage/UserManage/PaginationControls';
 
 function MemberManagement() {
   const [members, setMembers] = useState([
@@ -29,15 +21,18 @@ function MemberManagement() {
       position: { id: 1, title: '會長' },
       graduate: { id: 1, school: '國立高雄科技大學', grade: '109' },
     },
-    // 假設有更多的系友資料...
   ]);
+
   const [positions] = useState([
     { id: 1, title: '會長' },
     { id: 2, title: '副會長' },
   ]);
+
   const [selectedPosition, setSelectedPosition] = useState('');
   const [isPaidFilter, setIsPaidFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [editingMember, setEditingMember] = useState(null); // 保存當前編輯的會員資料
   const [formData, setFormData] = useState({
     name: '',
     home_phone: '',
@@ -55,44 +50,68 @@ function MemberManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const membersPerPage = 5;
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  // 新增或編輯提交
+  const handleSubmit = (newMember) => {
+    if (editingMember) {
+      // 編輯模式，更新現有會員
+      setMembers(
+        members.map((member) =>
+          member.id === editingMember.id ? { ...newMember, id: editingMember.id } : member
+        )
+      );
+    } else {
+      // 新增模式
+      setMembers([...members, newMember]);
+    }
+    setShowModal(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+    setEditingMember(null);
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, photo: e.target.files[0] });
+  // 切換繳費狀態
+  const togglePaymentStatus = (id) => {
+    setMembers(
+      members.map((member) =>
+        member.id === id ? { ...member, is_paid: !member.is_paid } : member
+      )
+    );
+  };
+
+  // 編輯會員
+  const handleEditMember = (member) => {
+    setEditingMember(member);
+    setFormData({
+      name: member.name,
+      home_phone: member.home_phone,
+      mobile_phone: member.mobile_phone,
+      gender: member.gender,
+      address: member.address,
+      is_paid: member.is_paid,
+      intro: member.intro,
+      birth_date: member.birth_date,
+      photo: null, // 編輯時不會直接顯示已上傳的照片，使用者需要重新選擇照片
+      position: member.position.id.toString(),
+      graduate: member.graduate.school,
+    });
+    setShowModal(true);
   };
 
   const handleFilterChange = () => {
     setSelectedPosition('');
     setIsPaidFilter('');
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const newMember = {
-      id: members.length + 1,
-      ...formData,
-      position: positions.find((p) => p.id === parseInt(formData.position)),
-      photo: URL.createObjectURL(formData.photo),
-    };
-
-    setMembers([...members, newMember]);
-    setShowModal(false);
-    setShowSuccess(true);
-
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 2000);
+    setSearchQuery('');
   };
 
   const filteredMembers = members.filter((member) => {
-    return (
-      (selectedPosition === '' || member.position.id === parseInt(selectedPosition)) &&
-      (isPaidFilter === '' || member.is_paid.toString() === isPaidFilter)
-    );
+    const matchesSearch = searchQuery
+      ? member.name.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+    const matchesPosition =
+      selectedPosition === '' || member.position.id === parseInt(selectedPosition);
+    const matchesIsPaid = isPaidFilter === '' || member.is_paid.toString() === isPaidFilter;
+
+    return matchesSearch && matchesPosition && matchesIsPaid;
   });
 
   const indexOfLastMember = currentPage * membersPerPage;
@@ -100,229 +119,72 @@ function MemberManagement() {
   const currentMembers = filteredMembers.slice(indexOfFirstMember, indexOfLastMember);
   const totalPages = Math.ceil(filteredMembers.length / membersPerPage);
 
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
-  };
-
   return (
     <Container className="mt-5">
-      {showSuccess && <Alert variant="success">新增成功！</Alert>}
+      {showSuccess && <Alert variant="success">{editingMember ? '更新成功！' : '新增成功！'}</Alert>}
       <Row>
         <Col md={4}>
-          <Button variant="success" className="mb-3" onClick={() => setShowModal(true)}>
+          <Button
+            variant="success"
+            className="mb-3"
+            onClick={() => {
+              setFormData({
+                name: '',
+                home_phone: '',
+                mobile_phone: '',
+                gender: 'M',
+                address: '',
+                is_paid: false,
+                intro: '',
+                birth_date: '',
+                photo: null,
+                position: '',
+                graduate: '',
+              });
+              setShowModal(true);
+            }}
+          >
             新增會員
           </Button>
-          <Card className="shadow-sm mb-4">
-            <Card.Header as="h5">篩選條件</Card.Header>
-            <Card.Body>
-              <Form>
-                <Form.Group className="mb-3">
-                  <Form.Label>職位</Form.Label>
-                  <Form.Select
-                    value={selectedPosition}
-                    onChange={(e) => setSelectedPosition(e.target.value)}
-                  >
-                    <option value="">所有職位</option>
-                    {positions.map((position) => (
-                      <option key={position.id} value={position.id}>
-                        {position.title}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>是否繳費</Form.Label>
-                  <Form.Select
-                    value={isPaidFilter}
-                    onChange={(e) => setIsPaidFilter(e.target.value)}
-                  >
-                    <option value="">全部</option>
-                    <option value="true">已繳費</option>
-                    <option value="false">未繳費</option>
-                  </Form.Select>
-                </Form.Group>
-                <Button variant="primary" onClick={handleFilterChange}>
-                  清除篩選
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
+          <FilterForm
+            positions={positions}
+            selectedPosition={selectedPosition}
+            setSelectedPosition={setSelectedPosition}
+            isPaidFilter={isPaidFilter}
+            setIsPaidFilter={setIsPaidFilter}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            handleFilterChange={handleFilterChange}
+          />
         </Col>
         <Col md={8}>
           <Card className="shadow-sm">
             <Card.Header as="h5">系友列表</Card.Header>
-            <Table striped bordered hover responsive className="text-center">
-              <thead>
-                <tr>
-                  <th>照片</th>
-                  <th>姓名</th>
-                  <th>職位</th>
-                  <th>畢業學校</th>
-                  <th>繳費狀態</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentMembers.map((member) => (
-                  <tr key={member.id}>
-                    <td>
-                      <Image src={member.photo} rounded fluid style={{ width: '50px', height: '50px' }} />
-                    </td>
-                    <td>{member.name}</td>
-                    <td>{member.position.title}</td>
-                    <td>{member.graduate.school} - {member.graduate.grade}</td>
-                    <td>{member.is_paid ? '已繳費' : '未繳費'}</td>
-                    <td>
-                      <Button variant="outline-primary" size="sm">
-                        編輯
-                      </Button>
-                      <Button variant="outline-danger" size="sm" className="ms-2">
-                        刪除
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-            <Pagination className="justify-content-center">
-              <Pagination.Prev onClick={handlePrevPage} disabled={currentPage === 1} />
-              <Pagination.Item active>{currentPage}</Pagination.Item>
-              <Pagination.Next onClick={handleNextPage} disabled={currentPage === totalPages} />
-            </Pagination>
+            <MemberTable
+              members={currentMembers}
+              togglePaymentStatus={togglePaymentStatus}
+              onEditMember={handleEditMember}
+            />
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setCurrentPage={setCurrentPage}
+            />
           </Card>
         </Col>
       </Row>
 
-      {/* 新增會員的 Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>新增會員</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>姓名</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>市內電話</Form.Label>
-              <Form.Control
-                type="text"
-                name="home_phone"
-                value={formData.home_phone}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>行動電話</Form.Label>
-              <Form.Control
-                type="text"
-                name="mobile_phone"
-                value={formData.mobile_phone}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>性別</Form.Label>
-              <Form.Select
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="M">男</option>
-                <option value="F">女</option>
-                <option value="O">其他</option>
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>住址</Form.Label>
-              <Form.Control
-                as="textarea"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="checkbox"
-                label="是否繳費"
-                name="is_paid"
-                checked={formData.is_paid}
-                onChange={(e) => setFormData({ ...formData, is_paid: e.target.checked })}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>自我介紹</Form.Label>
-              <Form.Control
-                as="textarea"
-                name="intro"
-                value={formData.intro}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>生日</Form.Label>
-              <Form.Control
-                type="date"
-                name="birth_date"
-                value={formData.birth_date}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>照片</Form.Label>
-              <Form.Control
-                type="file"
-                name="photo"
-                onChange={handleFileChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>職位</Form.Label>
-              <Form.Select
-                name="position"
-                value={formData.position}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">選擇職位</option>
-                {positions.map((position) => (
-                  <option key={position.id} value={position.id}>
-                    {position.title}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>畢業學校</Form.Label>
-              <Form.Control
-                type="text"
-                name="graduate"
-                value={formData.graduate}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              新增
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+      <MemberModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        positions={positions}
+        onSubmit={handleSubmit}
+        formData={formData}
+        setFormData={setFormData}
+        editingMember={editingMember}
+      />
     </Container>
   );
 }
 
 export default MemberManagement;
-    

@@ -25,8 +25,8 @@ function ManagerNav() {
             })
         }
     } , [])
-    
-    
+
+
     return (
         <Container fluid >
             <Navbar bg="light" expand="lg">
@@ -43,11 +43,11 @@ function ManagerNav() {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav" className='justify-content-end' >
                     <Nav className="ml-auto">
-                        <Nav.Link href="/alumni" className="mx-3">個人資料修改</Nav.Link>
+                        <Nav.Link href="/alumni/manage/member/" className="mx-3">使用者管理</Nav.Link>
                         <Nav.Link href="/search" className="mx-3">公司登陸</Nav.Link>
-                        <Nav.Link href="/Recruitment" className="mx-3">商品登陸</Nav.Link>
+                        <Nav.Link href="/alumni/manage/ProductManage/" className="mx-3">商品登陸</Nav.Link>
                         <Nav.Link href="/Recruitment" className="mx-3">推廣設定</Nav.Link>
-                        <Nav.Link href="/Recruitment" className="mx-3">招募登陸</Nav.Link>
+                        <Nav.Link href="/alumni/manage/RecruitManage/" className="mx-3">招募登陸</Nav.Link>
                         <NavDropdown title="系友專區" id="basic-nav-dropdown" className='mr-auto'>
                             <NavDropdown.Item href="/login">登出</NavDropdown.Item>
                             <NavDropdown.Item href="/Manager/User">使用說明</NavDropdown.Item>
