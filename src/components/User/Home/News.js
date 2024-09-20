@@ -1,105 +1,100 @@
-import React, { useState, useEffect } from 'react';
-     
-import { Container, ListGroup, Pagination} from 'react-bootstrap';
+// components/LatestNews.jsx
+import React, { useState } from 'react';
+import { Table } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import ReactPaginate from 'react-paginate';
+import { motion, AnimatePresence } from 'framer-motion';
+import 'css/News.css'; // 确保导入了自定义样式
 
-function News(){
-    const [activities, setActivities] = useState([]); // 活動資料
-    const [currentPage, setCurrentPage] = useState(1); // 當前頁面
-    const [activitiesPerPage] = useState(5); // 每頁顯示的活動數量
-  
-    useEffect(() => {
-      // 假設這裡從後端獲取最新的活動資料
-      const fetchActivities = async () => {
-        const data = [
-          { name: 'Activity 1', date: '2024-08-20' },
-          { name: 'Activity 2', date: '2024-08-21' },
-          { name: 'Activity 3', date: '2024-08-22' },
-          { name: 'Activity 4', date: '2024-08-23' },
-          { name: 'Activity 5', date: '2024-08-24' },
-          { name: 'Activity 6', date: '2024-08-25' },
-          { name: 'Activity 7', date: '2024-08-26' },
-          { name: 'Activity 8', date: '2024-08-27' },
-          { name: 'Activity 9', date: '2024-08-28' },
-          { name: 'Activity 10', date: '2024-08-29' },
-          { name: 'Activity 1', date: '2024-08-20' },
-          { name: 'Activity 2', date: '2024-08-21' },
-          { name: 'Activity 3', date: '2024-08-22' },
-          { name: 'Activity 4', date: '2024-08-23' },
-          { name: 'Activity 5', date: '2024-08-24' },
-          { name: 'Activity 6', date: '2024-08-25' },
-          { name: 'Activity 7', date: '2024-08-26' },
-          { name: 'Activity 8', date: '2024-08-27' },
-          { name: 'Activity 9', date: '2024-08-28' },
-          { name: 'Activity 10', date: '2024-08-29' },
-          { name: 'Activity 1', date: '2024-08-20' },
-          { name: 'Activity 2', date: '2024-08-21' },
-          { name: 'Activity 3', date: '2024-08-22' },
-          { name: 'Activity 4', date: '2024-08-23' },
-          { name: 'Activity 5', date: '2024-08-24' },
-          { name: 'Activity 6', date: '2024-08-25' },
-          { name: 'Activity 7', date: '2024-08-26' },
-          { name: 'Activity 8', date: '2024-08-27' },
-          { name: 'Activity 9', date: '2024-08-28' },
-          { name: 'Activity 10', date: '2024-08-29' },
-        ]; // 模擬的活動數據
-        setActivities(data);
-      };
-      fetchActivities();
-    }, []);
-  
-    // 計算顯示的活動
-    const indexOfLastActivity = currentPage * activitiesPerPage;
-    const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
-    const currentActivities = activities.slice(indexOfFirstActivity, indexOfLastActivity);
-  
-    // 處理分頁切換
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  
-    return (
-      <Container className='my-3' style={{width:"80%"}}>
-        <h2 style={{textAlign:"center"}}>最新消息</h2>
+function News() {
+  // data/newsData.js
+   const newsData = [
+  { date: '2023-10-01', event: '年度大会召开年度大会召开年度大会召开', link: '/news/1' },
+  { date: '2023-10-15', event: '新产品发布', link: '/news/2' },
+  { date: '2023-10-01', event: '年度大会召开', link: '/news/1' },
+  { date: '2023-10-15', event: '新产品发布', link: '/news/2' },
+  { date: '2023-10-01', event: '年度大会召开', link: '/news/1' },
+  { date: '2023-10-15', event: '新产品发布', link: '/news/2' },
+  { date: '2023-10-01', event: '年度大会召开', link: '/news/1' },
+  { date: '2023-10-15', event: '新产品发布', link: '/news/2' },
+  { date: '2023-10-01', event: '年度大会召开', link: '/news/1' },
+  { date: '2023-10-15', event: '新产品发布', link: '/news/2' },
+  { date: '2023-10-01', event: '年度大会召开', link: '/news/1' },
+  { date: '2023-10-15', event: '新产品发布', link: '/news/2' },
+  { date: '2023-10-01', event: '年度大会召开', link: '/news/1' },
+  { date: '2023-10-15', event: '新产品发布', link: '/news/2' },
 
-        <br></br>
+  // 添加更多数据...
+];
 
-        <ListGroup>
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 5; // 每页显示的项目数
 
-        {currentActivities.map((activity, index) => (
-          <ListGroup.Item key={index} >
-            <div className="d-flex justify-content-between ">
-              <span>{activity.name}</span>
-              <span>{activity.date}</span>
-            </div>
-          </ListGroup.Item>
-        ))}
+  const pageCount = Math.ceil(newsData.length / itemsPerPage);
 
-        </ListGroup>
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
-        <br></br>
+  const offset = currentPage * itemsPerPage;
+  const currentItems = newsData.slice(offset, offset + itemsPerPage);
 
-        <Pagination>
-          <Pagination.Prev 
-            onClick={() => paginate(currentPage - 1)} 
-            disabled={currentPage === 1} 
-          />
+  return (
+    <div className="latest-news">
+      <h2>最新消息</h2>
+    <div className="table-container">
+      <AnimatePresence mode='wait'>
+        <motion.div
+          key={currentPage}
+          initial={{ x: 100 }}
+          animate={{ x: 0 }}
+          exit={{ x: -100 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Table hover>
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>事件</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.map((item, index) => (
+                <tr
+                  key={index}
+                  onClick={() => navigate(item.link)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <td>{item.date}</td>
+                  <td>{item.event}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </motion.div>
+      </AnimatePresence>
+    </div>
 
-          {[...Array(Math.ceil(activities.length / activitiesPerPage)).keys()].map((page) => (
-            <Pagination.Item
-              key={page + 1}
-              active={page + 1 === currentPage}
-              onClick={() => paginate(page + 1)}
-            >
-              {page + 1}
-            </Pagination.Item>
-          ))}
-          
-          <Pagination.Next
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === Math.ceil(activities.length / activitiesPerPage)}
-          />
-        </Pagination>
-
-      </Container>
-    );
+    <div className="pagination-container">
+      <ReactPaginate
+        previousLabel={'上一页'}
+        nextLabel={'下一页'}
+        breakLabel={'...'}
+        pageCount={pageCount}
+        onPageChange={handlePageClick}
+        containerClassName={'pagination justify-content-center'}
+        pageClassName={'page-item'}
+        pageLinkClassName={'page-link'}
+        activeClassName={'active'}
+        previousClassName={'page-item'}
+        nextClassName={'page-item'}
+        previousLinkClassName={'page-link'}
+        nextLinkClassName={'page-link'}
+      />
+    </div>
+  </div>
+  );
 }
 
-export default News
+export default News;

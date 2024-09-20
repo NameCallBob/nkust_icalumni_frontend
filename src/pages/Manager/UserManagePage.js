@@ -1,190 +1,118 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Button, Card, Alert, Pagination } from 'react-bootstrap';
-import FilterForm from 'components/Manage/UserManage/filterForm';
-import MemberTable from 'components/Manage/UserManage/MemberTable';
-import MemberModal from 'components/Manage/UserManage/MemberModal';
-import PaginationControls from 'components/Manage/UserManage/PaginationControls';
+// UserManagement.js
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import UserFilter from 'components/Manage/UserManage/UserFilter';
+import UserTable from 'components/Manage/UserManage/UserTable';
+import EditUserModal from 'components/Manage/UserManage/EditModal';
+// import axios from 'axios'; // 如果要串接後端，取消註解
 
-function MemberManagement() {
-  const [members, setMembers] = useState([
+function UserManagement() {
+  // 狀態管理
+  const [users, setUsers] = useState([]);
+  const [filters, setFilters] = useState({
+    name: '',
+    gender: '',
+    school: '',
+    position: '',
+    is_paid: '',
+  });
+  const [showModal, setShowModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // 模擬假資料
+  const fakeUsers = [
     {
       id: 1,
-      name: 'John Doe',
-      home_phone: '02-12345678',
-      mobile_phone: '0912345678',
-      gender: 'M',
-      address: '台北市中正區',
+      name: '張三',
+      position: { title: '會長' },
+      gmail: 'zhangsan@gmail.com',
       is_paid: true,
-      intro: '我是John，喜歡參加校友活動。',
-      birth_date: '1985-05-15',
-      photo: 'https://via.placeholder.com/150',
-      position: { id: 1, title: '會長' },
-      graduate: { id: 1, school: '國立高雄科技大學', grade: '109' },
     },
-  ]);
+    {
+      id: 2,
+      name: '李四',
+      position: { title: '副會長' },
+      gmail: 'lisi@gmail.com',
+      is_paid: false,
+    },
+    {
+      id: 3,
+      name: '王五',
+      position: { title: '秘書' },
+      gmail: 'wangwu@gmail.com',
+      is_paid: true,
+    },
+  ];
 
-  const [positions] = useState([
-    { id: 1, title: '會長' },
-    { id: 2, title: '副會長' },
-  ]);
+  // 在組件掛載時設定假資料
+  useEffect(() => {
+    setUsers(fakeUsers);
+  }, []);
 
-  const [selectedPosition, setSelectedPosition] = useState('');
-  const [isPaidFilter, setIsPaidFilter] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [editingMember, setEditingMember] = useState(null); // 保存當前編輯的會員資料
-  const [formData, setFormData] = useState({
-    name: '',
-    home_phone: '',
-    mobile_phone: '',
-    gender: 'M',
-    address: '',
-    is_paid: false,
-    intro: '',
-    birth_date: '',
-    photo: null,
-    position: '',
-    graduate: '',
-  });
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const membersPerPage = 5;
-
-  // 新增或編輯提交
-  const handleSubmit = (newMember) => {
-    if (editingMember) {
-      // 編輯模式，更新現有會員
-      setMembers(
-        members.map((member) =>
-          member.id === editingMember.id ? { ...newMember, id: editingMember.id } : member
-        )
-      );
-    } else {
-      // 新增模式
-      setMembers([...members, newMember]);
-    }
-    setShowModal(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
-    setEditingMember(null);
-  };
-
-  // 切換繳費狀態
-  const togglePaymentStatus = (id) => {
-    setMembers(
-      members.map((member) =>
-        member.id === id ? { ...member, is_paid: !member.is_paid } : member
-      )
-    );
-  };
-
-  // 編輯會員
-  const handleEditMember = (member) => {
-    setEditingMember(member);
-    setFormData({
-      name: member.name,
-      home_phone: member.home_phone,
-      mobile_phone: member.mobile_phone,
-      gender: member.gender,
-      address: member.address,
-      is_paid: member.is_paid,
-      intro: member.intro,
-      birth_date: member.birth_date,
-      photo: null, // 編輯時不會直接顯示已上傳的照片，使用者需要重新選擇照片
-      position: member.position.id.toString(),
-      graduate: member.graduate.school,
-    });
+  // 顯示修改資料的 Modal
+  const handleShowModal = (user) => {
+    setCurrentUser(user);
     setShowModal(true);
   };
 
-  const handleFilterChange = () => {
-    setSelectedPosition('');
-    setIsPaidFilter('');
-    setSearchQuery('');
+  // 關閉 Modal
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setCurrentUser(null);
   };
 
-  const filteredMembers = members.filter((member) => {
-    const matchesSearch = searchQuery
-      ? member.name.toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
-    const matchesPosition =
-      selectedPosition === '' || member.position.id === parseInt(selectedPosition);
-    const matchesIsPaid = isPaidFilter === '' || member.is_paid.toString() === isPaidFilter;
+  // 更新使用者資料
+  const handleUpdateUser = () => {
+    const updatedUsers = users.map((user) =>
+      user.id === currentUser.id ? currentUser : user
+    );
+    setUsers(updatedUsers);
+    handleCloseModal();
+  };
 
-    return matchesSearch && matchesPosition && matchesIsPaid;
-  });
-
-  const indexOfLastMember = currentPage * membersPerPage;
-  const indexOfFirstMember = indexOfLastMember - membersPerPage;
-  const currentMembers = filteredMembers.slice(indexOfFirstMember, indexOfLastMember);
-  const totalPages = Math.ceil(filteredMembers.length / membersPerPage);
+  // 新增帳號功能
+  const handleAddUser = () => {
+    const newUser = {
+      id: users.length + 1,
+      name: '新用戶',
+      position: { title: '會員' },
+      gmail: 'newuser@gmail.com',
+      is_paid: false,
+    };
+    setUsers([...users, newUser]);
+  };
 
   return (
-    <Container className="mt-5">
-      {showSuccess && <Alert variant="success">{editingMember ? '更新成功！' : '新增成功！'}</Alert>}
-      <Row>
-        <Col md={4}>
-          <Button
-            variant="success"
-            className="mb-3"
-            onClick={() => {
-              setFormData({
-                name: '',
-                home_phone: '',
-                mobile_phone: '',
-                gender: 'M',
-                address: '',
-                is_paid: false,
-                intro: '',
-                birth_date: '',
-                photo: null,
-                position: '',
-                graduate: '',
-              });
-              setShowModal(true);
-            }}
-          >
-            新增會員
-          </Button>
-          <FilterForm
-            positions={positions}
-            selectedPosition={selectedPosition}
-            setSelectedPosition={setSelectedPosition}
-            isPaidFilter={isPaidFilter}
-            setIsPaidFilter={setIsPaidFilter}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            handleFilterChange={handleFilterChange}
+    <Container className='my-5'>
+      <Row className="justify-content-center">
+        {/* 左側篩選與新增帳號 */}
+        <Col md={3} className="bg-light p-3">
+          <UserFilter
+            filters={filters}
+            setFilters={setFilters}
+            applyFilters={() => {}}
+            handleAddUser={handleAddUser}
           />
         </Col>
-        <Col md={8}>
-          <Card className="shadow-sm">
-            <Card.Header as="h5">系友列表</Card.Header>
-            <MemberTable
-              members={currentMembers}
-              togglePaymentStatus={togglePaymentStatus}
-              onEditMember={handleEditMember}
-            />
-            <PaginationControls
-              currentPage={currentPage}
-              totalPages={totalPages}
-              setCurrentPage={setCurrentPage}
-            />
-          </Card>
+
+        {/* 右側使用者資料表格 */}
+        <Col md={9} className="p-3">
+          <UserTable users={users} handleShowModal={handleShowModal} />
         </Col>
       </Row>
 
-      <MemberModal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        positions={positions}
-        onSubmit={handleSubmit}
-        formData={formData}
-        setFormData={setFormData}
-        editingMember={editingMember}
-      />
+      {/* 修改資料的 Modal */}
+      {currentUser && (
+        <EditUserModal
+          showModal={showModal}
+          handleCloseModal={handleCloseModal}
+          currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
+          handleUpdateUser={handleUpdateUser}
+        />
+      )}
     </Container>
   );
 }
 
-export default MemberManagement;
+export default UserManagement;
