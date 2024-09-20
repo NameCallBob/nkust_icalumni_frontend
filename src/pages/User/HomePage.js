@@ -12,19 +12,19 @@ function Home() {
 
     return (
         <>
-        <Container fluid className="my-3">
+        <Container className="my-3">
             
             <Row>
-                <Col >
-                    {/* 照片輪播 */}
-                    <Slide></Slide>
-                </Col>
-            </Row>
-
-            <Row>
-                <Col >
+                <Col md={4} style={{
+                    display:"flex",
+                    flexDirection:"column",
+                    height:"100%"}}>
                     {/* 最新消息 */}
                     <News></News>
+                </Col>
+                <Col md={8}>
+                    {/* 照片輪播 */}
+                    <Slide></Slide>
                 </Col>
             </Row>
 

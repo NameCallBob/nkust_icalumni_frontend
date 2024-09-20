@@ -106,7 +106,7 @@ function App() {
         }>
         </Route>
 
-        <Route path='/alumni/manage/RecruitManage/' element={
+        <Route path='/alumni/manage/Recruit/' element={
           <>
           <ManagerNav />
           <RecruitManaPage />

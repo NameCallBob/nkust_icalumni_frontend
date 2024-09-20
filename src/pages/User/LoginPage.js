@@ -31,6 +31,7 @@ const Login = () => {
     <>
     <Helmet>
     <title>智商系系友會｜登入</title>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6LdbOi8qAAAAAAsuFDxSve8uJCUxjL-8eY9wVpb8"></script>
     <meta name="description" content="This is the home page of my website." />
     </Helmet>
     <Container className='my-5'>
