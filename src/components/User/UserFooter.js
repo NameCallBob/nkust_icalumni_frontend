@@ -8,10 +8,9 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
  */
 const Footer = () => {
   return (
-    <footer 
+    <footer
       className="bg-dark text-white py-4" >
       <Container style={{ flex: 1 }}>
-        
         <Row>
           <Col md={6}>
             <h5>聯絡資訊</h5>
@@ -51,7 +50,7 @@ const Footer = () => {
             </a>
           </Col>
         </Row>
-        <Row>
+        <Row className="my-5">
             <Col>
             <p>Copyright © 2024 國立高雄科技大學 智慧商務系 系友會</p>
             </Col>

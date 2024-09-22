@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, NavDropdown, Form, FormControl, Button, Container } from 'react-bootstrap';
-import logo from 'assets/ICbaby.png'; // 請替換為你的 logo 圖片路徑
-
+import logo from 'assets/logo.png'; // 請替換為你的 logo 圖片路徑
+import "css/Navlogo.css"
 
 /**
  * 使用者端的導覽列設計
@@ -15,11 +15,10 @@ function UserNav() {
                     <img
                         src={logo}
                         className="d-inline-block align-top logo-img"
-                        alt="My Brand Logo"
-                        width="50"
-                        height="60"
+                        alt="智商系友會LOGO"
+
                     />
-                    <span className="brand-title">高科大智慧商務系｜系友會</span>
+
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav" className='justify-content-end'>

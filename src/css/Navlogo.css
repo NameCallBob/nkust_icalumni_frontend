@@ -1,0 +1,23 @@
+.logo-img {
+  max-width: 100%;
+  height: 3vw; /* 使用相對單位讓高度根據視窗寬度變化 */
+}
+
+@media (max-width: 768px) {
+  .logo-img {
+      height: 10vw; /* 在平板或更小裝置上調整高度 */
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-img {
+      height: 8vw; /* 在手機或更小裝置上進一步調整高度 */
+  }
+}
+
+.navbar-nav .nav-link,
+.navbar-nav .nav-dropdown .dropdown-item {
+  font-weight: bold;
+  font-family: "Microsoft JhengHei", sans-serif;
+
+}

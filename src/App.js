@@ -106,13 +106,13 @@ function App() {
         }>
         </Route>
 
-        <Route path='/alumni/manage/Recruit/' element={
+        <Route path='/alumni/manage/recruit/' element={
           <>
           <ManagerNav />
           <RecruitManaPage />
           </>
         }></Route>
-          <Route path='/alumni/manage/ProductManage/' element={
+          <Route path='/alumni/manage/product/' element={
           <>
           <ManagerNav />
           <ProductList />
