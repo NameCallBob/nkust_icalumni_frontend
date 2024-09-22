@@ -6,14 +6,15 @@ import Slide from "components/User/Home/Slide";
 import News from "components/User/Home/News";
 import Company from "components/User/Home/Company";
 import Product from "components/User/Home/Product";
+import IconGrid from "components/User/Home/CompanyType";
 
 function Home() {
-    
+
 
     return (
         <>
         <Container className="my-3">
-            
+
             <Row>
                 <Col md={4} style={{
                     display:"flex",
@@ -27,14 +28,18 @@ function Home() {
                     <Slide></Slide>
                 </Col>
             </Row>
-
+            <Row>
+                <Col>
+                <IconGrid></IconGrid>
+                </Col>
+            </Row>
             <Row>
                 <Col >
                     {/* 公司介紹 */}
                     <Company></Company>
                 </Col>
             </Row>
-            
+
             <Row>
                 <Col >
                     {/* 產品 */}
