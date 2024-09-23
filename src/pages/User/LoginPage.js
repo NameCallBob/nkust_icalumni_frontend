@@ -18,13 +18,17 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (!captchaVerified) {
-      setError('Please verify that you are not a robot.');
-      return;
-    }
+    // recapture
+    // if (!captchaVerified) {
+    //   setError('Please verify that you are not a robot.');
+    //   return;
+    // }
     // Handle login logic here
     console.log('Email:', email);
     console.log('Password:', password);
+    // if 
+
+    navigator("alumni/manage/")
   };
 
   return (

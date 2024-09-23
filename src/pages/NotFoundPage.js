@@ -13,8 +13,16 @@ const NotFoundPage = () => {
       <Row>
         <Col>
           <h1 className="display-3">404 網站沒有找到</h1>
-          <p className="lead">沒這個頁面ㄋ！</p>
-          <Button variant="primary" onClick={goHome}>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+        <p className="lead">沒這個頁面ㄋ！</p>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+        <Button variant="primary" onClick={goHome}>
             去首頁
           </Button>
         </Col>
