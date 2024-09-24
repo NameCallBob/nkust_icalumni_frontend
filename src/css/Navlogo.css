@@ -21,3 +21,37 @@
   font-family: "Microsoft JhengHei", sans-serif;
 
 }
+/* 讓 .nav 設定為 flex container 並均等分配每個 nav-link 的空間 */
+.navbar .nav {
+  display: flex;
+  justify-content: space-between;
+  width: 100%; /* 讓 nav 占滿 Navbar */
+}
+
+/* 讓每個 .nav-link 占據相同的寬度，並保持在一行內 */
+.navbar .nav-link {
+  flex: 1; /* 每個 Nav.Link 平均分配空間 */
+  text-align: center; /* 文字置中 */
+  padding: 10px 0;
+  color: #000;
+  background-color: #fff;
+  border-right: 1px solid #dee2e6;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+
+  /* 防止換行並處理超出部分 */
+  white-space: nowrap;
+  overflow: hidden;
+  /* text-overflow: ellipsis;。 如果內容太長則以省略號顯示 */
+}
+
+/* 滑鼠懸停時的效果 */
+.navbar .nav-link:hover {
+  transform: scale(1.05);
+  background-color: #000;
+  color: #fff;
+}
+
+/* 移除最後一個 nav-link 的右邊框 */
+.navbar .nav-link:last-child {
+  border-right: none;
+}
