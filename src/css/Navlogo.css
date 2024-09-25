@@ -15,43 +15,48 @@
   }
 }
 
-.navbar-nav .nav-link,
-.navbar-nav .nav-dropdown .dropdown-item {
-  font-weight: bold;
-  font-family: "Microsoft JhengHei", sans-serif;
 
+/* 基本的 navbar 設計，讓背景顏色為淺色，並讓 nav-link 間有適當的間距 */
+.navbar {
+  background-color: #f8f9fa;
+  padding: 1rem;
 }
-/* 讓 .nav 設定為 flex container 並均等分配每個 nav-link 的空間 */
-.navbar .nav {
+
+.navbar-nav {
   display: flex;
-  justify-content: space-between;
-  width: 100%; /* 讓 nav 占滿 Navbar */
+  justify-content: flex-end;
+  width: 100%;
 }
 
-/* 讓每個 .nav-link 占據相同的寬度，並保持在一行內 */
-.navbar .nav-link {
-  flex: 1; /* 每個 Nav.Link 平均分配空間 */
-  text-align: center; /* 文字置中 */
-  padding: 10px 0;
+.navbar-nav .nav-link {
+  font-family: "Microsoft JhengHei", sans-serif;
+  font-size: 1.1rem;
   color: #000;
-  background-color: #fff;
-  border-right: 1px solid #dee2e6;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
-
-  /* 防止換行並處理超出部分 */
-  white-space: nowrap;
-  overflow: hidden;
-  /* text-overflow: ellipsis;。 如果內容太長則以省略號顯示 */
+  padding: 10px 15px;
+  text-decoration: none;
+  transition: all 0.3s ease; /* 為所有效果加上平滑過渡 */
+  border-bottom: 2px solid transparent; /* 加上底線來作為指示 */
 }
 
-/* 滑鼠懸停時的效果 */
-.navbar .nav-link:hover {
-  transform: scale(1.05);
-  background-color: #000;
+/* 當滑鼠懸停時，放大並加粗字體，變換背景顏色及文字顏色 */
+.navbar-nav .nav-link:hover {
   color: #fff;
+  background-color: #000;
+  transform: scale(1.1); /* 放大效果 */
+  font-weight: bold; /* 加粗字體 */
+  border-bottom: 2px solid #fff; /* 懸停時底線變成白色 */
 }
 
-/* 移除最後一個 nav-link 的右邊框 */
-.navbar .nav-link:last-child {
-  border-right: none;
+/* 針對行動裝置進行 RWD 調整 */
+@media (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 12px;
+    width: 100%;
+    text-align: center;
+  }
 }

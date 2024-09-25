@@ -21,16 +21,16 @@ function UserNav() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
             <Nav className="ml-auto align-items-center">
-                <NavDropdown title="系友會介紹" id="basic-nav-dropdown" className="mx-3 border-item">
+                <NavDropdown title="　系友會介紹　" id="basic-nav-dropdown" className="mx-3 border-item">
                     <NavDropdown.Item href="/IC/intro">簡介</NavDropdown.Item>
                     <NavDropdown.Item href="/IC/rule">章程</NavDropdown.Item>
                     <NavDropdown.Item href="/IC/member">組織</NavDropdown.Item>
                     <NavDropdown.Item href="/IC/joinUs">入會方式</NavDropdown.Item>
                 </NavDropdown>
-                <Nav.Link href="/alumniList" className="mx-3 border-item">系友們</Nav.Link>
-                <Nav.Link href="/search" className="mx-3 border-item">公司查詢　</Nav.Link>
-                <Nav.Link href="/Recruitment" className="mx-3 border-item">徵才啟示　</Nav.Link>
-                <NavDropdown title="系友專區" id="basic-nav-dropdown" className="mx-3 border-item">
+                <Nav.Link href="/alumniList" className="mx-3 border-item">　系友們　</Nav.Link>
+                <Nav.Link href="/search" className="mx-3 border-item">　公司查詢　</Nav.Link>
+                <Nav.Link href="/Recruitment" className="mx-3 border-item">　徵才啟示　</Nav.Link>
+                <NavDropdown title="　系友專區　" id="basic-nav-dropdown" className="mx-3 border-item">
                     <NavDropdown.Item href="/login">登入</NavDropdown.Item>
                     <NavDropdown.Item href="/User">使用說明</NavDropdown.Item>
                 </NavDropdown>

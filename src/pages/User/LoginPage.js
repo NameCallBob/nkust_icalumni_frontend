@@ -26,9 +26,9 @@ const Login = () => {
     // Handle login logic here
     console.log('Email:', email);
     console.log('Password:', password);
-    // if 
+    // if
 
-    navigator("alumni/manage/")
+    navigator("/alumni/manage/")
   };
 
   return (

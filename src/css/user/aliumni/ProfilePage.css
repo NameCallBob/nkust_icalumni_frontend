@@ -1,0 +1,15 @@
+.section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  .company-info__section {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .personal-info p {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
