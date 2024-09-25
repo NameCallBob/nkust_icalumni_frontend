@@ -1,4 +1,3 @@
-// UserTable.js
 import React from 'react';
 import { Table, Button , Container } from 'react-bootstrap';
 

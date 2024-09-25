@@ -1,4 +1,3 @@
-// UserFilter.js
 import React from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 
@@ -71,9 +70,9 @@ function UserFilter({ filters, setFilters, applyFilters, handleAddUser , handleA
             </Button>
         </Col>
       </Row>
-      
 
-      
+
+
     </Container>
   );
 }

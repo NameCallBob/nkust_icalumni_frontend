@@ -4,6 +4,7 @@
 
 .icon-col {
   border: 1px solid #ddd; /* 保持格線 */
+  border-radius: 20px;
   padding: 10px; /* 減少padding縮小整體 */
   cursor: pointer; /* 添加點擊效果 */
 }

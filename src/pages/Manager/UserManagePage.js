@@ -1,9 +1,11 @@
 // UserManagement.js
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+
 import UserFilter from 'components/Manage/UserManage/UserFilter';
 import UserTable from 'components/Manage/UserManage/UserTable';
-import EditUserModal from 'components/Manage/UserManage/EditModal';
+import EditUserModal from 'components/Manage/UserManage/EditUserModal';
+
 // import axios from 'axios'; // 如果要串接後端，取消註解
 
 function UserManagement() {
@@ -20,29 +22,48 @@ function UserManagement() {
   const [currentUser, setCurrentUser] = useState(null);
 
   // 模擬假資料
-  const fakeUsers = [
-    {
-      id: 1,
-      name: '張三',
-      position: { title: '會長' },
-      gmail: 'zhangsan@gmail.com',
-      is_paid: true,
-    },
-    {
-      id: 2,
-      name: '李四',
-      position: { title: '副會長' },
-      gmail: 'lisi@gmail.com',
-      is_paid: false,
-    },
-    {
-      id: 3,
-      name: '王五',
-      position: { title: '秘書' },
-      gmail: 'wangwu@gmail.com',
-      is_paid: true,
-    },
-  ];
+// 假資料的完整版本
+const fakeUsers = [
+  {
+    id: 1,
+    name: '張三',
+    gender: 'M',
+    mobile_phone: '0912345678',
+    home_phone: '072345678',
+    address: '台灣高雄市',
+    position: { title: '會長' },
+    graduate: { school: '國立高雄科技大學' },
+    email: 'zhangsan@gmail.com',
+    is_paid: true,
+    date_joined: '2020-01-15',
+  },
+  {
+    id: 2,
+    name: '李四',
+    gender: 'F',
+    mobile_phone: '0922345678',
+    home_phone: '073345678',
+    address: '台灣台北市',
+    position: { title: '副會長' },
+    graduate: { school: '國立台灣大學' },
+    email: 'lisi@gmail.com',
+    is_paid: false,
+    date_joined: '2021-03-22',
+  },
+  {
+    id: 3,
+    name: '王五',
+    gender: 'M',
+    mobile_phone: '0932345678',
+    home_phone: '074345678',
+    address: '台灣新竹市',
+    position: { title: '秘書' },
+    graduate: { school: '國立清華大學' },
+    email: 'wangwu@gmail.com',
+    is_paid: true,
+    date_joined: '2019-06-12',
+  },
+];
 
   // 在組件掛載時設定假資料
   useEffect(() => {
