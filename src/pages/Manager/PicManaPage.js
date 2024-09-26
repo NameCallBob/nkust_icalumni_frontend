@@ -109,36 +109,36 @@ const promotionAds = [
       <h1 className="my-4">照片管理頁面</h1>
             {/* 使用 Tabs 來顯示不同分類的照片管理 */}
             <Tabs defaultActiveKey="promotionAds" id="photo-management-tabs" className="mb-3">
-        <Tab eventKey="promotionAds" title="Promotion Ads">
+        <Tab eventKey="promotionAds" title="公司相關照片">
           <PhotoTable
-            title="Promotion Ads"
+            title="公司相關照片"
             photos={promotionAds}
             onDelete={handleDelete}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
           />
         </Tab>
-        <Tab eventKey="continuousAds" title="Continuous Ads">
+        <Tab eventKey="continuousAds" title="個人相關照片">
           <PhotoTable
-            title="Continuous Ads"
+            title="個人相關照片"
             photos={continuousAds}
             onDelete={handleDelete}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
           />
         </Tab>
-        <Tab eventKey="otherImages" title="Other Images">
+        <Tab eventKey="otherImages" title="其他照片">
           <PhotoTable
-            title="Other Images"
+            title="其他照片"
             photos={otherImages}
             onDelete={handleDelete}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
           />
         </Tab>
-        <Tab eventKey="slideImages" title="Slide Images">
+        <Tab eventKey="slideImages" title="官網廣告輪播">
           <PhotoTable
-            title="Slide Images"
+            title="官網廣告輪播"
             photos={slideImages}
             onDelete={handleDelete}
             onEdit={handleEdit}

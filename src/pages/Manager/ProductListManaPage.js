@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Container } from 'react-bootstrap';
+import { Table, Button, Modal, Container ,Row,Col} from 'react-bootstrap';
 import axios from 'axios';
 import ProductFormModal from 'components/Manage/ProductManage/ProductFormModal';
 import SearchBar from 'components/Manage/ProductManage/SearchBar';
@@ -59,13 +59,21 @@ function ProductList() {
     return (
         <Container className='my-5'>
             <h2>產品列表</h2>
-            <SearchBar onSearch={handleSearch} />
-            <Button onClick={handleAdd} className="mb-3">新增產品</Button>
+            <Row>
+                <Col>
+                <SearchBar onSearch={handleSearch} />
+                </Col>
+                <Col>
+                <Button onClick={handleAdd} className="mb-3">新增產品</Button>
+                </Col>
+            </Row>
+            
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>產品名稱</th>
-                        <th>產品簡介</th>
+                        <th>名稱</th>
+                        <th>簡介</th>
+                        <th>照片預覽</th> {/* 新增的欄位 */}
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -74,6 +82,17 @@ function ProductList() {
                         <tr key={product.id}>
                             <td>{product.name}</td>
                             <td>{product.description}</td>
+                            <td>
+                                {product.photo ? (
+                                    <img
+                                        src={product.photo}
+                                        alt={product.name}
+                                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                                    />
+                                ) : (
+                                    <span>無照片</span>
+                                )}
+                            </td>
                             <td>
                                 <Button variant="primary" onClick={() => handleEdit(product)}>編輯</Button>
                             </td>
@@ -89,8 +108,7 @@ function ProductList() {
                     handleClose={handleCloseModal}
                 />
             )}
-        </Container>
-    );
+        </Container>    );
 }
 
 export default ProductList;
