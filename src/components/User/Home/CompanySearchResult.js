@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Carousel } from "react-bootstrap";
 import CompanyCard from "components/User/Home/CompanyCard"; // 假設這個檔案和主元件放在同一資料夾
 import 'css/user/homepage/CompanyList.css'; // 引入自訂樣式
-
 
 const CompanyList = () => {
     // 假資料
@@ -19,8 +18,29 @@ const CompanyList = () => {
         { name: "公司 J", alumni: "校友 J", description: "描述 J", product: "產品 J", imageUrl: "https://via.placeholder.com/150" }
     ];
 
-    // 將公司分成每次顯示 4 個的組
-    const chunkSize = 4;
+    const [chunkSize, setChunkSize] = useState(4); // 預設每次顯示4個公司
+
+    // 檢測螢幕尺寸並根據大小設置每個幻燈片顯示的公司數量
+    const updateChunkSize = () => {
+        if (window.innerWidth < 768) {
+            setChunkSize(1); // 手機顯示1個公司
+        } else {
+            setChunkSize(4); // 桌面和大螢幕顯示4個公司
+        }
+    };
+
+    // 在組件掛載和螢幕尺寸變化時進行監聽
+    useEffect(() => {
+        updateChunkSize(); // 初次渲染時執行
+        window.addEventListener("resize", updateChunkSize); // 監聽螢幕尺寸變化
+
+        // 在組件卸載時移除事件監聽
+        return () => {
+            window.removeEventListener("resize", updateChunkSize);
+        };
+    }, []);
+
+    // 將公司分成每次顯示 chunkSize 個的組
     const companyChunks = [];
     for (let i = 0; i < companies.length; i += chunkSize) {
         companyChunks.push(companies.slice(i, i + chunkSize));
@@ -31,7 +51,7 @@ const CompanyList = () => {
             <Carousel interval={null} prevIcon={<span className="carousel-control-prev-icon custom-prev-icon" />} nextIcon={<span className="carousel-control-next-icon custom-next-icon" />}>
                 {companyChunks.map((chunk, idx) => (
                     <Carousel.Item key={idx}>
-                        <div className="d-flex justify-content-around">
+                        <div className="d-flex justify-content-around flex-wrap">
                             {chunk.map((company, idx) => (
                                 <CompanyCard key={idx} company={company} />
                             ))}
@@ -39,7 +59,7 @@ const CompanyList = () => {
                     </Carousel.Item>
                 ))}
             </Carousel>
-            <p className="text-center mt-3 slide-text">滑動以查看更多公司資訊</p> {/* 添加提示文字 */}
+            <p className="text-center mt-3 slide-text">滑動以查看更多公司資訊</p>
         </Container>
     );
 };
