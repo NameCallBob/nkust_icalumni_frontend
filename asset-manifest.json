@@ -1,0 +1,32 @@
+{
+  "files": {
+    "main.css": "/nkust_icalumni_frontend/static/css/main.3fdd25fb.css",
+    "main.js": "/nkust_icalumni_frontend/static/js/main.b07770e1.js",
+    "static/js/453.f0c657c3.chunk.js": "/nkust_icalumni_frontend/static/js/453.f0c657c3.chunk.js",
+    "static/media/YuPearl-Medium.ttf": "/nkust_icalumni_frontend/static/media/YuPearl-Medium.cde0f738f79a4963f9fa.ttf",
+    "static/media/326431594_911615443529376__n.jpg": "/nkust_icalumni_frontend/static/media/326431594_911615443529376_4304352214119373700_n.b83c508384cd0292c39b.jpg",
+    "static/media/manipic.jpg": "/nkust_icalumni_frontend/static/media/manipic.af7399aa921a312b9d09.jpg",
+    "static/media/403953713_742061541293273__n.jpg": "/nkust_icalumni_frontend/static/media/403953713_742061541293273_382114322976831463_n.7c568922e48d64eed271.jpg",
+    "static/media/bootstrap-icons.woff?": "/nkust_icalumni_frontend/static/media/bootstrap-icons.39795c0b4513de014cf8.woff",
+    "static/media/403151410_742061697959924__n.jpg": "/nkust_icalumni_frontend/static/media/403151410_742061697959924_82251486996955370_n.ca954a7173e07ce17d36.jpg",
+    "static/media/bootstrap-icons.woff2?": "/nkust_icalumni_frontend/static/media/bootstrap-icons.b7bcc075b395c14ce8c2.woff2",
+    "static/media/sports.png": "/nkust_icalumni_frontend/static/media/sports.3e1a8951393259186b8b.png",
+    "static/media/logo.png": "/nkust_icalumni_frontend/static/media/logo.bb3201a5ba7ca3c28733.png",
+    "static/media/diet.png": "/nkust_icalumni_frontend/static/media/diet.64e675a3e3f8f5a29bbb.png",
+    "static/media/all.png": "/nkust_icalumni_frontend/static/media/all.6e357703b2e3f93c7e1e.png",
+    "static/media/cosmetics.png": "/nkust_icalumni_frontend/static/media/cosmetics.81e75f3fd40c4dadd5a0.png",
+    "static/media/idea.png": "/nkust_icalumni_frontend/static/media/idea.7acd52e2b758b9d0eeee.png",
+    "static/media/shopping-bag.png": "/nkust_icalumni_frontend/static/media/shopping-bag.d47a6023b72a4a3c4421.png",
+    "static/media/baby.png": "/nkust_icalumni_frontend/static/media/baby.df009a0fd4f1ccae5d48.png",
+    "static/media/clothes-rack.png": "/nkust_icalumni_frontend/static/media/clothes-rack.a38748330b6711e1d16e.png",
+    "static/media/smart-tv.png": "/nkust_icalumni_frontend/static/media/smart-tv.ef1c1f784f936ce73355.png",
+    "index.html": "/nkust_icalumni_frontend/index.html",
+    "main.3fdd25fb.css.map": "/nkust_icalumni_frontend/static/css/main.3fdd25fb.css.map",
+    "main.b07770e1.js.map": "/nkust_icalumni_frontend/static/js/main.b07770e1.js.map",
+    "453.f0c657c3.chunk.js.map": "/nkust_icalumni_frontend/static/js/453.f0c657c3.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3fdd25fb.css",
+    "static/js/main.b07770e1.js"
+  ]
+}
