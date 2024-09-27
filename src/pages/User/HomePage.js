@@ -7,6 +7,7 @@ import News from "components/User/Home/News";
 import Company from "components/User/Home/Company";
 import Product from "components/User/Home/Product";
 import IconGrid from "components/User/Home/CompanyType";
+import VerticalCarousel from "components/User/Home/VerticalSlide";
 
 function Home() {
 
@@ -31,6 +32,15 @@ function Home() {
             <Row>
                 <Col>
                 <IconGrid></IconGrid>
+                </Col>
+            </Row>
+            {/* 垂直輪播 */}
+            <Row className="d-flex flex-column flex-md-row">
+                <Col md={6} className="mb-3 mb-md-0">
+                    <VerticalCarousel title={"最新上架"}></VerticalCarousel>
+                </Col>
+                <Col md={6}>
+                    <VerticalCarousel title={"最多點閱"}></VerticalCarousel>
                 </Col>
             </Row>
             <Row>

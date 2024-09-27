@@ -61,7 +61,7 @@ function Slide() {
               padding: "10px",
             }}
           >
-            <h3>會長交接大合照</h3>
+            <p>會長交接大合照</p>
           </Carousel.Caption>
         </Carousel.Item>
 
@@ -80,7 +80,7 @@ function Slide() {
               padding: "10px",
             }}
           >
-            <h3>校外參訪合照</h3>
+            <p>校外參訪合照</p>
           </Carousel.Caption>
         </Carousel.Item>
 
@@ -99,7 +99,7 @@ function Slide() {
               padding: "10px",
             }}
           >
-            <h4>112年度秋季「企業參訪暨聯誼交流」活動</h4>
+            <p>112年度秋季「企業參訪暨聯誼交流」活動</p>
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>

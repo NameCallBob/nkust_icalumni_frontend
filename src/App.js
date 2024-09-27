@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes ,Route} from 'react-router-dom';
 import Footer from 'components/User/UserFooter';
-
+import "./App.css"
 // 使用端頁面
 import UserNav from 'components/User/UserNav';
 import Home from 'pages/User/HomePage';
