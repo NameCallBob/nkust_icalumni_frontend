@@ -8,6 +8,7 @@ import Company from "components/User/Home/Company";
 import Product from "components/User/Home/Product";
 import IconGrid from "components/User/Home/CompanyType";
 import VerticalCarousel from "components/User/Home/VerticalSlide";
+import CategoryDropdown from "components/User/Home/dropdown";
 
 function Home() {
 
@@ -16,17 +17,20 @@ function Home() {
         <>
         <Container className="my-3">
 
-            <Row>
-                <Col md={4} style={{
-                    display:"flex",
-                    flexDirection:"column",
-                    height:"100%"}}>
-                    {/* 最新消息 */}
-                    <News></News>
+            <Row className="my-2">
+                <Col md={3} className="my-1">
+                    {/* 產業別 */}
+                    <CategoryDropdown></CategoryDropdown>
                 </Col>
-                <Col md={8}>
+                <Col md={9}>
                     {/* 照片輪播 */}
                     <Slide></Slide>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    {/* 最新消息 */}
+                    <News></News>
                 </Col>
             </Row>
             <Row>
