@@ -1,14 +1,13 @@
 import React from "react";
 import LoadingSpinner from "components/LoadingSpinner";
-import UserNav from "components/User/UserNav";
 import {Container , Row , Col} from "react-bootstrap";
 import Slide from "components/User/Home/Slide";
 import News from "components/User/Home/News";
 import Company from "components/User/Home/Company";
-import Product from "components/User/Home/Product";
-import IconGrid from "components/User/Home/CompanyType";
 import VerticalCarousel from "components/User/Home/VerticalSlide";
 import CategoryDropdown from "components/User/Home/dropdown";
+import SearchBar from "components/User/Home/SearchBar";
+import CompanyTabsSearch from "components/User/Home/CompanySearch";
 
 function Home() {
 
@@ -17,12 +16,17 @@ function Home() {
         <>
         <Container className="my-3">
 
-            <Row className="my-2">
+            <Row className="my-2 d-flex align-items-center">
                 <Col md={3} className="my-1">
                     {/* 產業別 */}
                     <CategoryDropdown></CategoryDropdown>
                 </Col>
-                <Col md={9}>
+                <Col md={9} >
+                    <SearchBar></SearchBar>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
                     {/* 照片輪播 */}
                     <Slide></Slide>
                 </Col>
@@ -33,9 +37,10 @@ function Home() {
                     <News></News>
                 </Col>
             </Row>
+            <h3>公司類別</h3>
             <Row>
                 <Col>
-                <IconGrid></IconGrid>
+                <CompanyTabsSearch></CompanyTabsSearch>
                 </Col>
             </Row>
             {/* 垂直輪播 */}
@@ -53,14 +58,6 @@ function Home() {
                     <Company></Company>
                 </Col>
             </Row>
-
-            <Row>
-                <Col >
-                    {/* 產品 */}
-                    <Product></Product>
-                </Col>
-            </Row>
-
         </Container>
         </>
     )

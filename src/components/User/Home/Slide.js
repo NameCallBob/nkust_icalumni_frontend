@@ -32,7 +32,7 @@ function Slide() {
             className="d-block w-100"
             src={image4}
             alt="First slide"
-            style={{ height: "50vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
+            style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
             onClick={() => handleImageClick(image4)} // 點擊圖片放大
           />
           <Carousel.Caption
@@ -51,7 +51,7 @@ function Slide() {
             className="d-block w-100"
             src={image1}
             alt="First slide"
-            style={{ height: "50vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
+            style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
             onClick={() => handleImageClick(image1)} // 點擊圖片放大
           />
           <Carousel.Caption
@@ -70,7 +70,7 @@ function Slide() {
             className="d-block w-100"
             src={image2}
             alt="Second slide"
-            style={{ height: "50vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
+            style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
             onClick={() => handleImageClick(image2)} // 點擊圖片放大
           />
           <Carousel.Caption
@@ -89,7 +89,7 @@ function Slide() {
             className="d-block w-100"
             src={image3}
             alt="Third slide"
-            style={{ height: "50vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
+            style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
             onClick={() => handleImageClick(image3)} // 點擊圖片放大
           />
           <Carousel.Caption

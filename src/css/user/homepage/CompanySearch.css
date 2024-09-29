@@ -1,0 +1,12 @@
+.fixed-height {
+    min-height: 400px; /* 固定公司列表的最小高度 */
+  }
+
+  .tab-button.active-tab {
+    font-weight: bold;
+    border-bottom: 3px solid #007bff; /* 高亮顯示被選中的按鈕 */
+  }
+
+  .tab-button {
+    margin-right: 5px;
+  }
