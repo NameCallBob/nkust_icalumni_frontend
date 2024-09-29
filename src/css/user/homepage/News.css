@@ -1,0 +1,57 @@
+.news-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.news-card:hover {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.news-card.animate {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.time-box {
+  flex-shrink: 0;
+  width: 120px; /* 固定時間區域的寬度，防止因活動名稱長度影響 */
+  text-align: left;
+}
+
+.time-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.activity-box {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.activity-title {
+  font-size: 18px;
+  color: #333;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
