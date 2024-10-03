@@ -4,14 +4,18 @@ import { Table, Button, Modal, Form } from 'react-bootstrap';
 const IndustryCRUD = () => {
   // 假資料
   const [industries, setIndustries] = useState([
-    { id: 1, name: '科技' },
-    { id: 2, name: '金融' },
-    { id: 3, name: '醫療' },
+    { id: 1, name: '科技', description: '科技產業的簡介' },
+    { id: 2, name: '金融', description: '金融產業的簡介' },
+    { id: 3, name: '醫療', description: '醫療產業的簡介' },
   ]);
-  
+
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [currentIndustry, setCurrentIndustry] = useState({ id: null, name: '' });
+  const [currentIndustry, setCurrentIndustry] = useState({
+    id: null,
+    name: '',
+    description: '',
+  });
 
   const handleSave = () => {
     if (isEdit) {
@@ -27,7 +31,7 @@ const IndustryCRUD = () => {
       ]);
     }
     setShowModal(false);
-    setCurrentIndustry({ id: null, name: '' });
+    setCurrentIndustry({ id: null, name: '', description: '' });
     setIsEdit(false);
   };
 
@@ -48,6 +52,7 @@ const IndustryCRUD = () => {
           <tr>
             <th>#</th>
             <th>產業名稱</th>
+            <th>簡介</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -56,6 +61,7 @@ const IndustryCRUD = () => {
             <tr key={industry.id}>
               <td>{index + 1}</td>
               <td>{industry.name}</td>
+              <td>{industry.description}</td>
               <td>
                 <Button variant="warning" onClick={() => handleEdit(industry)}>
                   修改
@@ -79,6 +85,17 @@ const IndustryCRUD = () => {
                 value={currentIndustry.name}
                 onChange={(e) =>
                   setCurrentIndustry({ ...currentIndustry, name: e.target.value })
+                }
+              />
+            </Form.Group>
+            <Form.Group controlId="industryDescription">
+              <Form.Label>產業簡介</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={currentIndustry.description}
+                onChange={(e) =>
+                  setCurrentIndustry({ ...currentIndustry, description: e.target.value })
                 }
               />
             </Form.Group>
