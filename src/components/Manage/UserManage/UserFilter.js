@@ -1,7 +1,21 @@
 import React from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 
-function UserFilter({ filters, setFilters, applyFilters, handleAddUser , handleAddAccount}) {
+/**
+ * 使用者篩選元件
+ * 
+ * 處理篩選後即使用者新增的modal及物件
+ * 
+ * @param {*} filters 父元件篩選
+ * @param {*} setFilters 父元件篩選_修改
+ * @param {*} applyFilters 篩選確認_事件
+ * @param {*} handleAddUser_easy 新增簡單使用者_事件
+ * @param {*} handleAddUser_complex 新增複雜使用者_事件
+ * @param {*} handleConfirmAddUser 確認新增使用者_事件
+ * 
+ * @returns html
+ */
+function UserFilter({ filters, setFilters, applyFilters, handleAddUser_easy , handleAddUser_complex}) {
   // 篩選條件變更處理
   const handleFilterChange = (e) => {
     setFilters({
@@ -12,7 +26,21 @@ function UserFilter({ filters, setFilters, applyFilters, handleAddUser , handleA
 
   return (
     <Container>
-      <h5>篩選條件</h5>
+      <h5>新增帳號</h5>
+      <Row>
+        <Col>
+            <Button variant="success" onClick={handleAddUser_easy}>
+                添加簡單帳號
+            </Button>
+        </Col>
+        <Col>
+            <Button variant="success" onClick={handleAddUser_complex}>
+                添加完整帳號
+            </Button>
+        </Col>
+      </Row>
+      
+      <h5 className='my-3'>篩選條件</h5>
       <Form>
         <Form.Group controlId="filterName">
           <Form.Label>姓名</Form.Label>
@@ -55,21 +83,7 @@ function UserFilter({ filters, setFilters, applyFilters, handleAddUser , handleA
         </Button>
       </Form>
 
-      <hr />
 
-      <h5>新增帳號</h5>
-      <Row>
-        <Col>
-            <Button variant="success" onClick={handleAddUser}>
-                添加帳號
-            </Button>
-        </Col>
-        <Col>
-            <Button variant="success" onClick={handleAddUser}>
-                添加完整帳號
-            </Button>
-        </Col>
-      </Row>
 
 
 
