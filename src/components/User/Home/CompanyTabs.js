@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-
+import "css/user/homepage/tabs.css"
 const MAX_VISIBLE_CATEGORIES = 5; // 設定最多顯示多少個分類
 
 const TabsComponent = ({ categories, onCategorySelect , activeCategory }) => {

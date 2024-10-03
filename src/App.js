@@ -24,6 +24,7 @@ import RecruitManaPage from 'pages/Manager/RecruitManaPage';
 import ProductList from 'pages/Manager/ProductListManaPage';
 import PhotoManagementPage from 'pages/Manager/PicManaPage';
 import CompanyForm from 'pages/Manager/CompanyManaPage';
+import OtherManage from 'pages/Manager/OtherManagePage';
 
 function App() {
   return (
@@ -146,6 +147,14 @@ function App() {
         <PhotoManagementPage />
       </>
     } />
+    {/* 其他管理 */}
+    <Route path="/alumni/manage/other/" element={
+      <>
+        <ManagerNav />
+        <OtherManage></OtherManage>
+      </>
+    } />
+
         {/*　其他　- 404 頁面 */}
         <Route path="*" element={
           <>
