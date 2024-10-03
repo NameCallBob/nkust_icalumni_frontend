@@ -25,6 +25,7 @@ import ProductList from 'pages/Manager/ProductListManaPage';
 import PhotoManagementPage from 'pages/Manager/PicManaPage';
 import CompanyForm from 'pages/Manager/CompanyManaPage';
 import OtherManage from 'pages/Manager/OtherManagePage';
+import ArticleEditor from 'pages/Manager/ArticleManaPage';
 
 function App() {
   return (
@@ -154,7 +155,13 @@ function App() {
         <OtherManage></OtherManage>
       </>
     } />
-
+    {/* 文章管理 */}
+    <Route path="/alumni/manage/article/" element={
+      <>
+        <ManagerNav />
+        <ArticleEditor></ArticleEditor>
+      </>
+    } />
         {/*　其他　- 404 頁面 */}
         <Route path="*" element={
           <>

@@ -47,6 +47,7 @@ function ManagerNav() {
                         <Nav.Link href="/alumni/manage/product/" className="mx-3 border-item">商品登陸</Nav.Link>
                         <Nav.Link href="/alumni/manage/recruit/" className="mx-3 border-item">招募登陸</Nav.Link>
                         <Nav.Link href="/alumni/manage/pic/" className="mx-3 border-item">照片管理</Nav.Link>
+                        <Nav.Link href="/alumni/manage/article/" className="mx-3 border-item">活動發布管理</Nav.Link>
                         <Nav.Link href="/alumni/manage/other/" className="mx-3 border-item">其他管理</Nav.Link>
                         <NavDropdown title="帳號相關" id="basic-nav-dropdown" className='mr-auto border-item'>
                             <NavDropdown.Item href="/login">登出</NavDropdown.Item>
