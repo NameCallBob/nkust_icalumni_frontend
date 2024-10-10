@@ -7,16 +7,16 @@ function Axios(){
   if (window.localStorage.getItem('jwt') === null){
   window.localStorage.setItem('jwt','None')
   }
+  console.log(process.env.REACT_APP_BASE_URL)
   let jwt = `Bearer ${(window.localStorage.getItem('jwt'))}`
   const res = axios.create(
     {
-      baseURL: 'http://140.133.74.162:12345/',
+      baseURL: process.env.REACT_APP_BASE_URL,
       timeout:10000,
       headers:{
-        // 'ngrok-skip-browser-warning':'123',
         'Authorization':jwt,
         'Content-Type':'Application/json',
-        'Accept':'*/*'
+        'Accept':'*/*',
       }
     }
   )

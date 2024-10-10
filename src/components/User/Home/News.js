@@ -1,7 +1,11 @@
 import { Container,  Pagination } from "react-bootstrap";
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import 'css/user/homepage/News.css'; // 自訂義 CSS 檔案
+import Axios from "common/Axios";
 
+/**
+ * 呈現的樣子
+ */
 const NewsItem = ({ time, title, onClick }) => {
   return (
     <div className="news-card animate" onClick={onClick}>
@@ -16,20 +20,19 @@ const NewsItem = ({ time, title, onClick }) => {
 };
 
 function News() {
-  const allMeetingsData = [
-    { time: "2024-09-25", title: "系友聯誼會" },
-    { time: "2024-09-24", title: "技術交流會議" },
-    { time: "2024-09-23", title: "校友捐贈儀式" },
-    { time: "2024-09-22", title: "系友創業成功故事" },
-    { time: "2024-09-21", title: "AI與未來科技講座" },
-    { time: "2024-09-20", title: "參訪創新科技企業" },
-    { time: "2024-09-19", title: "學術委員會會議" },
-    { time: "2024-09-18", title: "校友會理事會議" },
-  ];
 
+  const [article,setArticle] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // 每頁顯示5個項目
-  const totalPages = Math.ceil(allMeetingsData.length / itemsPerPage);
+  const totalPages = Math.ceil(article.length / itemsPerPage);
+
+  useEffect(() => {
+    Axios().get("/article/all/tableOutput/")
+    .then((res) => {
+      setArticle(res.data)
+    })
+  },[])
+
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -41,7 +44,7 @@ function News() {
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = allMeetingsData.slice(startIndex, startIndex + itemsPerPage);
+  const currentData = article.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <Container className="my-4">
@@ -49,7 +52,7 @@ function News() {
       {currentData.map((item, index) => (
         <NewsItem
           key={index}
-          time={item.time}
+          time={item.publish_at.split("T")[0]}
           title={item.title}
           onClick={() => handleItemClick(item.title)}
         />
