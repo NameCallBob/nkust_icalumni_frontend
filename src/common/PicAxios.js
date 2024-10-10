@@ -2,21 +2,21 @@ import axios from "axios"
 import { Navigate } from "react-router-dom"
 
 
-function Axios(){
+function PicAxios(){
   // const navigate = useNavigate()
   if (window.localStorage.getItem('jwt') === null){
   window.localStorage.setItem('jwt','None')
   }
-  console.log(process.env.REACT_APP_BASE_URL)
   let jwt = `Bearer ${(window.localStorage.getItem('jwt'))}`
   const res = axios.create(
     {
-      baseURL: process.env.REACT_APP_BASE_URL,
+      baseURL: 'http://140.133.74.162:12346/',
       timeout:10000,
       headers:{
         'Authorization':jwt,
         'Content-Type':'Application/json',
         'Accept':'*/*',
+        'Access-Control-Allow-Origin':'*'
       }
     }
   )
@@ -38,4 +38,4 @@ function Axios(){
 }
 
 
-export default Axios
+export default PicAxios

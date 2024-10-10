@@ -1,21 +1,22 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { Carousel, Modal, Button } from "react-bootstrap";
+import Axios from "common/Axios";
+import PicAxios from "common/PicAxios"
+import LoadingSpinner from "components/LoadingSpinner";
 
-// Test Pic
-import image1 from "assets/slide/326431594_911615443529376_4304352214119373700_n.jpg";
-import image2 from "assets/slide/403151410_742061697959924_82251486996955370_n.jpg";
-import image3 from "assets/slide/403953713_742061541293273_382114322976831463_n.jpg";
-import image4 from "assets/slide/manipic.jpg";
 
 /**
  * 照片輪播
  */
 function Slide() {
   const [showModal, setShowModal] = useState(false);
+  const [slideImage , setSlideImage] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true); // 管理加載狀態
 
   const handleImageClick = (image) => {
-    setSelectedImage(image);
+    let back_image = PicAxios().get(image)
+    setSelectedImage(back_image);
     setShowModal(true);
   };
 
@@ -24,85 +25,44 @@ function Slide() {
     setSelectedImage(null);
   };
 
+  useEffect(() => {
+    Axios().get("/picture/slide-images/active/")
+    .then((res) => {
+      setSlideImage(res.data)
+      setLoading(false); // 加載完成，隱藏動畫
+    })
+
+  },[])
+
   return (
     <div style={{ width: "100%" }}>
-      <Carousel>
-        <Carousel.Item>
-          <img
-            className="d-block w-100"
-            src={image4}
-            alt="First slide"
-            style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
-            onClick={() => handleImageClick(image4)} // 點擊圖片放大
-          />
-          <Carousel.Caption
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              color: "white",
-              padding: "10px",
-            }}
-          >
-            {/* <h3>招生</h3> */}
-          </Carousel.Caption>
-        </Carousel.Item>
-
-        <Carousel.Item>
-          <img
-            className="d-block w-100"
-            src={image1}
-            alt="First slide"
-            style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
-            onClick={() => handleImageClick(image1)} // 點擊圖片放大
-          />
-          <Carousel.Caption
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              color: "white",
-              padding: "10px",
-            }}
-          >
-            <p>會長交接大合照</p>
-          </Carousel.Caption>
-        </Carousel.Item>
-
-        <Carousel.Item>
-          <img
-            className="d-block w-100"
-            src={image2}
-            alt="Second slide"
-            style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
-            onClick={() => handleImageClick(image2)} // 點擊圖片放大
-          />
-          <Carousel.Caption
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              color: "white",
-              padding: "10px",
-            }}
-          >
-            <p>校外參訪合照</p>
-          </Carousel.Caption>
-        </Carousel.Item>
-
-        <Carousel.Item>
-          <img
-            className="d-block w-100"
-            src={image3}
-            alt="Third slide"
-            style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
-            onClick={() => handleImageClick(image3)} // 點擊圖片放大
-          />
-          <Carousel.Caption
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
-              color: "white",
-              padding: "10px",
-            }}
-          >
-            <p>112年度秋季「企業參訪暨聯誼交流」活動</p>
-          </Carousel.Caption>
-        </Carousel.Item>
-      </Carousel>
+    {loading ? (
+          <LoadingSpinner></LoadingSpinner>
+      ) : (
+        <Carousel>
+          {slideImage.map((slide) => (
+            <Carousel.Item key={slide.id}>
+              <img
+                className="d-block w-100"
+                src={process.env.REACT_APP_BASE_URL+slide.image}
+                alt={slide.name}
+                style={{ height: "60vh", objectFit: "cover", margin: "0 auto", cursor: "pointer" }}
+                onClick={() => handleImageClick(slide.image)} // 點擊圖片放大
+              />
+              <Carousel.Caption
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0.7)",
+                  color: "white",
+                  padding: "10px",
+                }}
+              >
+                <p style={{fontSize : "18pt"}}>{slide.title}</p>
+                <p>{slide.description}</p>
+              </Carousel.Caption>
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      )}
 
       {/* Modal for image zoom */}
       <Modal
