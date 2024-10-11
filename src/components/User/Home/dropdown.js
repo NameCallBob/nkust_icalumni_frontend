@@ -1,17 +1,14 @@
-import React , {useState} from 'react';
+import React , {useEffect, useState} from 'react';
 import { Dropdown, ButtonGroup } from 'react-bootstrap';
 import 'css/user/homepage/CategoryDropdown.css'; // 這裡引入 CSS 來定義動畫樣式
+import Axios from 'common/Axios';
 
-const categories = [
-    '3C', '家電', '美妝個清', '保健/食品', '服飾/內衣', 
-    '鞋包/精品', '母嬰用品', '圖書文具', '傢寢運動',
-    '運動用品', '戶外休閒', '數位內容', '玩具遊戲',
-  ];
   
   function CategoryDropdown() {
     const [currentPage, setCurrentPage] = useState(0);
+    const [categories,setCategories] = useState([]);
     const itemsPerPage = 11;
-  
+    
     const totalPages = Math.ceil(categories.length / itemsPerPage);
   
     const handleNextPage = () => {
@@ -30,7 +27,12 @@ const categories = [
       currentPage * itemsPerPage, 
       (currentPage + 1) * itemsPerPage
     );
-  
+    useEffect(() => {
+      Axios().get('company/industry/all/')
+      .then((res) => {
+        setCategories(res.data)
+      })
+    },[])
     return (
       <Dropdown as={ButtonGroup} className="w-100">
         <Dropdown.Toggle
@@ -45,11 +47,11 @@ const categories = [
         <Dropdown.Menu className="w-100 text-center dropdown-menu-animated">
           {currentItems.map((category, index) => (
             <Dropdown.Item
-              key={index}
-              href={`#${category}`}
+              key={category.id}
+              href={`#${category.id}`}
               className="py-2 dropdown-item-animated"
             >
-              {category}
+              {category.title}
             </Dropdown.Item>
           ))}
   

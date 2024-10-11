@@ -2,7 +2,7 @@ import axios from "axios"
 import { Navigate } from "react-router-dom"
 
 
-function Axios(){
+function PicAxios(){
   // const navigate = useNavigate()
   if (window.localStorage.getItem('jwt') === null){
   window.localStorage.setItem('jwt','None')
@@ -10,12 +10,13 @@ function Axios(){
   let jwt = `Bearer ${(window.localStorage.getItem('jwt'))}`
   const res = axios.create(
     {
-      baseURL: process.env.REACT_APP_BASE_URL,
+      baseURL: 'http://140.133.74.162:12346/',
       timeout:10000,
       headers:{
         'Authorization':jwt,
         'Content-Type':'Application/json',
         'Accept':'*/*',
+        'Access-Control-Allow-Origin':'*'
       }
     }
   )
@@ -28,15 +29,7 @@ function Axios(){
     function (err) {
       if (err.response && err.response.status === 401) {
         alert("您的憑證已失效，請重新登入");
-        <Navigate to="/login " />;
-      }
-      else if (err.response && err.response.status === 503){
-        alert("伺服器維護中，請稍後再試！");
-        <Navigate to="/" />;
-      }
-      else if (err.response && err.response.status === 500){
-        alert("發生伺服器意外錯誤，已通報開發者！請稍後再試，造成不便敬請見諒．");
-        // <Navigate to="/" />;
+        <Navigate to="/LoginPage"/>;
       }
       return Promise.reject(err);
     }
@@ -45,4 +38,4 @@ function Axios(){
 }
 
 
-export default Axios
+export default PicAxios
