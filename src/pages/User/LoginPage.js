@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import Axios from 'common/Axios';
+import React, { useEffect, useState } from 'react';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import ReCAPTCHA from 'react-google-recaptcha';
 // 變更網站head
@@ -23,13 +24,33 @@ const Login = () => {
     //   setError('Please verify that you are not a robot.');
     //   return;
     // }
-    // Handle login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // if
 
-    navigator("/alumni/manage/")
+    // Handle login logic here
+    Axios().post("/basic/login" ,{
+      "email":email,
+      "password":password
+    })
+    .then((res)=> {
+      window.localStorage.setItem("jwt",res.data.token)
+      alert("登入成功")
+      navigator("/alumni/manage/")
+    } )
+    .catch((err) => {
+      alert("帳號密碼不匹配")
+    })
   };
+  useEffect(() => {
+    Axios().post("api/token/verify/",{
+      "token":window.localStorage.getItem('jwt')
+    })
+    .then((res) => {
+      alert("已登入將自動跳轉！")
+      navigator("/alumni/manage/")
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  },[])
 
   return (
     <>

@@ -1,54 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Carousel, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-const companies = [
-  {
-    id: 1,
-    name: '公司A',
-    product: '生產產品A',
-    image: 'https://via.placeholder.com/300x300',
-  },
-  {
-    id: 2,
-    name: '公司B',
-    product: '生產產品B',
-    image: 'https://via.placeholder.com/300x300',
-  },
-  {
-    id: 3,
-    name: '公司C',
-    product: '生產產品C',
-    image: 'https://via.placeholder.com/300x300',
-  },
-  {
-    id: 4,
-    name: '公司D',
-    product: '生產產品D',
-    image: 'https://via.placeholder.com/300x300',
-  },
-  {
-    id: 5,
-    name: '公司E',
-    product: '生產產品E',
-    image: 'https://via.placeholder.com/300x300',
-  },
-  {
-    id: 6,
-    name: '公司F',
-    product: '生產產品F',
-    image: 'https://via.placeholder.com/300x300',
-  },
-];
+import Axios from 'common/Axios';
 
 const VerticalCarousel = ({title}) => {
+  const [companies , setCompanies] = useState([])
   const navigate = useNavigate();
-
+  const apilist = {
+    "最多點閱":"company/data/mostView/",
+    "最新上架":"company/data/newUpload/"
+  }
   const handleItemClick = (id) => {
     navigate(`/company/${id}`);
   };
+  useEffect(() => {
+    Axios().get(apilist[title])
+    .then((res) => {
+      setCompanies(res.data)
+    })
 
+  },[])
   return (
     <>
       
@@ -69,60 +41,68 @@ const VerticalCarousel = ({title}) => {
       slide={true}
       style={{ maxHeight: '600px' }} // 確保足夠空間容納項目
     >
-      {companies.map((company, index) => (
-        <Carousel.Item key={index}>
-          <Row className="d-none d-md-flex">
-            <Col md={6}>
-              <div
-                className="text-center p-3 border"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleItemClick(companies[index % companies.length].id)}
-              >
-                <img
-                  src={companies[index % companies.length].image}
-                  alt={companies[index % companies.length].name}
-                  style={{ width: '100%', height: '300px', objectFit: 'cover' }}
-                />
-                <h4>{companies[index % companies.length].name}</h4>
-                <p><strong>產品：</strong>{companies[index % companies.length].product}</p>
-              </div>
-            </Col>
-            <Col md={6}>
-              <div
-                className="text-center p-3 border"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleItemClick(companies[(index + 1) % companies.length].id)}
-              >
-                <img
-                  src={companies[(index + 1) % companies.length].image}
-                  alt={companies[(index + 1) % companies.length].name}
-                  style={{ width: '100%', height: '300px', objectFit: 'cover' }}
-                />
-                <h4>{companies[(index + 1) % companies.length].name}</h4>
-                <p><strong>產品：</strong>{companies[(index + 1) % companies.length].product}</p>
-              </div>
-            </Col>
-          </Row>
+{companies.map((company, index) => (
+  <Carousel.Item key={index}>
+    <Row className="d-none d-md-flex">
+      <Col md={12}>
+        <div
+          className="text-center p-3 border"
+          style={{ cursor: 'pointer' }}
+          onClick={() => handleItemClick(company.id)}
+        >
+          <img
+            src={process.env.REACT_APP_BASE_URL + company.photo}
+            alt={company.name}
+            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+          />
+          <h4>{company.name}</h4>
+          <p><strong>系友：</strong>{company.member_name}</p>
+          <p><strong>產品：</strong>{company.products}</p>
+        </div>
+      </Col>
+      
+      {/* 只有當 companies.length > 1 時才顯示第二個 Col */}
+      {companies.length > 1 && (
+        <Col md={6}>
+          <div
+            className="text-center p-3 border"
+            style={{ cursor: 'pointer' }}
+            onClick={() => handleItemClick(companies[(index + 1) % companies.length].id)}
+          >
+            <img
+              src={process.env.REACT_APP_BASE_URL + companies[(index + 1) % companies.length].photo}
+              alt={companies[(index + 1) % companies.length].name}
+              style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+            />
+            <h4>{companies[(index + 1) % companies.length].name}</h4>
+            <p><strong>系友：</strong>{companies[(index + 1) % companies.length].member_name}</p>
+            <p><strong>產品：</strong>{companies[(index + 1) % companies.length].products}</p>
+          </div>
+        </Col>
+      )}
+    </Row>
 
-          <Row className="d-flex d-md-none">
-            <Col xs={12}>
-              <div
-                className="text-center p-3 border"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleItemClick(company.id)}
-              >
-                <img
-                  src={company.image}
-                  alt={company.name}
-                  style={{ width: '100%', height: '300px', objectFit: 'cover' }}
-                />
-                <h4>{company.name}</h4>
-                <p><strong>產品：</strong>{company.product}</p>
-              </div>
-            </Col>
-          </Row>
-        </Carousel.Item>
-      ))}
+    {/* 畫面只能出現單一東西 */}
+    <Row className="d-flex d-md-none">
+      <Col xs={12}>
+        <div
+          className="text-center p-3 border"
+          style={{ cursor: 'pointer' }}
+          onClick={() => handleItemClick(company.id)}
+        >
+          <img
+            src={process.env.REACT_APP_BASE_URL + company.photo}
+            alt={company.name}
+            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+          />
+          <h4>{company.name}</h4>
+          <p><strong>系友：</strong>{company.member_name}</p>
+          <p><strong>產品：</strong>{company.products}</p>
+        </div>
+      </Col>
+    </Row>
+  </Carousel.Item>
+))}
     </Carousel>
 
       </Col>
