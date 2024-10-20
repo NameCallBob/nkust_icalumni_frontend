@@ -8,7 +8,6 @@ import UserNav from 'components/User/UserNav';
 import Home from 'pages/User/HomePage';
 import Login from 'pages/User/LoginPage';
 import Search from 'pages/User/SearchPage';
-import CompanyIntro from 'pages/User/CompanyDetailPage';
 import ProductPage from 'pages/User/ProductPage';
 import AlumniDetailPage from 'pages/User/AlumniIntroPage';
 import AlumniListPage from 'pages/User/AlumniListPage';
@@ -57,13 +56,6 @@ function App() {
       </>
     } />
 
-    {/* 公司介紹頁面 */}
-    <Route path="/company/:id" element={
-      <>
-        <UserNav />
-        <CompanyIntro />
-      </>
-    } />
 
     {/* 產品頁面 */}
     <Route path="/product" element={
