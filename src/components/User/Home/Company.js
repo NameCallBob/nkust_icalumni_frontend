@@ -1,10 +1,12 @@
 import Axios from "common/Axios";
 import React, { useEffect, useState } from "react";
 import { Card, Button, Container,Carousel, Row, Col } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import 'css/user/homepage/CompanyList.css'; // 添加樣式
 
 
-  
   function Company(){
+    const navigate = useNavigate()
     const [companies,setCompanies] = useState([])
     useEffect(() => {
       Axios().get("company/data/randomCompanies/")
@@ -17,7 +19,11 @@ import { Card, Button, Container,Carousel, Row, Col } from "react-bootstrap";
     for (let i = 0; i < companies.length; i += 4) {
       groupedCompanies.push(companies.slice(i, i + 4));
     }
-  
+
+    const handleItemClick = (id) => {
+      navigate(`/alumni/${id}`);
+    };
+
     return (
       <Container className="py-2 my-2" style={{ backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
         <Row>
@@ -31,20 +37,20 @@ import { Card, Button, Container,Carousel, Row, Col } from "react-bootstrap";
               <Row>
                 {group.map((company, idx) => (
                   <Col key={idx} xs={12} sm={6} md={4} lg={3} className="mb-5 px-3">
-                    <Card className="shadow-sm h-100" onClick={() => {}}>
-                      <Card.Img
-                        variant="top"
-                        src={process.env.REACT_APP_BASE_URL+company.photo}
-                        style={{ objectFit: "cover", height: "300px" , width:"100%" }}
-                        alt={`${company.name} Image`}
-                      />
-                      <Card.Body>
-                        <Card.Title>{company.name}</Card.Title>
-                        <Card.Subtitle className="mb-2 text-muted">{company.alumni}</Card.Subtitle>
-                        <Card.Text>{company.description}</Card.Text>
-                        <Card.Text>產品製作: {company.products}</Card.Text>
-                      </Card.Body>
-                    </Card>
+                  <div
+                    className="text-center p-3 border"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleItemClick(companies[(index + 1) % companies.length].member)}
+                  >
+                    <img
+                      src={process.env.REACT_APP_BASE_URL+companies[(index + 1) % companies.length].photo}
+                      alt={companies[(index + 1) % companies.length].name}
+                      style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+                    />
+                    <h4>{companies[(index + 1) % companies.length].name}</h4>
+                    <p><strong>系友：</strong>{companies[(index + 1) % companies.length].member_name}</p>
+                    <p><strong>產品：</strong>{companies[(index + 1) % companies.length].products}</p>
+                  </div>
                   </Col>
                 ))}
               </Row>

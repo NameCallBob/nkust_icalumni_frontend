@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigator = useNavigate()
 
   const handleSearchClick = () => {
     // 這裡是點擊搜尋按鈕時的邏輯
-    alert(`搜尋: ${searchTerm}`);
-  };
+    navigator("/search" , {state:{
+      type_id:null,search_text:searchTerm
+    }})  };
 
   return (
     <InputGroup className="mb-3" style={{ height: '40px' }}>

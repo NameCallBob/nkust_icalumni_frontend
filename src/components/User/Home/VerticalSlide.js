@@ -12,7 +12,7 @@ const VerticalCarousel = ({title}) => {
     "最新上架":"company/data/newUpload/"
   }
   const handleItemClick = (id) => {
-    navigate(`/company/${id}`);
+    navigate(`/alumni/${id}`);
   };
   useEffect(() => {
     Axios().get(apilist[title])
@@ -23,7 +23,7 @@ const VerticalCarousel = ({title}) => {
   },[])
   return (
     <>
-      
+
     <Row>
       <Col>
         <h4>{title}</h4>
@@ -48,7 +48,7 @@ const VerticalCarousel = ({title}) => {
         <div
           className="text-center p-3 border"
           style={{ cursor: 'pointer' }}
-          onClick={() => handleItemClick(company.id)}
+          onClick={() => handleItemClick(company.member)}
         >
           <img
             src={process.env.REACT_APP_BASE_URL + company.photo}
@@ -60,7 +60,7 @@ const VerticalCarousel = ({title}) => {
           <p><strong>產品：</strong>{company.products}</p>
         </div>
       </Col>
-      
+
       {/* 只有當 companies.length > 1 時才顯示第二個 Col */}
       {companies.length > 1 && (
         <Col md={6}>

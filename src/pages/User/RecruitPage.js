@@ -1,50 +1,44 @@
-import React, { useState } from 'react';
-import { Table, Modal, Button, Container } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Table, Modal, Button, Container, Carousel } from 'react-bootstrap'; // 引入 Carousel 組件
 import 'css/recruit.css';
-
-const jobs = [
-  {
-    id: 1,
-    title: '後端工程師',
-    postDate: '2023-09-01',
-    endDate: '2023-09-30',
-    company: 'XYZ 科技公司',
-    description: '需要熟悉 Django 和 REST API 開發，具備至少兩年經驗。',
-    contactName: '張三',
-    contactEmail: 'zhangsan@example.com',
-  },
-  {
-    id: 2,
-    title: '前端工程師',
-    postDate: '2023-08-15',
-    endDate: '2023-09-15',
-    company: 'ABC 網路公司',
-    description: '熟悉 React 和前端最佳實踐，具備至少一年的專業經驗。',
-    contactName: '李四',
-    contactEmail: 'lisi@example.com',
-  },
-  {
-    id: 3,
-    title: 'AI模型訓練專家',
-    postDate: '2023-08-25',
-    endDate: '2023-09-25',
-    company: 'ML 智能科技公司',
-    description: '具備深度學習模型訓練經驗，能夠使用 TensorFlow 或 PyTorch。',
-    contactName: '王五',
-    contactEmail: 'wangwu@example.com',
-  },
-  // 其他資料...
-];
+import Axios from 'common/Axios';
+import LoadingSpinner from 'components/LoadingSpinner';
+// 預防 XSS 攻擊
+import DOMPurify from 'dompurify';
 
 function RecruitPage() {
   const [show, setShow] = useState(false);
+  const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleClose = () => setShow(false);
+
   const handleShow = (job) => {
-    setSelectedJob(job);
     setShow(true);
+    setLoading(true);
+    Axios()
+      .get('/recruit/data/getOne/', {
+        params: { id: job.id },
+      })
+      .then((res) => {
+        setSelectedJob(res.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
+
+  useEffect(() => {
+    Axios()
+      .get('/recruit/data/tableOutput/')
+      .then((res) => {
+        setJobs(res.data.results);
+      })
+      .catch((err) => {
+        alert('伺服器異常，請稍後再試');
+      });
+  }, []);
 
   return (
     <Container className="mt-5">
@@ -63,42 +57,85 @@ function RecruitPage() {
           {jobs.map((job, index) => (
             <tr key={job.id} onClick={() => handleShow(job)} className="job-row">
               <td>{index + 1}</td>
-              <td>{job.postDate}</td>
-              <td>{job.endDate}</td>
-              <td>{job.company}</td>
+              <td>{job.release_date}</td>
+              <td>{job.deadline}</td>
+              <td>{job.company_name}</td>
               <td>{job.title}</td>
             </tr>
           ))}
         </tbody>
       </Table>
 
-      {/* Modal for job details */}
-      <Modal show={show} onHide={handleClose}>
+      {/* 模態框顯示職位詳情 */}
+      <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>職位詳情</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>
-            <strong>職位名稱:</strong> {selectedJob.title}
-          </p>
-          <p>
-            <strong>發布時間:</strong> {selectedJob.postDate}
-          </p>
-          <p>
-            <strong>截止時間:</strong> {selectedJob.endDate}
-          </p>
-          <p>
-            <strong>公司:</strong> {selectedJob.company}
-          </p>
-          <p>
-            <strong>聯絡人姓名:</strong> {selectedJob.contactName}
-          </p>
-          <p>
-            <strong>聯絡人 Email:</strong> {selectedJob.contactEmail}
-          </p>
-          <p>
-            <strong>詳細資訊:</strong> {selectedJob.description}
-          </p>
+          {loading ? (
+            <div className="text-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <>
+              <p>
+                <strong>職位名稱:</strong> {selectedJob.title}
+              </p>
+              <p>
+                <strong>發布時間:</strong> {selectedJob.release_date}
+              </p>
+              <p>
+                <strong>截止時間:</strong> {selectedJob.deadline}
+              </p>
+              <p>
+                <strong>公司:</strong> {selectedJob.company_name}
+              </p>
+              <p>
+                <strong>聯絡人姓名:</strong>{' '}
+                {selectedJob.contact && selectedJob.contact.name
+                  ? selectedJob.contact.name
+                  : '未提供'}
+              </p>
+              <p>
+                <strong>聯絡人 Email:</strong>{' '}
+                {selectedJob.contact && selectedJob.contact.email
+                  ? selectedJob.contact.email
+                  : '未提供'}
+              </p>
+              <p>
+                <strong>聯絡人電話:</strong>{' '}
+                {selectedJob.contact && selectedJob.contact.phone
+                  ? selectedJob.contact.phone
+                  : '未提供'}
+              </p>
+              <p>
+                <strong>詳細資訊:</strong>
+              </p>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(selectedJob.intro),
+                }}
+              />
+
+              {/* 照片幻燈片展示 */}
+              {selectedJob.images && selectedJob.images.length > 0 && (
+                <div className="photos-section mt-4">
+                  <h5>照片展示：</h5>
+                  <Carousel>
+                    {selectedJob.images.map((image, index) => (
+                      <Carousel.Item key={index}>
+                        <img
+                          className="d-block w-100"
+                          src={process.env.REACT_APP_BASE_URL+image.image}
+                          alt={`照片 ${index + 1}`}
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+                </div>
+              )}
+            </>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

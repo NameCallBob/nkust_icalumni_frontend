@@ -40,16 +40,18 @@ const Login = () => {
     })
   };
   useEffect(() => {
-    Axios().post("api/token/verify/",{
-      "token":window.localStorage.getItem('jwt')
-    })
-    .then((res) => {
-      alert("已登入將自動跳轉！")
-      navigator("/alumni/manage/")
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    if (window.localStorage.getItem('jwt') != "None"){
+      Axios().post("api/token/verify/",{
+        "token":window.localStorage.getItem('jwt')
+      })
+      .then((res) => {
+        alert("已登入將自動跳轉！")
+        navigator("/alumni/manage/")
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
   },[])
 
   return (

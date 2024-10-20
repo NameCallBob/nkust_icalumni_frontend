@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Pagination, Alert } from 'react-bootstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import 'css/user/homepage/CompanyList.css'; // 添加樣式
+import { useNavigate } from 'react-router-dom';
 
 const ITEMS_PER_PAGE_DESKTOP = 8; // 桌面每頁顯示 8 個
 const ITEMS_PER_PAGE_MOBILE = 1;  // 手機每頁顯示 1 個
 
 const CompanyListWithPagination = ({ companies }) => {
+  const navigate = useNavigate()
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -62,6 +64,10 @@ const CompanyListWithPagination = ({ companies }) => {
     currentPage * itemsPerPage
   );
 
+  const handleItemClick = (id) => {
+    navigate(`/alumni/${id}`);
+  };
+
   return (
     <Container>
       {totalItems === 0 ? (
@@ -78,20 +84,22 @@ const CompanyListWithPagination = ({ companies }) => {
                   timeout={500}
                   classNames="fade"
                 >
-                  <Col md={isMobile ? 12 : 3} className="mb-4">
-                    <Card>
-                      <Card.Img
-                        variant="top"
-                        src={company.image}
-                        alt={company.name}
-                        style={{ width: '300px', height: '300px', objectFit: 'cover' }}
-                      />
-                      <Card.Body>
-                        <Card.Title>{company.name}</Card.Title>
-                        <Card.Text>Alumni: {company.alumni}</Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
+                <Col md={isMobile ? 12 : 3} className="mb-4 d-flex">
+                  <div
+                    className="text-center p-3 border"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleItemClick(companies[(index + 1) % companies.length].member)}
+                  >
+                    <img
+                      src={companies[(index + 1) % companies.length].photo}
+                      alt={companies[(index + 1) % companies.length].name}
+                      style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+                    />
+                    <h4>{companies[(index + 1) % companies.length].name}</h4>
+                    <p><strong>系友：</strong>{companies[(index + 1) % companies.length].member_name}</p>
+                    <p><strong>產品：</strong>{companies[(index + 1) % companies.length].products}</p>
+                  </div>
+                </Col>
                 </CSSTransition>
               ))}
             </TransitionGroup>

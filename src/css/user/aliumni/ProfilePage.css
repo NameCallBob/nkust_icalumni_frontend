@@ -1,8 +1,4 @@
-.section-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-  }
+
 
   .company-info__section {
     font-size: 1.25rem;
@@ -13,3 +9,63 @@
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
   }
+
+
+  .section-title {
+    text-align: left;
+    font-size: 24px;
+    font-weight: bold;
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+  }
+
+  .company-section {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .company-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  .company-description {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .company-info-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .company-info-list li {
+    font-size: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+  }
+
+  .company-info-list .icon {
+    margin-right: 8px;
+    color: #007bff;
+  }
+
+  /* 調整 Carousel 的轉場效果 */
+.carousel.product-carousel .carousel-item {
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.carousel.product-carousel .carousel-item-next.carousel-item-start,
+.carousel.product-carousel .carousel-item-prev.carousel-item-end {
+  transform: scale(1.1);
+  opacity: 0;
+}
+
+.carousel.product-carousel .carousel-item-start.active,
+.carousel.product-carousel .carousel-item-end.active {
+  transform: scale(1);
+  opacity: 1;
+}

@@ -2,29 +2,36 @@ import React , {useEffect, useState} from 'react';
 import { Dropdown, ButtonGroup } from 'react-bootstrap';
 import 'css/user/homepage/CategoryDropdown.css'; // 這裡引入 CSS 來定義動畫樣式
 import Axios from 'common/Axios';
+import { useNavigate } from 'react-router-dom';
 
-  
+
   function CategoryDropdown() {
     const [currentPage, setCurrentPage] = useState(0);
     const [categories,setCategories] = useState([]);
+    const navigator = useNavigate()
     const itemsPerPage = 11;
-    
+
     const totalPages = Math.ceil(categories.length / itemsPerPage);
-  
+
+    const handleOnClick = (id) => {
+      navigator("/search" , {state:{
+        type_id:id,search_text:null
+      }})
+    }
     const handleNextPage = () => {
       if (currentPage < totalPages - 1) {
         setCurrentPage(currentPage + 1);
       }
     };
-  
+
     const handlePrevPage = () => {
       if (currentPage > 0) {
         setCurrentPage(currentPage - 1);
       }
     };
-  
+
     const currentItems = categories.slice(
-      currentPage * itemsPerPage, 
+      currentPage * itemsPerPage,
       (currentPage + 1) * itemsPerPage
     );
     useEffect(() => {
@@ -43,29 +50,29 @@ import Axios from 'common/Axios';
         >
           行業別
         </Dropdown.Toggle>
-  
+
         <Dropdown.Menu className="w-100 text-center dropdown-menu-animated">
           {currentItems.map((category, index) => (
             <Dropdown.Item
               key={category.id}
-              href={`#${category.id}`}
+              onClick={() => handleOnClick(category.id)}
               className="py-2 dropdown-item-animated"
             >
               {category.title}
             </Dropdown.Item>
           ))}
-  
+
           <div className="pagination-controls d-flex justify-content-between">
-            <Dropdown.Item 
-              as="button" 
-              className={`py-2 ${currentPage === 0 ? 'disabled' : ''}`} 
+            <Dropdown.Item
+              as="button"
+              className={`py-2 ${currentPage === 0 ? 'disabled' : ''}`}
               onClick={handlePrevPage}
             >
               上一頁
             </Dropdown.Item>
-            <Dropdown.Item 
-              as="button" 
-              className={`py-2 ${currentPage === totalPages - 1 ? 'disabled' : ''}`} 
+            <Dropdown.Item
+              as="button"
+              className={`py-2 ${currentPage === totalPages - 1 ? 'disabled' : ''}`}
               onClick={handleNextPage}
             >
               下一頁
@@ -75,5 +82,5 @@ import Axios from 'common/Axios';
       </Dropdown>
     );
   }
-  
+
   export default CategoryDropdown;
