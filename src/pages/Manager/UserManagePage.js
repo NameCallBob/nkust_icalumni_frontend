@@ -4,6 +4,7 @@ import { Container, Row, Col, Modal, Button, Form } from 'react-bootstrap';
 import UserFilter from 'components/Manage/UserManage/UserFilter';
 import UserTable from 'components/Manage/UserManage/UserTable';
 import NewUserModal from 'components/Manage/UserManage/NewUserModal';
+import Axios from 'common/Axios';
 
 /**
  * 
@@ -22,51 +23,54 @@ function UserManagement() {
   const [showModal, setShowModal] = useState(false);
   const [isComplex, setIsComplex] = useState(false);
 
-  // 假資料
-  const fakeUsers = [
-    {
-      id: 1,
-      name: '張三',
-      gender: 'M',
-      mobile_phone: '0912345678',
-      home_phone: '072345678',
-      address: '台灣高雄市',
-      position: { title: '會長' },
-      graduate: { school: '國立高雄科技大學' },
-      email: 'zhangsan@gmail.com',
-      is_paid: true,
-      date_joined: '2020-01-15',
-    },
-    {
-      id: 2,
-      name: '李四',
-      gender: 'F',
-      mobile_phone: '0922345678',
-      home_phone: '073345678',
-      address: '台灣台北市',
-      position: { title: '副會長' },
-      graduate: { school: '國立台灣大學' },
-      email: 'lisi@gmail.com',
-      is_paid: false,
-      date_joined: '2021-03-22',
-    },
-    {
-      id: 3,
-      name: '王五',
-      gender: 'M',
-      mobile_phone: '0932345678',
-      home_phone: '074345678',
-      address: '台灣新竹市',
-      position: { title: '秘書' },
-      graduate: { school: '國立清華大學' },
-      email: 'wangwu@gmail.com',
-      is_paid: true,
-      date_joined: '2019-06-12',
-    },
-  ];
+  const handleEdit = (id) => {
+    console.log('編輯資料的ID:', id);
+    // 進行編輯邏輯
+  };
+
+    /**
+     * 切換那位使用者的繳費狀態
+     * @param {*} id 
+     * @param {*} isPaid 
+     */
+  const handlePaymentStatus = (id, isPaid) => {
+    Axios().patch("/member/admin/switch_paid/",{
+      member_id:id,
+    })
+    .then((res) => {
+
+    })
+  };
+
+    /**
+     * 切換那位使用者的帳號狀態
+     * @param {*} id 
+     * @param {*} isPaid 
+     */
+  const handleToggleActive = (id, isActive) => {
+    Axios().patch("/member/admin/switch_active/",{
+      member_id:id,
+    })
+    .then((res) => {
+
+    })
+  };
+
+  const handleDelete = (id) => {
+    console.log('刪除帳號的ID:', id);
+    Axios().delete("/member/admin/delete/",{
+      member_id:id,
+    })
+    .then((res) => {
+      alert("刪除成功")
+    })
+  };
 
   useEffect(() => {
-    setUsers(fakeUsers);
+    Axios().get("/member/admin/tableOutput_all/")
+    .then((res) => {
+      setUsers(res.data)
+    })
   }, []);
 
   const handleCloseModal = () => setShowModal(false);
@@ -75,25 +79,38 @@ function UserManagement() {
     setShowModal(true);
   };
 
-  const handleAddUser = (newUser) => {
-    setUsers([...users, { id: users.length + 1, ...newUser }]);
+  const handleAddUser = (complex,info) => {
+    if (complex){
+        Axios().post("member/admin/newUser_email/",info)
+        .then((res) => {
+            alert("成功")
+        })
+
+    }else{
+        Axios().post("member/admin/newUser_basic/",info)
+        .then((res) => {
+          alert("成功")
+        })
+    }
   }
+  
 
   return (
     <Container className="my-5">
       <Row className="justify-content-center">
         <Col md={3} className="bg-light p-3">
-          <UserFilter
-            filters={filters}
-            setFilters={setFilters}
-            applyFilters={() => {}}
-            handleAddUser_easy={() => handleShowModal(false)}
-            handleAddUser_complex={() => handleShowModal(true)}
-          />
+        
         </Col>
 
         <Col md={9} className="p-3">
-          <UserTable users={users} handleShowModal={handleShowModal} />
+        <UserTable
+          users={users} 
+          handleShowModal={handleShowModal}
+          handleEdit={handleEdit}
+          handlePaymentStatus={handlePaymentStatus}
+          handleToggleActive={handleToggleActive}
+          handleDelete={handleDelete}
+        />        
         </Col>
       </Row>
 

@@ -30,6 +30,10 @@ function Axios(){
         alert("您的憑證已失效，請重新登入");
         <Navigate to="/login " />;
       }
+      else if (err.response && err.response.status === 403) {
+        alert("您沒有權限執行此動作，將跳回首頁！敬請見諒");
+        <Navigate to="/ " />;
+      }
       else if (err.response && err.response.status === 503){
         alert("伺服器維護中，請稍後再試！");
         <Navigate to="/" />;
