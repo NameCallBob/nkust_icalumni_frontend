@@ -56,7 +56,13 @@ function App() {
       </>
     } />
 
-
+    {/* 忘記密碼 */}
+    <Route path="/forgot" element={
+      <>
+        <UserNav />
+        <ForgotPasswordFlow />
+      </>
+    } />   
     {/* 產品頁面 */}
     <Route path="/product" element={
       <>

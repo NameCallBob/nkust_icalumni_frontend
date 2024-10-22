@@ -18,14 +18,14 @@ function NewUserModal({ showModal, handleClose, isComplex, handleAddUser }) {
   const handleSimpleSubmit = (e) => {
     e.preventDefault();
     console.log('Email:', email);
-    handleAddUser({ email });
+    handleAddUser(false,{'email':email });
     handleClose();
   };
 
   // 複雜帳號的處理
   const handleComplexSubmit = (e) => {
     e.preventDefault();
-    handleAddUser(formData);
+    handleAddUser(true,formData);
     handleClose();
   };
 
