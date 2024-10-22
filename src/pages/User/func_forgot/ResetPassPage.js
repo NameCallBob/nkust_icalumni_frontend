@@ -1,11 +1,14 @@
+import Axios from 'common/Axios';
 import React, { useState } from 'react';
 import { Form, Button, Alert, Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const ResetPassword = ({ email }) => {
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,9 +18,18 @@ const ResetPassword = ({ email }) => {
       setError('新密碼與確認密碼不一致');
     } else {
       setError('');
-      // 在這裡可以進行密碼重置請求的處理
-      console.log('密碼已重置');
-    }
+      Axios().post('/basic/forgot_verify',{
+        "code":code,
+        "new_password":newPassword
+      })
+      .then((res) =>{
+        alert("修改成功，請使用新密碼登入")
+        navigate("/login")
+      })
+      .catch((err) => {
+        alert("驗證碼錯誤")
+      })
+      }
   };
 
   return (
