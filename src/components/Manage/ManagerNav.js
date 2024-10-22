@@ -8,8 +8,12 @@ import "css/Navlogo.css";
 
 function ManagerNav() {
     const [userInfo, setUserInfo] = useState(null);
-    const navigator = useNavigate();
-
+    const navigator = useNavigate(); 
+    const Logout = () => {
+        window.localStorage.setItem("jwt","")
+        alert("已登出，期待在見到您!")
+        navigator("/")
+    }
     useEffect(() => {
         // 確認token有效並另取人員資訊
         if (window.localStorage.getItem("IsAuth") === false) {
@@ -80,7 +84,7 @@ function ManagerNav() {
 
                         {/* 帳號相關 */}
                         <NavDropdown title="帳號相關" id="account-dropdown" className='mr-auto border-item'>
-                            <NavDropdown.Item href="/login">
+                            <NavDropdown.Item onClick={Logout}>
                                 <FaSignOutAlt className="me-2" /> 登出
                             </NavDropdown.Item>
                             <NavDropdown.Item href="/Manager/User">
