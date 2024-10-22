@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert, Container, Row, Col } from 'react-bootstrap';
-
+import Axios from 'common/Axios';
 const ForgotPassword = ({ onNext }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
