@@ -5,15 +5,23 @@ import { FaUsers, FaBuilding, FaProductHunt, FaCamera, FaClipboardList, FaTasks,
 import logo from 'assets/logo.png'; // 請替換為你的 logo 圖片路徑
 import Axios from 'common/Axios';
 import "css/Navlogo.css";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // 引入react-toastify的樣式
 
 function ManagerNav() {
     const [userInfo, setUserInfo] = useState(null);
     const navigator = useNavigate(); 
+
     const Logout = () => {
-        window.localStorage.setItem("jwt","")
-        alert("已登出，期待在見到您!")
-        navigator("/")
+        window.localStorage.setItem("jwt", "")
+        toast.success("已登出，期待在見到您!", {
+            position: toast.POSITION.TOP_RIGHT
+        });
+        setTimeout(() => {
+            navigator("/");
+        }, 2000); // 加一個延遲，讓用戶有時間看到通知
     }
+
     useEffect(() => {
         // 確認token有效並另取人員資訊
         if (window.localStorage.getItem("IsAuth") === false) {
@@ -22,15 +30,20 @@ function ManagerNav() {
             })
             .catch((err) => {
                 if (err.response.status === 401) {
-                    alert("登入時效已過，請重新登入！");
-                    navigator('/login');
+                    toast.error("登入時效已過，請重新登入！", {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                    setTimeout(() => {
+                        navigator('/login');
+                    }, 2000); // 同樣加上延遲
                 }
             });
         }
-    }, []);
+    }, [navigator]);
 
     return (
         <Container fluid>
+            <ToastContainer /> {/* 放置 ToastContainer，來顯示通知 */}
             <Navbar bg="light" expand="lg">
                 <Navbar.Brand href="/" className="d-flex align-items-center mx-5">
                     <img

@@ -3,8 +3,11 @@ import { Container, Row, Col } from 'react-bootstrap';
 import UserFilter from 'components/Manage/UserManage/UserFilter';
 import UserTable from 'components/Manage/UserManage/UserTable';
 import NewUserModal from 'components/Manage/UserManage/NewUserModal';
+import ChangePasswordModal from 'components/Manage/UserManage/PasswordUpdateModal';
 import Axios from 'common/Axios';
-
+import LoadingSpinner from 'components/LoadingSpinner';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 /**
  * 使用者管理元件
  * @returns
@@ -19,17 +22,22 @@ function UserManagement() {
     is_active: '',
   });
   const [showModal, setShowModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isComplex, setIsComplex] = useState(false);
-  const [userId, setUserId] = useState(null); // 用來識別編輯的使用者ID
-  const [loading, setLoading] = useState(false); // loading狀態
+  const [userId, setUserId] = useState(null); 
+  const [loading, setLoading] = useState(false);
 
   const handleEdit = (id) => {
     setUserId(id);
-    handleShowModal(true); // 打開複雜帳號的編輯模式
+    handleShowModal(true);
+  };
+  const handlePassword = (id) => {
+    setUserId(id);
+    setShowPasswordModal(true);
   };
 
   const applyFilters = async () => {
-    setLoading(true); // 開始loading
+    setLoading(true);
     try {
       const cleanFilters = Object.fromEntries(
         Object.entries(filters).filter(([key, value]) => value !== '')
@@ -37,87 +45,107 @@ function UserManagement() {
       const res = await Axios().get("/member/search/", { params: cleanFilters });
       setUsers(res.data.results);
     } catch (error) {
-      alert("篩選失敗，請稍後再試");
+      handleAxiosError(error);
     } finally {
-      setLoading(false); // 結束loading
+      setLoading(false);
     }
   };
 
-  /**
-   * 切換繳費狀態
-   * @param {*} id
-   * @param {*} isPaid
-   */
+  const handleAxiosError = (error) => {
+    if (error.response) {
+      const status = error.response.status;
+      switch (status) {
+        case 400:
+          toast.error("請求錯誤，請檢查輸入的資料");
+          break;
+        case 401:
+          toast.error("未授權，請重新登入");
+          break;
+        case 403:
+          toast.error("無權限執行此操作");
+          break;
+        default:
+          toast.error("發生未知錯誤，請稍後再試");
+      }
+    } else {
+      toast.error("伺服器無回應，請稍後再試");
+    }
+  };
+  
   const handlePaymentStatus = async (id, isPaid) => {
     setLoading(true);
     try {
       await Axios().patch("/member/admin/switch_paid/", { member_id: id });
-      alert("繳費狀態切換成功");
-      fetchUsers(); // 重新載入使用者
+      toast.success("繳費狀態切換成功");
+      fetchUsers();
     } catch (error) {
-      alert("切換繳費狀態失敗");
+      handleAxiosError(error);
     } finally {
       setLoading(false);
     }
   };
-
-  /**
-   * 切換帳號啟用狀態
-   * @param {*} id
-   * @param {*} isActive
-   */
+  
   const handleToggleActive = async (id, isActive) => {
     setLoading(true);
     try {
       await Axios().patch("/member/admin/switch_active/", { member_id: id });
-      alert("帳號狀態切換成功");
-      fetchUsers(); // 重新載入使用者
+      toast.success("帳號狀態切換成功");
+      fetchUsers();
     } catch (error) {
-      alert("切換帳號狀態失敗");
+      handleAxiosError(error);
     } finally {
       setLoading(false);
     }
   };
-
-  /**
-   * 刪除使用者
-   * @param {*} id
-   */
+  
   const handleDelete = async (id) => {
     setLoading(true);
     try {
       await Axios().delete("/member/admin/delete/", { data: { member_id: id } });
-      alert("刪除成功");
-      fetchUsers(); // 重新載入使用者
+      toast.success("刪除成功");
+      fetchUsers();
     } catch (error) {
-      alert("刪除失敗");
+      handleAxiosError(error);
     } finally {
       setLoading(false);
     }
   };
+  
+  const handleChangePassword = async (password) => {
+    setLoading(true);
+    try {
+      await Axios().patch("/member/admin/update_password/", { member_id: userId, password: password });
+      toast.success("密碼修改成功");
+    } catch (error) {
+      handleAxiosError(error);
+    } finally {
+      setLoading(false);
+      setShowPasswordModal(false);
+      setUserId(null);
+    }
+  };
 
-  // 從後端獲取所有使用者
   const fetchUsers = async () => {
     setLoading(true);
     try {
       const res = await Axios().get("/member/admin/tableOutput_all/");
       setUsers(res.data);
     } catch (error) {
-      alert("載入使用者失敗，請稍後再試");
+      handleAxiosError(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 從後端獲取單個使用者的資料，用於編輯模式
   const fetchUserData = async (id) => {
     setLoading(true);
     try {
-      const res = await Axios().get(`/member/admin/getOne/`,{
-        params:{"member_id":id}});
+      const res = await Axios().get(`/member/admin/getOne/`, {
+        params: { "member_id": id }
+      });
       return res.data;
     } catch (error) {
-      alert("載入使用者資料失敗");
+      handleAxiosError(error);
       return null;
     } finally {
       setLoading(false);
@@ -130,7 +158,7 @@ function UserManagement() {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setUserId(null); // 清空編輯狀態
+    setUserId(null);
   };
 
   const handleShowModal = (complex) => {
@@ -143,19 +171,21 @@ function UserManagement() {
     try {
       if (complex) {
         if (userId) {
-          await Axios().patch(`/member/admin/${userId}/`, info);
-          alert("帳號編輯成功");
+          let tmp_info = info;
+          tmp_info['member_id'] = userId;
+          await Axios().patch(`/member/admin/partial_change/`, tmp_info);
+          toast.success("帳號編輯成功");
         } else {
           await Axios().post("/member/admin/newUser_basic/", info);
-          alert("複雜帳號新增成功");
+          toast.success("複雜帳號新增成功");
         }
       } else {
         await Axios().post("/member/admin/newUser_email/", info);
-        alert("簡單帳號新增成功");
+        toast.success("簡單帳號新增成功");
       }
-      fetchUsers(); // 新增或編輯後重新載入使用者
+      fetchUsers();
     } catch (error) {
-      alert("操作失敗，請檢查輸入資訊");
+      handleAxiosError(error);
     } finally {
       setLoading(false);
       handleCloseModal();
@@ -178,8 +208,7 @@ function UserManagement() {
         <Col md={9} className="p-3">
           {loading ? (
             <div className="text-center">
-              <p>資料載入中...</p>
-              {/* 你可以在這裡加上動畫 */}
+              <LoadingSpinner></LoadingSpinner>
             </div>
           ) : (
             <UserTable
@@ -189,6 +218,7 @@ function UserManagement() {
               handlePaymentStatus={handlePaymentStatus}
               handleToggleActive={handleToggleActive}
               handleDelete={handleDelete}
+              handlePassword={handlePassword}
             />
           )}
         </Col>
@@ -198,9 +228,17 @@ function UserManagement() {
         showModal={showModal}
         handleClose={handleCloseModal}
         isComplex={isComplex}
-        userId={userId} // 傳遞 userId 來處理編輯模式
+        userId={userId}
         handleAddUser={handleAddUser}
-        fetchUserData={fetchUserData} // 用於取得使用者資料
+        fetchUserData={fetchUserData}
+      />
+
+      <ChangePasswordModal
+        showModal={showPasswordModal}
+        handleClose={() => {
+          setShowPasswordModal(false); setUserId(null);
+        }}
+        handleChangePassword={handleChangePassword}
       />
     </Container>
   );

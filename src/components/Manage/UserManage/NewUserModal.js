@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Spinner } from 'react-bootstrap';
+import Axios from 'common/Axios'; // 引入 Axios
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser, fetchUserData }) {
   const [email, setEmail] = useState('');
@@ -9,11 +12,12 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
     mobile_phone: '',
     home_phone: '',
     address: '',
-    position: {title : ''},
+    position: { title: '' },
     graduate: { school: '', grade: '' }, // 確保 graduate 是一個空對象
     is_paid: false,
   });
-
+  const [originalData, setOriginalData] = useState(null); // 用於儲存原始資料
+  const [positions, setPositions] = useState([]); // 職位資料
   const [loading, setLoading] = useState(false);
 
   // 從後端獲取使用者資料（編輯模式），或者清空資料（新增模式）
@@ -24,27 +28,43 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
         setLoading(true);
         const data = await fetchUserData(userId);
         if (data) {
-          setFormData(data);
+          // 確保資料的物件結構完整，避免 null 或 undefined 導致的錯誤
+          const initializedData = {
+            ...data,
+            graduate: data.graduate || { school: '', grade: '' },
+            position: data.position || { title: '' },
+          };
+          setFormData(initializedData);
           setEmail(data.email); // 假設 email 也需要編輯
+          setOriginalData(initializedData); // 儲存原始資料
         }
         setLoading(false);
       } else {
-        // 新增模式，清空資料
+        // 新增模式，清空資料，並確保 graduate 被初始化
         setFormData({
           name: '',
           gender: '',
           mobile_phone: '',
           home_phone: '',
           address: '',
-          position: '',
-          school: '',
+          position: { title: '' },
+          graduate: { school: '國立高雄科技大學智慧商務系', grade: '' }, // 初始化 graduate
           is_paid: false,
         });
         setEmail('');
       }
     };
     fetchData();
-  }, [userId, fetchUserData]);
+
+    // 從後端獲取職位資料
+    Axios().get("member/position/get-all/")
+      .then((res) => {
+        setPositions(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching positions:", error);
+      });
+  }, [userId]);
 
   // 處理表單輸入變更
   const handleChange = (e) => {
@@ -59,16 +79,47 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
           [name]: value,
         },
       }));
+    } else if (name === 'position') {
+      setFormData((prev) => ({
+        ...prev,
+        position: positions.find((pos) => pos.id === parseInt(value)) || { title: '' },
+      }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
-  
+
+  // 比對表單變更
+  const getModifiedFields = () => {
+    if (!originalData) return formData; // 若無原始資料，直接回傳表單資料
+
+    const modifiedData = {};
+    Object.keys(formData).forEach((key) => {
+      // 確保原始資料和表單資料都是物件，避免 null 或 undefined
+      if (typeof formData[key] === 'object' && formData[key] !== null) {
+        // 比對物件屬性
+        Object.keys(formData[key] || {}).forEach((subKey) => {
+          if (formData[key][subKey] !== (originalData[key]?.[subKey] || '')) {
+            if (!modifiedData[key]) modifiedData[key] = {};
+            modifiedData[key][subKey] = formData[key][subKey];
+          }
+        });
+      } else {
+        // 比對簡單屬性
+        if (formData[key] !== (originalData[key] || '')) {
+          modifiedData[key] = formData[key];
+        }
+      }
+    });
+    return modifiedData;
+  };
+
   // 處理複雜帳號的送出
   const handleComplexSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await handleAddUser(true, formData);
+    const modifiedData = getModifiedFields(); // 獲取變更的資料
+    await handleAddUser(true, modifiedData);
     setLoading(false);
   };
 
@@ -154,35 +205,41 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
             <Form.Group className="mb-3" controlId="formPosition">
               <Form.Label>職位</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 name="position"
-                value={formData.position}
+                value={positions.find((pos) => pos.title === formData.position.title)?.id || ''}
                 onChange={handleChange}
-                placeholder="輸入職位"
-              />
+              >
+                <option value="">選擇職位</option>
+                {positions.map((position) => (
+                  <option key={position.id} value={position.id}>
+                    {position.title}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formSchool">
-            <Form.Label>畢業學校</Form.Label>
-            <Form.Control
-              type="text"
-              name="school"
-              value={formData.graduate.school}
-              onChange={handleChange}
-              placeholder="輸入畢業學校"
-            />
-          </Form.Group>
+              <Form.Label>畢業學校</Form.Label>
+              <Form.Control
+                type="text"
+                name="school"
+                value={formData.graduate.school}
+                onChange={handleChange}
+                placeholder="輸入畢業學校"
+              />
+            </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formGrade">
-            <Form.Label>畢業學年</Form.Label>
-            <Form.Control
-              type="text"
-              name="grade"
-              value={formData.graduate.grade}
-              onChange={handleChange}
-              placeholder="輸入畢業學年"
-            />
-          </Form.Group>
+            <Form.Group className="mb-3" controlId="formGrade">
+              <Form.Label>畢業學年</Form.Label>
+              <Form.Control
+                type="text"
+                name="grade"
+                value={formData.graduate.grade}
+                onChange={handleChange}
+                placeholder="輸入畢業學年"
+              />
+            </Form.Group>
 
             <Form.Group className="mb-3" controlId="formPaid">
               <Form.Check

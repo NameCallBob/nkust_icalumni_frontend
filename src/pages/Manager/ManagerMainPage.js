@@ -3,6 +3,8 @@ import { Container, Row, Col, Card, Button, ListGroup, ListGroupItem, Form } fro
 import { useNavigate } from 'react-router-dom';
 import MemberModal from 'components/Manage/Center/EditModal';
 import Axios from 'common/Axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // 引入react-toastify的樣式
 
 function MemberCenter() {
     const navigator = useNavigate();
@@ -19,40 +21,64 @@ function MemberCenter() {
         setShowModal(false);
     };
 
-    const handleSave = (formData,changedData) => {
+    const handleSave = (formData, changedData) => {
         setLoading(true)
-        if (changedData == {}){
+        if (Object.keys(changedData).length === 0) {
             return;
         }
-        Axios().patch("/member/logined/partial_change/",changedData )
-        .then((res) => {
-            alert("修改成功")
-            setUserData(formData)
-        })
-        setLoading(false)
-        setShowModal(false);
-        Location.reload()
+        Axios().patch("/member/logined/partial_change/", changedData)
+            .then((res) => {
+                toast.success("修改成功!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                setUserData(formData);
+            })
+            .catch((err) => {
+                handleAxiosError(err);
+            })
+            .finally(() => {
+                setLoading(false);
+                setShowModal(false);
+            });
+    };
+
+    const handleAxiosError = (err) => {
+        if (err.response) {
+            const status = err.response.status;
+            switch (status) {
+                case 400:
+                    toast.error("請求錯誤，請檢查您的輸入", { position: toast.POSITION.TOP_RIGHT });
+                    break;
+                case 401:
+                    toast.error("未授權，請重新登入", { position: toast.POSITION.TOP_RIGHT });
+                    navigator('/login'); // 重定向到登入頁
+                    break;
+                case 403:
+                    toast.error("禁止訪問，您沒有權限執行此操作", { position: toast.POSITION.TOP_RIGHT });
+                    break;
+                default:
+                    toast.error("發生錯誤，請稍後再試", { position: toast.POSITION.TOP_RIGHT });
+            }
+        } else {
+            toast.error("無法連接到伺服器，請稍後再試", { position: toast.POSITION.TOP_RIGHT });
+        }
     };
 
     useEffect(() => {
         Axios().get("member/logined/selfInfo/")
-        .then((res) => {
-            // 假設從回應中獲取的資料格式為 { name: "使用者名稱", email: "使用者電子郵件", photo: "使用者照片連結" }
-            setUserData(res.data);
-            setLoading(false);
-
-        })
-        .catch((err) => {
-            setError(true);
-            setLoading(false);
-            // 錯誤時使用預設圖片
-            setUserData(prevState => ({ ...prevState, photo: 'https://via.placeholder.com/150' }));
-        });
+            .then((res) => {
+                setUserData(res.data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                handleAxiosError(err);
+                setLoading(false);
+                setUserData(prevState => ({ ...prevState, photo: 'https://via.placeholder.com/150' }));
+            });
     }, []);
 
     useEffect(() => {
         if (showModal) {
-            // Modal 開啟時，獲取最新的 userData
             console.log("最新的 userData:", userData);
         }
     }, [showModal, userData]);
@@ -60,25 +86,22 @@ function MemberCenter() {
     return (
         <Container className="mt-5 my-5">
             <Row>
-                {/* 左邊的個人資料 */}
                 <Col md={4}>
                     <Card className="text-center shadow-sm">
-                        <Card.Img variant="top" src={loading || error ? 'https://via.placeholder.com/150' : process.env.REACT_APP_BASE_URL+userData.photo} alt="使用者照片" />
+                        <Card.Img variant="top" src={loading || error ? 'https://via.placeholder.com/150' : process.env.REACT_APP_BASE_URL + userData.photo} alt="使用者照片" />
                         <Card.Body>
                             <Card.Title>{loading || error ? '使用者名稱' : userData.name}</Card.Title>
                             <Card.Text>{loading || error ? '使用者電子郵件' : userData.email}</Card.Text>
                             <Button
                                 variant="primary"
                                 onClick={handleShowModal}
-                                disabled={error || loading} // 如果資料載入中或錯誤，禁用按鈕
+                                disabled={error || loading}
                             >
                                 編輯個人資料
                             </Button>
                         </Card.Body>
                     </Card>
                 </Col>
-
-                {/* 右邊的會員資訊 */}
                 <Col md={8} className="d-flex flex-column">
                     <Card className="shadow-sm mb-4 flex-grow-1">
                         <Card.Header as="h5">歡迎系友</Card.Header>
@@ -88,14 +111,12 @@ function MemberCenter() {
                             </Card.Text>
                         </Card.Body>
                     </Card>
-
                     <Card className="shadow-sm mb-4 flex-grow-1">
                         <Card.Header as="h5">系友最新消息</Card.Header>
                         <ListGroup variant="flush">
                             <ListGroupItem>功能暫無開放</ListGroupItem>
                         </ListGroup>
                     </Card>
-
                     <Card className="shadow-sm flex-grow-1">
                         <Card.Header as="h5">通知設定</Card.Header>
                         <Card.Body>
@@ -121,7 +142,7 @@ function MemberCenter() {
                 handleSave={handleSave}
                 parentData={userData}
                 loading={loading}
-                setLoading = {setLoading}
+                setLoading={setLoading}
             />
         </Container>
     );
