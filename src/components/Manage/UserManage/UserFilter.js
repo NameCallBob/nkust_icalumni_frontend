@@ -1,19 +1,10 @@
-import React, { useState } from 'react';
+import Axios from 'common/Axios';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 
-/**
- * 使用者篩選元件
- *
- * 處理篩選後即使用者新增的modal及物件
- *
- * @param {*} filters 父元件篩選
- * @param {*} setFilters 父元件篩選_修改
- * @param {*} applyFilters 篩選確認_事件
- * @param {*} handleAddUser_easy 新增簡單使用者_事件
- * @param {*} handleAddUser_complex 新增複雜使用者_事件
- * @returns html
- */
 function UserFilter({ filters, setFilters, applyFilters, handleAddUser_easy, handleAddUser_complex }) {
+  const [positions, setPositions] = useState([]);
+
   // 篩選條件變更處理
   const handleFilterChange = (e) => {
     setFilters({
@@ -21,6 +12,16 @@ function UserFilter({ filters, setFilters, applyFilters, handleAddUser_easy, han
       [e.target.name]: e.target.value,
     });
   };
+
+  useEffect(() => {
+    Axios().get("member/position/get-all/")
+      .then((res) => {
+        setPositions(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching positions:", error);
+      });
+  }, []);
 
   return (
     <Container>
@@ -39,8 +40,8 @@ function UserFilter({ filters, setFilters, applyFilters, handleAddUser_easy, han
       </Row>
 
       <h5 className="my-3">篩選條件</h5>
-      <Form className='my-1'>
-      <Form.Group controlId="filterSearch">
+      <Form className="my-1">
+        <Form.Group controlId="filterSearch">
           <Form.Label>搜尋</Form.Label>
           <Form.Control
             type="text"
@@ -68,11 +69,18 @@ function UserFilter({ filters, setFilters, applyFilters, handleAddUser_easy, han
         <Form.Group controlId="filterPosition">
           <Form.Label>職位</Form.Label>
           <Form.Control
-            type="text"
+            as="select"
             name="position"
             value={filters.position}
             onChange={handleFilterChange}
-          />
+          >
+            <option value="">全部</option>
+            {positions.map((position) => (
+              <option key={position.id} value={position.title}>
+                {position.title}
+              </option>
+            ))}
+          </Form.Control>
         </Form.Group>
 
         <Form.Group controlId="filterIsPaid">
