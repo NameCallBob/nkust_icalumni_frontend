@@ -45,7 +45,7 @@ import 'css/user/homepage/CompanyList.css'; // 添加樣式
                     <img
                       src={process.env.REACT_APP_BASE_URL+companies[(index + 1) % companies.length].photo}
                       alt={companies[(index + 1) % companies.length].name}
-                      style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                     />
                     <h4>{companies[(index + 1) % companies.length].name}</h4>
                     <p><strong>系友：</strong>{companies[(index + 1) % companies.length].member_name}</p>

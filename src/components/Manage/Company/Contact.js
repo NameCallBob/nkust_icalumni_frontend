@@ -4,8 +4,7 @@ import { Form } from "react-bootstrap";
 const ContactInfo = ({ company, handleInputChange, handleFileChange }) => {
   return (
     <div>
-      <h4 className="mb-4" style={{ fontWeight: "bold", fontSize: "1.5rem" }}>聯絡資訊</h4>
-      
+
       <Form.Group controlId="formWebsite" className="mb-4">
         <Form.Label style={{ fontSize: "1.2rem" }}>公司網站連結</Form.Label>
         <Form.Control
@@ -59,8 +58,8 @@ const ContactInfo = ({ company, handleInputChange, handleFileChange }) => {
         <Form.Label style={{ fontSize: "1.2rem" }}>聯絡電話</Form.Label>
         <Form.Control
           type="text"
-          name="phoneNumber"
-          value={company.phoneNumber}
+          name="phone_number"
+          value={company.phone_number}
           onChange={handleInputChange}
           style={{
             fontSize: "1.1rem",
@@ -73,15 +72,15 @@ const ContactInfo = ({ company, handleInputChange, handleFileChange }) => {
 
       <Form.Group controlId="formPhoto" className="mb-4">
         <Form.Label style={{ fontSize: "1.2rem" }}>公司照片</Form.Label>
-        <Form.Control 
-          type="file" 
-          name="photo" 
+        <Form.Control
+          type="file"
+          name="photo"
           onChange={handleFileChange}
           style={{
             padding: "10px",
             borderRadius: "8px",
             borderColor: "#ced4da",
-          }} 
+          }}
         />
       </Form.Group>
     </div>

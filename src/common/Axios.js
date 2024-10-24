@@ -13,7 +13,7 @@ function Axios() {
     timeout: 10000,
     headers: {
       Authorization: jwt,
-      "Content-Type": "Application/json",
+      "Content-Type": "application/json",
       Accept: "*/*",
     },
   });

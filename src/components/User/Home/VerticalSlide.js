@@ -53,7 +53,7 @@ const VerticalCarousel = ({title}) => {
           <img
             src={process.env.REACT_APP_BASE_URL + company.photo}
             alt={company.name}
-            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+            style={{ width: '90%', height: '200px', objectFit: 'cover' }}
           />
           <h4>{company.name}</h4>
           <p><strong>系友：</strong>{company.member_name}</p>
@@ -63,7 +63,7 @@ const VerticalCarousel = ({title}) => {
 
       {/* 只有當 companies.length > 1 時才顯示第二個 Col */}
       {companies.length > 1 && (
-        <Col md={6}>
+        <Col md={12}>
           <div
             className="text-center p-3 border"
             style={{ cursor: 'pointer' }}
@@ -72,7 +72,7 @@ const VerticalCarousel = ({title}) => {
             <img
               src={process.env.REACT_APP_BASE_URL + companies[(index + 1) % companies.length].photo}
               alt={companies[(index + 1) % companies.length].name}
-              style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+              style={{ width: '90%', height: '200px', objectFit: 'cover' }}
             />
             <h4>{companies[(index + 1) % companies.length].name}</h4>
             <p><strong>系友：</strong>{companies[(index + 1) % companies.length].member_name}</p>
@@ -93,7 +93,7 @@ const VerticalCarousel = ({title}) => {
           <img
             src={process.env.REACT_APP_BASE_URL + company.photo}
             alt={company.name}
-            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+            style={{ width: '90%', height: '200px', objectFit: 'cover' }}
           />
           <h4>{company.name}</h4>
           <p><strong>系友：</strong>{company.member_name}</p>

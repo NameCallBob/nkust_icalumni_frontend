@@ -10,7 +10,7 @@ const CompanyTabsSearch = () => {
 
     // 行業別（用ID進行保存及查詢）
     const [prev_category,setPrev_category] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState(4);
+    const [selectedCategory, setSelectedCategory] = useState(1);
     // 結果
     const [categories,setCategories] = useState([])
     const [companies,setCompanies] = useState([])
