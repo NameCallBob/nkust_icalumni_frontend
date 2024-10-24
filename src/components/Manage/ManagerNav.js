@@ -57,8 +57,8 @@ function ManagerNav() {
                     <Nav className="ml-auto">
                         {/* 一般管理 */}
                         <NavDropdown title="一般管理" id="general-management-dropdown" className='mx-3 border-item'>
-                            <NavDropdown.Item href="/alumni/manage/member/">
-                                <FaUsers className="me-2" /> 使用者管理
+                        <NavDropdown.Item href="/alumni/manage/">
+                                <FaUsers className="me-2" /> 個人頁面
                             </NavDropdown.Item>
                             <NavDropdown.Item href="/alumni/manage/company/">
                                 <FaBuilding className="me-2" /> 公司登陸
@@ -73,6 +73,9 @@ function ManagerNav() {
 
                         {/* 管理者管理 */}
                         <NavDropdown title="管理者管理" id="admin-management-dropdown" className='mx-3 border-item'>
+                        <NavDropdown.Item href="/alumni/manage/member/">
+                                <FaUsers className="me-2" /> 使用者管理
+                            </NavDropdown.Item>
                             <NavDropdown.Item href="/alumni/manage/article/">
                                 <FaTasks className="me-2" /> 活動發布管理
                             </NavDropdown.Item>
@@ -86,13 +89,14 @@ function ManagerNav() {
                             <NavDropdown.Item href="/alumni/manage/website/">
                                 <FaGlobe className="me-2" /> 官網設置
                             </NavDropdown.Item>
+                            <NavDropdown.Item href="/alumni/manage/other/">
+                                <FaTasks className="me-2" /> 其他管理
+                            </NavDropdown.Item>
                         </NavDropdown>
 
                         {/* 其他管理 */}
                         <NavDropdown title="其他管理" id="other-management-dropdown" className='mx-3 border-item'>
-                            <NavDropdown.Item href="/alumni/manage/other/">
-                                <FaTasks className="me-2" /> 其他管理
-                            </NavDropdown.Item>
+                           
                         </NavDropdown>
 
                         {/* 帳號相關 */}

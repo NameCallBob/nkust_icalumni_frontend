@@ -1,0 +1,32 @@
+.image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.image-preview {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    width: 180px; /* 增大30px */
+}
+
+.image-preview img {
+    width: 150px; /* 增大30px */
+    height: 150px; /* 增大30px */
+    object-fit: cover;
+    margin-bottom: 5px;
+}
+
+.image-preview p {
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+}
+
+.image-preview button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
