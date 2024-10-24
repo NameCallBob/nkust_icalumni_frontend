@@ -24,7 +24,8 @@ import ProductList from 'pages/Manager/ProductListManaPage';
 import PhotoManagementPage from 'pages/Manager/PicManaPage';
 import CompanyForm from 'pages/Manager/CompanyManaPage';
 import OtherManage from 'pages/Manager/OtherManagePage';
-import ArticleEditor from 'pages/Manager/ArticleManaPage';
+import ArticleEditor from 'pages/Manager/Article/ArticleManaPage';
+import ArticleForm from 'pages/Manager/Article/ArticleFormPage';
 
 function App() {
   return (
@@ -158,6 +159,20 @@ function App() {
       <>
         <ManagerNav />
         <ArticleEditor></ArticleEditor>
+      </>
+    } />
+    {/* 文章管理 */}
+        <Route path="/alumni/manage/article/new/" element={
+      <>
+        <ManagerNav />
+        <ArticleForm />
+      </>
+    } />
+    {/* 文章管理 */}
+    <Route path="/alumni/manage/article/edit/:id" element={
+      <>
+        <ManagerNav />
+        <ArticleForm />
       </>
     } />
         {/*　其他　- 404 頁面 */}
