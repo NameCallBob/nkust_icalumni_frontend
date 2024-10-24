@@ -1,37 +1,64 @@
-import React, { useState } from 'react';
+import Axios from 'common/Axios';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const IndustryCRUD = () => {
-  // 假資料
-  const [industries, setIndustries] = useState([
-    { id: 1, name: '科技', description: '科技產業的簡介' },
-    { id: 2, name: '金融', description: '金融產業的簡介' },
-    { id: 3, name: '醫療', description: '醫療產業的簡介' },
-  ]);
+  const [industries, setIndustries] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [currentIndustry, setCurrentIndustry] = useState({
     id: null,
-    name: '',
-    description: '',
+    title: '',
+    intro: '',
   });
+
+  useEffect(() => {
+    Axios()
+      .get('/company/industry/all/')
+      .then((res) => {
+        setIndustries(res.data);
+      })
+      .catch((err) => {
+        toast.error('取得產業資料失敗');
+        console.error('取得產業資料失敗', err);
+      });
+  }, []);
 
   const handleSave = () => {
     if (isEdit) {
-      setIndustries(
-        industries.map((industry) =>
-          industry.id === currentIndustry.id ? currentIndustry : industry
-        )
-      );
+      // 更新資料
+      Axios()
+        .put(`/company/industry/change/`, currentIndustry)
+        .then(() => {
+          setIndustries(
+            industries.map((industry) =>
+              industry.id === currentIndustry.id ? currentIndustry : industry
+            )
+          );
+          toast.success('產業資料修改成功');
+        })
+        .catch((err) => {
+          toast.error('產業資料修改失敗');
+          console.error('更新失敗', err);
+        });
     } else {
-      setIndustries([
-        ...industries,
-        { ...currentIndustry, id: industries.length + 1 },
-      ]);
+      // 新增資料
+      Axios()
+        .post('/company/industry/new/', currentIndustry)
+        .then((res) => {
+          setIndustries([...industries, res.data]);
+          toast.success('產業資料新增成功');
+        })
+        .catch((err) => {
+          toast.error('產業資料新增失敗');
+          console.error('新增失敗', err);
+        });
     }
     setShowModal(false);
-    setCurrentIndustry({ id: null, name: '', description: '' });
+    setCurrentIndustry({ id: null, title: '', intro: '' });
     setIsEdit(false);
   };
 
@@ -41,10 +68,29 @@ const IndustryCRUD = () => {
     setShowModal(true);
   };
 
+  const handleAddNew = () => {
+    setCurrentIndustry({ id: null, title: '', intro: '' }); // 重置表單
+    setIsEdit(false); // 設定為新增模式
+    setShowModal(true); // 顯示 modal
+  };
+
+  const handleDelete = (id) => {
+    Axios()
+      .post(`/company/industry/delete/`,{'id':id})
+      .then(() => {
+        setIndustries(industries.filter((industry) => industry.id !== id));
+        toast.success('產業資料刪除成功');
+      })
+      .catch((err) => {
+        toast.error('產業資料刪除失敗');
+        console.error('刪除失敗', err);
+      });
+  };
+
   return (
     <div>
       <h2>公司產業別管理</h2>
-      <Button variant="primary" onClick={() => setShowModal(true)}>
+      <Button variant="primary" onClick={handleAddNew}>
         新增產業別
       </Button>
       <Table striped bordered hover className="mt-3">
@@ -60,11 +106,14 @@ const IndustryCRUD = () => {
           {industries.map((industry, index) => (
             <tr key={industry.id}>
               <td>{index + 1}</td>
-              <td>{industry.name}</td>
-              <td>{industry.description}</td>
+              <td>{industry.title}</td>
+              <td>{industry.intro}</td>
               <td>
                 <Button variant="warning" onClick={() => handleEdit(industry)}>
                   修改
+                </Button>{' '}
+                <Button variant="danger" onClick={() => handleDelete(industry.id)}>
+                  刪除
                 </Button>
               </td>
             </tr>
@@ -82,9 +131,9 @@ const IndustryCRUD = () => {
               <Form.Label>產業名稱</Form.Label>
               <Form.Control
                 type="text"
-                value={currentIndustry.name}
+                value={currentIndustry.title}
                 onChange={(e) =>
-                  setCurrentIndustry({ ...currentIndustry, name: e.target.value })
+                  setCurrentIndustry({ ...currentIndustry, title: e.target.value })
                 }
               />
             </Form.Group>
@@ -93,9 +142,9 @@ const IndustryCRUD = () => {
               <Form.Control
                 as="textarea"
                 rows={3}
-                value={currentIndustry.description}
+                value={currentIndustry.intro}
                 onChange={(e) =>
-                  setCurrentIndustry({ ...currentIndustry, description: e.target.value })
+                  setCurrentIndustry({ ...currentIndustry, intro: e.target.value })
                 }
               />
             </Form.Group>
@@ -110,6 +159,9 @@ const IndustryCRUD = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Toastify container */}
+      <ToastContainer />
     </div>
   );
 };
