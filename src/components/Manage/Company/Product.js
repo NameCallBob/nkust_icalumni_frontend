@@ -4,7 +4,6 @@ import { Form } from "react-bootstrap";
 const ProductInfo = ({ company, handleInputChange }) => {
   return (
     <div>
-      <h4 className="mb-4" style={{ fontWeight: "bold", fontSize: "1.5rem" }}>產品資料</h4>
 
       <Form.Group controlId="formProducts" className="mb-4">
         <Form.Label style={{ fontSize: "1.2rem" }}>販售商品</Form.Label>
@@ -27,8 +26,8 @@ const ProductInfo = ({ company, handleInputChange }) => {
         <Form.Control
           as="textarea"
           rows={3}
-          name="productDescription"
-          value={company.productDescription}
+          name="product_description"
+          value={company.product_description}
           onChange={handleInputChange}
           style={{
             fontSize: "1.1rem",

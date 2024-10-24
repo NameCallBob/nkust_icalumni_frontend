@@ -1,0 +1,46 @@
+.custom-card {
+    border: 1px solid #ddd; /* 模擬 Card 的邊框 */
+    padding: 20px;
+    border-radius: 10px; /* 圓角邊框 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+    background-color: #fff; /* 背景顏色 */
+    margin-bottom: 20px; /* 區塊之間的間距 */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* 增加動畫效果 */
+  }
+
+  .custom-card:hover {
+    transform: translateY(-5px); /* 滑過時讓卡片稍微浮起 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 滑過時加深陰影效果 */
+  }
+
+  .custom-card-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px; /* 讓標題與內容分開 */
+    border-bottom: 1px solid #ddd; /* 增加一個底線來區分標題 */
+    padding-bottom: 10px;
+  }
+
+  .custom-card-body {
+    font-size: 1rem;
+    color: #333; /* 文字顏色 */
+    line-height: 1.6; /* 行距 */
+  }
+
+  .custom-card-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  .custom-card-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 100px;
+    resize: none;
+    margin-bottom: 10px;
+  }

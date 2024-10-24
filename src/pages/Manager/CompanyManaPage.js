@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Container, Form, Card, Tabs, Tab } from "react-bootstrap";
+import { Button, Container, Form, Tabs, Tab, Image } from "react-bootstrap";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CompanyInfo from "components/Manage/Company/Info";
@@ -7,6 +7,7 @@ import ContactInfo from "components/Manage/Company/Contact";
 import ProductInfo from "components/Manage/Company/Product";
 import IndustryDropdown from "components/Manage/Company/IndustryDropdown";
 import Axios from "common/Axios";
+import "css/manage/company.css"; // 引入你的CSS文件
 
 const CompanyForm = () => {
   const [company, setCompany] = useState({
@@ -16,12 +17,12 @@ const CompanyForm = () => {
     positions: "",
     description: "",
     products: "",
-    productDescription: "",
+    product_description: "",
     website: "",
     address: "",
     email: "",
-    phoneNumber: "",
-    photo: null,
+    phone_number: "",
+   photo: "", // base64 編碼後的圖片
   });
 
   const [originalCompany, setOriginalCompany] = useState({});
@@ -74,7 +75,18 @@ const CompanyForm = () => {
   };
 
   const handleFileChange = (e) => {
-    setCompany({ ...company, photo: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      // 使用 FileReader 讀取圖片並轉換為 base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCompany({
+          ...company,
+         photo: reader.result, // 存放 base64 編碼
+        });
+      };
+      reader.readAsDataURL(file); // 將圖片轉換為 base64
+    }
   };
 
   const handleSubmit = (e) => {
@@ -87,14 +99,9 @@ const CompanyForm = () => {
       }
     });
 
-    const formData = new FormData();
-    Object.keys(changedData).forEach((key) => {
-      formData.append(key, changedData[key]);
-    });
-
     if (isEditMode) {
       Axios()
-        .post("/company/data/selfChange/", formData)
+        .post("/company/data/selfChange/", changedData)
         .then(() => {
           toast.success("公司資料修改成功！");
           setOriginalCompany(company);
@@ -118,7 +125,7 @@ const CompanyForm = () => {
         });
     } else {
       Axios()
-        .post("/company/data/new/", formData)
+        .post("/company/data/new/", company)
         .then(() => {
           toast.success("公司資料新增成功！");
         })
@@ -139,8 +146,7 @@ const CompanyForm = () => {
             toast.error("伺服器錯誤，請稍後再試。");
           }
         });
-    }
-  };
+    }  };
 
   return (
     <Container fluid className="py-4" style={{ maxWidth: "1000px" }}>
@@ -153,45 +159,56 @@ const CompanyForm = () => {
           className="mb-3"
         >
           <Tab eventKey="companyInfo" title="公司資訊">
-            <Card className="mb-4 shadow-sm">
-              <Card.Body>
+            <div className="custom-card">
+              <div className="custom-card-header">公司資訊</div>
+              <div className="custom-card-body">
                 <CompanyInfo company={company} handleInputChange={handleInputChange} />
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
           </Tab>
           <Tab eventKey="industry" title="產業分類">
-            <Card className="mb-4 shadow-sm">
-              <Card.Body>
+            <div className="custom-card">
+              <div className="custom-card-header">產業分類</div>
+              <div className="custom-card-body">
                 <IndustryDropdown
                   industries={industries}
                   company={company}
                   handleInputChange={handleInputChange}
                 />
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
           </Tab>
           <Tab eventKey="productInfo" title="產品資訊">
-            <Card className="mb-4 shadow-sm">
-              <Card.Body>
+            <div className="custom-card">
+              <div className="custom-card-header">產品資訊</div>
+              <div className="custom-card-body">
                 <ProductInfo company={company} handleInputChange={handleInputChange} />
-              </Card.Body>
-            </Card>
+              </div>
+            </div>
           </Tab>
           <Tab eventKey="contactInfo" title="聯絡資訊">
-            <Card className="mb-4 shadow-sm">
-              <Card.Body>
+            <div className="custom-card">
+              <div className="custom-card-header">聯絡資訊</div>
+              <div className="custom-card-body">
                 <ContactInfo
                   company={company}
                   handleInputChange={handleInputChange}
                   handleFileChange={handleFileChange}
                 />
-              </Card.Body>
-            </Card>
+                {/* 顯示圖片預覽 */}
+                {company.photo && (
+                  <div className="mt-3">
+                    <h5>圖片預覽：</h5>
+                    <Image src={company.photo} alt="Preview" fluid />
+                  </div>
+                )}
+              </div>
+            </div>
           </Tab>
         </Tabs>
 
         <div className="text-center">
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" onClick={handleSubmit}>
             {isEditMode ? "修改公司資料" : "新增公司資料"}
           </Button>
         </div>

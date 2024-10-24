@@ -53,6 +53,10 @@ function Home() {
                 </Col>
             </Row>
             <Row>
+                <Col>
+                </Col>
+            </Row>
+            <Row>
                 <Col >
                     {/* 公司介紹 */}
                     <Company></Company>

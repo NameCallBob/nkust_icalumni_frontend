@@ -4,7 +4,6 @@ import { Form } from "react-bootstrap";
 const IndustryDropdown = ({ industries, company, handleInputChange }) => {
   return (
     <div>
-      <h4 className="mb-4" style={{ fontWeight: "bold", fontSize: "1.5rem" }}>行業分類</h4>
       <Form.Group controlId="formIndustry" className="mb-4">
         <Form.Label style={{ fontSize: "1.2rem" }}>行業分類</Form.Label>
         <Form.Control
@@ -22,7 +21,7 @@ const IndustryDropdown = ({ industries, company, handleInputChange }) => {
         >
           <option value="">請選擇行業分類</option>
           {industries.map((industry) => (
-            <option key={industry.id} value={industry.id}>
+            <option key={industry.id} value={industry.title}>
               {industry.title}
             </option>
           ))}

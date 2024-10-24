@@ -4,7 +4,6 @@ import { Form, Row, Col } from "react-bootstrap";
 const CompanyInfo = ({ company, handleInputChange }) => {
   return (
     <div>
-      <h4 className="mb-4" style={{ fontWeight: "bold", fontSize: "1.5rem" }}>公司基本資料</h4>
       <Row>
         <Col sm={12}>
           <Form.Group controlId="formName" className="mb-4">
