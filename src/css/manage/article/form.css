@@ -30,3 +30,11 @@
     top: 5px;
     right: 5px;
 }
+
+/* form.css */
+.quill-editor-container {
+    min-height: 300px; /* 使編輯器至少 300px 高 */
+    max-height: 500px; /* 設置最大高度，防止它過高 */
+    overflow-y: auto;  /* 當內容超過高度時顯示滾動條 */
+    margin-bottom: 20px; /* 保證編輯器底部有足夠空間 */
+}

@@ -2,6 +2,7 @@ import { Container,  Pagination } from "react-bootstrap";
 import { useState , useEffect } from "react";
 import 'css/user/homepage/News.css'; // 自訂義 CSS 檔案
 import Axios from "common/Axios";
+import { useNavigate } from "react-router-dom";
 
 /**
  * 呈現的樣子
@@ -25,7 +26,7 @@ function News() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // 每頁顯示5個項目
   const totalPages = Math.ceil(article.length / itemsPerPage);
-
+  const navigate = useNavigate()
   useEffect(() => {
     Axios().get("/article/all/tableOutput/")
     .then((res) => {
@@ -38,9 +39,8 @@ function News() {
     setCurrentPage(pageNumber);
   };
 
-  const handleItemClick = (title) => {
-    alert(`你點擊了活動: ${title}`);
-    // 可以改成頁面導航，或其他事件處理，如：navigate(`/event/${eventId}`);
+  const handleItemClick = (id) => {
+    navigate(`/activity/${id}`)
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -54,7 +54,7 @@ function News() {
           key={index}
           time={item.publish_at.split("T")[0]}
           title={item.title}
-          onClick={() => handleItemClick(item.title)}
+          onClick={() => handleItemClick(item.id)}
         />
       ))}
       <Pagination>

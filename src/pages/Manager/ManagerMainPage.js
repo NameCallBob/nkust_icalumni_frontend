@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, ListGroup, ListGroupItem, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import MemberModal from 'components/Manage/Center/EditModal';
@@ -7,7 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // 引入react-toastify的樣式
 
 function MemberCenter() {
-    const navigator = useNavigate();
+    const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [userData, setUserData] = useState({ name: '使用者名稱', email: '使用者電子郵件', photo: 'https://via.placeholder.com/150' });
     const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ function MemberCenter() {
     };
 
     const handleSave = (formData, changedData) => {
-        setLoading(true)
+        setLoading(true);
         if (Object.keys(changedData).length === 0) {
             return;
         }
@@ -44,20 +44,28 @@ function MemberCenter() {
 
     const handleAxiosError = (err) => {
         if (err.response) {
+            console.log(1)
             const status = err.response.status;
-            switch (status) {
-                case 400:
-                    toast.error("請求錯誤，請檢查您的輸入", { position: toast.POSITION.TOP_RIGHT });
-                    break;
-                case 401:
-                    toast.error("未授權，請重新登入", { position: toast.POSITION.TOP_RIGHT });
-                    navigator('/login'); // 重定向到登入頁
-                    break;
-                case 403:
-                    toast.error("禁止訪問，您沒有權限執行此操作", { position: toast.POSITION.TOP_RIGHT });
-                    break;
-                default:
-                    toast.error("發生錯誤，請稍後再試", { position: toast.POSITION.TOP_RIGHT });
+            const errorMessage = err.response.data?.detail || ''; // assuming the backend sends token error in 'detail'
+            if (status === 401 && errorMessage.includes('token')) {
+                console.log(2)
+                toast.error("Token 已失效，請重新登入", { position: toast.POSITION.TOP_RIGHT });
+                navigate('/login'); // 重定向到登入頁
+            } else {
+                switch (status) {
+                    case 400:
+                        toast.error("請求錯誤，請檢查您的輸入", { position: toast.POSITION.TOP_RIGHT });
+                        break;
+                    case 401:
+                        toast.error("未授權，請重新登入", { position: toast.POSITION.TOP_RIGHT });
+                        navigate('/login'); // 重定向到登入頁
+                        break;
+                    case 403:
+                        toast.error("禁止訪問，您沒有權限執行此操作", { position: toast.POSITION.TOP_RIGHT });
+                        break;
+                    default:
+                        toast.error("發生錯誤，請稍後再試", { position: toast.POSITION.TOP_RIGHT });
+                }
             }
         } else {
             toast.error("無法連接到伺服器，請稍後再試", { position: toast.POSITION.TOP_RIGHT });
@@ -65,7 +73,7 @@ function MemberCenter() {
     };
 
     useEffect(() => {
-        Axios().get("member/logined/selfInfo/")
+        Axios().get("/member/logined/selfInfo/")
             .then((res) => {
                 setUserData(res.data);
                 setLoading(false);
@@ -144,6 +152,7 @@ function MemberCenter() {
                 loading={loading}
                 setLoading={setLoading}
             />
+            <ToastContainer />
         </Container>
     );
 }
