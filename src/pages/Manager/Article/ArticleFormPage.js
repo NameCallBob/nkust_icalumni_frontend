@@ -3,10 +3,10 @@ import { Button, Form, Container, Spinner, Row, Col, Modal } from "react-bootstr
 import Axios from "common/Axios";
 import ReactQuill from "react-quill";
 import { useParams, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify"; // 引入 Toastify
+import { toast, ToastContainer } from "react-toastify"; 
 import "react-quill/dist/quill.snow.css";
-import "react-toastify/dist/ReactToastify.css"; // 引入 Toastify 的樣式
-import 'css/manage/article/form.css'; // 引入自訂CSS
+import "react-toastify/dist/ReactToastify.css"; 
+import 'css/manage/article/form.css';
 
 const ArticleForm = () => {
     const { id } = useParams();
@@ -15,17 +15,20 @@ const ArticleForm = () => {
     const [newTitle, setNewTitle] = useState("");
     const [newContent, setNewContent] = useState("");
     const [active, setActive] = useState(false);
-    const [publishAt, setPublishAt] = useState(""); // 預設為空，稍後設置
-    const [expireAt, setExpireAt] = useState(""); // 預設為空，稍後設置
+    const [publishAt, setPublishAt] = useState(""); 
+    const [expireAt, setExpireAt] = useState(""); 
     const [link, setLink] = useState("");
-    const [imageFiles, setImageFiles] = useState([]); // 已上傳的圖片
-    const [showImageModal, setShowImageModal] = useState(false); // 控制Modal顯示
+    const [imageFiles, setImageFiles] = useState([]); // 原始圖片
+    const [newImages, setNewImages] = useState([]); // 新上傳的圖片
+    const [removedImages, setRemovedImages] = useState([]); // 被移除的原始圖片
+    const [showImageModal, setShowImageModal] = useState(false); 
     const [imageSize, setImageSize] = useState("small");
-    const [newImages, setNewImages] = useState([]); // 新增圖片
+
+    // 用來保存從後端獲取的原始文章數據
+    const [originalArticleData, setOriginalArticleData] = useState({});
 
     useEffect(() => {
-        // 使用台灣時間設置發布時間
-        const now = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Taipei" }).slice(0, 16);
+        const now = new Date().toISOString().slice(0, 16); // 格式化當前時間
         setPublishAt(now);
         setExpireAt("2099-12-31T12:00");
 
@@ -37,7 +40,7 @@ const ArticleForm = () => {
     const fetchArticleById = async (articleId) => {
         setLoading(true);
         try {
-            const response = await Axios().get(`/article/${articleId}/`);
+            const response = await Axios().get(`/article/all/get_one/`, { params: { id: articleId } });
             const article = response.data;
             setNewTitle(article.title);
             setNewContent(article.content);
@@ -45,13 +48,34 @@ const ArticleForm = () => {
             setPublishAt(article.publish_at);
             setExpireAt(article.expire_at);
             setLink(article.link);
-            setImageFiles(article.images || []);
+
+            // 轉換後端返回的圖片URL為完整的可預覽URL
+            const processedImages = article.images.map((image) => ({
+                id: image.id,
+                url: `${process.env.REACT_APP_BASE_URL+image.image}`, // 假設圖片存放在 /static 目錄
+                size: image.pic_type
+            }));
+            setImageFiles(processedImages); // 保存轉換後的圖片預覽數據
+
+            // 保存原始的文章數據
+            setOriginalArticleData(article);
         } catch (error) {
             console.error("載入文章失敗:", error);
             toast.error("文章載入失敗");
         } finally {
             setLoading(false);
         }
+    };
+
+    // 比對新資料與原資料，返回不同的字段
+    const getChangedFields = (originalData, newData) => {
+        const changedFields = {};
+        Object.keys(newData).forEach((key) => {
+            if (key !== 'images' && newData[key] !== originalData[key]) {
+                changedFields[key] = newData[key];
+            }
+        });
+        return changedFields;
     };
 
     const handleSave = async () => {
@@ -63,20 +87,43 @@ const ArticleForm = () => {
             publish_at: publishAt,
             expire_at: expireAt,
             link: link,
-            images: imageFiles.concat(newImages),
+            images: imageFiles, // 將原始圖片保留
         };
 
         try {
             if (id) {
-                let tmp_article = articleData
-                tmp_article['id'] = id
-                await Axios().put(`/article/all/change/`, tmp_article);
-                toast.success("文章保存成功");
+                // 比對非圖片字段的變更
+                const changedFields = getChangedFields(originalArticleData, articleData);
+
+                // 檢查是否有圖片變更（新增或移除）
+                const newImagesBase64 = newImages.map((img) => ({
+                    image: img.file, // 將圖片轉換為 Base64 格式或處理為適合格式
+                    pic_type: img.size
+                }));
+
+                if (newImagesBase64.length > 0 || removedImages.length > 0) {
+                    changedFields['new_images'] = newImagesBase64;
+                    changedFields['removed_images'] = removedImages.map(img => img.id); // 只傳遞被移除的圖片 ID
+                }
+
+                if (Object.keys(changedFields).length > 0) {
+                    changedFields['id'] = id; // 確保包含文章 ID
+                    await Axios().patch(`/article/all/change/`, changedFields);
+                    toast.success("文章保存成功");
+                } else {
+                    toast.info("沒有變更的內容需要保存");
+                }
             } else {
-                await Axios().post("/article/new/", articleData);
+                await Axios().post("/article/all/new/", {
+                    ...articleData,
+                    new_images: newImages.map((img) => ({
+                        image: img.file,
+                        pic_type: img.size
+                    }))
+                });
                 toast.success("文章新增成功");
             }
-            navigate("/");
+            navigate("/alumni/manage/article/");
         } catch (error) {
             console.error("保存文章失敗:", error);
             toast.error("保存文章失敗");
@@ -95,8 +142,14 @@ const ArticleForm = () => {
         setNewImages([...newImages, ...uploadedImages]);
     };
 
-    const handleRemoveImage = (index) => {
-        setNewImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    const handleRemoveImage = (index, isOriginal = false) => {
+        if (isOriginal) {
+            const removedImage = imageFiles[index];
+            setRemovedImages([...removedImages, removedImage]);
+            setImageFiles(imageFiles.filter((_, i) => i !== index)); // 從原始圖片列表中移除
+        } else {
+            setNewImages((prevImages) => prevImages.filter((_, i) => i !== index));
+        }
     };
 
     return (
@@ -124,7 +177,6 @@ const ArticleForm = () => {
                         </Col>
                     </Row>
 
-                    {/* 排列：是否公開、發布時間、截止時間 */}
                     <Row>
                         <Col md={4}>
                             <Form.Group className="mb-3">
@@ -173,7 +225,6 @@ const ArticleForm = () => {
                         </Col>
                     </Row>
 
-                    {/* 內容編輯器 - 調整尺寸及字體大小 */}
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-3">
@@ -181,29 +232,39 @@ const ArticleForm = () => {
                                 <ReactQuill
                                     value={newContent}
                                     onChange={setNewContent}
-                                    style={{ height: "300px", fontSize: "16px", marginBottom: "20px" }} // 調整編輯框的高度和文字大小
+                                    className="quill-editor-container"
                                 />
                             </Form.Group>
                         </Col>
                     </Row>
 
-                    {/* 圖片上傳按鈕 */}
                     <Row className="mb-3">
                         <Col md={12}>
                             <Button
                                 variant="info"
                                 onClick={() => setShowImageModal(true)}
-                                style={{ marginBottom: "20px" }} // 增加按鈕和下方元素的間距
                             >
                                 上傳圖片
                             </Button>
                         </Col>
                     </Row>
 
-                    {/* 已上傳圖片顯示區 */}
                     <Row>
                         <Col md={12}>
                             <div className="image-preview-container">
+                                {imageFiles.map((image, index) => (
+                                    <div key={index} className="image-preview">
+                                        <img src={image.url} alt={`original-${index}`} />
+                                        <p>{image.size === "small" ? "小圖" : "大圖"}</p>
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            onClick={() => handleRemoveImage(index, true)}
+                                        >
+                                            刪除
+                                        </Button>
+                                    </div>
+                                ))}
                                 {newImages.map((image, index) => (
                                     <div key={index} className="image-preview">
                                         <img src={image.url} alt={`uploaded-${index}`} />
@@ -211,7 +272,7 @@ const ArticleForm = () => {
                                         <Button
                                             variant="danger"
                                             size="sm"
-                                            onClick={() => handleRemoveImage(index)}
+                                            onClick={() => handleRemoveImage(index, false)}
                                         >
                                             刪除
                                         </Button>
@@ -227,7 +288,6 @@ const ArticleForm = () => {
                                 variant="primary"
                                 onClick={handleSave}
                                 disabled={!newTitle || !newContent}
-                                style={{ marginTop: "20px" }} // 增加儲存按鈕與其他元素的間距
                             >
                                 {loading ? "保存中..." : "儲存"}
                             </Button>
@@ -236,10 +296,8 @@ const ArticleForm = () => {
                 </Form>
             )}
 
-            {/* Toastify 用於顯示通知 */}
             <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
-            {/* 圖片上傳 Modal */}
             <Modal show={showImageModal} onHide={() => setShowImageModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>上傳圖片</Modal.Title>

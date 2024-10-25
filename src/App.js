@@ -26,6 +26,7 @@ import CompanyForm from 'pages/Manager/CompanyManaPage';
 import OtherManage from 'pages/Manager/OtherManagePage';
 import ArticleEditor from 'pages/Manager/Article/ArticleManaPage';
 import ArticleForm from 'pages/Manager/Article/ArticleFormPage';
+import EventDetail from 'pages/User/ActivityPage';
 
 function App() {
   return (
@@ -71,7 +72,13 @@ function App() {
         <ProductPage />
       </>
     } />
-
+    {/* 活動頁面 */}
+    <Route path="/activity/:id" element={
+      <>
+        <UserNav />
+        <EventDetail />
+      </>
+    } />
     {/* 校友詳細頁面 */}
     <Route path="/alumni/:id" element={
       <>
