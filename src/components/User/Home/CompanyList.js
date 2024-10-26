@@ -91,7 +91,7 @@ const CompanyListWithPagination = ({ companies }) => {
                     onClick={() => handleItemClick(companies[(index + 1) % companies.length].member)}
                   >
                     <img
-                      src={companies[(index + 1) % companies.length].photo}
+                      src={process.env.REACT_APP_BASE_URL+companies[(index + 1) % companies.length].photo}
                       alt={companies[(index + 1) % companies.length].name}
                       style={{ width: '100%', height: '300px', objectFit: 'cover' }}
                     />

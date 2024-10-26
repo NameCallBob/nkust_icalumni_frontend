@@ -93,11 +93,11 @@ const Login = () => {
                 onChange={handleCaptchaChange}
               />
               <Button variant="primary" type="submit" className="mt-3">
-                Login
+                登入
               </Button>
             </Form>
             <Button variant="link" className="mt-2" onClick={() => navigator("/forgot")}>
-              Forgot Password?
+              忘記密碼
             </Button>
           </Col>
         </Row>
