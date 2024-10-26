@@ -51,7 +51,7 @@ const Login = () => {
         }, 1500);
       })
       .catch((err) => {
-        console.log(err);
+        
       });
     }
   }, [navigator]);

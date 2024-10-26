@@ -28,9 +28,7 @@ function MemberCenter() {
         }
         Axios().patch("/member/logined/partial_change/", changedData)
             .then((res) => {
-                toast.success("修改成功!", {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                toast.success("修改成功!", { position: 'top-right' });
                 setUserData(formData);
             })
             .catch((err) => {
@@ -44,31 +42,29 @@ function MemberCenter() {
 
     const handleAxiosError = (err) => {
         if (err.response) {
-            console.log(1)
             const status = err.response.status;
             const errorMessage = err.response.data?.detail || ''; // assuming the backend sends token error in 'detail'
             if (status === 401 && errorMessage.includes('token')) {
-                console.log(2)
                 toast.error("Token 已失效，請重新登入", { position: toast.POSITION.TOP_RIGHT });
                 navigate('/login'); // 重定向到登入頁
             } else {
                 switch (status) {
                     case 400:
-                        toast.error("請求錯誤，請檢查您的輸入", { position: toast.POSITION.TOP_RIGHT });
+                        toast.error("請求錯誤，請檢查您的輸入", { position: 'top-right' });
                         break;
                     case 401:
-                        toast.error("未授權，請重新登入", { position: toast.POSITION.TOP_RIGHT });
+                        toast.error("未授權，請重新登入", { position: 'top-right' });
                         navigate('/login'); // 重定向到登入頁
                         break;
                     case 403:
-                        toast.error("禁止訪問，您沒有權限執行此操作", { position: toast.POSITION.TOP_RIGHT });
+                        toast.error("禁止訪問，您沒有權限執行此操作", { position: 'top-right' });
                         break;
                     default:
-                        toast.error("發生錯誤，請稍後再試", { position: toast.POSITION.TOP_RIGHT });
+                        toast.error("發生錯誤，請稍後再試", { position: 'top-right' });
                 }
             }
         } else {
-            toast.error("無法連接到伺服器，請稍後再試", { position: toast.POSITION.TOP_RIGHT });
+            toast.error("無法連接到伺服器，請稍後再試", { position: 'top-right' });
         }
     };
 
@@ -84,12 +80,6 @@ function MemberCenter() {
                 setUserData(prevState => ({ ...prevState, photo: 'https://via.placeholder.com/150' }));
             });
     }, []);
-
-    useEffect(() => {
-        if (showModal) {
-            console.log("最新的 userData:", userData);
-        }
-    }, [showModal, userData]);
 
     return (
         <Container className="mt-5 my-5">

@@ -3,10 +3,11 @@ import { Button, Form, Container, Spinner, Row, Col, Modal } from "react-bootstr
 import Axios from "common/Axios";
 import ReactQuill from "react-quill";
 import { useParams, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify"; 
+import { toast, ToastContainer } from "react-toastify";
 import "react-quill/dist/quill.snow.css";
-import "react-toastify/dist/ReactToastify.css"; 
+import "react-toastify/dist/ReactToastify.css";
 import 'css/manage/article/form.css';
+import LoadingSpinner from "components/LoadingSpinner";
 
 const ArticleForm = () => {
     const { id } = useParams();
@@ -15,13 +16,13 @@ const ArticleForm = () => {
     const [newTitle, setNewTitle] = useState("");
     const [newContent, setNewContent] = useState("");
     const [active, setActive] = useState(false);
-    const [publishAt, setPublishAt] = useState(""); 
-    const [expireAt, setExpireAt] = useState(""); 
+    const [publishAt, setPublishAt] = useState("");
+    const [expireAt, setExpireAt] = useState("");
     const [link, setLink] = useState("");
     const [imageFiles, setImageFiles] = useState([]); // 原始圖片
     const [newImages, setNewImages] = useState([]); // 新上傳的圖片
     const [removedImages, setRemovedImages] = useState([]); // 被移除的原始圖片
-    const [showImageModal, setShowImageModal] = useState(false); 
+    const [showImageModal, setShowImageModal] = useState(false);
     const [imageSize, setImageSize] = useState("small");
 
     // 用來保存從後端獲取的原始文章數據
@@ -70,60 +71,69 @@ const ArticleForm = () => {
     // 比對新資料與原資料，返回不同的字段
     const getChangedFields = (originalData, newData) => {
         const changedFields = {};
+
+        // 檢查非圖片字段
         Object.keys(newData).forEach((key) => {
             if (key !== 'images' && newData[key] !== originalData[key]) {
                 changedFields[key] = newData[key];
             }
         });
+
+        // 檢查圖片的變更（新增或移除）
+        const originalImageIds = originalData.images ? originalData.images.map(img => img.id) : [];
+        const newImageIds = newData.images ? newData.images.map(img => img.id) : [];
+
+        if (
+            newImageIds.length !== originalImageIds.length ||
+            !newImageIds.every((id) => originalImageIds.includes(id))
+        ) {
+            changedFields.images = newData.images; // 標記圖片為已變更
+        }
+
         return changedFields;
     };
 
+
     const handleSave = async () => {
         setLoading(true);
-        const articleData = {
-            title: newTitle,
-            content: newContent,
-            active: active,
-            publish_at: publishAt,
-            expire_at: expireAt,
-            link: link,
-            images: imageFiles, // 將原始圖片保留
-        };
-
         try {
+            // 結合保留的原始圖片和新增的圖片
+            const allImages = [
+                ...imageFiles.filter((img) => !removedImages.includes(img)), // 移除被標記為刪除的圖片
+                ...newImages.map((img) => ({
+                    image: img.file, // Base64 格式
+                    pic_type: img.size,
+                })),
+            ];
+
+            const articleData = {
+                title: newTitle,
+                content: newContent,
+                active: active,
+                publish_at: publishAt,
+                expire_at: expireAt,
+                link: link,
+                images: allImages, // 全部的圖片（包含保留和新增的）
+            };
+
             if (id) {
-                // 比對非圖片字段的變更
                 const changedFields = getChangedFields(originalArticleData, articleData);
-
-                // 檢查是否有圖片變更（新增或移除）
-                const newImagesBase64 = newImages.map((img) => ({
-                    image: img.file, // 將圖片轉換為 Base64 格式或處理為適合格式
-                    pic_type: img.size
-                }));
-
-                if (newImagesBase64.length > 0 || removedImages.length > 0) {
-                    changedFields['new_images'] = newImagesBase64;
-                    changedFields['removed_images'] = removedImages.map(img => img.id); // 只傳遞被移除的圖片 ID
-                }
-
                 if (Object.keys(changedFields).length > 0) {
-                    changedFields['id'] = id; // 確保包含文章 ID
+                    changedFields['id'] = id; // 加上文章 ID
                     await Axios().patch(`/article/all/change/`, changedFields);
                     toast.success("文章保存成功");
                 } else {
                     toast.info("沒有變更的內容需要保存");
                 }
             } else {
-                await Axios().post("/article/all/new/", {
-                    ...articleData,
-                    new_images: newImages.map((img) => ({
-                        image: img.file,
-                        pic_type: img.size
-                    }))
-                });
+                await Axios().post("/article/all/new/", articleData);
                 toast.success("文章新增成功");
             }
-            navigate("/alumni/manage/article/");
+
+            // 添加延遲，確保 toast 訊息彈出
+            setTimeout(() => {
+                navigate("/alumni/manage/article/");
+            }, 1000); // 延遲 0.5 秒
         } catch (error) {
             console.error("保存文章失敗:", error);
             toast.error("保存文章失敗");
@@ -132,34 +142,49 @@ const ArticleForm = () => {
         }
     };
 
-    const handleImageUpload = (e) => {
+
+    const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files);
-        const uploadedImages = files.map((file) => ({
-            url: URL.createObjectURL(file),
-            file,
-            size: imageSize,
-        }));
-        setNewImages([...newImages, ...uploadedImages]);
+
+        const readFilesAsBase64 = files.map((file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    resolve({
+                        url: reader.result,
+                        file: reader.result, // Base64 編碼
+                        size: imageSize,
+                    });
+                };
+                reader.onerror = (error) => reject(error);
+            });
+        });
+
+        try {
+            const uploadedImages = await Promise.all(readFilesAsBase64);
+            setNewImages((prevImages) => [...prevImages, ...uploadedImages]);
+        } catch (error) {
+            console.error("圖片加載失敗:", error);
+        }
     };
 
     const handleRemoveImage = (index, isOriginal = false) => {
         if (isOriginal) {
-            const removedImage = imageFiles[index];
-            setRemovedImages([...removedImages, removedImage]);
-            setImageFiles(imageFiles.filter((_, i) => i !== index)); // 從原始圖片列表中移除
+            setRemovedImages([...removedImages, imageFiles[index]]); // 標記原始圖片為已刪除
+            setImageFiles(imageFiles.filter((_, i) => i !== index)); // 從顯示列表移除
         } else {
-            setNewImages((prevImages) => prevImages.filter((_, i) => i !== index));
+            setNewImages((prevImages) => prevImages.filter((_, i) => i !== index)); // 從新增列表移除
         }
     };
+
 
     return (
         <Container>
             <h2>{id ? "編輯文章" : "新增文章"}</h2>
             {loading ? (
                 <div className="text-center">
-                    <Spinner animation="border" role="status">
-                        <span className="sr-only">加載中...</span>
-                    </Spinner>
+                    <LoadingSpinner></LoadingSpinner>
                 </div>
             ) : (
                 <Form>

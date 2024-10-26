@@ -1,108 +1,177 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form, Table, Container } from 'react-bootstrap';
+import Axios from 'common/Axios';
+import React, { useEffect, useState } from 'react';
+import { Modal, Button, Form, Table, Container, Image } from 'react-bootstrap';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import LoadingSpinner from 'components/LoadingSpinner';
 
-
-/**
- * 招募管理頁面
- */
 function RecruitManaPage() {
-  const [jobs, setJobs] = useState([
-    {
-      id: 1,
-      title: '後端工程師',
-      company: 'XYZ 科技公司',
-      postDate: '2023-09-01',
-      endDate: '2023-09-30',
-      contactName: '張三',
-      contactEmail: 'zhangsan@example.com',
-      description: '需要具備 Django 開發經驗',
-    },
-    {
-      id: 2,
-      title: '前端工程師',
-      company: 'ABC 網路公司',
-      postDate: '2023-08-15',
-      endDate: '2023-09-15',
-      contactName: '李四',
-      contactEmail: 'lisi@example.com',
-      description: '熟悉 React 和 JavaScript',
-    },
-  ]);
-
+  const [jobs, setJobs] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading 狀態
   const [formData, setFormData] = useState({
     id: '',
     title: '',
     company: '',
-    postDate: '',
-    endDate: '',
+    release_date: '',
+    deadline: '',
     contactName: '',
     contactEmail: '',
-    description: '',
+    intro: '',
   });
 
   const [isPersonalContact, setIsPersonalContact] = useState(false);
   const [isPersonalCompany, setIsPersonalCompany] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
-  // Toggle Modals
   const handleCloseAddModal = () => setShowAddModal(false);
   const handleShowAddModal = () => setShowAddModal(true);
   const handleCloseEditModal = () => setShowEditModal(false);
 
-  // Handle Form Data Changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Handle Add Job
+  const handleQuillChange = (value) => {
+    setFormData((prevData) => ({ ...prevData, intro: value }));
+  };
+
+  useEffect(() => {
+    Axios()
+      .get('/recruit/data/tableOutput_admin/')
+      .then((res) => {
+        setJobs(res.data.results);
+      })
+      .catch(() => {
+        toast.error('載入職位資料失敗');
+      });
+  }, []);
+
+  // 統一的表單提交資料
+  const prepareFormData = () => ({
+    ...formData,
+    isPersonalContact,
+    isPersonalCompany,
+    contactName: isPersonalContact ? undefined : formData.contactName,
+    contactEmail: isPersonalContact ? undefined : formData.contactEmail,
+    company: isPersonalCompany ? undefined : formData.company,
+    images: selectedImages.map((image) => ({
+      image: image,            // base64 格式圖片
+      image_type: 'small',      // 默認為小圖
+    })),
+  });
+
+  // 新增職位
   const handleAddJob = (e) => {
     e.preventDefault();
-    const newJob = {
-      ...formData,
-      id: jobs.length + 1,
-      contactName: isPersonalContact ? '本人' : formData.contactName,
-      company: isPersonalCompany ? '本人所在公司' : formData.company,
-    };
-    setJobs([...jobs, newJob]);
+    Axios()
+      .post('/recruit/data/new/', prepareFormData())
+      .then((res) => {
+        setJobs([...jobs, res.data]);
+        resetForm();
+        setShowAddModal(false);
+        toast.success('新增職位成功');
+      })
+      .catch((err) => {
+        toast.error(`新增失敗：${err.response?.status === 404 ? '未找到資源' : '請稍後再試'}`);
+      });
+  };
+
+  // 編輯職位
+  const handleEditJob = (id) => {
+    setLoading(true);
+    Axios()
+      .get(`/recruit/data/getOne/`, { params: { id: id } })
+      .then((res) => {
+        setFormData(res.data);
+        setIsPersonalContact(res.data.isPersonalContact); // 確保布林值狀態正確
+        setIsPersonalCompany(res.data.isPersonalCompany); // 確保布林值狀態正確
+        setSelectedImages(res.data.images || []);
+        setImagePreviews(res.data.images || []);
+        setShowEditModal(true);
+      })
+      .catch(() => {
+        toast.error('載入職位詳細資料失敗');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  // 保存編輯職位
+  const handleSaveEditJob = (e) => {
+    e.preventDefault();
+    Axios()
+      .put(`/recruit/data/update/${formData.id}/`, prepareFormData())
+      .then((res) => {
+        setJobs(jobs.map((job) => (job.id === formData.id ? res.data : job)));
+        setShowEditModal(false);
+        toast.success('編輯成功');
+      })
+      .catch((err) => {
+        toast.error(`編輯失敗：${err.response?.status === 404 ? '未找到資源' : '請稍後再試'}`);
+      });
+  };
+
+  // 刪除職位
+  const handleDeleteJob = (id) => {
+    Axios()
+      .delete(`/recruit/data/delete/${id}/`)
+      .then(() => {
+        setJobs(jobs.filter((job) => job.id !== id));
+        toast.success('刪除成功');
+      })
+      .catch((err) => {
+        toast.error(`刪除失敗：${err.response?.status === 404 ? '未找到資源' : '請稍後再試'}`);
+      });
+  };
+
+  // 照片處理
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const previews = [];
+    const base64Images = [];
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        base64Images.push(reader.result);
+        previews.push(reader.result);
+        if (base64Images.length === files.length) {
+          setSelectedImages(base64Images);
+          setImagePreviews(previews);
+        }
+      };
+    });
+  };
+
+  // 重置表單
+  const resetForm = () => {
     setFormData({
       id: '',
       title: '',
       company: '',
-      postDate: '',
-      endDate: '',
+      release_date: '',
+      deadline: '',
       contactName: '',
       contactEmail: '',
-      description: '',
+      intro: '',
     });
     setIsPersonalContact(false);
     setIsPersonalCompany(false);
-    setShowAddModal(false);
-  };
-
-  // Handle Edit Job
-  const handleEditJob = (id) => {
-    const job = jobs.find((job) => job.id === id);
-    setFormData(job);
-    setShowEditModal(true);
-  };
-
-  const handleSaveEditJob = (e) => {
-    e.preventDefault();
-    setJobs(
-      jobs.map((job) => (job.id === formData.id ? { ...formData } : job))
-    );
-    setShowEditModal(false);
-  };
-
-  // Handle Delete Job
-  const handleDeleteJob = (id) => {
-    setJobs(jobs.filter((job) => job.id !== id));
+    setSelectedImages([]);
+    setImagePreviews([]);
   };
 
   return (
     <Container className="mt-5">
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
       <h1 className="mb-4">徵才管理頁面</h1>
       <Button variant="success" onClick={handleShowAddModal}>
         新增職位
@@ -113,7 +182,6 @@ function RecruitManaPage() {
           <tr>
             <th>編號</th>
             <th>職位名稱</th>
-            <th>公司</th>
             <th>發布時間</th>
             <th>截止時間</th>
             <th>操作</th>
@@ -124,9 +192,8 @@ function RecruitManaPage() {
             <tr key={job.id}>
               <td>{job.id}</td>
               <td>{job.title}</td>
-              <td>{job.company}</td>
-              <td>{job.postDate}</td>
-              <td>{job.endDate}</td>
+              <td>{job.release_date}</td>
+              <td>{job.deadline}</td>
               <td>
                 <Button
                   variant="warning"
@@ -145,19 +212,18 @@ function RecruitManaPage() {
       </Table>
 
       {/* Add Job Modal */}
-      <Modal show={showAddModal} onHide={handleCloseAddModal}>
+      <Modal show={showAddModal} onHide={handleCloseAddModal} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>新增職位</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAddJob}>
-            <Form.Group className="mb-3" controlId="formJobDescription">
-              <Form.Label>詳細資料說明</Form.Label>
+            <Form.Group className="mb-3" controlId="formJobTitle">
+              <Form.Label>職位名稱</Form.Label>
               <Form.Control
-                as="textarea"
-                rows={3}
-                name="description"
-                value={formData.description}
+                type="text"
+                name="title"
+                value={formData.title}
                 onChange={handleInputChange}
                 required
               />
@@ -176,7 +242,6 @@ function RecruitManaPage() {
               checked={isPersonalCompany}
               onChange={() => setIsPersonalCompany(!isPersonalCompany)}
             />
-
             <Form.Group className="mb-3" controlId="formJobCompany">
               <Form.Label>公司名稱</Form.Label>
               <Form.Control
@@ -192,8 +257,8 @@ function RecruitManaPage() {
               <Form.Label>發布時間</Form.Label>
               <Form.Control
                 type="date"
-                name="postDate"
-                value={formData.postDate}
+                name="release_date"
+                value={formData.release_date}
                 onChange={handleInputChange}
                 required
               />
@@ -202,8 +267,8 @@ function RecruitManaPage() {
               <Form.Label>截止時間</Form.Label>
               <Form.Control
                 type="date"
-                name="endDate"
-                value={formData.endDate}
+                name="deadline"
+                value={formData.deadline}
                 onChange={handleInputChange}
                 required
               />
@@ -229,6 +294,39 @@ function RecruitManaPage() {
                 required
                 disabled={isPersonalContact}
               />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formJobDescription">
+              <Form.Label>詳細資料說明</Form.Label>
+              <ReactQuill
+                value={formData.intro}
+                onChange={handleQuillChange}
+                placeholder="輸入詳細說明..."
+              />
+            </Form.Group>
+            <Form.Group controlId="formJobImages" className="mb-3">
+              <Form.Label>上傳照片</Form.Label>
+              <Form.Control
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+              <div className="d-flex flex-wrap mt-2">
+                {imagePreviews.map((src, index) => (
+                  <Image
+                    key={index}
+                    src={src}
+                    alt="預覽照片"
+                    thumbnail
+                    style={{
+                      width: '100px',
+                      height: '100px',
+                      objectFit: 'cover',
+                      marginRight: '10px',
+                    }}
+                  />
+                ))}
+              </div>
             </Form.Group>
             <Button variant="primary" type="submit">
               新增職位
@@ -238,77 +336,132 @@ function RecruitManaPage() {
       </Modal>
 
       {/* Edit Job Modal */}
-      <Modal show={showEditModal} onHide={handleCloseEditModal}>
+      <Modal show={showEditModal} onHide={handleCloseEditModal} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>編輯職位</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSaveEditJob}>
-            <Form.Group className="mb-3" controlId="formJobDescription">
-              <Form.Label>詳細資料說明</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                required
+          {loading ? (
+            <div className="text-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <Form onSubmit={handleSaveEditJob}>
+              <Form.Group className="mb-3" controlId="formJobTitleEdit">
+                <Form.Label>職位名稱</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+              <Form.Check
+                type="checkbox"
+                id="isPersonalContactEdit"
+                label="聯絡人為本人"
+                checked={isPersonalContact}
+                onChange={() => setIsPersonalContact(!isPersonalContact)}
               />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formJobCompany">
-              <Form.Label>公司名稱</Form.Label>
-              <Form.Control
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleInputChange}
-                required
+              <Form.Check
+                type="checkbox"
+                id="isPersonalCompanyEdit"
+                label="公司為本人所在公司"
+                checked={isPersonalCompany}
+                onChange={() => setIsPersonalCompany(!isPersonalCompany)}
               />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formPostDate">
-              <Form.Label>發布時間</Form.Label>
-              <Form.Control
-                type="date"
-                name="postDate"
-                value={formData.postDate}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formEndDate">
-              <Form.Label>截止時間</Form.Label>
-              <Form.Control
-                type="date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formContactName">
-              <Form.Label>聯絡人姓名</Form.Label>
-              <Form.Control
-                type="text"
-                name="contactName"
-                value={formData.contactName}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formContactEmail">
-              <Form.Label>聯絡人 Email</Form.Label>
-              <Form.Control
-                type="email"
-                name="contactEmail"
-                value={formData.contactEmail}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              保存修改
-            </Button>
-          </Form>
+              <Form.Group className="mb-3" controlId="formJobCompanyEdit">
+                <Form.Label>公司名稱</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isPersonalCompany}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formPostDateEdit">
+                <Form.Label>發布時間</Form.Label>
+                <Form.Control
+                  type="date"
+                  name="release_date"
+                  value={formData.release_date}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formEndDateEdit">
+                <Form.Label>截止時間</Form.Label>
+                <Form.Control
+                  type="date"
+                  name="deadline"
+                  value={formData.deadline}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formContactNameEdit">
+                <Form.Label>聯絡人姓名</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="contactName"
+                  value={formData.contactName}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isPersonalContact}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formContactEmailEdit">
+                <Form.Label>聯絡人 Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  name="contactEmail"
+                  value={formData.contactEmail}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isPersonalContact}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formJobDescriptionEdit">
+                <Form.Label>詳細資料說明</Form.Label>
+                <ReactQuill
+                  value={formData.intro}
+                  onChange={handleQuillChange}
+                  placeholder="輸入詳細說明..."
+                />
+              </Form.Group>
+              <Form.Group controlId="formJobImagesEdit" className="mb-3">
+                <Form.Label>上傳照片</Form.Label>
+                <Form.Control
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                <div className="d-flex flex-wrap mt-2">
+                  {imagePreviews.map((src, index) => (
+                    <Image
+                      key={index}
+                      src={src}
+                      alt="預覽照片"
+                      thumbnail
+                      style={{
+                        width: '100px',
+                        height: '100px',
+                        objectFit: 'cover',
+                        marginRight: '10px',
+                      }}
+                    />
+                  ))}
+                </div>
+              </Form.Group>
+              <Button variant="primary" type="submit">
+                保存修改
+              </Button>
+            </Form>
+          )}
         </Modal.Body>
       </Modal>
     </Container>

@@ -10,13 +10,11 @@ import 'react-toastify/dist/ReactToastify.css'; // 引入react-toastify的樣式
 
 function ManagerNav() {
     const [userInfo, setUserInfo] = useState(null);
-    const navigator = useNavigate(); 
+    const navigator = useNavigate();
 
     const Logout = () => {
         window.localStorage.setItem("jwt", "")
-        toast.success("已登出，期待在見到您!", {
-            position: toast.POSITION.TOP_RIGHT
-        });
+        toast.success("已登出，期待在見到您!", { position: 'top-right' });
         setTimeout(() => {
             navigator("/");
         }, 2000); // 加一個延遲，讓用戶有時間看到通知
@@ -96,7 +94,7 @@ function ManagerNav() {
 
                         {/* 其他管理 */}
                         <NavDropdown title="其他管理" id="other-management-dropdown" className='mx-3 border-item'>
-                           
+
                         </NavDropdown>
 
                         {/* 帳號相關 */}
