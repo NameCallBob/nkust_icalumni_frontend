@@ -44,7 +44,7 @@ function Home() {
                 </Col>
             </Row>
             {/* 垂直輪播 */}
-            <Row className="d-flex flex-column flex-md-row">
+            <Row className="d-flex flex-column flex-md-row mb-4">
                 <Col md={6} className="mb-3 mb-md-0">
                     <VerticalCarousel title={"最新上架"}></VerticalCarousel>
                 </Col>
@@ -56,7 +56,7 @@ function Home() {
                 <Col>
                 </Col>
             </Row>
-            <Row>
+            <Row className="mb-4">
                 <Col >
                     {/* 公司介紹 */}
                     <Company></Company>

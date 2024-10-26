@@ -44,8 +44,6 @@ function Axios() {
           case 500:
             toast.error("發生伺服器意外錯誤，已通報開發者！請稍後再試，造成不便敬請見諒。");
             break;
-          default:
-            toast.error("發生錯誤，請稍後再試！");
         }
       } else if (err.request) {
         // Handle no response from the server (network issues, etc.)

@@ -23,6 +23,9 @@ import 'css/user/homepage/CompanyList.css'; // 添加樣式
     const handleItemClick = (id) => {
       navigate(`/alumni/${id}`);
     };
+    const handleNavi = () => {
+      navigate("/search")
+    }
 
     return (
       <Container className="py-2 my-2" style={{ backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
@@ -59,7 +62,7 @@ import 'css/user/homepage/CompanyList.css'; // 添加樣式
         </Carousel>
         <Row className="justify-content-center">
           <Col class="text-center">
-            <Button>瞭解更多系友公司</Button>
+            <Button onClick={handleNavi}>瞭解更多系友公司</Button>
           </Col>
         </Row>
       </Container>
