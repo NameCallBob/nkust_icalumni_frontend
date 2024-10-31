@@ -1,153 +1,107 @@
-import React, { useState, useEffect } from "react";
-import { Container, Tabs, Tab } from "react-bootstrap";
-import axios from "axios";
-import PhotoTable from "components/Manage/PicManage/photoTable";
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, ListGroup, Button, Alert, Spinner } from 'react-bootstrap';
+import { FaUser, FaBuilding } from 'react-icons/fa';
+import PhotoItem from 'components/Manage/PicManage/PhotoItem';
+import PhotoUploadModal from 'components/Manage/PicManage/PhotoUploadModal';
+import 'css/manage/photo.css';
+import LoadingSpinner from 'components/LoadingSpinner';
+import Axios from 'common/Axios';
 
+const PhotoManager = () => {
+  const [selectedCategory, setSelectedCategory] = useState('自身照片');
+  const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      setLoading(true);
+      setError(null);
+      let apiname = ""
+      try {
+        if(selectedCategory === "自身照片"){
+          apiname="picture/self-images/selfInfo/"
+        }else if (selectedCategory === "公司照片"){
+          apiname="picture/company-images/selfInfo/"
+        }
+        const response = await Axios().get(apiname);
+        if (response.data.length === 0) {
+          setPhotos([]);
+          setError('未找到任何資料');
+        } else {
+          setPhotos(response.data);
+        }
+      } catch (err) {
+        setError('無法取得資料，請稍後再試');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-
-
-
-const PhotoManagementPage = () => {
-// 先註解
-//   const [promotionAds, setPromotionAds] = useState([]);
-//   const [continuousAds, setContinuousAds] = useState([]);
-//   const [otherImages, setOtherImages] = useState([]);
-//   const [slideImages, setSlideImages] = useState([]);
-
-// 假資料
-const promotionAds = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/150",
-      title: "促銷廣告 1",
-      description: "這是促銷廣告的說明。",
-      created_at: "2023-09-25T12:34:56",
-      is_active: true,
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/150",
-      title: "促銷廣告 2",
-      description: "這是促銷廣告的說明。",
-      created_at: "2023-09-20T10:22:33",
-      is_active: false,
-    },
-  ];
-
-  const continuousAds = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/150",
-      title: "連續廣告 1",
-      description: "這是連續廣告的說明。",
-      created_at: "2023-09-18T08:15:22",
-      is_active: true,
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/150",
-      title: "連續廣告 2",
-      description: "這是連續廣告的說明。",
-      created_at: "2023-09-10T14:45:11",
-      is_active: false,
-    },
-  ];
-
-  const otherImages = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/150",
-      title: "其他圖片 1",
-      description: "這是其他圖片的說明。",
-      created_at: "2023-09-14T16:22:30",
-      is_active: true,
-    },
-  ];
-
-  const slideImages = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/150",
-      title: "輪播圖片 1",
-      description: "這是輪播圖片的說明。",
-      created_at: "2023-09-12T18:33:44",
-      is_active: true,
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/150",
-      title: "輪播圖片 2",
-      description: "這是輪播圖片的說明。",
-      created_at: "2023-09-05T12:10:20",
-      is_active: false,
-    },
-  ];
-
-
-//   useEffect(() => {
-//     axios.get("/api/promotion-ads/").then((res) => setPromotionAds(res.data));
-//     axios.get("/api/continuous-ads/").then((res) => setContinuousAds(res.data));
-//     axios.get("/api/other-images/").then((res) => setOtherImages(res.data));
-//     axios.get("/api/slide-images/").then((res) => setSlideImages(res.data));
-//   }, []);
-
-  const handleDelete = (id) => {
-    // Implement delete logic, e.g., call API to delete and update state
-  };
-
-  const handleEdit = (id, updatedData) => {
-    // Implement edit logic, e.g., call API to update and modify state
-  };
-
-  const handleToggleStatus = (id) => {
-    // Implement toggle status logic, e.g., call API to toggle active/inactive
-  };
+    fetchPhotos();
+  }, [selectedCategory]);
 
   return (
-    <Container>
-      <h1 className="my-4">照片管理頁面</h1>
-            {/* 使用 Tabs 來顯示不同分類的照片管理 */}
-            <Tabs defaultActiveKey="promotionAds" id="photo-management-tabs" className="mb-3">
-        <Tab eventKey="promotionAds" title="公司相關照片">
-          <PhotoTable
-            title="公司相關照片"
-            photos={promotionAds}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
-          />
-        </Tab>
-        <Tab eventKey="continuousAds" title="個人相關照片">
-          <PhotoTable
-            title="個人相關照片"
-            photos={continuousAds}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
-          />
-        </Tab>
-        <Tab eventKey="otherImages" title="其他照片">
-          <PhotoTable
-            title="其他照片"
-            photos={otherImages}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
-          />
-        </Tab>
-        <Tab eventKey="slideImages" title="官網廣告輪播">
-          <PhotoTable
-            title="官網廣告輪播"
-            photos={slideImages}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
-          />
-        </Tab>
-      </Tabs>
+    <Container fluid className="photo-manager">
+      <Row>
+        <Col md={3} className="sidebar">
+          <div className="category-container">
+            <Button
+              variant={selectedCategory === '自身照片' ? 'primary' : 'secondary'}
+              className="category-button"
+              onClick={() => setSelectedCategory('自身照片')}
+            >
+              <FaUser size={40} className="category-icon" />
+              自身照片
+            </Button>
+            <Button
+              variant={selectedCategory === '公司照片' ? 'primary' : 'secondary'}
+              className="category-button mt-4"
+              onClick={() => setSelectedCategory('公司照片')}
+            >
+              <FaBuilding size={40} className="category-icon" />
+              公司照片
+            </Button>
+          </div>
+        </Col>
+
+        <Col md={9} className="main-panel">
+          <div className="d-flex justify-content-end mb-3">
+            <Button variant="primary" onClick={() => setShowUploadModal(true)}>
+              新增照片
+            </Button>
+          </div>
+
+          {loading ? (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="border" role="status">
+                <LoadingSpinner></LoadingSpinner>
+              </Spinner>
+            </div>
+          ) : error ? (
+            <Alert variant="warning" className="text-center">
+              {error}
+            </Alert>
+          ) : (
+            <Row>
+              {photos.map((photo) => (
+                <Col md={4} key={photo.id} className="photo-item">
+                  <PhotoItem photo={photo} />
+                </Col>
+              ))}
+            </Row>
+          )}
+        </Col>
+      </Row>
+      <PhotoUploadModal
+        show={showUploadModal}
+        onHide={() => setShowUploadModal(false)}
+        onUpload={() => {}}
+      />
+      <footer className="footer">© 2024 Photo Manager</footer>
     </Container>
   );
 };
 
-export default PhotoManagementPage;
+export default PhotoManager;
