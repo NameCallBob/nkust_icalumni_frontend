@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, ListGroup, Button, Alert, Spinner } from 'react-bootstrap';
-import { FaUser, FaBuilding } from 'react-icons/fa';
+import { Container, Row, Col, ListGroup, Alert, Spinner, Button } from 'react-bootstrap';
+import { FaUser, FaBuilding, FaPlus } from 'react-icons/fa';
 import PhotoItem from 'components/Manage/PicManage/PhotoItem';
 import PhotoUploadModal from 'components/Manage/PicManage/PhotoUploadModal';
 import 'css/manage/photo.css';
 import LoadingSpinner from 'components/LoadingSpinner';
 import Axios from 'common/Axios';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PhotoManager = () => {
   const [selectedCategory, setSelectedCategory] = useState('自身照片');
@@ -13,17 +15,18 @@ const PhotoManager = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [isFresh, setIsFresh] = useState(false);
 
   useEffect(() => {
     const fetchPhotos = async () => {
       setLoading(true);
       setError(null);
-      let apiname = ""
+      let apiname = "";
       try {
-        if(selectedCategory === "自身照片"){
-          apiname="picture/self-images/selfInfo/"
-        }else if (selectedCategory === "公司照片"){
-          apiname="picture/company-images/selfInfo/"
+        if (selectedCategory === "自身照片") {
+          apiname = "picture/self-images/selfInfo/";
+        } else if (selectedCategory === "公司照片") {
+          apiname = "picture/company-images/selfInfo/";
         }
         const response = await Axios().get(apiname);
         if (response.data.length === 0) {
@@ -40,35 +43,46 @@ const PhotoManager = () => {
     };
 
     fetchPhotos();
-  }, [selectedCategory]);
+  }, [selectedCategory, isFresh]);
+
+  const refreshPhotos = () => setIsFresh((prev) => !prev);
 
   return (
     <Container fluid className="photo-manager">
+      <ToastContainer />
       <Row>
         <Col md={3} className="sidebar">
-          <div className="category-container">
-            <Button
-              variant={selectedCategory === '自身照片' ? 'primary' : 'secondary'}
-              className="category-button"
+          <ListGroup as="div" className="category-container">
+            <ListGroup.Item
+              action
+              active={selectedCategory === '自身照片'}
               onClick={() => setSelectedCategory('自身照片')}
+              className="d-flex align-items-center justify-content-center"
             >
-              <FaUser size={40} className="category-icon" />
+              <FaUser size={30} className="me-2" />
               自身照片
-            </Button>
-            <Button
-              variant={selectedCategory === '公司照片' ? 'primary' : 'secondary'}
-              className="category-button mt-4"
+            </ListGroup.Item>
+            <ListGroup.Item
+              action
+              active={selectedCategory === '公司照片'}
               onClick={() => setSelectedCategory('公司照片')}
+              className="d-flex align-items-center justify-content-center mt-3"
             >
-              <FaBuilding size={40} className="category-icon" />
+              <FaBuilding size={30} className="me-2" />
               公司照片
-            </Button>
-          </div>
+            </ListGroup.Item>
+          </ListGroup>
         </Col>
 
         <Col md={9} className="main-panel">
           <div className="d-flex justify-content-end mb-3">
-            <Button variant="primary" onClick={() => setShowUploadModal(true)}>
+            <Button
+              variant="success"
+              onClick={() => setShowUploadModal(true)}
+              className="d-flex align-items-center"
+              style={{ maxWidth: '150px' }}  // 限制寬度
+            >
+              <FaPlus className="me-2" />
               新增照片
             </Button>
           </div>
@@ -76,7 +90,7 @@ const PhotoManager = () => {
           {loading ? (
             <div className="d-flex justify-content-center">
               <Spinner animation="border" role="status">
-                <LoadingSpinner></LoadingSpinner>
+                <LoadingSpinner />
               </Spinner>
             </div>
           ) : error ? (
@@ -87,7 +101,7 @@ const PhotoManager = () => {
             <Row>
               {photos.map((photo) => (
                 <Col md={4} key={photo.id} className="photo-item">
-                  <PhotoItem photo={photo} />
+                  <PhotoItem photo={photo} type={selectedCategory} refresh={refreshPhotos} />
                 </Col>
               ))}
             </Row>
@@ -97,9 +111,9 @@ const PhotoManager = () => {
       <PhotoUploadModal
         show={showUploadModal}
         onHide={() => setShowUploadModal(false)}
-        onUpload={() => {}}
+        onUpload={refreshPhotos}
+        type={selectedCategory}
       />
-      <footer className="footer">© 2024 Photo Manager</footer>
     </Container>
   );
 };
