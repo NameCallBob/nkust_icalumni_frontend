@@ -1,6 +1,3 @@
- <!-- 使Apache在路徑更動。可以自動導回index.html -->
- <!-- 文獻位置:https://medium.com/@xergiodf/react-router-404s-pages-nginx-apache-amazon-s3-93f9b55e21f3 -->
-
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
