@@ -91,7 +91,7 @@ const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
         <Button variant="primary" onClick={handlePasswordUpdate} disabled={loading}>
           {loading ? (
             <>
-              <LoadingSpinner></LoadingSpinner>>
+              <LoadingSpinner></LoadingSpinner>
             </>
           ) : (
             '更新密碼'
