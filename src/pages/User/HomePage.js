@@ -37,6 +37,12 @@ function Home() {
                     <News></News>
                 </Col>
             </Row>
+            <Row className="mb-4">
+                <Col >
+                    {/* 公司介紹 */}
+                    <Company></Company>
+                </Col>
+            </Row>
             <h3>公司類別</h3>
             <Row>
                 <Col>
@@ -52,16 +58,7 @@ function Home() {
                     <VerticalCarousel title={"最多點閱"}></VerticalCarousel>
                 </Col>
             </Row>
-            <Row>
-                <Col>
-                </Col>
-            </Row>
-            <Row className="mb-4">
-                <Col >
-                    {/* 公司介紹 */}
-                    <Company></Company>
-                </Col>
-            </Row>
+
         </Container>
         </>
     )

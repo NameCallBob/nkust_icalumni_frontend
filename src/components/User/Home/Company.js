@@ -51,6 +51,7 @@ import 'css/user/homepage/CompanyList.css'; // 添加樣式
                       style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                     />
                     <h4>{companies[(index + 1) % companies.length].name}</h4>
+                    <p><strong>系級：</strong>{companies[(index + 1) % companies.length].graduate_grade}級</p>
                     <p><strong>系友：</strong>{companies[(index + 1) % companies.length].member_name}</p>
                     <p><strong>產品：</strong>{companies[(index + 1) % companies.length].products}</p>
                   </div>

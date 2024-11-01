@@ -53,6 +53,7 @@ const VerticalCarousel = ({ title }) => {
                       style={{ width: '100%', height: '250px', objectFit: 'cover' }}
                     />
                     <h5>{company.name}</h5>
+                    <p><strong>系級：</strong>{company.graduate_grade}</p>
                     <p><strong>系友：</strong>{company.member_name}</p>
                     <p><strong>產品：</strong>{company.products}</p>
                   </Col>
@@ -65,6 +66,7 @@ const VerticalCarousel = ({ title }) => {
                         style={{ width: '100%', height: '250px', objectFit: 'cover' }}
                       />
                       <h5>{companies[(index + 1) % companies.length].name}</h5>
+                      <p><strong>系級：</strong>{companies[(index + 1) % companies.length].graduate_grade}</p>
                       <p><strong>系友：</strong>{companies[(index + 1) % companies.length].member_name}</p>
                       <p><strong>產品：</strong>{companies[(index + 1) % companies.length].products}</p>
                     </Col>
@@ -80,6 +82,7 @@ const VerticalCarousel = ({ title }) => {
                       style={{ width: '90%', height: '200px', objectFit: 'cover' }}
                     />
                     <h5>{company.name}</h5>
+                    <p><strong>系級：</strong>{company.graduate_grade}</p>                    
                     <p><strong>系友：</strong>{company.member_name}</p>
                     <p><strong>產品：</strong>{company.products}</p>
                   </Col>

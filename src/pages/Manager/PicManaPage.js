@@ -89,9 +89,7 @@ const PhotoManager = () => {
 
           {loading ? (
             <div className="d-flex justify-content-center">
-              <Spinner animation="border" role="status">
                 <LoadingSpinner />
-              </Spinner>
             </div>
           ) : error ? (
             <Alert variant="warning" className="text-center">

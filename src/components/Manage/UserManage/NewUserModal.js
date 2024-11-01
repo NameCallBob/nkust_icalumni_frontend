@@ -241,6 +241,17 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
               />
             </Form.Group>
 
+            <Form.Group className="mb-3" controlId="formGrade">
+              <Form.Label>畢業學年</Form.Label>
+              <Form.Control
+                type="text"
+                name="student_id"
+                value={formData.graduate.student_id}
+                onChange={handleChange}
+                placeholder="輸入學號"
+              />
+            </Form.Group>
+
             <Form.Group className="mb-3" controlId="formPaid">
               <Form.Check
                 type="checkbox"

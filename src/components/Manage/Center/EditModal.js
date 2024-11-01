@@ -33,7 +33,7 @@ const MemberModal = ({ show, handleClose, handleSave, parentData,loading , setLo
   useEffect(() => {
     setFormData({
       ...parentData,
-      graduate: parentData.graduate || { grade: '', school: '' },
+      graduate: parentData.graduate || { grade: '', school: '國立高雄科技大學智慧商務系' },
     });
   }, [parentData]);
 
@@ -211,6 +211,17 @@ const MemberModal = ({ show, handleClose, handleSave, parentData,loading , setLo
             </Row>
 
             <Row>
+            <Col xs={12} md={6}>
+                <Form.Group controlId="photo">
+                  <Form.Label>學號</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="student_id"
+                    value={formData.graduate?.student_id || ''}
+                    onChange={handleFileChange}
+                  />
+                </Form.Group>
+              </Col>
               <Col xs={12} md={6}>
                 <Form.Group controlId="photo">
                   <Form.Label>照片</Form.Label>

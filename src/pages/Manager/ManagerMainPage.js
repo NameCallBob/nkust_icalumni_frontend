@@ -5,6 +5,7 @@ import MemberModal from 'components/Manage/Center/EditModal';
 import Axios from 'common/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // 引入react-toastify的樣式
+import PwdUpdateModal from 'components/Manage/Center/PwdUpdateModal';
 
 function MemberCenter() {
     const navigate = useNavigate();
@@ -142,6 +143,10 @@ function MemberCenter() {
                 loading={loading}
                 setLoading={setLoading}
             />
+            <PwdUpdateModal>
+                show={showModal}
+                handleClose={handleCloseModal}
+            </PwdUpdateModal>
             <ToastContainer />
         </Container>
     );
