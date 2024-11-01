@@ -3,6 +3,7 @@ import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Axios from 'common/Axios';
 import 'react-toastify/dist/ReactToastify.css';
+import LoadingSpinner from 'components/LoadingSpinner';
 
 const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -119,8 +120,7 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
         <Button variant="primary" onClick={handleUpload} disabled={loading}>
           {loading ? (
             <>
-              <Spinner animation="border" size="sm" className="me-2" />
-              上傳中...
+              <LoadingSpinner />
             </>
           ) : (
             "上傳"

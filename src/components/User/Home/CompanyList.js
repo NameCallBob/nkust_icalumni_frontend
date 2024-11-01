@@ -91,6 +91,7 @@ const CompanyListWithPagination = ({ companies }) => {
                         style={{ width: '100%', height: '250px', objectFit: 'cover' }}
                       />
                       <h4>{company.name}</h4>
+                      <p><strong>系級：</strong>{company.graduate_grade}</p>
                       <p><strong>系友：</strong>{company.member_name}</p>
                       <p><strong>產品：</strong>{company.products}</p>
                     </div>
