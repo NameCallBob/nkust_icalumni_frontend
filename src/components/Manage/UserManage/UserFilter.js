@@ -61,8 +61,9 @@ function UserFilter({ filters, setFilters, applyFilters, handleAddUser_easy, han
             onChange={handleFilterChange}
           >
             <option value="">全部</option>
-            <option value="male">男</option>
-            <option value="female">女</option>
+            <option value="M">男</option>
+            <option value="F">女</option>
+            <option value="O">其他</option>
           </Form.Control>
         </Form.Group>
 

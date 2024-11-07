@@ -13,7 +13,7 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
     home_phone: '',
     address: '',
     position: { title: '' },
-    graduate: { school: '', grade: '' }, // 確保 graduate 是一個空對象
+    graduate: { school: '', grade: '', student_id: '' }, // 初始化 graduate 為空對象並加入 student_id
     is_paid: false,
   });
   const [originalData, setOriginalData] = useState(null); // 用於儲存原始資料
@@ -28,19 +28,17 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
         setLoading(true);
         const data = await fetchUserData(userId);
         if (data) {
-          // 確保資料的物件結構完整，避免 null 或 undefined 導致的錯誤
           const initializedData = {
             ...data,
-            graduate: data.graduate || { school: '', grade: '' },
+            graduate: data.graduate || { school: '', grade: '', student_id: '' },
             position: data.position || { title: '' },
           };
           setFormData(initializedData);
-          setEmail(data.email); // 假設 email 也需要編輯
+          setEmail(data.email);
           setOriginalData(initializedData); // 儲存原始資料
         }
         setLoading(false);
       } else {
-        // 新增模式，清空資料，並確保 graduate 被初始化
         setFormData({
           name: '',
           gender: '',
@@ -48,7 +46,7 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
           home_phone: '',
           address: '',
           position: { title: '' },
-          graduate: { school: '國立高雄科技大學智慧商務系', grade: '' }, // 初始化 graduate
+          graduate: { school: '國立高雄科技大學智慧商務系', grade: '', student_id: '' },
           is_paid: false,
         });
         setEmail('');
@@ -70,8 +68,8 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // 檢查是否需要更新嵌套的 graduate 屬性
-    if (name === 'school' || name === 'grade') {
+    // 檢查是否需要更新 graduate 屬性
+    if (name === 'school' || name === 'grade' || name === 'student_id') {
       setFormData((prev) => ({
         ...prev,
         graduate: {
@@ -91,13 +89,11 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
 
   // 比對表單變更
   const getModifiedFields = () => {
-    if (!originalData) return formData; // 若無原始資料，直接回傳表單資料
+    if (!originalData) return formData;
 
     const modifiedData = {};
     Object.keys(formData).forEach((key) => {
-      // 確保原始資料和表單資料都是物件，避免 null 或 undefined
       if (typeof formData[key] === 'object' && formData[key] !== null) {
-        // 比對物件屬性
         Object.keys(formData[key] || {}).forEach((subKey) => {
           if (formData[key][subKey] !== (originalData[key]?.[subKey] || '')) {
             if (!modifiedData[key]) modifiedData[key] = {};
@@ -105,7 +101,6 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
           }
         });
       } else {
-        // 比對簡單屬性
         if (formData[key] !== (originalData[key] || '')) {
           modifiedData[key] = formData[key];
         }
@@ -114,16 +109,14 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
     return modifiedData;
   };
 
-  // 處理複雜帳號的送出
   const handleComplexSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const modifiedData = getModifiedFields(); // 獲取變更的資料
+    const modifiedData = getModifiedFields();
     await handleAddUser(true, modifiedData);
     setLoading(false);
   };
 
-  // 處理簡單帳號的送出
   const handleSimpleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -241,8 +234,8 @@ function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser
               />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formGrade">
-              <Form.Label>畢業學年</Form.Label>
+            <Form.Group className="mb-3" controlId="formStudentId">
+              <Form.Label>學號</Form.Label>
               <Form.Control
                 type="text"
                 name="student_id"

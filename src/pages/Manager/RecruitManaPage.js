@@ -20,6 +20,7 @@ function RecruitManaPage() {
     deadline: '',
     contactName: '',
     contactEmail: '',
+    contactPhone:'',
     intro: '',
   });
 
@@ -57,9 +58,12 @@ function RecruitManaPage() {
     ...formData,
     isPersonalContact,
     isPersonalCompany,
-    contactName: isPersonalContact ? undefined : formData.contactName,
-    contactEmail: isPersonalContact ? undefined : formData.contactEmail,
-    company: isPersonalCompany ? undefined : formData.company,
+    contact:{
+      name:isPersonalContact ? undefined : formData.contactName,
+      email:isPersonalContact ? undefined : formData.contactEmail,
+      phone:isPersonalContact ? undefined : formData.contactPhone,
+      company_name: isPersonalCompany ? undefined : formData.company,
+    },
     images: selectedImages.map((image) => ({
       image: image,            // base64 格式圖片
       image_type: 'small',      // 默認為小圖
@@ -106,8 +110,9 @@ function RecruitManaPage() {
   // 保存編輯職位
   const handleSaveEditJob = (e) => {
     e.preventDefault();
+    let data = prepareFormData() ; data['id'] = formData.id
     Axios()
-      .put(`/recruit/data/update/${formData.id}/`, prepareFormData())
+      .put(`/recruit/data/change/`,data)
       .then((res) => {
         setJobs(jobs.map((job) => (job.id === formData.id ? res.data : job)));
         setShowEditModal(false);
@@ -121,7 +126,7 @@ function RecruitManaPage() {
   // 刪除職位
   const handleDeleteJob = (id) => {
     Axios()
-      .delete(`/recruit/data/delete/${id}/`)
+      .delete(`/recruit/data/delete/`,{params:{"id":id}})
       .then(() => {
         setJobs(jobs.filter((job) => job.id !== id));
         toast.success('刪除成功');
@@ -246,8 +251,8 @@ function RecruitManaPage() {
               <Form.Label>公司名稱</Form.Label>
               <Form.Control
                 type="text"
-                name="company"
-                value={formData.company}
+                name="company_name"
+                value={formData.company_name}
                 onChange={handleInputChange}
                 required
                 disabled={isPersonalCompany}
@@ -290,6 +295,17 @@ function RecruitManaPage() {
                 type="email"
                 name="contactEmail"
                 value={formData.contactEmail}
+                onChange={handleInputChange}
+                required
+                disabled={isPersonalContact}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formContactPhone">
+              <Form.Label>聯絡人電話</Form.Label>
+              <Form.Control
+                type="text"
+                name="contactPhone"
+                value={formData.contactPhone}
                 onChange={handleInputChange}
                 required
                 disabled={isPersonalContact}
@@ -376,7 +392,7 @@ function RecruitManaPage() {
                 <Form.Control
                   type="text"
                   name="company"
-                  value={formData.company}
+                  value={formData.company_name}
                   onChange={handleInputChange}
                   required
                   disabled={isPersonalCompany}
@@ -419,6 +435,17 @@ function RecruitManaPage() {
                   type="email"
                   name="contactEmail"
                   value={formData.contactEmail}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isPersonalContact}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formContactPhoneEdit">
+                <Form.Label>聯絡人電話</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="contactPhone"
+                  value={formData.contactPhone}
                   onChange={handleInputChange}
                   required
                   disabled={isPersonalContact}

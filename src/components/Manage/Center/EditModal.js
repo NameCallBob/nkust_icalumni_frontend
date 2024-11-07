@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Col, Row, Spinner } from 'react-bootstrap';
 
-const MemberModal = ({ show, handleClose, handleSave, parentData,loading , setLoading }) => {
+const MemberModal = ({ show, handleClose, handleSave, parentData, loading, setLoading }) => {
   const [formData, setFormData] = useState({
     ...parentData,
-    graduate: parentData.graduate || { grade: '', school: '' }, // 確保 graduate 存在
+    graduate: parentData.graduate || { grade: '', school: '', student_id: '' }, // 確保 graduate 存在
   });
 
   // 處理表單變更
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // 如果是 graduate 相關的欄位，做特殊處理
-    if (name === 'graduate_year' || name === 'graduate') {
-      const graduateField = name === 'graduate_year' ? 'grade' : 'school';
+    // 處理 graduate 相關欄位，包括學號
+    if (name === 'graduate_year' || name === 'graduate' || name === 'student_id') {
+      const graduateField = name === 'graduate_year' ? 'grade' : name === 'graduate' ? 'school' : 'student_id';
       setFormData((prevState) => ({
         ...prevState,
         graduate: {
@@ -33,7 +33,7 @@ const MemberModal = ({ show, handleClose, handleSave, parentData,loading , setLo
   useEffect(() => {
     setFormData({
       ...parentData,
-      graduate: parentData.graduate || { grade: '', school: '國立高雄科技大學智慧商務系' },
+      graduate: parentData.graduate || { grade: '', school: '國立高雄科技大學智慧商務系', student_id: '' },
     });
   }, [parentData]);
 
@@ -191,7 +191,7 @@ const MemberModal = ({ show, handleClose, handleSave, parentData,loading , setLo
                   <Form.Label>畢業學年</Form.Label>
                   <Form.Control
                     type="text"
-                    name="graduate_year"  // 和 handleChange 中的 name 保持一致
+                    name="graduate_year"
                     value={formData.graduate?.grade || ''}
                     onChange={handleChange}
                   />
@@ -202,7 +202,7 @@ const MemberModal = ({ show, handleClose, handleSave, parentData,loading , setLo
                   <Form.Label>畢業學校</Form.Label>
                   <Form.Control
                     type="text"
-                    name="graduate"  // 和 handleChange 中的 name 保持一致
+                    name="graduate"
                     value={formData.graduate?.school || ''}
                     onChange={handleChange}
                   />
@@ -211,14 +211,14 @@ const MemberModal = ({ show, handleClose, handleSave, parentData,loading , setLo
             </Row>
 
             <Row>
-            <Col xs={12} md={6}>
-                <Form.Group controlId="photo">
+              <Col xs={12} md={6}>
+                <Form.Group controlId="student_id">
                   <Form.Label>學號</Form.Label>
                   <Form.Control
                     type="text"
                     name="student_id"
                     value={formData.graduate?.student_id || ''}
-                    onChange={handleFileChange}
+                    onChange={handleChange}
                   />
                 </Form.Group>
               </Col>
