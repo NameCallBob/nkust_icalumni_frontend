@@ -53,10 +53,43 @@ function UserManagement() {
 
   const handleAxiosError = (error) => {
     if (error.response) {
-      const status = error.response.status;
+      const { status, data } = error.response;
+      let errorDetails = "";
+  
+      // 計算錯誤訊息數量
+      const countErrors = (obj) =>
+        Object.values(obj).reduce((sum, val) => {
+          if (Array.isArray(val)) return sum + val.length; // 如果是陣列，累加長度
+          if (typeof val === "object" && val !== null) return sum + countErrors(val); // 如果是物件，遞迴計算
+          if (typeof val === "string") return sum + 1; // 如果是字串，計算為 1 條錯誤
+          return sum;
+        }, 0);
+  
+      // 提取錯誤訊息（新增對字串型別的支援）
+      const extractErrors = (obj) =>
+        Object.entries(obj)
+          .flatMap(([key, val]) => {
+            if (Array.isArray(val)) return val.map((message) => `${key}: ${message}`);
+            if (typeof val === "object" && val !== null) return extractErrors(val);
+            if (typeof val === "string") return `${key}: ${val}`;
+            return [];
+          })
+          .join("\n");
+  
+      // 計算錯誤訊息數量
+      const errorCount = data && typeof data === "object" ? countErrors(data) : 0;
+  
+      // 提取少量錯誤詳細資訊
+      if (errorCount > 0 && errorCount <= 3) {
+        errorDetails = extractErrors(data);
+      }
+  
+      // 根據 HTTP 狀態碼處理
       switch (status) {
         case 400:
-          toast.error("請求錯誤，請檢查輸入的資料");
+          toast.error(
+            errorDetails || "請求錯誤，請檢查輸入的資料"
+          );
           break;
         case 401:
           toast.error("未授權，請重新登入");
@@ -65,12 +98,15 @@ function UserManagement() {
           toast.error("無權限執行此操作");
           break;
         default:
-          toast.error("發生未知錯誤，請稍後再試");
+          toast.error(
+            errorDetails || "發生未知錯誤，請稍後再試"
+          );
       }
     } else {
       toast.error("伺服器無回應，請稍後再試");
     }
   };
+  
   
   const handlePaymentStatus = async (id, isPaid) => {
     setLoading(true);

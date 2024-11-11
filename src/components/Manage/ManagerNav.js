@@ -67,6 +67,9 @@ function ManagerNav() {
                             <NavDropdown.Item href="/alumni/manage/recruit/">
                                 <FaClipboardList className="me-2" /> 招募登陸
                             </NavDropdown.Item>
+                            <NavDropdown.Item href="/alumni/manage/pic/">
+                                <FaCamera className="me-2" /> 照片管理
+                            </NavDropdown.Item>
                         </NavDropdown>
 
                         {/* 管理者管理 */}
@@ -76,9 +79,6 @@ function ManagerNav() {
                             </NavDropdown.Item>
                             <NavDropdown.Item href="/alumni/manage/article/">
                                 <FaTasks className="me-2" /> 活動發布管理
-                            </NavDropdown.Item>
-                            <NavDropdown.Item href="/alumni/manage/pic/">
-                                <FaCamera className="me-2" /> 照片管理
                             </NavDropdown.Item>
                         </NavDropdown>
 

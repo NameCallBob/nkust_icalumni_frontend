@@ -27,6 +27,7 @@ import OtherManage from 'pages/Manager/OtherManagePage';
 import ArticleEditor from 'pages/Manager/Article/ArticleManaPage';
 import ArticleForm from 'pages/Manager/Article/ArticleFormPage';
 import EventDetail from 'pages/User/ActivityPage';
+import WebPicManager from 'pages/Manager/WebsiteManaPage';
 
 function App() {
   return (
@@ -161,6 +162,15 @@ function App() {
         <OtherManage></OtherManage>
       </>
     } />
+
+    {/*  */}
+        <Route path="/alumni/manage/website/" element={
+      <>
+        <ManagerNav />
+        <WebPicManager></WebPicManager>
+      </>
+    } />
+
     {/* 文章管理 */}
     <Route path="/alumni/manage/article/" element={
       <>
