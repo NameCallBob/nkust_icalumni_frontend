@@ -29,14 +29,22 @@ const ArticleForm = () => {
     const [originalArticleData, setOriginalArticleData] = useState({});
 
     useEffect(() => {
-        const now = new Date().toISOString().slice(0, 16); // 格式化當前時間
-        setPublishAt(now);
+        setPublishAt(getTaipeiTime());
         setExpireAt("2099-12-31T12:00");
 
         if (id) {
             fetchArticleById(id);
         }
     }, [id]);
+
+    // 將當前時間設定為台北時間，並格式化為 YYYY-MM-DDTHH:mm
+    const getTaipeiTime = () => {
+        const now = new Date(); // 獲取當前時間
+        const offset = 8 * 60; // 台北時區 +8 小時，轉換為分鐘
+        const localTime = new Date(now.getTime() + offset * 60 * 1000);
+        const isoString = localTime.toISOString();
+        return isoString.slice(0, 16); // 格式化為 YYYY-MM-DDTHH:mm
+    };
 
     const fetchArticleById = async (articleId) => {
         setLoading(true);

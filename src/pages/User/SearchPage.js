@@ -66,11 +66,11 @@ const Search = () => {
     // 如果有選擇的類型則加入查詢
     if (selectedType) {
       query['industry'] = selectedType;
-    }
+    } 
 
     // 添加輸入條件
     if (searchTerm) {
-      query['name'] = searchTerm;
+      query['search'] = searchTerm;
     }
 
     handleSearch(query);
@@ -80,7 +80,7 @@ const Search = () => {
   const handleSearch = (searchQuery=null) => {
     setLoading(true); // 開始加載資料
     console.log(searchQuery)
-    Axios().get('company/search/', { params: searchQuery })
+    Axios().get('company/search_any/', { params: searchQuery })
       .then((res) => {
         if (res.data.results.length === 0) {
           setShowNoResults(true);
