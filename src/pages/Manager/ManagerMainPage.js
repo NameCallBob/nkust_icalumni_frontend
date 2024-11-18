@@ -4,22 +4,31 @@ import { useNavigate } from 'react-router-dom';
 import MemberModal from 'components/Manage/Center/EditModal';
 import Axios from 'common/Axios';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // 引入react-toastify的樣式
+import 'react-toastify/dist/ReactToastify.css'; // 引入 react-toastify 的樣式
 import PwdUpdateModal from 'components/Manage/Center/PwdUpdateModal';
 
 function MemberCenter() {
     const navigate = useNavigate();
-    const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showPwdModal, setShowPwdModal] = useState(false);
     const [userData, setUserData] = useState({ name: '使用者名稱', email: '使用者電子郵件', photo: 'https://via.placeholder.com/150' });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const handleShowModal = () => {
-        setShowModal(true);
+    const handleShowEditModal = () => {
+        setShowEditModal(true);
     };
 
-    const handleCloseModal = () => {
-        setShowModal(false);
+    const handleCloseEditModal = () => {
+        setShowEditModal(false);
+    };
+
+    const handleShowPwdModal = () => {
+        setShowPwdModal(true);
+    };
+
+    const handleClosePwdModal = () => {
+        setShowPwdModal(false);
     };
 
     const handleSave = (formData, changedData) => {
@@ -37,17 +46,17 @@ function MemberCenter() {
             })
             .finally(() => {
                 setLoading(false);
-                setShowModal(false);
+                setShowEditModal(false);
             });
     };
 
     const handleAxiosError = (err) => {
         if (err.response) {
             const status = err.response.status;
-            const errorMessage = err.response.data?.detail || ''; // assuming the backend sends token error in 'detail'
+            const errorMessage = err.response.data?.detail || '';
             if (status === 401 && errorMessage.includes('token')) {
                 toast.error("Token 已失效，請重新登入", { position: toast.POSITION.TOP_RIGHT });
-                navigate('/login'); // 重定向到登入頁
+                navigate('/login');
             } else {
                 switch (status) {
                     case 400:
@@ -55,7 +64,7 @@ function MemberCenter() {
                         break;
                     case 401:
                         toast.error("未授權，請重新登入", { position: 'top-right' });
-                        navigate('/login'); // 重定向到登入頁
+                        navigate('/login');
                         break;
                     case 403:
                         toast.error("禁止訪問，您沒有權限執行此操作", { position: 'top-right' });
@@ -78,7 +87,7 @@ function MemberCenter() {
             .catch((err) => {
                 handleAxiosError(err);
                 setLoading(false);
-                setUserData(prevState => ({ ...prevState, photo: 'https://via.placeholder.com/150' }));
+                setUserData((prevState) => ({ ...prevState, photo: 'https://via.placeholder.com/150' }));
             });
     }, []);
 
@@ -91,13 +100,28 @@ function MemberCenter() {
                         <Card.Body>
                             <Card.Title>{loading || error ? '使用者名稱' : userData.name}</Card.Title>
                             <Card.Text>{loading || error ? '使用者電子郵件' : userData.email}</Card.Text>
-                            <Button
-                                variant="primary"
-                                onClick={handleShowModal}
-                                disabled={error || loading}
-                            >
-                                編輯個人資料
-                            </Button>
+                            <Row>
+                                <Col>
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleShowEditModal}
+                                        disabled={error || loading}
+                                        className="mb-2"
+                                    >
+                                        編輯資料
+                                    </Button>
+                                </Col>
+                                <Col>
+                                    <Button
+                                        variant="secondary"
+                                        onClick={handleShowPwdModal}
+                                        disabled={error || loading}
+                                        className="mb-2"
+                                    >
+                                        修改密碼
+                                    </Button>
+                                </Col>
+                            </Row>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -136,17 +160,17 @@ function MemberCenter() {
                 </Col>
             </Row>
             <MemberModal
-                show={showModal}
-                handleClose={handleCloseModal}
+                show={showEditModal}
+                handleClose={handleCloseEditModal}
                 handleSave={handleSave}
                 parentData={userData}
                 loading={loading}
                 setLoading={setLoading}
             />
-            <PwdUpdateModal>
-                show={showModal}
-                handleClose={handleCloseModal}
-            </PwdUpdateModal>
+            <PwdUpdateModal
+                show={showPwdModal}
+                handleClose={handleClosePwdModal}
+            />
             <ToastContainer />
         </Container>
     );
