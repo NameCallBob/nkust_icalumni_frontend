@@ -15,13 +15,15 @@ function RecruitManaPage() {
   const [formData, setFormData] = useState({
     id: '',
     title: '',
-    company: '',
     release_date: '',
     deadline: '',
-    contactName: '',
-    contactEmail: '',
-    contactPhone:'',
+    contact:{
+      "name":"",
+      "phone":"",
+      "email":"",
+    },
     intro: '',
+    company_name:''
   });
 
   const [isPersonalContact, setIsPersonalContact] = useState(false);
@@ -58,11 +60,11 @@ function RecruitManaPage() {
     ...formData,
     isPersonalContact,
     isPersonalCompany,
+    company_name: isPersonalCompany ? undefined : formData.company_name,
     contact:{
-      name:isPersonalContact ? undefined : formData.contactName,
-      email:isPersonalContact ? undefined : formData.contactEmail,
-      phone:isPersonalContact ? undefined : formData.contactPhone,
-      company_name: isPersonalCompany ? undefined : formData.company,
+      name:isPersonalContact ? undefined : formData.contact.name,
+      email:isPersonalContact ? undefined : formData.contact.email,
+      phone:isPersonalContact ? undefined : formData.contact.phone,
     },
     images: selectedImages.map((image) => ({
       image: image,            // base64 格式圖片
@@ -73,8 +75,12 @@ function RecruitManaPage() {
   // 新增職位
   const handleAddJob = (e) => {
     e.preventDefault();
+    let tmp_data = prepareFormData()
+    if (isPersonalContact){
+      delete tmp_data['contact']
+    }
     Axios()
-      .post('/recruit/data/new/', prepareFormData())
+      .post('/recruit/data/new/', tmp_data)
       .then((res) => {
         setJobs([...jobs, res.data]);
         resetForm();
@@ -164,8 +170,13 @@ function RecruitManaPage() {
       company: '',
       release_date: '',
       deadline: '',
-      contactName: '',
-      contactEmail: '',
+      contact:{
+        "name":"",
+        "phone":"",
+        "email":"",
+      }, "name":"",
+      "phone":"",
+      "email":"",
       intro: '',
     });
     setIsPersonalContact(false);
@@ -282,8 +293,8 @@ function RecruitManaPage() {
               <Form.Label>聯絡人姓名</Form.Label>
               <Form.Control
                 type="text"
-                name="contactName"
-                value={formData.contactName}
+                name="contact.name"
+                value={formData.contact?.name}
                 onChange={handleInputChange}
                 required
                 disabled={isPersonalContact}
@@ -293,8 +304,8 @@ function RecruitManaPage() {
               <Form.Label>聯絡人 Email</Form.Label>
               <Form.Control
                 type="email"
-                name="contactEmail"
-                value={formData.contactEmail}
+                name="contact.email"
+                value={formData.contact?.email}
                 onChange={handleInputChange}
                 required
                 disabled={isPersonalContact}
@@ -304,8 +315,8 @@ function RecruitManaPage() {
               <Form.Label>聯絡人電話</Form.Label>
               <Form.Control
                 type="text"
-                name="contactPhone"
-                value={formData.contactPhone}
+                name="contact.phone"
+                value={formData.contact?.phone}
                 onChange={handleInputChange}
                 required
                 disabled={isPersonalContact}
@@ -422,8 +433,8 @@ function RecruitManaPage() {
                 <Form.Label>聯絡人姓名</Form.Label>
                 <Form.Control
                   type="text"
-                  name="contactName"
-                  value={formData.contactName}
+                  name="contact.name"
+                  value={formData.contact.name}
                   onChange={handleInputChange}
                   required
                   disabled={isPersonalContact}
@@ -433,8 +444,8 @@ function RecruitManaPage() {
                 <Form.Label>聯絡人 Email</Form.Label>
                 <Form.Control
                   type="email"
-                  name="contactEmail"
-                  value={formData.contactEmail}
+                  name="contact.email"
+                  value={formData.contact.email}
                   onChange={handleInputChange}
                   required
                   disabled={isPersonalContact}
@@ -444,8 +455,8 @@ function RecruitManaPage() {
                 <Form.Label>聯絡人電話</Form.Label>
                 <Form.Control
                   type="text"
-                  name="contactPhone"
-                  value={formData.contactPhone}
+                  name="contact.phone"
+                  value={formData.contact.phone}
                   onChange={handleInputChange}
                   required
                   disabled={isPersonalContact}
@@ -471,7 +482,7 @@ function RecruitManaPage() {
                   {imagePreviews.map((src, index) => (
                     <Image
                       key={index}
-                      src={src}
+                      src={process.env.REACT_APP_BASE_URL + src}
                       alt="預覽照片"
                       thumbnail
                       style={{

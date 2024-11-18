@@ -14,6 +14,7 @@ function NewUserModal({
   fetchUserData,
 }) {
   const [simple_email, setSimpleEmail] = useState("");
+  const [simple_userType,setUserType] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     gender: "",
@@ -217,7 +218,7 @@ function NewUserModal({
   const handleSimpleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await handleAddUser(false, { simple_email });
+    await handleAddUser(false, { "email":simple_email,"is_superuser":simple_userType });
     setLoading(false);
   };
 
@@ -496,6 +497,18 @@ function NewUserModal({
               />
             </Form.Group>
 
+            <Form.Group className="mb-3" controlId="formGender">
+                    <Form.Label>是否為管理員</Form.Label>
+                    <Form.Control
+                      as="select"
+                      name="is_superuser"
+                      value={simple_userType}
+                      onChange={(e) => setUserType(e.target.value)}
+                    >
+                      <option value="N">否</option>
+                      <option value="Y">是</option>
+                    </Form.Control>
+                  </Form.Group>
             <Button variant="primary" type="submit" disabled={loading}>
               {loading ? <Spinner animation="border" size="sm" /> : '新增帳號'}
             </Button>

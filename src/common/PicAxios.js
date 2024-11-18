@@ -10,7 +10,7 @@ function PicAxios(){
   let jwt = `Bearer ${(window.localStorage.getItem('jwt'))}`
   const res = axios.create(
     {
-      baseURL: 'http://140.133.74.162:12346/',
+      baseURL: process.env.REACT_APP_BASE_URL,
       timeout:10000,
       headers:{
         'Authorization':jwt,

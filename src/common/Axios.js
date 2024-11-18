@@ -10,7 +10,7 @@ function Axios() {
 
   const res = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
-    timeout: 10000,
+    timeout: 10000, // Timeout set to 10 seconds
     headers: {
       Authorization: jwt,
       "Content-Type": "application/json",
@@ -24,7 +24,13 @@ function Axios() {
       return response; // If the response is successful, just return it
     },
     function (err) {
-      if (err.response) {
+      if (axios.isCancel(err)) {
+        // Handle cancellation explicitly if needed
+        toast.warning("請求已被取消！");
+      } else if (err.code === "ECONNABORTED") {
+        // Specific handling for timeout
+        toast.error("請求超時，請檢查您的網路連線或稍後再試！");
+      } else if (err.response) {
         const status = err.response.status;
 
         // Handle different status codes

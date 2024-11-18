@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
+import { Modal, Button, Form, Alert , Spinner} from 'react-bootstrap';
 import Axios from 'common/Axios';
-import LoadingSpinner from 'components/LoadingSpinner';
 import { toast } from 'react-toastify';
 
 const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
@@ -21,24 +20,31 @@ const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
     setError('');
 
     try {
-      // 請根據實際的 API 路徑更新
       const response = await Axios().post('/member/logined/update_password/', {
-        "old_password":oldPassword,
-        "new_password":newPassword,
+        old_password: oldPassword,
+        new_password: newPassword,
       });
 
       if (response.status === 200) {
-        toast.success("密碼更改成功")
+        toast.success('密碼更改成功');
+        if (onSuccess) onSuccess(response.data);
         handleClose();
       }
     } catch (err) {
-        if (err.response.status === 400){
-            toast.error("新密碼與舊密碼相同");
+      if (err.response) {
+        const { status, data } = err.response;
+        if (status === 400) {
+          setError('新密碼與舊密碼相同');
+        } else if (status === 403) {
+          setError(
+            '舊密碼錯誤，若忘記密碼，請登出後去登入介面的忘記密碼'
+          );
+        } else {
+          setError(data?.message || '密碼更新失敗，請稍後再試');
         }
-        else if (err.response.status === 403){
-            toast.error("舊密碼錯誤，若忘記密碼，請登出後去登入介面的忘記密碼");
-        }
-    //   setError('密碼更新失敗，請檢查您的舊密碼');
+      } else {
+        setError('網路錯誤，請稍後再試');
+      }
     } finally {
       setLoading(false);
     }
@@ -59,7 +65,7 @@ const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
               placeholder="輸入舊密碼"
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
-              required
+              disabled={loading}
             />
           </Form.Group>
           <Form.Group controlId="newPassword">
@@ -69,7 +75,7 @@ const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
               placeholder="輸入新密碼"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              required
+              disabled={loading}
             />
           </Form.Group>
           <Form.Group controlId="confirmNewPassword">
@@ -79,23 +85,21 @@ const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
               placeholder="再次輸入新密碼"
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
-              required
+              disabled={loading}
             />
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" onClick={handleClose} disabled={loading}>
           取消
         </Button>
-        <Button variant="primary" onClick={handlePasswordUpdate} disabled={loading}>
-          {loading ? (
-            <>
-              <LoadingSpinner></LoadingSpinner>
-            </>
-          ) : (
-            '更新密碼'
-          )}
+        <Button
+          variant="primary"
+          onClick={handlePasswordUpdate}
+          disabled={loading || !oldPassword || !newPassword || !confirmNewPassword}
+        >
+          {loading ? <Spinner animation="border" size="sm" /> : '更新密碼'}
         </Button>
       </Modal.Footer>
     </Modal>
