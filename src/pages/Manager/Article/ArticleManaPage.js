@@ -89,7 +89,7 @@ const ArticleEditor = () => {
     // 刪除文章
     const handleDelete = async (id) => {
         try {
-            await Axios().delete(`/article/all/delete/${id}`);
+            await Axios().delete(`/article/all/delete/`,{params:{"id":id}});
             setArticles(articles.filter((article) => article.id !== id));
             setFilteredArticles(filteredArticles.filter((article) => article.id !== id));
         } catch (error) {

@@ -26,13 +26,13 @@ function UserNav() {
                     <NavDropdown.Item href="/IC/rule">章程</NavDropdown.Item>
                     <NavDropdown.Item href="/IC/member">組織</NavDropdown.Item>
                     <NavDropdown.Item href="/IC/joinUs">入會方式</NavDropdown.Item>
+                    <NavDropdown.Item href="/IC/contactUs">聯絡我們</NavDropdown.Item>
                 </NavDropdown>
                 <Nav.Link href="/alumniList" className="mx-3 border-item">　系友們　</Nav.Link>
                 <Nav.Link href="/search" className="mx-3 border-item">　公司查詢　</Nav.Link>
                 <Nav.Link href="/recruit" className="mx-3 border-item">　徵才啟示　</Nav.Link>
                 <NavDropdown title="　系友專區　" id="basic-nav-dropdown" className="mx-3 border-item">
                     <NavDropdown.Item href="/login">登入</NavDropdown.Item>
-                    <NavDropdown.Item href="/User">使用說明</NavDropdown.Item>
                 </NavDropdown>
             </Nav>
         </Navbar.Collapse>
