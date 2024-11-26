@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes ,Route} from 'react-router-dom';
 import Footer from 'components/User/UserFooter';
 import "./App.css"
+
 // 使用端頁面
 import UserNav from 'components/User/UserNav';
 import Home from 'pages/User/HomePage';
@@ -28,6 +29,7 @@ import ArticleEditor from 'pages/Manager/Article/ArticleManaPage';
 import ArticleForm from 'pages/Manager/Article/ArticleFormPage';
 import EventDetail from 'pages/User/ActivityPage';
 import WebPicManager from 'pages/Manager/WebsiteManaPage';
+import ContactUsPage from 'pages/User/ContactUsPage';
 
 function App() {
   return (
@@ -42,7 +44,13 @@ function App() {
         <Home />
       </>
     } />
-
+  {/* 聯絡我們 */}
+ <Route path="/IC/contactUs" element={
+      <>
+        <UserNav />
+        <ContactUsPage />
+      </>
+    } />
     {/* 登入頁面 */}
     <Route path="/login" element={
       <>

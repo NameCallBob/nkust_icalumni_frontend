@@ -12,6 +12,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [error, setError] = useState('');
+  
   const navigator = useNavigate();
 
   const handleCaptchaChange = (value) => {
@@ -28,7 +29,20 @@ const Login = () => {
         password: password,
       })
       .then((res) => {
+        // JWT token
         window.localStorage.setItem("jwt", res.data.token);
+        // 判斷是否為管理員
+        window.localStorage.setItem("super",res.data.is_super)
+
+        // 判斷是否有效
+        const issuedAt = Math.floor(Date.now() / 1000); // 當前時間 (秒)
+        const validityDuration = 14400; // 有效時間，單位：秒 (4小時)
+        const expiry = issuedAt + validityDuration;
+
+        // 儲存到 localStorage 或 sessionStorage
+        localStorage.setItem("issuedAt", issuedAt);
+        localStorage.setItem("expiry", expiry);
+
         toast.success("登入成功，將自動跳轉！");
         setTimeout(() => {
           navigator("/alumni/manage/");
