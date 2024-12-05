@@ -330,6 +330,20 @@ const MemberModal = ({ show, handleClose, handleSave, parentData, loading, setLo
             />
             {errors.intro && <div className="text-danger">{errors.intro}</div>}
           </Form.Group>
+            <Form.Group className="mb-3" controlId="formShow">
+                    <Form.Check
+                      type="checkbox"
+                      name="is_show"
+                      label="是否展現於官網"
+                      checked={formData.is_show}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          is_show: e.target.checked,
+                        }))
+                      }
+                    />
+            </Form.Group>
         </Form>
       )}
     </Modal.Body>

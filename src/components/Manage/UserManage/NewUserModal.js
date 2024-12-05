@@ -26,6 +26,7 @@ function NewUserModal({
     graduate: { school: "", grade: "", student_id: "" },
     private_input: { email: "", password: "" },
     is_paid: false,
+    is_show: false,
     birth_date: "", // 新增出生日期
   });
   const [originalData, setOriginalData] = useState(null); // 用於儲存原始資料
@@ -62,11 +63,14 @@ function NewUserModal({
 
     return modifiedData;
   };
-  
+
   const [hint ,setHint] = useState("")
 
   const handleFocus = (field) => {
     switch (field) {
+      case "is_show":
+        setHint("選擇是否讓使用者呈現於官網");
+        break;
       case "name":
         setHint("請輸入您的真實姓名，例如：王小明，最多 50 個字。");
         break;
@@ -187,7 +191,7 @@ function NewUserModal({
 
   /**
    * 處裡使用者輸入所有帳號資料的創建帳號方式
-   * @param {*} e 
+   * @param {*} e
    */
   const handleComplexSubmit = async (e) => {
     e.preventDefault();
@@ -201,7 +205,7 @@ function NewUserModal({
       setErrors({}); // 清空錯誤
       handleClose(); // 成功後關閉模態框
       toast.success("帳號保存成功！");
-    } 
+    }
     } catch (error) {
       if (error.response && error.response.data) {
         console.log(error.response.data)
@@ -427,14 +431,14 @@ function NewUserModal({
                       type="text"
                       name="email"
                       value={formData.private_input.email}
-                      onChange={handleChange}                      
+                      onChange={handleChange}
                       placeholder="輸入電子郵件"
                       onFocus={() => handleFocus("email")}
                     />
                     {errors.private_input?.email && (
                       <div className="text-danger">{errors.private_input.email[0]}</div>
-                    )}              
-                    
+                    )}
+
                     </Form.Group>
                   {!userId && (
                     <>
@@ -461,6 +465,20 @@ function NewUserModal({
                         setFormData((prev) => ({
                           ...prev,
                           is_paid: e.target.checked,
+                        }))
+                      }
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formShow">
+                    <Form.Check
+                      type="checkbox"
+                      name="is_show"
+                      label="是否繳費"
+                      checked={formData.is_show}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          is_show: e.target.checked,
                         }))
                       }
                     />
@@ -514,7 +532,7 @@ function NewUserModal({
             </Button>
 
           </Form>
-          
+
         )}
       </Modal.Body>
     </Modal>
