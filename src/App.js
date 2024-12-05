@@ -30,6 +30,7 @@ import ArticleForm from 'pages/Manager/Article/ArticleFormPage';
 import EventDetail from 'pages/User/ActivityPage';
 import WebPicManager from 'pages/Manager/WebsiteManaPage';
 import ContactUsPage from 'pages/User/ContactUsPage';
+import InfoManager from 'pages/Manager/Alumni/InfoManaPage';
 
 function App() {
   return (
@@ -73,7 +74,7 @@ function App() {
         <UserNav />
         <ForgotPasswordFlow />
       </>
-    } />   
+    } />
     {/* 產品頁面 */}
     <Route path="/product" element={
       <>
@@ -170,7 +171,35 @@ function App() {
         <OtherManage></OtherManage>
       </>
     } />
-
+    {/* 系友會資料相關 */}
+    {/* 其他管理 */}
+    <Route path="/alumni/manage/info/" element={
+      <>
+        <ManagerNav />
+        <InfoManager></InfoManager>
+      </>
+    } />
+    {/* 其他管理 */}
+    <Route path="/alumni/manage/other/" element={
+      <>
+        <ManagerNav />
+        <OtherManage></OtherManage>
+      </>
+    } />
+    {/* 其他管理 */}
+    <Route path="/alumni/manage/other/" element={
+      <>
+        <ManagerNav />
+        <OtherManage></OtherManage>
+      </>
+    } />
+    {/* 其他管理 */}
+    <Route path="/alumni/manage/other/" element={
+      <>
+        <ManagerNav />
+        <OtherManage></OtherManage>
+      </>
+    } />
     {/*  */}
         <Route path="/alumni/manage/website/" element={
       <>
@@ -186,14 +215,14 @@ function App() {
         <ArticleEditor></ArticleEditor>
       </>
     } />
-    {/* 文章管理 */}
+    {/* 文章管理_新增 */}
         <Route path="/alumni/manage/article/new/" element={
       <>
         <ManagerNav />
         <ArticleForm />
       </>
     } />
-    {/* 文章管理 */}
+    {/* 文章管理_編輯 */}
     <Route path="/alumni/manage/article/edit/:id" element={
       <>
         <ManagerNav />

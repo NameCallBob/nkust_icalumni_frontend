@@ -9,13 +9,13 @@ import 'react-toastify/dist/ReactToastify.css'; // 引入react-toastify的樣式
 
 /**
  * 管理端專用導覽列
- * @returns 
+ * @returns
  */
 function ManagerNav() {
 
     const navigator = useNavigate();
-    let isAdmin = false
-    
+    const [isAdmin,setAdminStatus] = useState(false)
+
 
     const Logout = () => {
         window.localStorage.setItem("jwt", "")
@@ -37,7 +37,8 @@ function ManagerNav() {
                 navigator('/login');
             }, 2000); // 同樣加上延遲
         }
-        window.localStorage.getItem("is_super") === "0" ? isAdmin = false : isAdmin = true
+        window.localStorage.getItem("super") === 'true' ? setAdminStatus(true) : setAdminStatus(false)
+        console.log(window.localStorage.getItem("super"))
     }, [navigator]);
 
     return (
@@ -94,8 +95,24 @@ function ManagerNav() {
                             <NavDropdown.Item href="/alumni/manage/other/">
                                 <FaTasks className="me-2" /> 其他管理
                             </NavDropdown.Item>
-                            <NavDropdown.Item href="/alumni/manage/intro/">
-                                <FaTasks className="me-2" /> 系友會介紹管理
+
+                        </NavDropdown>
+                        )}
+
+                        {/* 官網管理 - 根據 isAdmin 條件渲染*/}
+                        {isAdmin && (
+                        <NavDropdown title="系友會資訊管理" id="website-management-dropdown" className='mx-3 border-item'>
+                            <NavDropdown.Item href="/alumni/manage/info/">
+                                <FaTasks className="me-2" /> 介紹
+                            </NavDropdown.Item>
+                            <NavDropdown.Item href="/alumni/manage/structure/">
+                                <FaTasks className="me-2" /> 組織
+                            </NavDropdown.Item>
+                            <NavDropdown.Item href="/alumni/manage/requirement/">
+                                <FaTasks className="me-2" /> 加入我們
+                            </NavDropdown.Item>
+                            <NavDropdown.Item href="/alumni/manage/constitutions/">
+                                <FaTasks className="me-2" /> 章程
                             </NavDropdown.Item>
                         </NavDropdown>
                         )}
