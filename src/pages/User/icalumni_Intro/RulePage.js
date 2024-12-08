@@ -1,36 +1,34 @@
-import { Container, Spinner, Alert } from 'react-bootstrap';
-import DOMPurify from 'dompurify';
-import Axios from 'common/Axios';
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import Axios from "common/Axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const HTMLContentLoader = () => {
-  const [content, setContent] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+const AlumniAssociationBylaws = () => {
+  const [pdfFile, setPdfFile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bodyContent, setBodyContent] = useState("");
 
   useEffect(() => {
-    const fetchHTMLContent = async () => {
+    const fetchPdf = async () => {
       try {
-        setIsLoading(true);
-        // 替換成你的後端 API 端點
-        const response = await Axios().get('');
-
-        // 使用 DOMPurify 淨化 HTML 內容以防止 XSS 攻擊
-        const sanitizedHTML = DOMPurify.sanitize(response.data);
-        setContent(sanitizedHTML);
-        setIsLoading(false);
+        // 從後端獲取 PDF 文件和介紹內容
+        const response = await Axios().get("info/constitutions/latest/");
+        setBodyContent(response.data.description);
+        setPdfFile(`${process.env.REACT_APP_BASE_URL}${response.data.pdf_file}`);
+        setLoading(false);
       } catch (err) {
-        setError('載入內容時發生錯誤');
-        setIsLoading(false);
-        console.error('Error fetching HTML content:', err);
+        setError(err.message);
+        setLoading(false);
       }
     };
 
-    fetchHTMLContent();
+    fetchPdf();
   }, []);
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <Container className="text-center my-5">
+      <Container className="text-center py-5">
         <Spinner animation="border" role="status">
           <span className="visually-hidden">載入中...</span>
         </Spinner>
@@ -40,18 +38,52 @@ const HTMLContentLoader = () => {
 
   if (error) {
     return (
-      <Container>
-        <Alert variant="danger">{error}</Alert>
+      <Container className="text-center py-5">
+        <Card className="text-danger">
+          <Card.Body>
+            無法載入章程 PDF：{error}
+          </Card.Body>
+        </Card>
       </Container>
     );
   }
 
   return (
-    <Container>
-      {/* 使用 dangerouslySetInnerHTML 渲染淨化後的 HTML */}
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+    <Container fluid className="py-4">
+      <Row>
+        <Col md={10} className="mx-auto">
+          <Card className="shadow-lg">
+            <Card.Header as="h2" className="bg-primary text-white text-center">
+              系友會章程
+            </Card.Header>
+            <Card.Body>
+              {/* 介紹文字區域 */}
+              <div className="introduction text-center mb-4">
+                <div
+                  dangerouslySetInnerHTML={{ __html: bodyContent }}
+                  style={{ lineHeight: "1.8" }}
+                />
+                <p>如果無法查看 PDF，請 <a href={pdfFile} download>點擊這裡下載 PDF</a></p>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+        {/* PDF Viewer */}
+              {pdfFile && (
+                <div className="pdf-container" style={{ margin: "0 auto", maxWidth: "80%" }}>
+                  <embed
+                    src={pdfFile}
+                    width="100%"
+                    height="1000px"
+                    style={{ border: "none" }}
+                    title="系友會章程 PDF"
+                  />
+                </div>
+              )}
     </Container>
   );
 };
 
-export default HTMLContentLoader;
+export default AlumniAssociationBylaws;

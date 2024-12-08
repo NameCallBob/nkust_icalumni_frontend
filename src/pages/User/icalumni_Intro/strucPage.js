@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
 
-const IntroPage = () => {
+const StructurePage = () => {
   const [slides, setSlides] = useState({ largeImages: [], smallImages: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,11 +14,11 @@ const IntroPage = () => {
         setIsLoading(true);
         // 替換成你的後端 API 端點
         let response,pic_response
-        await Axios().get('info/associations/latest/')
+        await Axios().get('info/structures/latest/')
         .then((res) => {
           response = res.data
         })
-        await Axios().get('info/association-images/query_active_images/')
+        await Axios().get('info/structure-images/query_active_images/')
         .then((res) => {
           pic_response = res.data
         })      
@@ -118,4 +118,4 @@ const IntroPage = () => {
   );
 };
 
-export default IntroPage;
+export default StructurePage;

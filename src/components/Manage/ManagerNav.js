@@ -102,13 +102,13 @@ function ManagerNav() {
                         {/* 官網管理 - 根據 isAdmin 條件渲染*/}
                         {isAdmin && (
                         <NavDropdown title="系友會資訊管理" id="website-management-dropdown" className='mx-3 border-item'>
-                            <NavDropdown.Item href="/alumni/manage/info/">
+                            <NavDropdown.Item href="/alumni/manage/info/?type=rule">
                                 <FaTasks className="me-2" /> 介紹
                             </NavDropdown.Item>
-                            <NavDropdown.Item href="/alumni/manage/structure/">
+                            <NavDropdown.Item href="/alumni/manage/info/?type=structure">
                                 <FaTasks className="me-2" /> 組織
                             </NavDropdown.Item>
-                            <NavDropdown.Item href="/alumni/manage/requirement/">
+                            <NavDropdown.Item href="/alumni/manage/info/?type=us">
                                 <FaTasks className="me-2" /> 加入我們
                             </NavDropdown.Item>
                             <NavDropdown.Item href="/alumni/manage/constitutions/">

@@ -103,7 +103,7 @@ const Login = () => {
               </Form.Group>
               <br />
               <ReCAPTCHA
-                sitekey={"6LeMb2kqAAAAAPnRT3S6K_GKgPQi7hrqx2OzTGav"}
+                sitekey={process.env.REACT_APP_RECAPTURE_APIKEY}
                 onChange={handleCaptchaChange}
               />
               <Button variant="primary" type="submit" className="mt-3">
