@@ -1,22 +1,36 @@
-import { Container, Spinner, Alert } from 'react-bootstrap';
+import { Container, Spinner, Alert, Carousel } from 'react-bootstrap';
 import DOMPurify from 'dompurify';
 import Axios from 'common/Axios';
+import React, { useState, useEffect } from 'react';
 
-const HTMLContentLoader = () => {
-  const [content, setContent] = useState('');
+const LeaderPage = () => {
+  const [slides, setSlides] = useState({ largeImages: [], smallImages: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [bodyContent,setBodyContent] = useState()
   useEffect(() => {
     const fetchHTMLContent = async () => {
       try {
         setIsLoading(true);
         // 替換成你的後端 API 端點
-        const response = await Axios().get('');
+        let response,pic_response
+        await Axios().get('info/associations/latest/')
+        .then((res) => {
+          response = res.data
+        })
+        await Axios().get('info/association-images/query_active_images/')
+        .then((res) => {
+          pic_response = res.data
+        })      
+        // 根據 image_type 分類
+        const largeImages = pic_response.filter((img) => img.image_type === 'large');
+        const smallImages = pic_response.filter((img) => img.image_type === 'small');
+
 
         // 使用 DOMPurify 淨化 HTML 內容以防止 XSS 攻擊
-        const sanitizedHTML = DOMPurify.sanitize(response.data);
-        setContent(sanitizedHTML);
+        const sanitizedHTML = DOMPurify.sanitize(response.description);
+        setBodyContent(sanitizedHTML)
+        setSlides({ largeImages, smallImages });
         setIsLoading(false);
       } catch (err) {
         setError('載入內容時發生錯誤');
@@ -47,11 +61,61 @@ const HTMLContentLoader = () => {
   }
 
   return (
-    <Container>
+    <Container className="my-5">
+      {/* 幻燈片元件 */}
+      {slides.largeImages.length > 0 ? (
+        <Carousel>
+          {slides.largeImages.map((image, index) => (
+            <Carousel.Item key={`large-${index}`}>
+              <img
+                className="d-block w-100"
+                src={image.file}
+                alt={image.alt || `Slide ${index + 1}`}
+                style={{ maxHeight: '300px', objectFit: 'cover' }}
+              />
+              {image.caption && (
+                <Carousel.Caption>
+                  <h3>{image.caption}</h3>
+                </Carousel.Caption>
+              )}
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      ) : (
+        <p className="text-center my-4">無展示圖片</p>
+      )}
+      <br>
+      </br>
       {/* 使用 dangerouslySetInnerHTML 渲染淨化後的 HTML */}
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <div dangerouslySetInnerHTML={{ __html: bodyContent }} style={{ lineHeight: '1.8' }} />
+      <br>
+      </br>
+      {/* 小圖展示 */}
+      <div className="mt-4">
+        <h4>相關圖片</h4>
+        {slides.smallImages.length > 0 ? (
+          <div className="d-flex flex-wrap">
+            {slides.smallImages.map((image, index) => (
+              <div
+                key={`small-${index}`}
+                className="m-2"
+                style={{ width: '150px', height: '150px', overflow: 'hidden' }}
+              >
+                <img
+                  className="d-block w-100"
+                  src={image.file}
+                  alt={image.alt || `Small Image ${index + 1}`}
+                  style={{ maxHeight: '100px', objectFit: 'cover' }}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center">無相關圖片</p>
+        )}
+      </div>
     </Container>
   );
 };
 
-export default HTMLContentLoader;
+export default LeaderPage;

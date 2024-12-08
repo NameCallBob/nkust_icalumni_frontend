@@ -23,8 +23,8 @@ function UserNav() {
             <Nav className="ml-auto align-items-center">
                 <NavDropdown title="　系友會介紹　" id="basic-nav-dropdown" className="mx-3 border-item">
                     <NavDropdown.Item href="/IC/intro">簡介</NavDropdown.Item>
-                    <NavDropdown.Item href="/IC/rule">章程</NavDropdown.Item>
-                    <NavDropdown.Item href="/IC/member">組織</NavDropdown.Item>
+                    <NavDropdown.Item href="/IC/constitution">章程</NavDropdown.Item>
+                    <NavDropdown.Item href="/IC/structure">組織</NavDropdown.Item>
                     <NavDropdown.Item href="/IC/joinUs">入會方式</NavDropdown.Item>
                     <NavDropdown.Item href="/IC/contactUs">聯絡我們</NavDropdown.Item>
                 </NavDropdown>

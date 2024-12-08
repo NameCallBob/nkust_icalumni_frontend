@@ -31,6 +31,11 @@ import EventDetail from 'pages/User/ActivityPage';
 import WebPicManager from 'pages/Manager/WebsiteManaPage';
 import ContactUsPage from 'pages/User/ContactUsPage';
 import InfoManager from 'pages/Manager/Alumni/InfoManaPage';
+import RuleManaPage from 'pages/Manager/Alumni/RuleManaPage';
+import JoinUsPage from 'pages/User/icalumni_Intro/JoinPage';
+import StructurePage from 'pages/User/icalumni_Intro/strucPage';
+import AlumniAssociationBylaws from 'pages/User/icalumni_Intro/RulePage';
+import IntroPage from 'pages/User/icalumni_Intro/IntroPage';
 
 function App() {
   return (
@@ -50,6 +55,34 @@ function App() {
       <>
         <UserNav />
         <ContactUsPage />
+      </>
+    } />
+      {/* 加入 */}
+ <Route path="/IC/joinUs" element={
+      <>
+        <UserNav />
+        <JoinUsPage></JoinUsPage>
+      </>
+    } />
+      {/* 組織 */}
+ <Route path="/IC/structure" element={
+      <>
+        <UserNav />
+        <StructurePage></StructurePage>
+      </>
+    } />
+      {/* 簡介*/}
+ <Route path="/IC/intro" element={
+      <>
+        <UserNav />
+        <IntroPage></IntroPage>
+      </>
+    } />
+          {/* 章程 */}
+ <Route path="/IC/constitution" element={
+      <>
+        <UserNav />
+        <AlumniAssociationBylaws></AlumniAssociationBylaws>
       </>
     } />
     {/* 登入頁面 */}
@@ -180,24 +213,24 @@ function App() {
       </>
     } />
     {/* 其他管理 */}
-    <Route path="/alumni/manage/other/" element={
+    <Route path="/alumni/manage/structure/" element={
       <>
         <ManagerNav />
         <OtherManage></OtherManage>
       </>
     } />
     {/* 其他管理 */}
-    <Route path="/alumni/manage/other/" element={
+    <Route path="/alumni/manage/requirement/" element={
       <>
         <ManagerNav />
         <OtherManage></OtherManage>
       </>
     } />
     {/* 其他管理 */}
-    <Route path="/alumni/manage/other/" element={
+    <Route path="/alumni/manage/constitutions/" element={
       <>
         <ManagerNav />
-        <OtherManage></OtherManage>
+        <RuleManaPage></RuleManaPage>
       </>
     } />
     {/*  */}
