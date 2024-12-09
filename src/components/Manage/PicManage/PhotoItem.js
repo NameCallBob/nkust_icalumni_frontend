@@ -13,7 +13,7 @@ const PhotoItem = ({ photo, type, refresh }) => {
       apiname = "picture/company-images/delete/";
     }
     Axios()
-      .delete(apiname, { params: { id: id } })  // 使用 params 傳遞 ID
+      .delete(apiname, { data: { id: id } })  // 使用 params 傳遞 ID
       .then((res) => {
         toast.success("刪除成功!");
         refresh(); // 呼叫父元件的刷新方法
