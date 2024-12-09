@@ -191,22 +191,35 @@ const handleUploadSuccess = (newImage) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {records.map((record, index) => (
-                    <tr key={record.id}>
-                      <td>{index + 1}</td>
-                      <td>{record.name}</td>
-                      <td>{record.created_at}</td>
-                      <td>
-                        <Button
-                          variant="warning"
-                          className="me-2"
-                          onClick={() => handleEditContent(record)}
-                        >
-                          編輯
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                {records.map((record, index) => {
+                // 使用 JavaScript 的 Date 進行格式化
+                const createdAt = new Date(record.created_at).toLocaleString("zh-TW", {
+                  timeZone: "Asia/Taipei", // 設定為台北時區
+                  year: "numeric",        // 顯示完整年份
+                  month: "2-digit",       // 兩位數的月份
+                  day: "2-digit",         // 兩位數的日期
+                  hour: "2-digit",        // 兩位數的小時
+                  minute: "2-digit",      // 兩位數的分鐘
+                  second: "2-digit",      // 兩位數的秒數
+                });
+
+                return (
+                  <tr key={record.id}>
+                    <td>{index + 1}</td>
+                    <td>{record.name}</td>
+                    <td>{createdAt}</td> {/* 顯示格式化的時間 */}
+                    <td>
+                      <Button
+                        variant="warning"
+                        className="me-2"
+                        onClick={() => handleEditContent(record)}
+                      >
+                        編輯
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
                 </tbody>
               </Table>
 

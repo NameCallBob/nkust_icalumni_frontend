@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { toast } from "react-toastify";
 
 const ArticleEditor = () => {
     const [articles, setArticles] = useState([]);
@@ -89,11 +90,13 @@ const ArticleEditor = () => {
     // 刪除文章
     const handleDelete = async (id) => {
         try {
-            await Axios().delete(`/article/all/delete/`,{params:{"id":id}});
+            await Axios().delete(`/article/all/delete/`,{data:{"id":id}});
             setArticles(articles.filter((article) => article.id !== id));
             setFilteredArticles(filteredArticles.filter((article) => article.id !== id));
+            toast.success("文章刪除成功")
         } catch (error) {
             console.error("刪除文章失敗:", error);
+            toast.error("文章不存在")
         }
     };
 
