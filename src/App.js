@@ -36,6 +36,7 @@ import JoinUsPage from 'pages/User/icalumni_Intro/JoinPage';
 import StructurePage from 'pages/User/icalumni_Intro/strucPage';
 import AlumniAssociationBylaws from 'pages/User/icalumni_Intro/RulePage';
 import IntroPage from 'pages/User/icalumni_Intro/IntroPage';
+import OutstandingAlumniPage from 'pages/Manager/OutstandingMemberManaPage';
 
 function App() {
   return (
@@ -240,7 +241,13 @@ function App() {
         <WebPicManager></WebPicManager>
       </>
     } />
-
+    {/* 傑出系友 */}
+    <Route path="/alumni/manage/outstanding/" element={
+      <>
+        <ManagerNav />
+        <OutstandingAlumniPage></OutstandingAlumniPage>
+      </>
+    } />
     {/* 文章管理 */}
     <Route path="/alumni/manage/article/" element={
       <>
