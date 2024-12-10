@@ -473,7 +473,7 @@ function NewUserModal({
                     <Form.Check
                       type="checkbox"
                       name="is_show"
-                      label="是否繳費"
+                      label="是否展現於官網"
                       checked={formData.is_show}
                       onChange={(e) =>
                         setFormData((prev) => ({

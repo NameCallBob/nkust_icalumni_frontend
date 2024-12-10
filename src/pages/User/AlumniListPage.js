@@ -7,11 +7,12 @@ import 'slick-carousel/slick/slick-theme.css';
 import 'css/AlumniListPage.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
+import FeaturedAlumni from 'components/User/alumni/featrued';
 
 const AlumniListPage = () => {
     const [key, setKey] = useState('全部'); // 預設顯示 "全部"
     const [alumniList, setAlumniList] = useState([]);
-    const [featuredAlumni, setFeaturedAlumni] = useState([]);
+    const [featured, setFeaturedAlumni] = useState([]);
     const [searchQuery, setSearchQuery] = useState(''); // 搜尋字串
     const [yearsOrder, setYearOrder] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -29,6 +30,14 @@ const AlumniListPage = () => {
             .finally(() => {
                 setLoading(false);
             });
+    };
+
+    // 獲取傑出系友資料
+    const fetchAlumniList = () => {
+        Axios().get('member/outstanding-alumni/')
+            .then((res) => {
+                setFeaturedAlumni(res.data.results);
+            })
     };
 
     const handleSearch = () => {
@@ -74,14 +83,7 @@ const AlumniListPage = () => {
                 setLoading(false);
             });
 
-        // Fetch featured alumni
-        Axios().get("member/any/featured-alumni/")
-            .then((res) => {
-                setFeaturedAlumni(res.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching featured alumni:', error);
-            });
+            fetchAlumniList()
     }, []);
 
     const sliderSettings = {
@@ -112,26 +114,8 @@ const AlumniListPage = () => {
         <Container>
             <h1 className="text-center my-4">系友介紹</h1>
 
-            {/* 傑出系友區塊 */}
-            <h2 className="text-center my-4">傑出系友</h2>
-            <Slider {...sliderSettings} className="mb-5">
-                {featuredAlumni.slice(0, 8).map((alumni) => (
-                    <div key={alumni.id} className="px-2">
-                        <Card
-                            className="h-100 shadow"
-                            onClick={() => window.location.href = `/alumni/${alumni.id}`}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <Card.Img variant="top" src={process.env.REACT_APP_BASE_URL + alumni.photo} alt={alumni.name} />
-                            <Card.Body>
-                                <Card.Title>{alumni.name}</Card.Title>
-                                <Card.Text>{alumni.position.title}</Card.Text>
-                                <Card.Text>{alumni.graduate.grade}級</Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </div>
-                ))}
-            </Slider>
+            <FeaturedAlumni featuredAlumni={featured} />
+
             <h2 className="text-center my-4">各系友級別</h2>
             {/* 搜尋框 */}
             <Form className="mb-4" onKeyDown={handleEnterPress}>
@@ -172,9 +156,9 @@ const AlumniListPage = () => {
                                             onClick={() => window.location.href = `/alumni/${alumni.id}`}
                                             style={{ cursor: 'pointer' }}
                                         >
-                                            <Card.Img variant="top" src={process.env.REACT_APP_BASE_URL + alumni.photo} alt={alumni.name} />
+                                            <Card.Img variant="top" src={alumni.photo} alt={alumni.name} />
                                             <Card.Body>
-                                                <Card.Title>{alumni.name}</Card.Title>
+                                                <Card.Title>{alumni.name}&nbsp;</Card.Title>
                                                 <Card.Text>{alumni.position.title}</Card.Text>
                                                 <Card.Text>{alumni.graduate.grade}級</Card.Text>
                                             </Card.Body>
