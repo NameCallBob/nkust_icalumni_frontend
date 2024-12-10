@@ -83,6 +83,9 @@ function ManagerNav() {
                                 <NavDropdown.Item href="/alumni/manage/article/">
                                     <FaTasks className="me-2" /> 活動發布管理
                                 </NavDropdown.Item>
+                                <NavDropdown.Item href="/alumni/manage/outstanding/">
+                                    <FaUsers className="me-2" /> 傑出系友設置
+                                </NavDropdown.Item>
                             </NavDropdown>
                         )}
 
@@ -90,7 +93,7 @@ function ManagerNav() {
                         {isAdmin && (
                         <NavDropdown title="官網管理" id="website-management-dropdown" className='mx-3 border-item'>
                             <NavDropdown.Item href="/alumni/manage/website/">
-                                <FaGlobe className="me-2" /> 官網設置
+                                <FaGlobe className="me-2" /> 官網照片設置
                             </NavDropdown.Item>
                             <NavDropdown.Item href="/alumni/manage/other/">
                                 <FaTasks className="me-2" /> 其他管理
