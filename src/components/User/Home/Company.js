@@ -43,17 +43,17 @@ import 'css/user/homepage/CompanyList.css'; // 添加樣式
                   <div
                     className="text-center p-3 border"
                     style={{ cursor: 'pointer' }}
-                    onClick={() => handleItemClick(companies[(index + 1) % companies.length].member)}
+                    onClick={() => handleItemClick(company.member)}
                   >
                     <img
-                      src={process.env.REACT_APP_BASE_URL+companies[(index + 1) % companies.length].photo}
-                      alt={companies[(index + 1) % companies.length].name}
+                      src={process.env.REACT_APP_BASE_URL+company.photo}
+                      alt={company.name}
                       style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                     />
-                    <h4>{companies[(index + 1) % companies.length].name}</h4>
-                    <p><strong>系級：</strong>{companies[(index + 1) % companies.length].graduate_grade}級</p>
-                    <p><strong>系友：</strong>{companies[(index + 1) % companies.length].member_name}</p>
-                    <p><strong>產品：</strong>{companies[(index + 1) % companies.length].products}</p>
+                    <h4>{company.name}</h4>
+                    <p><strong>系級：</strong>{company.graduate_grade}級</p>
+                    <p><strong>系友：</strong>{company.member_name}</p>
+                    <p><strong>產品：</strong>{company.products}</p>
                   </div>
                   </Col>
                 ))}

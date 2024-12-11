@@ -63,9 +63,9 @@ function ManagerNav() {
                             <NavDropdown.Item href="/alumni/manage/company/">
                                 <FaBuilding className="me-2" /> 公司登陸
                             </NavDropdown.Item>
-                            <NavDropdown.Item href="/alumni/manage/product/">
+                            {/* <NavDropdown.Item href="/alumni/manage/product/">
                                 <FaProductHunt className="me-2" /> 商品登陸
-                            </NavDropdown.Item>
+                            </NavDropdown.Item> */}
                             <NavDropdown.Item href="/alumni/manage/recruit/">
                                 <FaClipboardList className="me-2" /> 招募登陸
                             </NavDropdown.Item>
@@ -120,10 +120,10 @@ function ManagerNav() {
                         </NavDropdown>
                         )}
 
-                        {/* 其他管理 */}
+                        {/* 其他管理
                         <NavDropdown title="其他管理" id="other-management-dropdown" className='mx-3 border-item'>
 
-                        </NavDropdown>
+                        </NavDropdown> */}
 
                         {/* 帳號相關 */}
                         <NavDropdown title="帳號相關" id="account-dropdown" className='mr-auto border-item'>
