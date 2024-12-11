@@ -112,6 +112,7 @@ const ProfilePage = () => {
                 src={process.env.REACT_APP_BASE_URL+profileData.company.photo}
                 rounded
                 fluid
+                style={{width:"400px",height:"300px"}}
                 alt="公司大樓"
               />
             </Col>
