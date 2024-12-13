@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Container ,Row,Col} from 'react-bootstrap';
-import axios from 'axios';
+
+import { Table, Button, Container, Row, Col } from 'react-bootstrap';
 import ProductFormModal from 'components/Manage/ProductManage/ProductFormModal';
 import SearchBar from 'components/Manage/ProductManage/SearchBar';
+import Axios from 'common/Axios';
 
 function ProductList() {
-    // 假資料
-    const fakeProducts = [
-        { id: 1, name: '產品A', description: '這是產品A的描述', photo: null },
-        { id: 2, name: '產品B', description: '這是產品B的描述', photo: null },
-        { id: 3, name: '產品C', description: '這是產品C的描述', photo: null },
-    ];
-
-    const [products, setProducts] = useState(fakeProducts);
-    const [filteredProducts, setFilteredProducts] = useState(fakeProducts);
+    const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+
+    // 讀取產品資料
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        try {
+            const response = await Axios().get('product/data/selfCompnay/');
+            setProducts(response.data);
+            setFilteredProducts(response.data);
+        } catch (error) {
+            console.error('Failed to fetch products:', error);
+        }
+    };
 
     const handleSearch = (query) => {
         if (!query) {
@@ -38,42 +47,70 @@ function ProductList() {
         setShowModal(true);
     };
 
-    const handleCloseModal = (newProduct) => {
+    const handleCloseModal = async (newProduct) => {
         setShowModal(false);
 
-        // 如果有新的產品（新增或更新），更新產品列表
         if (newProduct) {
-            if (selectedProduct) {
-                // 更新現有產品
-                setProducts((prev) =>
-                    prev.map((p) => (p.id === selectedProduct.id ? newProduct : p))
-                );
-            } else {
-                // 新增產品
-                setProducts((prev) => [...prev, { ...newProduct, id: prev.length + 1 }]);
+            try {
+                if (selectedProduct) {
+                    // 更新產品
+                    await updateProduct(selectedProduct.id, newProduct);
+                } else {
+                    // 新增產品
+                    await createProduct(newProduct);
+                }
+                fetchProducts(); // 更新列表
+            } catch (error) {
+                console.error('Failed to save product:', error);
             }
-            setFilteredProducts(products);
+        }
+    };
+
+    const createProduct = async (product) => {
+        try {
+            await Axios().post('product/data/new/', product);
+        } catch (error) {
+            console.error('Failed to create product:', error);
+        }
+    };
+
+    const updateProduct = async (id, product) => {
+        try {
+            let tmp_product = product
+            tmp_product['id'] = id
+            await Axios().put(`product/data/change/`, tmp_product);
+        } catch (error) {
+            console.error('Failed to update product:', error);
+        }
+    };
+
+    const deleteProduct = async (id) => {
+        try {
+            await Axios().delete(`product/data/remove/` , {data:{'id':id}});
+            fetchProducts(); // 更新列表
+        } catch (error) {
+            console.error('Failed to delete product:', error);
         }
     };
 
     return (
-        <Container className='my-5'>
+        <Container className="my-5">
             <h2>產品列表</h2>
             <Row>
                 <Col>
-                <SearchBar onSearch={handleSearch} />
+                    <SearchBar onSearch={handleSearch} />
                 </Col>
                 <Col>
-                <Button onClick={handleAdd} className="mb-3">新增產品</Button>
+                    <Button onClick={handleAdd} className="mb-3">新增產品</Button>
                 </Col>
             </Row>
-            
+
             <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>名稱</th>
                         <th>簡介</th>
-                        <th>照片預覽</th> {/* 新增的欄位 */}
+                        <th>照片預覽</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -94,7 +131,13 @@ function ProductList() {
                                 )}
                             </td>
                             <td>
-                                <Button variant="primary" onClick={() => handleEdit(product)}>編輯</Button>
+                                <Button variant="primary" onClick={() => handleEdit(product)}>編輯</Button>{' '}
+                                <Button
+                                    variant="danger"
+                                    onClick={() => deleteProduct(product.id)}
+                                >
+                                    刪除
+                                </Button>
                             </td>
                         </tr>
                     ))}
@@ -108,7 +151,8 @@ function ProductList() {
                     handleClose={handleCloseModal}
                 />
             )}
-        </Container>    );
+        </Container>
+    );
 }
 
 export default ProductList;

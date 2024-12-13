@@ -1,11 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 
-const AddPhotoModal = ({ show, onClose, onAdd }) => {
+const AddPhotoModal = ({ show, onClose, onAdd, editSlide }) => {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isActive, setIsActive] = useState(true);
+
+  useEffect(() => {
+    if (editSlide) {
+      setPreview(editSlide.image);
+      setName(editSlide.name);
+      setDescription(editSlide.description);
+      setIsActive(editSlide.is_active);
+    } else {
+      setPreview("");
+      setName("");
+      setDescription("");
+      setIsActive(true);
+    }
+  }, [editSlide]);
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -14,20 +29,21 @@ const AddPhotoModal = ({ show, onClose, onAdd }) => {
   };
 
   const handleAdd = () => {
-    if (file && title) {
-      onAdd({ image: preview, title, description });
-      setFile(null);
-      setPreview("");
-      setTitle("");
-      setDescription("");
-      onClose();
+    if (name) {
+      const slideData = {
+        image: file ? preview : editSlide?.image,
+        name,
+        description,
+        active: isActive,
+      };
+      onAdd(slideData);
     }
   };
 
   return (
     <Modal show={show} onHide={onClose}>
       <Modal.Header closeButton>
-        <Modal.Title>新增照片</Modal.Title>
+        <Modal.Title>{editSlide ? "編輯照片" : "新增照片"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -44,13 +60,13 @@ const AddPhotoModal = ({ show, onClose, onAdd }) => {
               />
             </div>
           )}
-          <Form.Group controlId="formTitle" className="mb-3">
-            <Form.Label>標題</Form.Label>
+          <Form.Group controlId="formName" className="mb-3">
+            <Form.Label>名稱</Form.Label>
             <Form.Control
               type="text"
-              placeholder="輸入標題"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              placeholder="輸入名稱"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </Form.Group>
           <Form.Group controlId="formDescription" className="mb-3">
@@ -63,6 +79,14 @@ const AddPhotoModal = ({ show, onClose, onAdd }) => {
               onChange={(e) => setDescription(e.target.value)}
             />
           </Form.Group>
+          <Form.Group controlId="formActive" className="mb-3">
+            <Form.Check
+              type="checkbox"
+              label="啟用"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+            />
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
@@ -70,7 +94,7 @@ const AddPhotoModal = ({ show, onClose, onAdd }) => {
           取消
         </Button>
         <Button variant="primary" onClick={handleAdd}>
-          新增
+          {editSlide ? "儲存修改" : "新增"}
         </Button>
       </Modal.Footer>
     </Modal>

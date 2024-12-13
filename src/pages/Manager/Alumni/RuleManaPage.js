@@ -63,7 +63,7 @@ const RuleManaPage = () => {
     try {
         // 使用 FormData
         const formData = new FormData();
-        formData.append('intro', currentRule.intro); // 添加章程簡介
+        formData.append('description', currentRule.intro); // 添加章程簡介
         if (currentRule.file) {
             formData.append('pdf_file', currentRule.file); // 添加 PDF 檔案
         }

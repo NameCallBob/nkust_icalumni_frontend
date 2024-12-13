@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+// SlideManagement.js
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Button, Toast, ToastContainer } from "react-bootstrap";
 import CategorySelector from "components/Manage/WebPic/CategorySelector";
 import PreviewPanel from "components/Manage/WebPic/PreviewPanel";
 import AddPhotoModal from "components/Manage/WebPic/AddPhotoModal";
@@ -9,22 +10,41 @@ const WebPicManager = () => {
   const [selectedCategory, setSelectedCategory] = useState("廣告設置");
   const [slides, setSlides] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [editSlide, setEditSlide] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    if (selectedCategory === "主頁輪播"){
-        Axios().get("/picture/slide-images/all/")
-        .then((res) => {
-            setSlides(res.data)
-        })
-    }
-  },[selectedCategory])
+    
+    Axios().get(`picture/slide-images/all/`)
+      .then((response) => setSlides(response.data))
+      .catch((error) => console.error("Failed to fetch slides", error));
+      
+  }, [selectedCategory]);
 
-  const handleAddSlide = (slide) => {
-    setSlides([...slides, { ...slide, id: slides.length + 1 }]);
+  const handleAddOrEditSlide = (slide) => {
+    if (editSlide) {
+      setSlides(
+        slides.map((s) => (s.id === editSlide.id ? { ...s, ...slide } : s))
+      );
+      setToastMessage("Slide updated successfully.");
+    } else {
+      setSlides([...slides, { ...slide, id: Date.now() }]);
+      setToastMessage("Slide added successfully.");
+    }
+    setShowToast(true);
+    setEditSlide(null);
   };
 
   const handleDeleteSlide = (id) => {
     setSlides(slides.filter((slide) => slide.id !== id));
+    setToastMessage("Slide deleted successfully.");
+    setShowToast(true);
+  };
+
+  const handleEditSlide = (slide) => {
+    setEditSlide(slide);
+    setShowModal(true);
   };
 
   return (
@@ -46,17 +66,36 @@ const WebPicManager = () => {
           <PreviewPanel
             slides={slides}
             category={selectedCategory}
+            onEditSlide={handleEditSlide}
             onDeleteSlide={handleDeleteSlide}
           />
         </Col>
       </Row>
       <AddPhotoModal
         show={showModal}
-        onClose={() => setShowModal(false)}
-        onAdd={handleAddSlide}
+        onClose={() => {
+          setShowModal(false);
+          setEditSlide(null);
+        }}
+        onAdd={(slide) => {
+          handleAddOrEditSlide(slide);
+          setShowModal(false);
+        }}
+        editSlide={editSlide}
       />
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          autohide
+        >
+          <Toast.Body>{toastMessage}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </Container>
   );
 };
 
-export default WebPicManager;
+
+export default WebPicManager

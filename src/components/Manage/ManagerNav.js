@@ -38,7 +38,7 @@ function ManagerNav() {
             }, 2000); // 同樣加上延遲
         }
         window.localStorage.getItem("super") === 'true' ? setAdminStatus(true) : setAdminStatus(false)
-        console.log(window.localStorage.getItem("super"))
+        // console.log(window.localStorage.getItem("super"))
     }, [navigator]);
 
     return (
