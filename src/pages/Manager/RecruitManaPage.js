@@ -18,9 +18,9 @@ function RecruitManaPage() {
     release_date: '',
     deadline: '',
     contact:{
-      "name":"",
-      "phone":"",
-      "email":"",
+      "name":'',
+      "phone":'',
+      "email":'',
     },
     intro: '',
     company_name:''
@@ -37,12 +37,29 @@ function RecruitManaPage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  
+    // 檢查是否為嵌套屬性
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".");
+      setFormData((prevData) => ({
+        ...prevData,
+        [parent]: {
+          ...prevData[parent],
+          [child]: value,
+        },
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleQuillChange = (value) => {
     setFormData((prevData) => ({ ...prevData, intro: value }));
   };
+
 
   useEffect(() => {
     Axios()
@@ -88,7 +105,7 @@ function RecruitManaPage() {
         toast.success('新增職位成功');
       })
       .catch((err) => {
-        toast.error(`新增失敗：${err.response?.status === 404 ? '未找到資源' : '請稍後再試'}`);
+        toast.error(`新增失敗：${err.response?.status === 404 ? '未找到資源' : err.response.data}`);
       });
   };
 
@@ -125,7 +142,7 @@ function RecruitManaPage() {
         toast.success('編輯成功');
       })
       .catch((err) => {
-        toast.error(`編輯失敗：${err.response?.status === 404 ? '未找到資源' : '請稍後再試'}`);
+        toast.error(`編輯失敗：${err.response?.status === 404 ? '未找到資源' : err.response}`);
       });
   };
 
@@ -142,21 +159,20 @@ function RecruitManaPage() {
       });
   };
 
-  // 照片處理
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files); // 獲取所有上傳的檔案
     const previews = [];
     const base64Images = [];
-
+  
     files.forEach((file) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
+      const reader = new FileReader(); // 建立 FileReader 實例
+      reader.readAsDataURL(file); // 將圖片轉換為 Base64
       reader.onloadend = () => {
-        base64Images.push(reader.result);
-        previews.push(reader.result);
+        base64Images.push(reader.result); // 儲存 Base64 結果
+        previews.push(reader.result); // 儲存預覽用的圖片
         if (base64Images.length === files.length) {
-          setSelectedImages(base64Images);
-          setImagePreviews(previews);
+          setSelectedImages(base64Images); // 更新選擇的 Base64 圖片
+          setImagePreviews(previews); // 更新圖片預覽
         }
       };
     });
@@ -294,7 +310,7 @@ function RecruitManaPage() {
               <Form.Control
                 type="text"
                 name="contact.name"
-                value={formData.contact?.name}
+                value={formData.contact.name}
                 onChange={handleInputChange}
                 required
                 disabled={isPersonalContact}
@@ -305,7 +321,7 @@ function RecruitManaPage() {
               <Form.Control
                 type="email"
                 name="contact.email"
-                value={formData.contact?.email}
+                value={formData.contact.email}
                 onChange={handleInputChange}
                 required
                 disabled={isPersonalContact}
@@ -316,7 +332,7 @@ function RecruitManaPage() {
               <Form.Control
                 type="text"
                 name="contact.phone"
-                value={formData.contact?.phone}
+                value={formData.contact.phone}
                 onChange={handleInputChange}
                 required
                 disabled={isPersonalContact}
@@ -402,7 +418,7 @@ function RecruitManaPage() {
                 <Form.Label>公司名稱</Form.Label>
                 <Form.Control
                   type="text"
-                  name="company"
+                  name="company_name"
                   value={formData.company_name}
                   onChange={handleInputChange}
                   required
@@ -482,7 +498,7 @@ function RecruitManaPage() {
                   {imagePreviews.map((src, index) => (
                     <Image
                       key={index}
-                      src={process.env.REACT_APP_BASE_URL + src}
+                      src={process.env.REACT_APP_BASE_URL + src.image}
                       alt="預覽照片"
                       thumbnail
                       style={{

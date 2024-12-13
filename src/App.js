@@ -9,7 +9,6 @@ import UserNav from 'components/User/UserNav';
 import Home from 'pages/User/HomePage';
 import Login from 'pages/User/LoginPage';
 import Search from 'pages/User/SearchPage';
-import ProductPage from 'pages/User/ProductPage';
 import AlumniDetailPage from 'pages/User/AlumniIntroPage';
 import AlumniListPage from 'pages/User/AlumniListPage';
 import RecruitPage from 'pages/User/RecruitPage';
@@ -109,13 +108,7 @@ function App() {
         <ForgotPasswordFlow />
       </>
     } />
-    {/* 產品頁面 */}
-    <Route path="/product" element={
-      <>
-        <UserNav />
-        <ProductPage />
-      </>
-    } />
+
     {/* 活動頁面 */}
     <Route path="/activity/:id" element={
       <>

@@ -6,14 +6,25 @@ import Axios from 'common/Axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // 引入 react-toastify 的樣式
 import PwdUpdateModal from 'components/Manage/Center/PwdUpdateModal';
+import ThankYouModal from 'components/Manage/Center/introModal';
 
 function MemberCenter() {
     const navigate = useNavigate();
     const [showEditModal, setShowEditModal] = useState(false);
     const [showPwdModal, setShowPwdModal] = useState(false);
+    const [showThxModal , setThxModal] = useState(false)
     const [userData, setUserData] = useState({ name: '使用者名稱', email: '使用者電子郵件', photo: 'https://via.placeholder.com/150' });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+
+    const handleCloseThxModal = () => {
+        setThxModal(false);
+    };
+
+    const handleShowThxModal = () => {
+        setThxModal(true);
+    };
+
 
     const handleShowEditModal = () => {
         setShowEditModal(true);
@@ -85,8 +96,9 @@ function MemberCenter() {
                 setLoading(false);
             })
             .catch((err) => {
-                handleAxiosError(err);
+                toast.warn("偵測到無會員資料，請填寫基本資訊")
                 setLoading(false);
+                handleShowThxModal()
                 setUserData((prevState) => ({ ...prevState, photo: 'https://via.placeholder.com/150' }));
             });
     }, []);
@@ -167,6 +179,12 @@ function MemberCenter() {
                 loading={loading}
                 setLoading={setLoading}
             />
+            
+            <ThankYouModal 
+           show={showThxModal}
+           handleClose={handleCloseThxModal}
+            />
+
             <PwdUpdateModal
                 show={showPwdModal}
                 handleClose={handleClosePwdModal}
