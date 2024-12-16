@@ -36,11 +36,15 @@ import StructurePage from 'pages/User/icalumni_Intro/strucPage';
 import AlumniAssociationBylaws from 'pages/User/icalumni_Intro/RulePage';
 import IntroPage from 'pages/User/icalumni_Intro/IntroPage';
 import OutstandingAlumniPage from 'pages/Manager/OutstandingMemberManaPage';
+import GoogleAnalyticsWrapper from 'GA';
+
+// GA
 
 function App() {
   return (
     <>
       <Router>
+      <GoogleAnalyticsWrapper>
         <Routes>
         {/* 使用者端路由 */}
         {/* 首頁 */}
@@ -270,7 +274,9 @@ function App() {
           </>
         } />
         </Routes>
+        </GoogleAnalyticsWrapper>
       </Router>
+      
       <Footer />
     </>
   );

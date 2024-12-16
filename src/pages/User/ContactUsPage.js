@@ -2,6 +2,8 @@ import React from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaClock, FaFacebook, FaLine, FaInstagram } from "react-icons/fa";
 import { motion } from "framer-motion";
+import Axios from "common/Axios";
+import { toast } from "react-toastify";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -9,28 +11,29 @@ const fadeInUp = {
 };
 
 const ContactUsPage = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
 
-    const formData = {
-      name: e.target.formName.value,
-      email: e.target.formEmail.value,
-      phone: e.target.formPhone.value,
-      message: e.target.formMessage.value,
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+    
+      const formData = {
+        name: event.target.formName.value,
+        email: event.target.formEmail.value,
+        phone: event.target.formPhone.value,
+        message: event.target.formMessage.value,
+      };
+    
+      try {
+        const response = await Axios().post("record/contact/" , formData)
+    
+        if (response) {
+          toast.success("提交成功，講有專員為您服務～")
+        } else {
+          toast.warn("提交失敗，請注意資訊是否填寫正確")
+        }
+      } catch (error) {
+        toast.error("伺服器忙碌中，請稍後再試！")
+      }
     };
-
-    console.log("提交表單資料：", formData);
-
-    // 預留 API 串接區域
-    // fetch('/api/contact', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(formData),
-    // })
-    //   .then(response => response.json())
-    //   .then(data => console.log("回應資料：", data))
-    //   .catch(error => console.error("提交錯誤：", error));
-  };
 
   return (
     <Container className="py-5">
@@ -72,7 +75,7 @@ const ContactUsPage = () => {
                     <div>
                       <strong>信箱：</strong>
                       <p className="mb-0">
-                        <a href="mailto:vhoffice01@nkust.edu.tw">vhoffice01@nkust.edu.tw</a>
+                        <a href="mailto:icdaa2019@nkust.edu.tw">icdaa2019@nkust.edu.tw</a>
                       </p>
                     </div>
                   </Col>
