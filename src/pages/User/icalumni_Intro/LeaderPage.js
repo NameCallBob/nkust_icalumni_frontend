@@ -1,5 +1,5 @@
 import { Container, Spinner, Alert, Carousel } from 'react-bootstrap';
-import DOMPurify from 'dompurify';
+
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
 
@@ -26,10 +26,7 @@ const LeaderPage = () => {
         const largeImages = pic_response.filter((img) => img.image_type === 'large');
         const smallImages = pic_response.filter((img) => img.image_type === 'small');
 
-
-        // 使用 DOMPurify 淨化 HTML 內容以防止 XSS 攻擊
-        const sanitizedHTML = DOMPurify.sanitize(response.description);
-        setBodyContent(sanitizedHTML)
+        setBodyContent(response.description)
         setSlides({ largeImages, smallImages });
         setIsLoading(false);
       } catch (err) {
@@ -92,20 +89,20 @@ const LeaderPage = () => {
       </br>
       {/* 小圖展示 */}
       <div className="mt-4">
-        <h4>相關圖片</h4>
+        <h4 className="text-center">相關圖片</h4>
         {slides.smallImages.length > 0 ? (
-          <div className="d-flex flex-wrap">
+          <div className="d-flex flex-wrap justify-content-center">
             {slides.smallImages.map((image, index) => (
               <div
                 key={`small-${index}`}
                 className="m-2"
-                style={{ width: '150px', height: '150px', overflow: 'hidden' }}
+                style={{ width: '600px' }}
               >
                 <img
                   className="d-block w-100"
                   src={image.file}
                   alt={image.alt || `Small Image ${index + 1}`}
-                  style={{ maxHeight: '100px', objectFit: 'cover' }}
+                  style={{ objectFit: 'contain' }} // 保持圖片完整
                 />
               </div>
             ))}

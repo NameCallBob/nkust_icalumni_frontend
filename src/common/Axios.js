@@ -44,6 +44,10 @@ function Axios() {
             toast.warning("您沒有權限執行此動作，將跳回首頁！敬請見諒");
             window.location.href = "/"; // Redirect to the homepage
             break;
+          case 429:
+            toast.error("您在短期內發出太多請求，請稍後再試：）");
+            window.location.href = "/"; // Redirect to the homepage
+            break;
           case 503:
             toast.info("伺服器維護中，請稍後再試！");
             break;

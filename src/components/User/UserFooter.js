@@ -19,7 +19,7 @@ const Footer = () => {
               <br />
               電話:  07-3814526 轉 17501
               <br />
-              Email: vhoffice01@nkust.edu.tw
+              Email: icdaa2019@nkust.edu.tw
             </p>
           </Col>
 
@@ -34,7 +34,7 @@ const Footer = () => {
             <a href="https://www.instagram.com/ic.nkust/" className="text-white me-3">
               <i className="bi bi-instagram" style={{ fontSize: '1.5rem' }}></i>
             </a>
-            <a href="mailto:vhoffice01@nkust.edu.tw" className="text-white">
+            <a href="mailto:icdaa2019@nkust.edu.tw" className="text-white">
               <i className="bi bi-envelope-arrow-up-fill" style={{ fontSize: '1.5rem' }}></i>
             </a>
 

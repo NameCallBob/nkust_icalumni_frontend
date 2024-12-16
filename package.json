@@ -4,6 +4,7 @@
   "private": false,
   "homepage": "http://nkusticalumni.org/",
   "dependencies": {
+    "@hcaptcha/react-hcaptcha": "^1.11.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
