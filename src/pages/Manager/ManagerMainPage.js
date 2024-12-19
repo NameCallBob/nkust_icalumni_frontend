@@ -8,9 +8,16 @@ import 'react-toastify/dist/ReactToastify.css'; // 引入 react-toastify 的樣�
 import PwdUpdateModal from 'components/Manage/Center/PwdUpdateModal';
 import ThankYouModal from 'components/Manage/Center/introModal';
 
+/**
+ * 會員中心 
+ * @returns  
+ */
 function MemberCenter() {
+    
     const navigate = useNavigate();
+
     const [showEditModal, setShowEditModal] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(true); // 預設為編輯模式
     const [showPwdModal, setShowPwdModal] = useState(false);
     const [showThxModal , setThxModal] = useState(false)
     const [userData, setUserData] = useState({ name: '使用者名稱', email: '使用者電子郵件', photo: 'https://via.placeholder.com/150' });
@@ -26,7 +33,8 @@ function MemberCenter() {
     };
 
 
-    const handleShowEditModal = () => {
+    const handleShowEditModal = (isEdit = true) => {
+        // setIsEditMode(isEdit); // 設定模式
         setShowEditModal(true);
     };
 
@@ -47,9 +55,13 @@ function MemberCenter() {
         if (Object.keys(changedData).length === 0) {
             return;
         }
-        Axios().patch("/member/logined/partial_change/", changedData)
+        const apiEndpoint = isEditMode
+            ? "/member/logined/partial_change/"
+            : "/member/logined/new/"
+
+        Axios()[isEditMode ? 'patch' : 'post'](apiEndpoint, changedData)
             .then((res) => {
-                toast.success("修改成功!", { position: 'top-right' });
+                toast.success(isEditMode ? "修改成功!" : "新增成功!", { position: 'top-right' });
                 setUserData(formData);
             })
             .catch((err) => {
@@ -61,17 +73,19 @@ function MemberCenter() {
             });
     };
 
+
     const handleAxiosError = (err) => {
         if (err.response) {
             const status = err.response.status;
             const errorMessage = err.response.data?.detail || '';
+            setError(errorMessage)
             if (status === 401 && errorMessage.includes('token')) {
                 toast.error("Token 已失效，請重新登入", { position: toast.POSITION.TOP_RIGHT });
                 navigate('/login');
             } else {
                 switch (status) {
                     case 400:
-                        toast.error("請求錯誤，請檢查您的輸入", { position: 'top-right' });
+                        toast.error("請確認資料是否輸入齊全，且照片有上傳", { position: 'top-right' });
                         break;
                     case 401:
                         toast.error("未授權，請重新登入", { position: 'top-right' });
@@ -94,11 +108,13 @@ function MemberCenter() {
             .then((res) => {
                 setUserData(res.data);
                 setLoading(false);
+                setIsEditMode(true); // 已有資料，進入編輯模式
             })
             .catch((err) => {
                 toast.warn("偵測到無會員資料，請填寫基本資訊")
                 setLoading(false);
                 handleShowThxModal()
+                setIsEditMode(false); // 無資料，進入新增模式
                 setUserData((prevState) => ({ ...prevState, photo: 'https://via.placeholder.com/150' }));
             });
     }, []);
@@ -171,8 +187,10 @@ function MemberCenter() {
                     </Card>
                 </Col>
             </Row>
+
             <MemberModal
                 show={showEditModal}
+                isEditMode={isEditMode} // 傳入是否為編輯模式
                 handleClose={handleCloseEditModal}
                 handleSave={handleSave}
                 parentData={userData}
