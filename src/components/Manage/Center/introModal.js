@@ -12,7 +12,7 @@ const ThankYouModal = ({show , handleClose}) => {
     >
       <Modal.Header closeButton>
         <Modal.Title className="text-center w-100 text-primary">
-          🌟 感謝系友支持 🌟
+          哈摟系友～
         </Modal.Title>
       </Modal.Header>
       
