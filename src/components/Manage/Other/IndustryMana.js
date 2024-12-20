@@ -14,7 +14,17 @@ const IndustryCRUD = () => {
     title: '',
     intro: '',
   });
-
+  const validateFields = () => {
+    const isValid = currentIndustry.title && currentIndustry.intro;
+    if (!currentIndustry.title) {
+      alert("產業名稱為必填項目！");
+    }
+    if (!currentIndustry.intro) {
+      alert("產業簡介為必填項目！");
+    }
+    return isValid;
+  };
+  
   useEffect(() => {
     Axios()
       .get('/company/industry/all/')
@@ -122,43 +132,68 @@ const IndustryCRUD = () => {
       </Table>
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{isEdit ? '修改產業別' : '新增產業別'}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="industryName">
-              <Form.Label>產業名稱</Form.Label>
-              <Form.Control
-                type="text"
-                value={currentIndustry.title}
-                onChange={(e) =>
-                  setCurrentIndustry({ ...currentIndustry, title: e.target.value })
-                }
-              />
-            </Form.Group>
-            <Form.Group controlId="industryDescription">
-              <Form.Label>產業簡介</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={currentIndustry.intro}
-                onChange={(e) =>
-                  setCurrentIndustry({ ...currentIndustry, intro: e.target.value })
-                }
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            取消
-          </Button>
-          <Button variant="primary" onClick={handleSave}>
-            {isEdit ? '儲存修改' : '新增'}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+  <Modal.Header closeButton>
+    <Modal.Title>{isEdit ? '修改產業別' : '新增產業別'}</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form>
+      {/* 產業名稱 */}
+      <Form.Group controlId="industryName">
+        <Form.Label>產業名稱</Form.Label>
+        <Form.Control
+          type="text"
+          value={currentIndustry.title}
+          onChange={(e) =>
+            setCurrentIndustry({ ...currentIndustry, title: e.target.value })
+          }
+          required // 設定必填
+          placeholder="請輸入產業名稱"
+          maxLength={50} // 限制字數
+          isInvalid={!currentIndustry.title} // 驗證是否有值
+        />
+        <Form.Control.Feedback type="invalid">
+          產業名稱為必填項目，且不得超過 50 字。
+        </Form.Control.Feedback>
+      </Form.Group>
+
+      {/* 產業簡介 */}
+      <Form.Group controlId="industryDescription">
+        <Form.Label>產業簡介</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={3}
+          value={currentIndustry.intro}
+          onChange={(e) =>
+            setCurrentIndustry({ ...currentIndustry, intro: e.target.value })
+          }
+          required // 設定必填
+          placeholder="請輸入產業簡介"
+          maxLength={200} // 限制字數
+          isInvalid={!currentIndustry.intro} // 驗證是否有值
+        />
+        <Form.Control.Feedback type="invalid">
+          產業簡介為必填項目，且不得超過 200 字。
+        </Form.Control.Feedback>
+      </Form.Group>
+    </Form>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowModal(false)}>
+      取消
+    </Button>
+    <Button
+      variant="primary"
+      onClick={() => {
+        if (validateFields()) {
+          handleSave();
+        }
+      }}
+    >
+      {isEdit ? '儲存修改' : '新增'}
+    </Button>
+  </Modal.Footer>
+</Modal>
+
 
       {/* Toastify container */}
       <ToastContainer />

@@ -73,10 +73,12 @@ const Login = () => {
           navigator('/alumni/manage/');
         }, 1500);
       })
-      .catch(() => {
+      .catch((err) => {
         setIsLoading(false);
         toast.error('帳號密碼不匹配，請再試一次。');
-
+        if (err.response.status === 403){
+          toast.warn("此帳號未啟用或您未繳費")
+        }
         // 更新登入嘗試次數與封鎖時間
         const currentAttempts = parseInt(localStorage.getItem('loginAttempts') || '0', 10) + 1;
         localStorage.setItem('loginAttempts', currentAttempts);
@@ -85,6 +87,7 @@ const Login = () => {
           localStorage.setItem('lastAttemptTime', currentTime);
           setBlockTimeLeft(BLOCK_TIME_SECONDS);
         }
+        
       });
   };
 

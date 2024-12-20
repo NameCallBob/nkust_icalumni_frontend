@@ -169,29 +169,50 @@ const AlumniPositionCRUD = () => {
           <Modal.Title>{isEdit ? '修改職稱' : '新增職稱'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group controlId="positionTitle">
-              <Form.Label>職稱名稱</Form.Label>
-              <Form.Control
-                type="text"
-                value={currentPosition.title}
-                onChange={(e) =>
-                  setCurrentPosition({ ...currentPosition, title: e.target.value })
-                }
-              />
-            </Form.Group>
-            <Form.Group controlId="positionPriority">
-              <Form.Label>優先度</Form.Label> {/* 新增優先度輸入欄 */}
-              <Form.Control
-                type="number"
-                value={currentPosition.priority}
-                onChange={(e) =>
-                  setCurrentPosition({ ...currentPosition, priority: e.target.value })
-                }
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
+  <Form>
+    {/* 職稱名稱 */}
+    <Form.Group controlId="positionTitle">
+      <Form.Label>職稱名稱</Form.Label>
+      <Form.Control
+        type="text"
+        value={currentPosition.title}
+        onChange={(e) =>
+          setCurrentPosition({ ...currentPosition, title: e.target.value })
+        }
+        required // 必填
+        placeholder="請輸入職稱名稱"
+        maxLength={50} // 限制最多 50 字元
+        isInvalid={!currentPosition.title} // 若為空則顯示錯誤樣式
+      />
+      <Form.Control.Feedback type="invalid">
+        職稱名稱為必填項目。
+      </Form.Control.Feedback>
+    </Form.Group>
+
+        {/* 優先度 */}
+        <Form.Group controlId="positionPriority">
+          <Form.Label>優先度</Form.Label>
+          <Form.Control
+            type="number"
+            value={currentPosition.priority}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value >= 1 && value <= 10) { // 驗證範圍
+                setCurrentPosition({ ...currentPosition, priority: value });
+              }
+            }}
+            required // 必填
+            min={1} // 最小值
+            max={10} // 最大值
+            isInvalid={!currentPosition.priority || currentPosition.priority < 1 || currentPosition.priority > 10} // 驗證
+          />
+          <Form.Control.Feedback type="invalid">
+            請輸入 1 到 10 的優先度數值。
+          </Form.Control.Feedback>
+        </Form.Group>
+      </Form>
+    </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             取消
