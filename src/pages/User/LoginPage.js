@@ -34,6 +34,22 @@ const Login = () => {
         localStorage.removeItem('loginAttempts');
       }
     }
+
+    if (window.localStorage.getItem('jwt') != "None"){
+      Axios().post("api/token/verify/",{
+        "token":window.localStorage.getItem('jwt')
+      })
+      .then((res) => {
+        toast.success('已登入，自動跳轉');
+        setTimeout(() => {
+          navigator('/alumni/manage/');
+        }, 600);
+        navigator("/alumni/manage/")
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
   }, []);
 
   useEffect(() => {
@@ -71,7 +87,7 @@ const Login = () => {
         toast.success('登入成功，將自動跳轉！');
         setTimeout(() => {
           navigator('/alumni/manage/');
-        }, 1500);
+        }, 1000);
       })
       .catch((err) => {
         setIsLoading(false);
@@ -87,7 +103,7 @@ const Login = () => {
           localStorage.setItem('lastAttemptTime', currentTime);
           setBlockTimeLeft(BLOCK_TIME_SECONDS);
         }
-        
+
       });
   };
 

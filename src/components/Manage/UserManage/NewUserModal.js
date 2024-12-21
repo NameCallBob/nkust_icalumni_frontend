@@ -14,7 +14,7 @@ function NewUserModal({
   fetchUserData,
 }) {
   const [simple_email, setSimpleEmail] = useState("");
-  const [simple_userType,setUserType] = useState("");
+  const [simple_userType,setUserType] = useState("N");
   const [formData, setFormData] = useState({
     name: "",
     gender: "",

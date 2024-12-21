@@ -39,7 +39,7 @@ const InfoManager = () => {
       updateContentAPI: "info/associations/change/",
       toggleImageStatusAPI: "info/association-images/toggle_status/",
       deleteImageAPI: "info/association-images/delete_image/",
-      title: "章程管理_修改紀錄",
+      title: "介紹管理_修改紀錄",
       img_url:'association-images',
     },
     'structure': {
@@ -48,9 +48,9 @@ const InfoManager = () => {
       createAPI:"info/structures/new/",
       updateContentAPI: "info/structures/change/",
       toggleImageStatusAPI: "info/structure-images/toggle_status/",
-      deleteImageAPI: "info/structure-images/delete_image/",      
+      deleteImageAPI: "info/structure-images/delete_image/",
       title: "組織管理_修改紀錄",
-      img_url:'structure-images',    
+      img_url:'structure-images',
     },
     'us': {
       contentAPI: "info/requirement/all/",
@@ -63,7 +63,7 @@ const InfoManager = () => {
       img_url:'requirement-images',
     },
   };
-  
+
   const { contentAPI, imageAPI, updateContentAPI, toggleImageStatusAPI, deleteImageAPI, title } = config[pageType] || config["rule"];
   // 請求內容記錄
   const fetchContentRecords = async () => {
