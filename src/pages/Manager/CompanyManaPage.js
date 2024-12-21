@@ -116,7 +116,7 @@ const CompanyForm = () => {
                 toast.error("您沒有權限執行此操作。");
                 break;
               default:
-                toast.error("修改公司資料失敗，請稍後再試。");
+                toast.error("修改公司資料失敗。");
                 break;
             }
           } else {
@@ -128,8 +128,12 @@ const CompanyForm = () => {
         .post("/company/data/new/", company)
         .then(() => {
           toast.success("公司資料新增成功！");
+          window.location.reload()
         })
         .catch((error) => {
+          console.log(error);
+
+          const messages = Object.values(error.response.data).flat();
           if (error.response) {
             switch (error.response.status) {
               case 401:
@@ -139,7 +143,16 @@ const CompanyForm = () => {
                 toast.error("您沒有權限執行此操作。");
                 break;
               default:
-                toast.error("新增公司資料失敗，請稍後再試。");
+                messages.forEach((message) => {
+                  toast.error(message, {
+                    position: "top-right",
+                    autoClose: 3000, // 自動關閉時間
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true
+                  });
+                });
                 break;
             }
           } else {

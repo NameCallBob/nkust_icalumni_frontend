@@ -37,7 +37,7 @@ function RecruitManaPage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     // 檢查是否為嵌套屬性
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
@@ -123,7 +123,7 @@ function RecruitManaPage() {
         setShowEditModal(true);
       })
       .catch(() => {
-        toast.error('載入職位詳細資料失敗');
+        toast.error('載入失敗，無公司資料');
       })
       .finally(() => {
         setLoading(false);
@@ -163,7 +163,7 @@ function RecruitManaPage() {
     const files = Array.from(e.target.files); // 獲取所有上傳的檔案
     const previews = [];
     const base64Images = [];
-  
+
     files.forEach((file) => {
       const reader = new FileReader(); // 建立 FileReader 實例
       reader.readAsDataURL(file); // 將圖片轉換為 Base64
