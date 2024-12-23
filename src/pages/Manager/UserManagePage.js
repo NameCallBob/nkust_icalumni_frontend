@@ -8,6 +8,7 @@ import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AccountManageModal from 'components/Manage/UserManage/AccountModal';
 /**
  * 使用者管理元件
  * @returns
@@ -22,9 +23,10 @@ function UserManagement() {
     is_active: '',
   });
   const [showModal, setShowModal] = useState(false);
+  const [showAcModal, setAcModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isComplex, setIsComplex] = useState(false);
-  const [userId, setUserId] = useState(null); 
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleEdit = (id) => {
@@ -55,7 +57,7 @@ function UserManagement() {
     if (error.response) {
       const { status, data } = error.response;
       let errorDetails = "";
-  
+
       // 計算錯誤訊息數量
       const countErrors = (obj) =>
         Object.values(obj).reduce((sum, val) => {
@@ -64,7 +66,7 @@ function UserManagement() {
           if (typeof val === "string") return sum + 1; // 如果是字串，計算為 1 條錯誤
           return sum;
         }, 0);
-  
+
       // 提取錯誤訊息（新增對字串型別的支援）
       const extractErrors = (obj) =>
         Object.entries(obj)
@@ -75,15 +77,15 @@ function UserManagement() {
             return [];
           })
           .join("\n");
-  
+
       // 計算錯誤訊息數量
       const errorCount = data && typeof data === "object" ? countErrors(data) : 0;
-  
+
       // 提取少量錯誤詳細資訊
       if (errorCount > 0 && errorCount <= 3) {
         errorDetails = extractErrors(data);
       }
-  
+
       // 根據 HTTP 狀態碼處理
       switch (status) {
         case 400:
@@ -106,8 +108,8 @@ function UserManagement() {
       toast.error("伺服器無回應，請稍後再試");
     }
   };
-  
-  
+
+
   const handlePaymentStatus = async (id, isPaid) => {
     setLoading(true);
     try {
@@ -120,7 +122,7 @@ function UserManagement() {
       setLoading(false);
     }
   };
-  
+
   const handleToggleActive = async (id, isActive) => {
     setLoading(true);
     try {
@@ -133,7 +135,7 @@ function UserManagement() {
       setLoading(false);
     }
   };
-  
+
   const handleDelete = async (id) => {
     setLoading(true);
     try {
@@ -146,7 +148,7 @@ function UserManagement() {
       setLoading(false);
     }
   };
-  
+
   const handleChangePassword = async (password) => {
     setLoading(true);
     try {
@@ -202,6 +204,13 @@ function UserManagement() {
     setShowModal(true);
   };
 
+  const handleCloseACModal = () => {
+    setAcModal(false);
+  };
+
+  const handleShowACModal = () => {
+    setAcModal(true);
+  };
   const handleAddUser = async (complex, info) => {
     setLoading(true);
     try {
@@ -238,6 +247,7 @@ function UserManagement() {
             applyFilters={applyFilters}
             handleAddUser_easy={() => handleShowModal(false)}
             handleAddUser_complex={() => handleShowModal(true)}
+            handleAccountModal={() =>handleShowACModal() }
           />
         </Col>
 
@@ -275,6 +285,10 @@ function UserManagement() {
           setShowPasswordModal(false); setUserId(null);
         }}
         handleChangePassword={handleChangePassword}
+      />
+      <AccountManageModal
+        show={showAcModal}
+        handleClose={handleCloseACModal}
       />
     </Container>
   );

@@ -156,7 +156,7 @@ const AlumniListPage = () => {
                                             onClick={() => window.location.href = `/alumni/${alumni.id}`}
                                             style={{ cursor: 'pointer' }}
                                         >
-                                            <Card.Img variant="top" src={alumni.photo} alt={alumni.name} />
+                                            <Card.Img variant="top" src={process.env.REACT_APP_BASE_URL+alumni.photo} alt={alumni.name} />
                                             <Card.Body>
                                                 <Card.Title>{alumni.name}&nbsp;</Card.Title>
                                                 <Card.Text>{alumni.position.title}</Card.Text>

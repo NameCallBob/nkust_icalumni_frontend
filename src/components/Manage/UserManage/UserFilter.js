@@ -2,7 +2,8 @@ import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 
-function UserFilter({ filters, setFilters, applyFilters, handleAddUser_easy, handleAddUser_complex }) {
+function UserFilter({ filters, setFilters, applyFilters,
+   handleAddUser_easy, handleAddUser_complex,handleAccountModal }) {
   const [positions, setPositions] = useState([]);
 
   // 篩選條件變更處理
@@ -25,6 +26,19 @@ function UserFilter({ filters, setFilters, applyFilters, handleAddUser_easy, han
 
   return (
     <Container>
+      <h5>已開通帳號</h5>
+      <Row className='my-3'>
+        <Col>
+          <Button variant="success" onClick={handleAccountModal}>
+            查詢
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+
+        </Col>
+      </Row>
       <h5>新增帳號</h5>
       <Row>
         <Col>

@@ -12,7 +12,6 @@ function Slide() {
   const [slideImage, setSlideImage] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true); // 管理加載狀態
-
   const fallbackImage = {
     id: 0,
     image: "/images/活動整理中.png",
@@ -21,8 +20,7 @@ function Slide() {
   };
 
   const handleImageClick = (image) => {
-    let back_image = PicAxios().get(image);
-    setSelectedImage(back_image);
+    setSelectedImage(process.env.REACT_APP_BASE_URL + image);
     setShowModal(true);
   };
 

@@ -29,14 +29,12 @@ const CompanyTabsSearch = () => {
 
       // 搜尋公司
       if(prev_category != selectedCategory){
-        console.log(selectedCategory)
         Axios().get('company/search/',{params:{
           "industry":selectedCategory
         }
         })
         .then((res) => {
           setCompanies(res.data.results)
-          console.log(res.data.results)
         })
 
         setPrev_category(selectedCategory)

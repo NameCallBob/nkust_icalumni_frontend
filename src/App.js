@@ -37,6 +37,7 @@ import AlumniAssociationBylaws from 'pages/User/icalumni_Intro/RulePage';
 import IntroPage from 'pages/User/icalumni_Intro/IntroPage';
 import OutstandingAlumniPage from 'pages/Manager/OutstandingMemberManaPage';
 import GoogleAnalyticsWrapper from 'GA';
+import PosterModal from 'components/User/Home/PosterModal';
 
 // GA
 
@@ -45,6 +46,8 @@ function App() {
     <>
       <Router>
       <GoogleAnalyticsWrapper>
+      <PosterModal />
+
         <Routes>
         {/* 使用者端路由 */}
         {/* 首頁 */}
@@ -276,7 +279,7 @@ function App() {
         </Routes>
         </GoogleAnalyticsWrapper>
       </Router>
-      
+
       <Footer />
     </>
   );

@@ -105,6 +105,8 @@ function RecruitManaPage() {
         toast.success('新增職位成功');
       })
       .catch((err) => {
+        const messages = Object.values(err.response.data).flat();
+
         toast.error(`新增失敗：${err.response?.status === 404 ? '未找到資源' : err.response.data}`);
       });
   };
