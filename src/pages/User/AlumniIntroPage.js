@@ -98,112 +98,128 @@ const ProfilePage = () => {
             </Col>
           </Row>
 
-          {/* 公司資訊區塊 */}
-          <Row className="my-5">
-            <Col>
-              <h2 className="section-title mb-4">公司資訊</h2>
-            </Col>
-          </Row>
+    {/* 公司資訊區塊 */}
+    <Row className="my-5">
+      <Col>
+        <h2 className="section-title mb-4">公司資訊</h2>
+      </Col>
+    </Row>
 
-          {/* 公司介紹區塊 */}
-          <Row className="company-section mb-5">
-            <Col xs={12} md={4} className="mb-4">
-              <Image
-                src={process.env.REACT_APP_BASE_URL+profileData.company.photo}
-                rounded
-                fluid
-                style={{width:"400px",height:"300px"}}
-                alt="公司大樓"
-              />
-            </Col>
-            <Col xs={12} md={8}>
-              <h3 className="company-title mb-3">{profileData.company.name}</h3>
-              <p className="company-description mb-4">
-                {profileData.company.description}
-              </p>
-              <ul className="company-info-list list-unstyled">
-                <li className="mb-2">
-                  <FaMapMarkerAlt className="icon mr-2" /> {profileData.company.address}
-                </li>
-                <li className="mb-2">
-                  <FaPhoneAlt className="icon mr-2" /> {profileData.company.phone_number}
-                </li>
-                <li className="mb-2">
-                  <FaEnvelope className="icon mr-2" /> {profileData.company.email}
-                </li>
-                <li className="mb-2">
-                  <FaGlobe className="icon mr-2" />{' '}
+    {/* 判斷公司資訊是否存在 */}
+    {profileData.company ? (
+      <>
+        {/* 公司介紹區塊 */}
+        <Row className="company-section mb-5">
+          <Col xs={12} md={4} className="mb-4">
+            <Image
+              src={process.env.REACT_APP_BASE_URL + profileData.company.photo}
+              rounded
+              fluid
+              style={{ width: "400px", height: "300px" }}
+              alt="公司大樓"
+            />
+          </Col>
+          <Col xs={12} md={8}>
+            <h3 className="company-title mb-3">{profileData.company.name}</h3>
+            <p className="company-description mb-4">
+              {profileData.company.description}
+            </p>
+            <ul className="company-info-list list-unstyled">
+              <li className="mb-2">
+                <FaMapMarkerAlt className="icon mr-2" /> {profileData.company.address || "未提供地址"}
+              </li>
+              <li className="mb-2">
+                <FaPhoneAlt className="icon mr-2" /> {profileData.company.phone_number || "未提供聯絡電話"}
+              </li>
+              <li className="mb-2">
+                <FaEnvelope className="icon mr-2" /> {profileData.company.email || "未提供電子郵件"}
+              </li>
+              <li className="mb-2">
+                <FaGlobe className="icon mr-2" />{' '}
+                {profileData.company.website ? (
                   <a href={profileData.company.website} target="_blank" rel="noopener noreferrer">
                     {profileData.company.website}
                   </a>
-                </li>
-              </ul>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <h3 className="section-title mb-4">我們的產品</h3>
-            </Col>
-          </Row>
-          {/* 我們的產品 */}
-          <Row className="my-5">
-            <Col>
-              <p>{profileData.company.products}</p>
-              <p>{profileData.company.product_description}</p>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <h3 className="section-title mb-4">商品展示</h3>
-            </Col>
-          </Row>
-          {/* 商品展示 */}
-          <Row className="my-5">
-            <Col>
-              {profileData.company_images && profileData.company_images.length > 0 ? (
-                <Carousel indicators={false} controls={true} interval={3000} slide={false}>
-                  {profileData.company_images.map((image, index) => (
-                    <Carousel.Item key={index}>
-                      <img
-                        className="d-block w-100"
-                        src={process.env.REACT_APP_BASE_URL+image.image}
-                        alt={image.title}
-                        onClick={() => handleImageClick(image.image)}
-                        style={{ cursor: 'pointer', objectFit: 'cover', height: '400px' }}
-                      />
-                      <Carousel.Caption>
-                        <h5>{image.title}</h5>
-                        <p>{image.description}</p>
-                      </Carousel.Caption>
-                    </Carousel.Item>
-                  ))}
-                </Carousel>
-              ) : (
-                <p>目前沒有公司圖片。</p>
-              )}
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <h3 className="section-title mb-4">我們的位置</h3>
-            </Col>
-          </Row>
-          {/* 我們的位置 */}
-          <Row className="my-5">
-            <Col>
-              <div style={{ width: '100%', height: '400px' }}>
-                <iframe
-                  title="Company Location"
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(profileData.company.address)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                ></iframe>
-              </div>
-            </Col>
-          </Row>
+                ) : (
+                  "未提供網站"
+                )}
+              </li>
+            </ul>
+          </Col>
+        </Row>
+
+        {/* 我們的產品 */}
+        <Row>
+          <Col>
+            <h3 className="section-title mb-4">我們的產品</h3>
+            <p>{profileData.company.products || "未提供產品資訊"}</p>
+            <p>{profileData.company.product_description || "未提供產品描述"}</p>
+          </Col>
+        </Row>
+
+        {/* 商品展示 */}
+        <Row>
+          <Col>
+            <h3 className="section-title mb-4">商品展示</h3>
+          </Col>
+        </Row>
+        <Row className="my-5">
+          <Col>
+            {profileData.company_images && profileData.company_images.length > 0 ? (
+              <Carousel indicators={false} controls={true} interval={3000} slide={false}>
+                {profileData.company_images.map((image, index) => (
+                  <Carousel.Item key={index}>
+                    <img
+                      className="d-block w-100"
+                      src={process.env.REACT_APP_BASE_URL + image.image}
+                      alt={image.title}
+                      onClick={() => handleImageClick(image.image)}
+                      style={{ cursor: "pointer", objectFit: "cover", height: "400px" }}
+                    />
+                    <Carousel.Caption>
+                      <h5>{image.title}</h5>
+                      <p>{image.description}</p>
+                    </Carousel.Caption>
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            ) : (
+              <p>目前沒有公司圖片。</p>
+            )}
+          </Col>
+        </Row>
+
+        {/* 我們的位置 */}
+        <Row>
+          <Col>
+            <h3 className="section-title mb-4">我們的位置</h3>
+          </Col>
+        </Row>
+        <Row className="my-5">
+          <Col>
+            <div style={{ width: "100%", height: "400px" }}>
+              <iframe
+                title="Company Location"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                  profileData.company.address || "未知地址"
+                )}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+              ></iframe>
+            </div>
+          </Col>
+        </Row>
+      </>
+    ) : (
+      <Row className="my-5">
+        <Col>
+          <h3 className="section-title text-center">系友無添加公司資訊</h3>
+        </Col>
+      </Row>
+      )}
 
           {/* 圖片放大 Modal */}
           <Modal show={showModal} onHide={handleCloseModal} centered>
