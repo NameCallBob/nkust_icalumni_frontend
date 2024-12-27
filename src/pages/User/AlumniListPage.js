@@ -8,6 +8,7 @@ import 'css/AlumniListPage.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 import FeaturedAlumni from 'components/User/alumni/featrued';
+import SEO from 'SEO';
 
 const AlumniListPage = () => {
     const [key, setKey] = useState('全部'); // 預設顯示 "全部"
@@ -112,6 +113,12 @@ const AlumniListPage = () => {
 
     return (
         <Container>
+            <SEO
+      title="系友們"
+      description="瀏覽智慧商務系友會成員名單，發現更多聯繫機會與合作夥伴。"
+      keywords={["智慧商務", "系友列表", "成員"]}
+    />
+
             <h1 className="text-center my-4">系友介紹</h1>
 
             <FeaturedAlumni featuredAlumni={featured} />

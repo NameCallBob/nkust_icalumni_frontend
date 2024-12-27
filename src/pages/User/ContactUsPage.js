@@ -4,6 +4,7 @@ import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaClock, FaFacebook, FaLine, Fa
 import { motion } from "framer-motion";
 import Axios from "common/Axios";
 import { toast } from "react-toastify";
+import SEO from 'SEO';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -37,6 +38,11 @@ const ContactUsPage = () => {
 
   return (
     <Container className="py-5">
+       <SEO
+      title="聯絡我們"
+      description="若有任何疑問或建議，歡迎聯絡智慧商務系友會，我們將竭誠為您服務。"
+      keywords={["智慧商務", "聯絡我們", "客服"]}
+    />
       {/* Google Map */}
       <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
         <Row className="mb-4">
