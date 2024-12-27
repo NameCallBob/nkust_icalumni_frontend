@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Nav, Card, Container, Row, Col, Form, Button, Fade, Spinner } from 'react-bootstrap';
 import LoadingSpinner from 'components/LoadingSpinner';
+import SEO from 'SEO';
 
 const Search = () => {
   const location = useLocation();
@@ -105,6 +106,11 @@ const Search = () => {
 
   return (
     <Container className='my-4'>
+      <SEO
+      title="招募查詢"
+      description="了解智慧商務系友會中系友們的招募需求與最新機會，加入我們，共創未來。"
+      keywords={["智慧商務", "招募", "招聘", "加入系友會"]}
+    />
       <Row className="d-flex flex-column flex-md-row">
         <Col md={3} className="mb-3 mb-md-0">
           <Nav variant="pills" className="flex-md-column justify-content-center">

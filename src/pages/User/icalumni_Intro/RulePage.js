@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 import Axios from "common/Axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import SEO from "SEO";
 
 const AlumniAssociationBylaws = () => {
   const [pdfFile, setPdfFile] = useState(null);
@@ -50,6 +51,11 @@ const AlumniAssociationBylaws = () => {
 
   return (
     <Container fluid className="py-4">
+            <SEO
+        title="章程 - 智慧商務系友會"
+        description="瀏覽智慧商務系友會的章程與規範，了解我們的運作方式與核心價值。"
+        keywords={["智慧商務", "章程", "規範"]}
+      />
       <Row>
         <Col md={10} className="mx-auto">
           <Card className="shadow-lg">

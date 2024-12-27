@@ -8,12 +8,18 @@ import VerticalCarousel from "components/User/Home/VerticalSlide";
 import CategoryDropdown from "components/User/Home/dropdown";
 import SearchBar from "components/User/Home/SearchBar";
 import CompanyTabsSearch from "components/User/Home/CompanySearch";
+import SEO from "SEO";
 
 function Home() {
 
 
     return (
         <>
+        <SEO
+        title="首頁 - 智慧商務系友會"
+        description="智慧商務系友會提供多元服務，包含產品查詢、系友資訊、入會指南等，致力於促進系友間的聯繫與交流。"
+        keywords={["智慧商務", "系友會", "產品查詢", "招募"]}
+        />
         <Container className="my-3">
 
             <Row className="my-2 d-flex align-items-center">

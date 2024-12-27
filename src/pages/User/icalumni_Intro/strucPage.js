@@ -2,6 +2,7 @@ import { Container, Spinner, Alert, Carousel } from 'react-bootstrap';
 import DOMPurify from 'dompurify';
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
+import SEO from 'SEO';
 
 const StructurePage = () => {
   const [slides, setSlides] = useState({ largeImages: [], smallImages: [] });
@@ -62,6 +63,11 @@ const StructurePage = () => {
 
   return (
     <Container className="my-5">
+          <SEO
+      title="組織架構"
+      description="智慧商務系友會的組織架構介紹，包括核心成員與運作模式。"
+      keywords={["智慧商務", "組織", "架構"]}
+    />
       {/* 幻燈片元件 */}
       {slides.largeImages.length > 0 ? (
         <Carousel>

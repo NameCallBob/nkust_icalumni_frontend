@@ -5,6 +5,7 @@ import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 // 預防 XSS 攻擊
 import DOMPurify from 'dompurify';
+import SEO from 'SEO';
 
 function RecruitPage() {
   const [show, setShow] = useState(false);
@@ -42,6 +43,11 @@ function RecruitPage() {
 
   return (
     <Container className="mt-5">
+          <SEO
+      title="招募查詢"
+      description="了解智慧商務系友會中系友們的招募需求與最新機會，加入我們，共創未來。"
+      keywords={["智慧商務", "招募", "招聘", "加入系友會"]}
+    />
       <h1 className="mb-4">系友公司徵才資訊</h1>
       <Table responsive hover className="job-table">
         <thead className="table-dark">

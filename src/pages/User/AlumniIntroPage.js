@@ -4,6 +4,7 @@ import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaGlobe } from 'react-icons/fa'
 import "css/user/aliumni/ProfilePage.css"
 import Axios from 'common/Axios';
 import { useParams } from 'react-router-dom';
+import SEO from 'SEO';
 
 const ProfilePage = () => {
   const { id } = useParams(); // 取得網址中的 id (例如 1)
@@ -31,7 +32,13 @@ const ProfilePage = () => {
   const BASE_URL = ''; // 如果需要，請替換為您的基本 URL
 
   return (
+    
     <Container>
+      <SEO
+        title="系友詳細 - 智慧商務系友會"
+        description="深入了解智慧商務系友會各個成員的背景、專長與成就，促進交流與合作。"
+        keywords={["智慧商務", "系友詳細", "會員資訊"]}
+      />
       {profileData ? (
         <>
           {/* 個人資訊區塊 */}
