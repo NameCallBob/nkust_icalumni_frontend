@@ -20,7 +20,6 @@ import ManagerNav from 'components/Manage/ManagerNav.js';
 import MemberCenter from 'pages/Manager/ManagerMainPage';
 import MemberManagement from 'pages/Manager/UserManagePage';
 import RecruitManaPage from 'pages/Manager/RecruitManaPage';
-import ProductList from 'pages/Manager/ProductListManaPage';
 import PhotoManagementPage from 'pages/Manager/PicManaPage';
 import CompanyForm from 'pages/Manager/CompanyManaPage';
 import OtherManage from 'pages/Manager/OtherManagePage';
@@ -38,8 +37,7 @@ import IntroPage from 'pages/User/icalumni_Intro/IntroPage';
 import OutstandingAlumniPage from 'pages/Manager/OutstandingMemberManaPage';
 import GoogleAnalyticsWrapper from 'GA';
 import PosterModal from 'components/User/Home/PosterModal';
-
-// GA
+import ProductManagement from 'pages/Manager/ProductListManaPage';
 
 function App() {
   return (
@@ -188,7 +186,7 @@ function App() {
     <Route path="/alumni/manage/product/" element={
       <>
         <ManagerNav />
-        <ProductList />
+        <ProductManagement />
       </>
     } />
     {/* 照片管理 */}
