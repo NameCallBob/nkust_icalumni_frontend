@@ -5,6 +5,7 @@ import "css/user/aliumni/ProfilePage.css"
 import Axios from 'common/Axios';
 import { useParams } from 'react-router-dom';
 import SEO from 'SEO';
+import ProductDisplay from 'components/User/intro/Productlist';
 
 const ProfilePage = () => {
   const { id } = useParams(); // 取得網址中的 id (例如 1)
@@ -159,11 +160,15 @@ const ProfilePage = () => {
         <Row>
           <Col>
             <h3 className="section-title mb-4">我們的產品</h3>
-            <p>{profileData.company.products || "未提供產品資訊"}</p>
-            <p>{profileData.company.product_description || "未提供產品描述"}</p>
+            
           </Col>
         </Row>
-
+        <Row>
+                <Col>
+                <p>{profileData.company.products || "未提供產品資訊"}</p>
+              <p>{profileData.company.product_description || "未提供產品描述"}</p>
+                </Col>
+        </Row>
         {/* 商品展示 */}
         <Row>
           <Col>
@@ -195,7 +200,9 @@ const ProfilePage = () => {
             )}
           </Col>
         </Row>
-
+          <Row>
+            <ProductDisplay memberId={id} />
+          </Row>
         {/* 我們的位置 */}
         <Row>
           <Col>
