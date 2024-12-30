@@ -52,7 +52,8 @@ const AlumniAssociationBylaws = () => {
   return (
     <Container fluid className="py-4">
             <SEO
-        title="章程 - 智慧商務系友會"
+      main={false}
+      title="章程"
         description="瀏覽智慧商務系友會的章程與規範，了解我們的運作方式與核心價值。"
         keywords={["智慧商務", "章程", "規範"]}
       />

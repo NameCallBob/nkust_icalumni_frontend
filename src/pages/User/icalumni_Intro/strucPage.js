@@ -64,6 +64,7 @@ const StructurePage = () => {
   return (
     <Container className="my-5">
           <SEO
+      main={false}
       title="組織架構"
       description="智慧商務系友會的組織架構介紹，包括核心成員與運作模式。"
       keywords={["智慧商務", "組織", "架構"]}

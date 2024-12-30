@@ -36,7 +36,8 @@ const ProfilePage = () => {
     
     <Container>
       <SEO
-        title="系友詳細 - 智慧商務系友會"
+      main={false}
+        title={"系友"+profileData.name}
         description="深入了解智慧商務系友會各個成員的背景、專長與成就，促進交流與合作。"
         keywords={["智慧商務", "系友詳細", "會員資訊"]}
       />

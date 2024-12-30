@@ -39,6 +39,7 @@ const ContactUsPage = () => {
   return (
     <Container className="py-5">
        <SEO
+       main={false}
       title="聯絡我們"
       description="若有任何疑問或建議，歡迎聯絡智慧商務系友會，我們將竭誠為您服務。"
       keywords={["智慧商務", "聯絡我們", "客服"]}

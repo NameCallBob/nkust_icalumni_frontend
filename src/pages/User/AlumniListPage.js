@@ -114,6 +114,7 @@ const AlumniListPage = () => {
     return (
         <Container>
             <SEO
+            main={false}
       title="系友們"
       description="瀏覽智慧商務系友會成員名單，發現更多聯繫機會與合作夥伴。"
       keywords={["智慧商務", "系友列表", "成員"]}
