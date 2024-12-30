@@ -1,6 +1,7 @@
 import { Container, Spinner, Alert, Carousel } from 'react-bootstrap';
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
+import SEO from "SEO";
 
 const IntroPage = () => {
   const [slides, setSlides] = useState({ largeImages: [], smallImages: [] });
@@ -60,6 +61,12 @@ const IntroPage = () => {
 
   return (
     <Container className="my-5">
+                  <SEO
+      main={false}
+      title="簡介"
+        description="了解國立高雄科技大學智慧商務系友會的成立理念、核心價值與使命，促進系友交流與商務發展。"
+        keywords={["智慧商務", "簡介", "介紹","了解"]}
+      />
       {/* 幻燈片元件 */}
       {slides.largeImages.length > 0 ? (
         <Carousel>

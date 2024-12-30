@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'css/user/login.css';
+import SEO from 'SEO';
 
 const BLOCK_TIME_SECONDS = 300; // 封鎖持續時間：半天（12 小時）
 
@@ -109,10 +110,12 @@ const Login = () => {
 
   return (
     <>
-      <Helmet>
-        <title>智商系系友會｜登入</title>
-        <meta name="description" content="歡迎尊榮智慧商務系系友登入本系統" />
-      </Helmet>
+    <SEO
+          main={false}
+      title="系友登入"
+      description="歡迎尊榮系友登入系統，上傳最新的消息讓大家了解！。"
+      keywords={["智慧商務", "登入", "忘記密碼", "系友會"]}
+    />
       <div>
         <Container className="login-container my-5 p-4 rounded shadow">
           <Row className="justify-content-md-center">

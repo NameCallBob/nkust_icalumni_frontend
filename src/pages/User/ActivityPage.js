@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Container, Row, Col, Carousel ,Modal} from 'react-bootstrap';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
+import SEO from 'SEO';
 
 const ImageSlider = ({ images }) => {
     const [showModal, setShowModal] = useState(false);
@@ -87,7 +88,14 @@ const ImageSlider = ({ images }) => {
     if (!event) return <LoadingSpinner />;
   
     return (
+      
       <Container className="mt-4">
+        <SEO
+      main={false}
+        title={event.title}
+        description="深入了解智慧商務系友會各個成員的背景、專長與成就，促進交流與合作。"
+        keywords={["智慧商務", "系友詳細", "會員資訊"]}
+      />
         <Row>
           <Col>
             <h1>{event.title}</h1>

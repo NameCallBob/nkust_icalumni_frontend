@@ -16,7 +16,8 @@ function Home() {
     return (
         <>
         <SEO
-        title="首頁 - 智慧商務系友會"
+        main={true}
+        title="首頁"
         description="智慧商務系友會提供多元服務，包含產品查詢、系友資訊、入會指南等，致力於促進系友間的聯繫與交流。"
         keywords={["智慧商務", "系友會", "產品查詢", "招募"]}
         />

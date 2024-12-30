@@ -1,6 +1,7 @@
 import { Container, Spinner, Alert, Carousel } from 'react-bootstrap';
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
+import SEO from "SEO";
 
 const JoinUsPage = () => {
   const [slides, setSlides] = useState({ largeImages: [], smallImages: [] });
@@ -60,6 +61,12 @@ const JoinUsPage = () => {
 
   return (
     <Container className="my-5">
+                  <SEO
+      main={false}
+      title="加入我們"
+        description="成為智慧商務系友會的一員，獲取資源、商務合作，並與系友共同成長。立即加入！"
+        keywords={["智慧商務", "加入", "交流"]}
+      />
       {/* 幻燈片元件 */}
       {slides.largeImages.length > 0 ? (
         <Carousel>
