@@ -9,6 +9,7 @@ import LoadingSpinner from 'components/LoadingSpinner';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AccountManageModal from 'components/Manage/UserManage/AccountModal';
+import UploadExcelModal from 'components/Manage/UserManage/MemberExcelModal';
 /**
  * 使用者管理元件
  * @returns
@@ -23,6 +24,7 @@ function UserManagement() {
     is_active: '',
   });
   const [showModal, setShowModal] = useState(false);
+  const [showExcelModal, setExcelModal] = useState(false);
   const [showAcModal, setAcModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isComplex, setIsComplex] = useState(false);
@@ -211,6 +213,12 @@ function UserManagement() {
   const handleShowACModal = () => {
     setAcModal(true);
   };
+  const handleShowExcelModal = () => {
+    setExcelModal(true)
+  }
+  const handleCloseExcelModal = () => {
+    setExcelModal(false)
+  }
   const handleAddUser = async (complex, info) => {
     setLoading(true);
     try {
@@ -248,6 +256,7 @@ function UserManagement() {
             handleAddUser_easy={() => handleShowModal(false)}
             handleAddUser_complex={() => handleShowModal(true)}
             handleAccountModal={() =>handleShowACModal() }
+            handleExcelModal={() => handleShowExcelModal()}
           />
         </Col>
 
@@ -289,6 +298,10 @@ function UserManagement() {
       <AccountManageModal
         show={showAcModal}
         handleClose={handleCloseACModal}
+      />
+      <UploadExcelModal 
+        show={showExcelModal}
+        handleClose={() => {handleCloseExcelModal()}}
       />
     </Container>
   );

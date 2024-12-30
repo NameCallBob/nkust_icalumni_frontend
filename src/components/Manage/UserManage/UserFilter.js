@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 
 function UserFilter({ filters, setFilters, applyFilters,
-   handleAddUser_easy, handleAddUser_complex,handleAccountModal }) {
+   handleAddUser_easy, handleAddUser_complex,handleAccountModal,
+  handleExcelModal
+  }) {
   const [positions, setPositions] = useState([]);
 
   // 篩選條件變更處理
@@ -33,11 +35,14 @@ function UserFilter({ filters, setFilters, applyFilters,
             查詢
           </Button>
         </Col>
+        <Col>
+        <Button variant="success" onClick={handleExcelModal}>
+            上傳系友資料
+          </Button>
+        </Col>
       </Row>
       <Row>
-        <Col>
 
-        </Col>
       </Row>
       <h5>新增帳號</h5>
       <Row>
