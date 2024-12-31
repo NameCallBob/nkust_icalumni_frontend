@@ -96,10 +96,10 @@ function NewUserModal({
         setHint("請設定帳號密碼，至少 8 個字元。");
         break;
       case "school":
-        setHint("請輸入畢業學校，例如：國立高雄科技大學 智慧商務系。");
+        setHint("請輸入就學學校，例如：國立高雄科技大學 智慧商務系。");
         break;
       case "grade":
-        setHint("請輸入畢業學年，例如：113。");
+        setHint("請輸入入學學年，例如：113。");
         break;
       case "student_id":
         setHint("請輸入學號，例如：S12345678。");
@@ -377,28 +377,28 @@ function NewUserModal({
                     </Form.Control>
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formSchool">
-                    <Form.Label>畢業學校</Form.Label>
+                    <Form.Label>就學學校</Form.Label>
                     <Form.Control
                       type="text"
                       name="school"
                       value={formData.graduate.school}
                       onChange={handleChange}
                       onFocus={() => handleFocus("school")}
-                      placeholder="輸入畢業學校"
+                      placeholder="輸入就學學校"
                     />
                     {errors.graduate?.school && (
                       <div className="text-danger">{errors.graduate.school[0]}</div>
                     )}
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formGrade">
-                    <Form.Label>畢業學年</Form.Label>
+                    <Form.Label>入學學年</Form.Label>
                     <Form.Control
                       type="text"
                       name="grade"
                       value={formData.graduate.grade}
                       onFocus={() => handleFocus("grade")}
                       onChange={handleChange}
-                      placeholder="輸入畢業學年"
+                      placeholder="輸入入學學年"
                     />
                     {errors.graduate?.year && (
                       <div className="text-danger">{errors.graduate.year[0]}</div>

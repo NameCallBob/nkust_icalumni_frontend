@@ -16,7 +16,7 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
       const { [field]: _, ...rest } = prevState; // 移除特定欄位錯誤
       return rest;
     });
-  
+
     switch (field) {
       case "name":
         setHint("請輸入您的真實姓名，例如：王小明，最多 50 個字。");
@@ -43,7 +43,7 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
         setHint("請輸入畢業學校，例如：國立高雄科技大學 智慧商務系。");
         break;
       case "grade":
-        setHint("請輸入畢業學年，例如：113。");
+        setHint("請輸入入學學年，例如：113。");
         break;
       case "student_id":
         setHint("請輸入學號，例如：S12345678。");
@@ -56,7 +56,7 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
 
   const validateFields = (name, value) => {
     const errors = {};
-    
+
     if (name === "name" && (!value || value.trim() === "")) {
       errors.name = ["姓名為必填項目"];
     }
@@ -78,11 +78,11 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
     if (name === "photo" && value && value.size > 2 * 1024 * 1024) {
       errors.photo = ["照片大小不可超過 2MB"];
     }
-  
+
     return errors;
   };
 
-  
+
   const handleBlur = () => {
     setHint(""); // 失焦時清空提示
   };
@@ -101,7 +101,7 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
   // 處理照片上傳並轉換為 base64
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-  
+
     if (file && file.size > 2 * 1024 * 1024) {
       setErrors((prevState) => ({
         ...prevState,
@@ -109,7 +109,7 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
       }));
       return;
     }
-  
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setFormData((prevState) => ({
@@ -117,16 +117,16 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
         photo: reader.result,
       }));
     };
-  
+
     if (file) {
       reader.readAsDataURL(file);
     }
   };
-  
+
   // 對比 formData 和 parentData，找出變更
   const validateAllFields = () => {
     const newErrors = {};
-  
+
     Object.keys(formData).forEach((key) => {
       if (key === "graduate") {
         Object.keys(formData.graduate).forEach((nestedKey) => {
@@ -143,20 +143,20 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
         }
       }
     });
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // 回傳是否沒有錯誤
   };
-  
+
 
   const handleSubmit = () => {
     if (!validateAllFields()) {
       return; // 若驗證未通過，則阻止提交
     }
-  
+
     setLoading(true);
     const changedData = isEditMode ? getChangedData() : formData;
-  
+
     setTimeout(() => {
       handleSave(formData, changedData);
       setLoading(false);
@@ -165,7 +165,7 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-  
+
     if (['graduate_year', 'graduate', 'student_id'].includes(name)) {
       const graduateField = name === 'graduate_year' ? 'grade' : name === 'graduate' ? 'school' : 'student_id';
       setFormData((prevState) => ({
@@ -181,12 +181,12 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
         [name]: type === 'checkbox' ? checked : value,
       });
     }
-  
+
     // 動態驗證
     const fieldErrors = validateFields(name, value);
     setErrors((prevState) => ({ ...prevState, ...fieldErrors }));
   };
-  
+
   const getChangedData = () => {
     return Object.keys(formData).reduce((changedData, key) => {
       if (typeof formData[key] === 'object' && formData[key] !== null) {
@@ -196,18 +196,18 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
           }
           return nested;
         }, {});
-  
+
         if (Object.keys(nestedChanges).length > 0) {
           changedData[key] = nestedChanges;
         }
       } else if (formData[key] !== (parentData[key] ?? undefined)) {
         changedData[key] = formData[key];
       }
-  
+
       return changedData;
     }, {});
   };
-  
+
 
   return (
 <Modal show={show} onHide={handleClose} size="lg" centered>
@@ -355,10 +355,10 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
         </Row>
 
         <Row>
-          {/* 畢業學年 */}
+          {/* 入學學年 */}
           <Col xs={12} md={6}>
             <Form.Group controlId="graduate_year">
-              <Form.Label>畢業學年</Form.Label>
+              <Form.Label>入學學年</Form.Label>
               <Form.Control
                 type="text"
                 name="graduate_year"

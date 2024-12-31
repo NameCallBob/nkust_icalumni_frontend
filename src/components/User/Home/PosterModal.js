@@ -2,6 +2,7 @@ import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Carousel } from 'react-bootstrap';
 import "css/user/poster.css"
+import LoadingSpinner from 'components/LoadingSpinner';
 const PosterModal = () => {
   const [show, setShow] = useState(false); // 控制 Modal 顯示
   const [posterImages, setPosterImages] = useState([]); // 存放海報資料
@@ -10,22 +11,22 @@ const PosterModal = () => {
     // 判斷是否是第一次進入頁面
     const hasSeenPoster = localStorage.getItem('hasSeenPoster');
 
+        // 使用 Axios 從 API 取得資料
+        const fetchPosters = async () => {
+          try {
+            const response = await Axios().get('/picture/popup-ads/?active=true'); // 替換為實際的 API 路徑
+            setPosterImages(response.data.results); // 假設 API 回傳的資料為圖片 URL 的陣列
+          } catch (error) {
+            console.error('Error fetching posters:', error);
+          }
+        };
+
     if (!hasSeenPoster) {
       setShow(true); // 顯示彈跳視窗
       localStorage.setItem('hasSeenPoster', 'true'); // 記錄已看過狀態
+      fetchPosters();
     }
 
-    // 使用 Axios 從 API 取得資料
-    const fetchPosters = async () => {
-      try {
-        const response = await Axios().get('/picture/popup-ads/?active=true'); // 替換為實際的 API 路徑
-        setPosterImages(response.data.results); // 假設 API 回傳的資料為圖片 URL 的陣列
-      } catch (error) {
-        console.error('Error fetching posters:', error);
-      }
-    };
-
-    fetchPosters();
   }, []);
 
   const handleClose = () => setShow(false);
@@ -74,9 +75,7 @@ const PosterModal = () => {
             ))}
           </Carousel>
         ) : (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <p>載入中...</p>
-          </div>
+        <LoadingSpinner />
         )}
       </Modal.Body>
     </Modal>

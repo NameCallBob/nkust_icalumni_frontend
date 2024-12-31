@@ -33,14 +33,29 @@ const ProfilePage = () => {
   const BASE_URL = ''; // 如果需要，請替換為您的基本 URL
 
   return (
-    
+
     <Container>
-      <SEO
-      main={false}
-        title={"系友"+profileData.name}
-        description="深入了解智慧商務系友會各個成員的背景、專長與成就，促進交流與合作。"
-        keywords={["智慧商務", "系友詳細", "會員資訊"]}
-      />
+ {profileData ? (
+      <>
+        <SEO
+          main={false}
+          title={`系友 ${profileData.name}`}
+          description="深入了解智慧商務系友會各個成員的背景、專長與成就，促進交流與合作。"
+          keywords={["智慧商務", "系友詳細", "會員資訊"]}
+        />
+        {/* 其餘內容 */}
+      </>
+    ) : (
+      <>
+        <SEO
+          main={false}
+          title="系友資料載入中"
+          description="智慧商務系友會成員資料正在載入，請稍候。"
+          keywords={["智慧商務", "系友詳細", "會員資訊"]}
+        />
+        <p>資料載入中...</p>
+      </>
+    )}
       {profileData ? (
         <>
           {/* 個人資訊區塊 */}
@@ -161,7 +176,7 @@ const ProfilePage = () => {
         <Row>
           <Col>
             <h3 className="section-title mb-4">我們的產品</h3>
-            
+
           </Col>
         </Row>
         <Row>
