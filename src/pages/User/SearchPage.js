@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Nav, Card, Container, Row, Col, Form, Button, Fade, Spinner } from 'react-bootstrap';
 import LoadingSpinner from 'components/LoadingSpinner';
 import SEO from 'SEO';
+import { BsSearch } from "react-icons/bs";
 
 const Search = () => {
   const location = useLocation();
@@ -67,7 +68,7 @@ const Search = () => {
     // 如果有選擇的類型則加入查詢
     if (selectedType) {
       query['industry'] = selectedType;
-    } 
+    }
 
     // 添加輸入條件
     if (searchTerm) {
@@ -181,11 +182,32 @@ const Search = () => {
               ))
             ) : (
               <Fade in={showNoResults}>
-                <Col xs={12}>
-                  <div className="text-center">
-                    <p>沒有符合的搜尋結果</p>
-                  </div>
-                </Col>
+                  <Container
+    className="d-flex justify-content-center align-items-center"
+    style={{ height: "100vh" }} // 全螢幕高度
+  >
+    <Col xs={12} md={8} lg={6}> {/* 控制卡片最大寬度 */}
+      <Card className="text-center shadow-sm" style={{ maxWidth: "500px", padding: "20px" }}>
+        <Row className="justify-content-center">
+          <Col xs="auto">
+            <BsSearch size={50} className="text-muted" />
+          </Col>
+        </Row>
+        <Card.Body>
+          <Card.Title className="mt-3">找不到相關結果</Card.Title>
+          <Card.Text>
+            {searchTerm ? (
+              <>
+                沒有找到與 <strong>{searchTerm}</strong> 相關的內容，請換個關鍵詞搜尋!
+              </>
+            ) : (
+              "請嘗試輸入其他關鍵字或稍後再試。"
+            )}
+          </Card.Text>
+        </Card.Body>
+      </Card>
+    </Col>
+  </Container>
               </Fade>
             )}
           </Row>
