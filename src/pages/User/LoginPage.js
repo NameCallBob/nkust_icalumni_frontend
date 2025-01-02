@@ -111,7 +111,7 @@ const Login = () => {
   return (
     <>
     <SEO
-          main={false}
+      main={false}
       title="系友登入"
       description="歡迎尊榮系友登入系統，上傳最新的消息讓大家了解！。"
       keywords={["智慧商務", "登入", "忘記密碼", "系友會"]}
