@@ -13,7 +13,7 @@ import {
   Pagination,
 } from "react-bootstrap";
 import Axios from "common/Axios";
-
+import searchImage from "assets/searching.png"
 const ProductDisplay = ({ memberId }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -93,34 +93,57 @@ const ProductDisplay = ({ memberId }) => {
       </Tabs>
 
       <Row className="g-4">
-        {paginatedProducts.map((product) => (
-          <Col md={4} sm={6} xs={12} key={product.name}>
-          <Card
-            className="shadow-sm product-card"
-            onClick={() => handleModalShow(product)}
-          >
-            <Carousel fade>
-              {product.photos.map((photo, index) => (
-                <Carousel.Item key={index}>
-                  <img
-                    style={{
-                      width: "300px", // 固定寬度
-                      height: "200px", // 固定高度
-                      objectFit: "cover", // 防止圖片變形
-                    }}
-                    className="d-block w-100"
-                    src={process.env.REACT_APP_BASE_URL + photo}
-                    alt={`Product Image ${index + 1}`}
-                  />
-                </Carousel.Item>
-              ))}
-            </Carousel>
-            <Card.Body>
-              <Card.Title>{product.name}</Card.Title>
-            </Card.Body>
-          </Card>
-        </Col>
-        ))}
+      {paginatedProducts.length > 0 ? (
+    paginatedProducts.map((product) => (
+      <Col md={4} sm={6} xs={12} key={product.name}>
+        <Card
+          className="shadow-sm product-card"
+          onClick={() => handleModalShow(product)}
+        >
+          <Carousel fade>
+            {product.photos.map((photo, index) => (
+              <Carousel.Item key={index}>
+                <img
+                  style={{
+                    width: "300px", // 固定寬度
+                    height: "200px", // 固定高度
+                    objectFit: "cover", // 防止圖片變形
+                  }}
+                  className="d-block w-100"
+                  src={process.env.REACT_APP_BASE_URL + photo}
+                  alt={`Product Image ${index + 1}`}
+                />
+              </Carousel.Item>
+            ))}
+          </Carousel>
+          <Card.Body>
+            <Card.Title>{product.name}</Card.Title>
+          </Card.Body>
+        </Card>
+      </Col>
+    ))
+  ) : (
+    <Col>
+      <div className="d-flex flex-column align-items-center text-muted py-5">
+        <img
+          src={searchImage} // 可替換為您的圖示檔案
+          alt="沒有產品找到"
+          style={{ width: "150px", height: "150px", marginBottom: "20px" }}
+        />
+        <h5>目前沒有商品可供顯示</h5>
+        <p className="text-center">
+          嘗試切換分類或稍後再試，<br />
+          若問題持續發生，系友可能尚未上架商品！。
+        </p>
+        <Button
+          variant="primary"
+          onClick={() => handleTabSelect("All")}
+        >
+          查看所有商品
+        </Button>
+      </div>
+    </Col>
+  )}
       </Row>
 
       <div className="d-flex justify-content-center mt-4">

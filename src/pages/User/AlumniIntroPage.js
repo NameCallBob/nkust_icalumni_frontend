@@ -6,12 +6,14 @@ import Axios from 'common/Axios';
 import { useParams } from 'react-router-dom';
 import SEO from 'SEO';
 import ProductDisplay from 'components/User/intro/Productlist';
-
+import { toast } from 'react-toastify';
+import notfoundpic  from "assets/系有資料404.png"
 const ProfilePage = () => {
   const { id } = useParams(); // 取得網址中的 id (例如 1)
   const [profileData, setProfileData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalImage, setModalImage] = useState('');
+  const [notfound , setNotfound] = useState(false)
 
   const handleImageClick = (src) => {
     setModalImage(src);
@@ -26,11 +28,25 @@ const ProfilePage = () => {
         setProfileData(response.data);
       })
       .catch(error => {
-        console.error("Error fetching profile data:", error);
+       if (error.response.status === 404){
+        setNotfound(true)
+        toast.warn("此系友目前資料暫不開放")
+       }
       });
   }, [id]);
 
-  const BASE_URL = ''; // 如果需要，請替換為您的基本 URL
+  if (notfound){
+    return(
+      <Container>
+        <img 
+        src={notfoundpic}
+        style={{
+          width:"100%"
+        }}
+        />
+      </Container>
+    )
+  }
 
   return (
 
@@ -64,7 +80,7 @@ const ProfilePage = () => {
               <Image
                 src={process.env.REACT_APP_BASE_URL+profileData.photo}
                 roundedCircle
-                style={{ width: '100%', height: 'auto', maxWidth: '350px' }}
+                style={{ width: '100%', height: 'auto', maxWidth: '350px',objectFit: 'cover'}}
                 alt="個人照片"
               />
             </Col>
@@ -139,7 +155,7 @@ const ProfilePage = () => {
               src={process.env.REACT_APP_BASE_URL + profileData.company.photo}
               rounded
               fluid
-              style={{ width: "400px", height: "300px" }}
+              style={{ width: "400px", height: "300px" , objectFit: 'cover' }}
               alt="公司大樓"
             />
           </Col>
