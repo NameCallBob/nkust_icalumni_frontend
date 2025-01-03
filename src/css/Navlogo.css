@@ -1,0 +1,155 @@
+.logo-img {
+  max-width: 100%;
+  height: 3vw;
+}
+
+@media (max-width: 768px) {
+  .logo-img {
+    height: 10vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-img {
+    height: 8vw;
+  }
+}
+
+/* 白色 Navbar 背景，黑色字體 */
+.navbar {
+  background-color: #fff;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #e5e5e5; /* 添加細邊框增強視覺層次 */
+}
+
+.navbar-brand {
+  color: #000;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.navbar-nav {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.navbar-nav .nav-link {
+  color: #000;
+  font-family: "Microsoft JhengHei", sans-serif;
+  font-size: 1.1rem;
+  padding: 10px 15px;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover 特效：字體顏色變橘色，下劃線滑入效果 */
+.navbar-nav .nav-link:hover {
+  color: #f39c12;
+  transform: scale(1.05);
+}
+
+.navbar-nav .nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: #f39c12;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.navbar-nav .nav-link:hover::after {
+  width: 100%;
+}
+
+/* Dropdown 菜單動畫：滑鼠懸停時自動展開 */
+.navbar-nav .dropdown:hover > .dropdown-menu {
+  display: block;
+  animation: dropdownFade 0.3s ease-in-out;
+  transform-origin: top;
+}
+
+.dropdown-menu {
+  display: none;
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu .dropdown-item {
+  color: #000;
+  font-size: 1rem;
+  padding: 10px 15px;
+  opacity: 0;
+  animation: slideIn 0.3s ease-in-out forwards;
+  animation-delay: 0.1s;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  color: #f39c12;
+  background-color: #f8f8f8;
+}
+
+.dropdown-menu .dropdown-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dropdown-menu .dropdown-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.dropdown-menu .dropdown-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.dropdown-menu .dropdown-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* 動畫效果 */
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: scaleY(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RWD 支援 */
+@media (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 12px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .navbar-nav .dropdown:hover > .dropdown-menu {
+    position: static;
+    width: 100%;
+  }
+}

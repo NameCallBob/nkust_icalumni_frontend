@@ -1,0 +1,129 @@
+
+
+  .company-info__section {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .personal-info p {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+
+  .section-title {
+    text-align: left;
+    font-size: 24px;
+    font-weight: bold;
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+  }
+
+  .company-section {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .company-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  .company-description {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .company-info-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .company-info-list li {
+    font-size: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+  }
+
+  .company-info-list .icon {
+    margin-right: 8px;
+    color: #007bff;
+  }
+
+  /* 調整 Carousel 的轉場效果 */
+.carousel.product-carousel .carousel-item {
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.carousel.product-carousel .carousel-item-next.carousel-item-start,
+.carousel.product-carousel .carousel-item-prev.carousel-item-end {
+  transform: scale(1.1);
+  opacity: 0;
+}
+
+.carousel.product-carousel .carousel-item-start.active,
+.carousel.product-carousel .carousel-item-end.active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* ProductDisplay.css */
+
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.carousel img {
+  border-radius: 8px;
+  transition: opacity 0.3s ease;
+}
+
+.carousel img:hover {
+  opacity: 0.9;
+}
+
+.tabs .nav-link {
+  font-weight: bold;
+  color: #007bff;
+  transition: color 0.3s ease;
+}
+
+.tabs .nav-link.active {
+  color: #0056b3;
+  border-bottom: 2px solid #0056b3;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.pagination .page-item .page-link {
+  color: #007bff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+.modal .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal .modal-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+

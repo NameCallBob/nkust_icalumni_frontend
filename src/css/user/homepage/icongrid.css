@@ -1,0 +1,22 @@
+.icon-grid-container {
+  padding: 20px;
+}
+
+.icon-col {
+  border: 1px solid #ddd; /* 保持格線 */
+  border-radius: 20px;
+  padding: 10px; /* 減少padding縮小整體 */
+  cursor: pointer; /* 添加點擊效果 */
+}
+
+.icon-title {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.query-result {
+  border: 1px solid #ddd;
+  padding: 15px;
+  background-color: #f9f9f9;
+  min-height: 100px; /* 保證區域高度 */
+}

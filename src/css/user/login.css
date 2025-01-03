@@ -1,0 +1,55 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .login-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  h2 {
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .form-input {
+    font-size: 16px;
+    padding: 10px;
+  }
+  
+  button {
+    font-size: 18px;
+  }
+  
+  button:disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed;
+  }
+  
+  .text-muted {
+    font-size: 14px;
+  }
+  
+  .input-group {
+    position: relative;
+  }
+  
+  .input-group .btn {
+    font-size: 14px;
+    border-left: none;
+  }
+  
+  .input-group .form-control {
+    border-right: none;
+  }
+    

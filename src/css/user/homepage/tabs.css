@@ -1,0 +1,26 @@
+.button-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .tab-button {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-category-list {
+    display: flex;
+    flex-wrap: wrap; /* 允許換行 */
+    gap: 10px; /* 按鈕之間的間距 */
+    justify-content: center; /* 將按鈕置中 */
+  }
+
+  .modal-category-button {
+    /* margin-right: 0.5rem;
+    margin-bottom: 0.5rem; */
+    flex: 1 1 120px; /* 按鈕的寬度可調整 */
+    margin: 5px; /* 每個按鈕的邊距 */
+  }
+  
+  
