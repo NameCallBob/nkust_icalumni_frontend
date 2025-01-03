@@ -1,0 +1,13 @@
+.collapsible-section {
+    margin-bottom: 10px;
+}
+
+.collapsible-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}

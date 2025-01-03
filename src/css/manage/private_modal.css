@@ -1,0 +1,12 @@
+.table-responsive {
+    max-height: 300px; /* 可視需求調整高度 */
+    overflow-x: auto;
+  }
+
+  .email-active {
+    color: green;
+  }
+
+  .email-inactive {
+    color: red;
+  }

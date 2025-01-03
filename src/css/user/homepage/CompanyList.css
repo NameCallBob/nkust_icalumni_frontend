@@ -1,0 +1,66 @@
+.carousel-container {
+    margin-top: 50px;  /* 調整 Carousel 的上邊距 */
+    margin-bottom: 50px; /* 調整 Carousel 的下邊距 */
+}
+
+.custom-prev-icon, .custom-next-icon {
+    background-color: rgba(0, 0, 0, 0.5); /* 調整箭頭背景色 */
+    border-radius: 50%; /* 圓形箭頭 */
+    width: 40px; /* 調整箭頭大小 */
+    height: 40px;
+}
+
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    background-size: 100%, 100%; /* 調整箭頭大小 */
+}
+
+.slide-text {
+    color: #555; /* 提示文字顏色 */
+    font-size: 1rem;
+}
+
+/* RWD - 在小螢幕上進行調整 */
+@media (max-width: 768px) {
+    .company-card {
+        width: 100% !important; /* 在手機上讓卡片寬度佔滿 */
+        margin-bottom: 20px; /* 增加底部間距 */
+    }
+
+    .custom-prev-icon, .custom-next-icon {
+        width: 30px; /* 手機上縮小箭頭大小 */
+        height: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-prev-icon, .custom-next-icon {
+        width: 25px; /* 極小裝置上進一步縮小箭頭 */
+        height: 25px;
+    }
+}
+
+.fade-enter {
+    opacity: 0;
+    transform: translateY(20px); /* 卡片從下方進入 */
+  }
+
+  .fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 500ms, transform 500ms;
+  }
+
+  .fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fade-exit-active {
+    opacity: 0;
+    transform: translateY(20px); /* 卡片往下退出 */
+    transition: opacity 500ms, transform 500ms;
+  }
+
+  .fixed-height {
+    min-height: 400px; /* 固定公司列表的最小高度 */
+  }

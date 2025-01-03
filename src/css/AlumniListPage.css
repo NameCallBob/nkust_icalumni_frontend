@@ -1,0 +1,98 @@
+/* 簡單的淡入效果 */
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 1s forwards ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 縮小圖片 */
+.card-img-top {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+
+/* 卡片置中 */
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center; /* 文字也置中 */
+    height: auto; /* 確保卡片高度一致 */
+}
+
+/* 調整 Col 使其內容置中 */
+.col {
+    display: flex;
+    justify-content: center; /* 讓 Col 內的卡片容器水平置中 */
+}
+
+/* 卡片基礎樣式 */
+.shadow-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.shadow-hover:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.8);
+}
+
+/* 圖片外層樣式 */
+.image-wrapper {
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+/* 圖片效果 */
+.image-fixed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.image-wrapper:hover .image-fixed {
+    transform: scale(1.2);
+}
+
+/* 半透明覆蓋層 */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.3));
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 1;
+}
+
+.image-wrapper:hover .overlay {
+    opacity: 1;
+}
+
+/* 卡片文字淡入效果 */
+.title-hover {
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.shadow-hover:hover .title-hover {
+    color: rgba(255, 69, 0, 0.9);
+    transform: scale(1.1);
+}

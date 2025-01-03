@@ -1,0 +1,16 @@
+/* components/LatestNews.css */
+.latest-news {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .table-container {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .pagination-container {
+    flex-shrink: 0;
+  }
+  

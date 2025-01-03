@@ -1,0 +1,64 @@
+/* 基本下拉樣式 */
+.dropdown-toggle-animated {
+  transition: transform 0.3s ease-in-out;
+}
+
+.dropdown-toggle-animated:hover {
+  transform: scale(1.05);
+}
+
+.dropdown-menu-animated {
+  animation: fadeInDropdown 0.5s ease forwards;
+  opacity: 0;
+}
+
+.dropdown-item-animated {
+  transition: transform 0.3s, opacity 0.3s;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.dropdown-item-animated:hover {
+  transform: translateY(0px) scale(1.1);
+  color: #fff;
+  background-color: #28a745;
+}
+
+@keyframes fadeInDropdown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-menu-animated .dropdown-item-animated {
+  animation: fadeInItems 0.6s ease forwards;
+}
+
+@keyframes fadeInItems {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pagination-controls {
+  padding-top: 10px;
+}
+
+.pagination-controls .dropdown-item {
+  cursor: pointer;
+}
+
+.pagination-controls .disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

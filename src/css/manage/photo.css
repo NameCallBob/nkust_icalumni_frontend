@@ -1,0 +1,25 @@
+.photo-manager .sidebar {
+  background-color: #2e2e2e;
+  color: white;
+  padding: 20px;
+}
+
+.main-panel {
+  padding: 20px;
+  background: #f7f7f7;
+}
+
+.photo-card {
+  margin-bottom: 20px;
+  transition: transform 0.3s;
+}
+
+.photo-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.photo-preview {
+  height: 200px;
+  object-fit: cover;
+}
