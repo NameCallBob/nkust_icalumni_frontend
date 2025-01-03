@@ -17,6 +17,13 @@ const CategoryManagement = ({ categories, fetchCategories, saveCategory, updateC
             toast.error('新增分類失敗，請稍後再試！');
         }
     };
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // 防止表單提交
+            handleAddCategory(); // 呼叫新增分類函數
+        }
+    };
+
 
     return (
         <Modal show={show} onHide={onClose}>
@@ -32,6 +39,7 @@ const CategoryManagement = ({ categories, fetchCategories, saveCategory, updateC
                                 placeholder="輸入分類名稱..."
                                 value={newCategory}
                                 onChange={(e) => setNewCategory(e.target.value)}
+                                onKeyPress={handleKeyPress}
                             />
                             <Button variant="primary" onClick={handleAddCategory}>
                                 新增

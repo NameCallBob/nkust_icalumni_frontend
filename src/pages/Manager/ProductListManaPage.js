@@ -113,19 +113,41 @@ const ProductManagement = () => {
                     </Form.Group>
                 </Col>
                 <Col md={6} className="mb-2 mb-md-0">
-                    <InputGroup>
-                        <Form.Control
-                            type="text"
-                            placeholder="搜尋產品名稱"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <Button variant="outline-secondary" onClick={handleSearch}>
-                            搜尋
-                        </Button>
-                    </InputGroup>
+                <InputGroup>
+                    <Form.Control
+                        type="text"
+                        placeholder="搜尋產品名稱"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                if (searchTerm.trim() === '' && selectedCategory === '') {
+                                    toast.warning('請輸入搜尋條件或選擇分類');
+                                } else {
+                                    handleSearch();
+                                }
+                            }
+                        }}
+                    />
+                    <Button variant="outline-secondary" onClick={() => {
+                        if (searchTerm.trim() === '' && selectedCategory === '') {
+                            toast.warning('請輸入搜尋條件或選擇分類');
+                        } else {
+                            handleSearch();
+                        }
+                    }}>
+                        搜尋
+                    </Button>
+                </InputGroup>
                 </Col>
                 <Col md={2} className="text-md-end text-center">
+                    <Button
+                        variant="link"
+                        onClick={() => setShowCategoryModal(true)}
+                    >
+                        管理分類
+                    </Button>
+                    
                     <Button
                         variant="primary"
                         onClick={() => setShowProductModal(true)}
@@ -133,12 +155,7 @@ const ProductManagement = () => {
                     >
                         新增商品
                     </Button>
-                    <Button
-                        variant="link"
-                        onClick={() => setShowCategoryModal(true)}
-                    >
-                        管理分類
-                    </Button>
+
                 </Col>
             </Row>
             <ProductList

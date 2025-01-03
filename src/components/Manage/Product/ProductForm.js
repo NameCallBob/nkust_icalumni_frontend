@@ -42,6 +42,17 @@ const ProductForm = ({
         }));
         setImagePreviews([mainImage, ...updatedImages]);
     };
+
+    const handleDeleteImage = (index) => {
+        const updatedImages = [...imagePreviews];
+        updatedImages.splice(index, 1);
+        setProductData((prev) => ({
+            ...prev,
+            images: updatedImages,
+        }));
+        setImagePreviews(updatedImages);
+    };
+    
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setProductData((prev) => ({
@@ -119,7 +130,7 @@ const ProductForm = ({
                             onChange={handleImageUpload}
                         />
                         <div className="d-flex flex-wrap mt-3">
-                            {imagePreviews.map((image, index) => (
+                        {imagePreviews.map((image, index) => (
                                 <div key={index} className="position-relative me-2">
                                     <Image
                                         src={image}
@@ -136,6 +147,14 @@ const ProductForm = ({
                                         className="position-absolute top-0 start-0"
                                     >
                                         主
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="danger"
+                                        onClick={() => handleDeleteImage(index)}
+                                        className="position-absolute top-0 end-0"
+                                    >
+                                        刪
                                     </Button>
                                 </div>
                             ))}
