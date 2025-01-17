@@ -66,7 +66,7 @@ const AlumniListPage = () => {
 
         Axios().get(endpoint, { params })
             .then((res) => {
-                setAlumniList(res.data);
+                setPaginatedList(res.data);
             })
             .catch((error) => {
                 console.error('Error fetching alumni list:', error);
@@ -88,7 +88,7 @@ const AlumniListPage = () => {
         setLoading(true);
         Axios().get("member/any/alumni-search/", { params: { q: searchQuery } })
             .then((res) => {
-                setAlumniList(res.data);
+                setPaginatedList(res.data);
             })
             .catch((error) => {
                 console.error('Error fetching search results:', error);
@@ -123,7 +123,7 @@ const AlumniListPage = () => {
 
         Axios().get("member/any/get-by-grade/", { params: { grade: key } })
             .then((res) => {
-                setAlumniList(res.data);
+                setPaginatedList(res.data);
             })
             .catch((error) => {
                 console.error('Error fetching alumni list:', error);
@@ -163,10 +163,10 @@ const AlumniListPage = () => {
         <Container>
             <SEO
             main={false}
-      title="系友們"
-      description="瀏覽智慧商務系友會成員名單，發現更多聯繫機會與合作夥伴。"
-      keywords={["智慧商務", "系友列表", "成員"]}
-    />
+            title="系友們"
+            description="瀏覽智慧商務系友會成員名單，發現更多聯繫機會與合作夥伴。"
+            keywords={["智慧商務", "系友列表", "成員"]}
+            />
 
             <h1 className="text-center my-4">系友介紹</h1>
 
