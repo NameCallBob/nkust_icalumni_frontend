@@ -91,20 +91,33 @@ const CompanyForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
     const changedData = {};
     Object.keys(company).forEach((key) => {
       if (company[key] !== originalCompany[key]) {
         changedData[key] = company[key];
       }
     });
-
+  
+    const fetchUpdatedData = () => {
+      Axios()
+        .get("/company/data/selfInfo/")
+        .then((res) => {
+          setCompany(res.data);
+          setOriginalCompany(res.data);
+          toast.success("資料已更新！");
+        })
+        .catch((error) => {
+          toast.error("重新取得公司資料失敗，請稍後再試。");
+        });
+    };
+  
     if (isEditMode) {
       Axios()
         .post("/company/data/selfChange/", changedData)
         .then(() => {
           toast.success("公司資料修改成功！");
-          setOriginalCompany(company);
+          fetchUpdatedData(); // 更新資料
         })
         .catch((error) => {
           if (error.response) {
@@ -128,11 +141,11 @@ const CompanyForm = () => {
         .post("/company/data/new/", company)
         .then(() => {
           toast.success("公司資料新增成功！");
-          window.location.reload()
+          fetchUpdatedData(); // 更新資料
         })
         .catch((error) => {
           console.log(error);
-
+  
           const messages = Object.values(error.response.data).flat();
           if (error.response) {
             switch (error.response.status) {
@@ -146,11 +159,11 @@ const CompanyForm = () => {
                 messages.forEach((message) => {
                   toast.error(message, {
                     position: "top-right",
-                    autoClose: 3000, // 自動關閉時間
+                    autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
-                    draggable: true
+                    draggable: true,
                   });
                 });
                 break;
@@ -159,8 +172,9 @@ const CompanyForm = () => {
             toast.error("伺服器錯誤，請稍後再試。");
           }
         });
-    }  };
-
+    }
+  };
+  
   return (
     <Container fluid className="py-4" style={{ maxWidth: "1000px" }}>
       <h1 className="text-center mb-4">公司資料維護</h1>
@@ -222,7 +236,7 @@ const CompanyForm = () => {
 
         <div className="text-center">
           <Button variant="primary" type="submit" onClick={handleSubmit}>
-            {isEditMode ? "修改公司資料" : "新增公司資料"}
+            {isEditMode ? "修改" : "保存"}
           </Button>
         </div>
       </Form>
