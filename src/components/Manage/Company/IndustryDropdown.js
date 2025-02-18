@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 
 const IndustryDropdown = ({ industries, company, handleInputChange }) => {
+  const [error, setError] = useState(false);
+
+  const validateField = (e) => {
+    setError(e.target.value.trim() === ""); // 若選項為空則設定錯誤狀態
+  };
+
   return (
     <div>
       <Form.Group controlId="formIndustry" className="mb-4">
@@ -11,6 +17,8 @@ const IndustryDropdown = ({ industries, company, handleInputChange }) => {
           name="industry"
           value={company.industry}
           onChange={handleInputChange}
+          onBlur={validateField}
+          isInvalid={error}
           required
           style={{
             fontSize: "1.1rem",
@@ -26,6 +34,7 @@ const IndustryDropdown = ({ industries, company, handleInputChange }) => {
             </option>
           ))}
         </Form.Control>
+        <Form.Control.Feedback type="invalid">請選擇行業分類。</Form.Control.Feedback>
       </Form.Group>
     </div>
   );

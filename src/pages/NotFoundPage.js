@@ -13,11 +13,11 @@ const NotFoundPage = () => {
     
     <Container className="text-center my-5" style={{ paddingTop: '50px'}}>
       
-                  <SEO
+      <SEO
       main={false}
       title="404網站"
-        description="瀏覽智慧商務系友會的章程與規範，了解我們的運作方式與核心價值。"
-        keywords={["智慧商務", "章程", "規範"]}
+        description="路徑不存在"
+        keywords={["404"]}
       />
       <Row>
         <Col>

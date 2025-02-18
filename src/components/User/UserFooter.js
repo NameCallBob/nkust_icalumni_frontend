@@ -7,6 +7,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
  * @returns html
  */
 const Footer = () => {
+  const year = new Date().getFullYear(); 
   return (
     <footer
       className="bg-dark text-white py-4" >
@@ -52,7 +53,7 @@ const Footer = () => {
         </Row>
         <Row className="my-5">
             <Col>
-            <p>Copyright © 2024 國立高雄科技大學 智慧商務系 系友會</p>
+            <p>Copyright © {year} 國立高雄科技大學 智慧商務系 系友會</p>
             </Col>
         </Row>
       </Container>
