@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Table, Button, Container, Dropdown, Pagination, Alert } from 'react-bootstrap';
-import { FaEdit, FaTrash, FaKey, FaToggleOn, FaToggleOff, FaMoneyBillWave } from 'react-icons/fa'; // 使用 FontAwesome 圖標
+import { Table, Button, Container, Dropdown, Pagination, Alert, Modal } from 'react-bootstrap';
+import { FaEdit, FaTrash, FaKey, FaToggleOn, FaToggleOff, FaMoneyBillWave } from 'react-icons/fa';
 
 function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, handleToggleActive, handleDelete, handlePassword }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const totalPages = Math.ceil(users.length / itemsPerPage);
   const currentUsers = users.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -15,6 +18,19 @@ function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, ha
   const handleItemsPerPageChange = (eventKey) => {
     setItemsPerPage(Number(eventKey));
     setCurrentPage(1);
+  };
+
+  const confirmDelete = (user) => {
+    setSelectedUser(user);
+    setShowConfirm(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedUser) {
+      handleDelete(selectedUser.id);
+      setShowConfirm(false);
+      setSelectedUser(null);
+    }
   };
 
   return (
@@ -33,7 +49,7 @@ function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, ha
       ) : (
         <>
           {/* 桌面版表格 */}
-          <Table striped bordered hover responsive className="d-none d-md-table">
+          <Table striped bordered hover className="d-none d-md-table">
             <thead>
               <tr>
                 <th>級別</th>
@@ -90,7 +106,7 @@ function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, ha
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => handleDelete(user.id)}
+                      onClick={() => confirmDelete(user)}
                       className="me-2"
                       title="刪除使用者"
                     >
@@ -145,7 +161,7 @@ function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, ha
           </Table>
         </>
       )}
-
+      {/* 依照資料進行分頁 */}
       <Pagination>
         {[...Array(totalPages).keys()].map((_, index) => (
           <Pagination.Item
@@ -157,6 +173,25 @@ function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, ha
           </Pagination.Item>
         ))}
       </Pagination>
+
+      {/* 刪除確認對話框 */}
+      <Modal show={showConfirm} onHide={() => setShowConfirm(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>確認刪除</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          您確定要刪除使用者 <strong>{selectedUser?.name}</strong> 嗎？ 此操作無法恢復。
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirm(false)}>
+            取消
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete}>
+            確認刪除
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
     </Container>
   );
 }
