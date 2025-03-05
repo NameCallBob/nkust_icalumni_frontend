@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Modal, Button, Container, Carousel } from 'react-bootstrap'; // 引入 Carousel 組件
+import { Table, Modal, Button, Container, Carousel } from 'react-bootstrap';
 import 'css/recruit.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
@@ -42,39 +42,53 @@ function RecruitPage() {
   }, []);
 
   return (
-    <Container className="mt-5">
-          <SEO
-          main={false}
-      title="招募查詢"
-      description="了解智慧商務系友會中系友們的招募需求與最新機會，加入我們，共創未來。"
-      keywords={["智慧商務", "招募", "招聘", "加入系友會"]}
-    />
-      <h1 className="mb-4">系友公司徵才資訊</h1>
-      <Table responsive hover className="job-table">
-        <thead className="table-dark">
-          <tr>
-            <th>編號</th>
-            <th>發布時間</th>
-            <th>截止時間</th>
-            <th>公司</th>
-            <th>職位</th>
-          </tr>
-        </thead>
-        <tbody>
-          {jobs.map((job, index) => (
-            <tr key={job.id} onClick={() => handleShow(job)} className="job-row">
-              <td>{index + 1}</td>
-              <td>{job.release_date}</td>
-              <td>{job.deadline}</td>
-              <td>{job.company_name}</td>
-              <td>{job.title}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    <Container className="mt-5 recruit-page">
+      <SEO
+        main={false}
+        title="招募查詢"
+        description="了解智慧商務系友會中系友們的招募需求與最新機會，加入我們，共創未來。"
+        keywords={["智慧商務", "招募", "招聘", "加入系友會"]}
+      />
+      <h1 className="mb-4 text-center">系友公司徵才資訊</h1>
+      {jobs.length === 0 ? (
+        <div className="no-job text-center">
+          <h2>暫無招募</h2>
+          <p>請稍後再來查看最新資訊。</p>
+        </div>
+      ) : (
+        <div className="table-responsive">
+          <Table hover className="job-table">
+            <thead className="table-dark">
+              <tr>
+                <th>編號</th>
+                <th>發布時間</th>
+                <th>截止時間</th>
+                <th>公司</th>
+                <th>職位</th>
+              </tr>
+            </thead>
+            <tbody>
+              {jobs.map((job, index) => (
+                <tr
+                  key={job.id}
+                  onClick={() => handleShow(job)}
+                  className="job-row"
+                  style={{ cursor: 'pointer' }}
+                >
+                  <td>{index + 1}</td>
+                  <td>{job.release_date}</td>
+                  <td>{job.deadline}</td>
+                  <td>{job.company_name}</td>
+                  <td>{job.title}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      )}
 
       {/* 模態框顯示職位詳情 */}
-      <Modal show={show} onHide={handleClose} size="lg">
+      <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>職位詳情</Modal.Title>
         </Modal.Header>
@@ -133,7 +147,7 @@ function RecruitPage() {
                       <Carousel.Item key={index}>
                         <img
                           className="d-block w-100"
-                          src={process.env.REACT_APP_BASE_URL+image.image}
+                          src={process.env.REACT_APP_BASE_URL + image.image}
                           alt={`照片 ${index + 1}`}
                         />
                       </Carousel.Item>

@@ -133,6 +133,7 @@ const AlumniListPage = () => {
             });
             fetchChildOptions(parentKey);
             fetchAlumniList_normal(parentKey, childKey);
+            fetchAlumniList_outstanding();
     }, []);
 
     const sliderSettings = {
@@ -189,7 +190,7 @@ const AlumniListPage = () => {
                     </Col>
                 </Row>
             </Form>
-            
+
             {/* 父級 Tabs */}
             <Tabs
                 id="parent-tabs"
