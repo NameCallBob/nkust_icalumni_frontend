@@ -1,0 +1,54 @@
+.bylaws-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+  }
+  
+  .bylaws-card {
+    border: none;
+    border-radius: 15px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+  
+  .card-header-custom {
+    background: linear-gradient(90deg, #007bff, #00c4ff);
+    color: white;
+    padding: 1.5rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+  }
+  
+  .introduction {
+    font-size: 1.1rem;
+  }
+  
+  .pdf-viewer {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    overflow: auto;
+    max-height: 80vh;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .error-card {
+    border-radius: 10px;
+    background: #fff5f5;
+    border: 1px solid #ffcccc;
+  }
+  
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .card-header-custom {
+      font-size: 1.5rem;
+      padding: 1rem;
+    }
+  
+    .introduction {
+      font-size: 1rem;
+    }
+  
+    .pdf-viewer {
+      padding: 10px;
+    }
+  }
