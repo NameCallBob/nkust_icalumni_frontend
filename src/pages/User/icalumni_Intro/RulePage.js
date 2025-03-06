@@ -42,7 +42,7 @@ const AlumniAssociationBylaws = () => {
       <Container className="text-center py-5">
         <Card className="text-danger">
           <Card.Body>
-            無法載入章程 PDF：{error}
+            目前伺服器離線中，請稍候再試～
           </Card.Body>
         </Card>
       </Container>

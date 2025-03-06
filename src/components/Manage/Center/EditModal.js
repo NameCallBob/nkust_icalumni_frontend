@@ -72,8 +72,8 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
     if (name === "birth_date" && (!value || new Date(value) > new Date())) {
       errors.birth_date = ["生日必填且不能是未來日期"];
     }
-    if (name === "graduate_year" && value && !/^\d{4}$/.test(value)) {
-      errors.graduate_year = ["畢業學年應為4位數"];
+    if (name === "graduate_year" && value && !/^\d{3}$/.test(value)) {
+      errors.graduate_year = ["畢業學年應為3位數"];
     }
     if (name === "photo" && value && value.size > 2 * 1024 * 1024) {
       errors.photo = ["照片大小不可超過 2MB"];
@@ -83,8 +83,16 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
   };
 
 
-  const handleBlur = () => {
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
     setHint(""); // 失焦時清空提示
+  
+    // 檢查當前錯誤是否仍然有效
+    const fieldErrors = validateFields(name, value);
+    setErrors((prevState) => ({
+      ...prevState,
+      [name]: fieldErrors[name] ? fieldErrors[name] : undefined,
+    }));
   };
 
 
@@ -165,7 +173,7 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
+  
     if (['graduate_year', 'graduate', 'student_id'].includes(name)) {
       const graduateField = name === 'graduate_year' ? 'grade' : name === 'graduate' ? 'school' : 'student_id';
       setFormData((prevState) => ({
@@ -176,16 +184,20 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
         },
       }));
     } else {
-      setFormData({
-        ...formData,
+      setFormData((prevState) => ({
+        ...prevState,
         [name]: type === 'checkbox' ? checked : value,
-      });
+      }));
     }
-
-    // 動態驗證
+  
+    // 立即驗證並更新錯誤訊息
     const fieldErrors = validateFields(name, value);
-    setErrors((prevState) => ({ ...prevState, ...fieldErrors }));
+    setErrors((prevState) => ({
+      ...prevState,
+      [name]: fieldErrors[name] ? fieldErrors[name] : undefined, // 確保錯誤訊息被清除
+    }));
   };
+  
 
   const getChangedData = () => {
     return Object.keys(formData).reduce((changedData, key) => {

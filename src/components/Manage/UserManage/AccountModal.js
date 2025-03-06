@@ -16,25 +16,25 @@ const AccountManageModal = ({ show, handleClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(null); // null, 'save', 'delete', 'toggle', 'password'
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [nextPageUrl, setNextPageUrl] = useState(null);
+  const [prevPageUrl, setPrevPageUrl] = useState(null);
   const [sortOrder, setSortOrder] = useState("desc"); // 排序順序
+  const [searchEmail, setSearchEmail] = useState("");
 
   const isEditMode = Boolean(selectedUserId);
 
-  const fetchUsers = async (page = 1, order = "desc") => {
+  const fetchUsers = async (url = `basic/private_search/?order_by=${sortOrder === "desc" ? "-last_login" : "last_login"}&search=${searchEmail}`) => {
     setIsLoading(true);
     try {
-      const res = await Axios().get(`basic/private_search/`, {
-        params: {
-          page,
-          order_by: order === "desc" ? "-last_login" : "last_login",
-        },
-      });
+      // 修正 HTTP 為 HTTPS
+      const fixedUrl = url.startsWith("http://") ? url.replace("http://", "https://") : url;
+      
+      const res = await Axios().get(fixedUrl);
       setUsers(res.data.results || []);
-      setCurrentPage(res.data.current_page || 1);
-      setTotalPages(res.data.total_pages || 1);
+      setNextPageUrl(res.data.next);
+      setPrevPageUrl(res.data.previous);
     } catch (error) {
-        toast.error("無法取得資料，請稍後再試或確認帳號身分");
+      toast.error("無法取得資料，請稍後再試或確認帳號身分");
     } finally {
       setIsLoading(false);
     }
@@ -51,8 +51,8 @@ const AccountManageModal = ({ show, handleClose }) => {
   };
 
   useEffect(() => {
-    fetchUsers(currentPage, sortOrder);
-  }, [currentPage, sortOrder,show]);
+    if (show) fetchUsers();
+  }, [show, sortOrder]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -63,7 +63,7 @@ const AccountManageModal = ({ show, handleClose }) => {
           setFormData({
             email: data.email,
             isActive: data.is_active,
-            createdAt: data.created_at,
+            createdAt: data.date_joined,
             lastLogin: data.last_login || "尚未登入",
           });
         }
@@ -110,6 +110,10 @@ const AccountManageModal = ({ show, handleClose }) => {
     }
   };
 
+  const handleSearch = () => {
+    fetchUsers();
+  };
+  
   const handleDelete = async (id) => {
     if (!window.confirm("確定要刪除嗎？")) return;
     setActionLoading("delete");
@@ -186,6 +190,15 @@ const AccountManageModal = ({ show, handleClose }) => {
         <Modal.Title>使用者管理</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      <Form className="d-flex mb-3">
+              <Form.Control
+                type="text"
+                placeholder="輸入 Email 進行搜尋"
+                value={searchEmail}
+                onChange={(e) => setSearchEmail(e.target.value)}
+              />
+              <Button variant="primary" className="ms-2" onClick={handleSearch}>搜尋</Button>
+            </Form>
         <Row>
           {/* 左側表格 */}
           <Col md={7} className="mb-3">
@@ -206,56 +219,51 @@ const AccountManageModal = ({ show, handleClose }) => {
                 )}
                 </Button>
                 <Table striped bordered hover responsive="sm">
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>啟用狀態</th>
-      <th>創立時間</th>
-      <th>操作</th>
-    </tr>
-  </thead>
-  <tbody>
-    {users.map((user) => (
-      <tr key={user.id}>
-        <td className={user.is_active ? "email-active" : "email-inactive"}>
-          {user.email}
-        </td>
-        <td>{user.is_active ? "啟用" : "停用"}</td>
-        <td>{formatDate(user.date_joined)}</td>
-        <td>
-          <Button
-            variant="warning"
-            size="sm"
-            className="me-2"
-            onClick={() => setSelectedUserId(user.id)}
-          >
-            編輯
-          </Button>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => handleDelete(user.id)}
-          >
-            刪除
-          </Button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</Table>
-
-                <Pagination className="justify-content-center mt-3">
-                {[...Array(totalPages)].map((_, idx) => (
-                    <Pagination.Item
-                    key={idx + 1}
-                    active={idx + 1 === currentPage}
-                    disabled={isLoading} // 當加載中時禁用按鈕
-                    onClick={() => !isLoading && setCurrentPage(idx + 1)}
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>啟用狀態</th>
+                <th>創立時間</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td className={user.is_active ? "email-active" : "email-inactive"}>
+                    {user.email}
+                  </td>
+                  <td>{user.is_active ? "啟用" : "停用"}</td>
+                  <td>{formatDate(user.date_joined)}</td>
+                  <td>
+                    <Button
+                      variant="warning"
+                      size="sm"
+                      className="me-2"
+                      onClick={() => setSelectedUserId(user.id)}
                     >
-                    {idx + 1}
-                    </Pagination.Item>
-                ))}
-                </Pagination>
+                      編輯
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDelete(user.id)}
+                    >
+                      刪除
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+              <div className="d-flex justify-content-between">
+                  <Button variant="secondary" disabled={!prevPageUrl} onClick={() => fetchUsers(prevPageUrl)}>
+                    上一頁
+                  </Button>
+                  <Button variant="secondary" disabled={!nextPageUrl} onClick={() => fetchUsers(nextPageUrl)}>
+                    下一頁
+                  </Button>
+                </div>
               </>
             )}
           </Col>
@@ -286,7 +294,7 @@ const AccountManageModal = ({ show, handleClose }) => {
                 <Form.Label>創立時間</Form.Label>
                 <Form.Control
                   type="text"
-                  value={formData.createdAt}
+                  value={formatDate(formData.createdAt)}
                   disabled
                   readOnly
                 />

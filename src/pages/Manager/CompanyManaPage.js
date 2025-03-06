@@ -91,14 +91,32 @@ const CompanyForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
+    // **檢查新增時，是否有欄位為空**
+    if (!isEditMode) {
+      const hasEmptyField = Object.values(company).some(
+        (value) => value.trim() === ""
+      );
+
+      if (hasEmptyField) {
+        toast.error("所有欄位都必須填寫，不能為空！");
+        return;
+      }
+    }
+
+    // **檢查修改時，是否有實際變更**
     const changedData = {};
     Object.keys(company).forEach((key) => {
       if (company[key] !== originalCompany[key]) {
         changedData[key] = company[key];
       }
     });
-  
+
+    if (isEditMode && Object.keys(changedData).length === 0) {
+      toast.info("您沒有修改任何資料。");
+      return;
+    }
+
     const fetchUpdatedData = () => {
       Axios()
         .get("/company/data/selfInfo/")
@@ -107,71 +125,58 @@ const CompanyForm = () => {
           setOriginalCompany(res.data);
           toast.success("資料已更新！");
         })
-        .catch((error) => {
+        .catch(() => {
           toast.error("重新取得公司資料失敗，請稍後再試。");
         });
     };
-  
-    if (isEditMode) {
-      Axios()
-        .post("/company/data/selfChange/", changedData)
-        .then(() => {
-          toast.success("公司資料修改成功！");
-          fetchUpdatedData(); // 更新資料
-        })
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 401:
-                toast.error("未授權，請登入後再試。");
-                break;
-              case 403:
-                toast.error("您沒有權限執行此操作。");
-                break;
-              default:
-                toast.error("修改公司資料失敗。");
-                break;
-            }
+
+    const apiUrl = isEditMode
+      ? "/company/data/selfChange/"
+      : "/company/data/new/";
+    const requestData = isEditMode ? changedData : company;
+
+    Axios()
+      .post(apiUrl, requestData)
+      .then(() => {
+        toast.success(
+          isEditMode ? "公司資料修改成功！" : "公司資料新增成功！"
+        );
+        fetchUpdatedData();
+      })
+      .catch((error) => {
+        handleApiError(error);
+      });
+  };
+
+  const handleApiError = (error) => {
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          toast.error("未授權，請登入後再試。");
+          break;
+        case 403:
+          toast.error("您沒有權限執行此操作。");
+          break;
+        default:
+          const messages = Object.values(error.response.data || {}).flat();
+          if (messages.length > 0) {
+            messages.forEach((message) => {
+              toast.error(message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
+            });
           } else {
-            toast.error("伺服器錯誤，請稍後再試。");
+            toast.error("操作失敗，請稍後再試。");
           }
-        });
+          break;
+      }
     } else {
-      Axios()
-        .post("/company/data/new/", company)
-        .then(() => {
-          toast.success("公司資料新增成功！");
-          fetchUpdatedData(); // 更新資料
-        })
-        .catch((error) => {
-          console.log(error);
-  
-          const messages = Object.values(error.response.data).flat();
-          if (error.response) {
-            switch (error.response.status) {
-              case 401:
-                toast.error("未授權，請登入後再試。");
-                break;
-              case 403:
-                toast.error("您沒有權限執行此操作。");
-                break;
-              default:
-                messages.forEach((message) => {
-                  toast.error(message, {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                  });
-                });
-                break;
-            }
-          } else {
-            toast.error("伺服器錯誤，請稍後再試。");
-          }
-        });
+      toast.error("伺服器錯誤，請稍後再試。");
     }
   };
   
@@ -225,7 +230,7 @@ const CompanyForm = () => {
                 {/* 顯示圖片預覽 */}
                 {company.photo && (
                   <div className="mt-3">
-                    <h5>圖片預覽：</h5>
+                    <h5>即將上傳的照片：</h5>
                     <Image src={company.photo} alt="Preview" fluid />
                   </div>
                 )}

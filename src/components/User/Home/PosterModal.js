@@ -3,30 +3,35 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Carousel } from 'react-bootstrap';
 import "css/user/poster.css"
 import LoadingSpinner from 'components/LoadingSpinner';
+
 const PosterModal = () => {
   const [show, setShow] = useState(false); // 控制 Modal 顯示
   const [posterImages, setPosterImages] = useState([]); // 存放海報資料
+  const [loading, setLoading] = useState(true); // 用於顯示 Loading
 
   useEffect(() => {
-    // 判斷是否是第一次進入頁面
     const hasSeenPoster = localStorage.getItem('hasSeenPoster');
 
-        // 使用 Axios 從 API 取得資料
-        const fetchPosters = async () => {
-          try {
-            const response = await Axios().get('/picture/popup-ads/?active=true'); // 替換為實際的 API 路徑
-            setPosterImages(response.data.results); // 假設 API 回傳的資料為圖片 URL 的陣列
-          } catch (error) {
-            console.error('Error fetching posters:', error);
-          }
-        };
+    // 使用 Axios 從 API 取得資料
+    const fetchPosters = async () => {
+      try {
+        const response = await Axios().get('/picture/popup-ads/?active=true');
+        const images = response.data.results || [];
+        setPosterImages(images);
 
-    if (!hasSeenPoster) {
-      setShow(true); // 顯示彈跳視窗
-      localStorage.setItem('hasSeenPoster', 'true'); // 記錄已看過狀態
-      fetchPosters();
-    }
+        // 若有圖片且使用者尚未看過，則顯示彈窗
+        if (images.length > 0 && !hasSeenPoster) {
+          setShow(true);
+          localStorage.setItem('hasSeenPoster', 'true');
+        }
+      } catch (err) {
+        console.error("Error fetching posters:", err);
+      } finally {
+        setLoading(false); // API 請求完成後停止 Loading
+      }
+    };
 
+    fetchPosters();
   }, []);
 
   const handleClose = () => setShow(false);
@@ -36,11 +41,10 @@ const PosterModal = () => {
       show={show}
       onHide={handleClose}
       centered
-      size="lg" // 彈跳廣告大小
-      backdrop="static" // 禁止點擊背景關閉
-      contentClassName="custom-modal-content" // 自定義樣式
+      size="lg"
+      backdrop="static"
+      contentClassName="custom-modal-content"
     >
-      {/* 自定義右上角的關閉按鈕 */}
       <Button
         variant="light"
         className="close-btn"
@@ -50,7 +54,9 @@ const PosterModal = () => {
         ✖
       </Button>
       <Modal.Body className="p-0 custom-modal-body">
-        {posterImages.length > 0 ? (
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
           <Carousel>
             {posterImages.map((image, index) => (
               <Carousel.Item key={index}>
@@ -58,24 +64,22 @@ const PosterModal = () => {
                   style={{
                     width: '30vw',
                     margin: 'auto',
-                    overflow: 'cover',
+                    overflow: 'hidden',
                   }}
                 >
                   <img
-                    src={image.image} // 假設 API 回傳的物件有 `url` 欄位
+                    src={image.image} // 假設 API 回傳的物件有 `image` 欄位
                     alt={`Poster ${index + 1}`}
                     style={{
                       width: '100%',
                       height: '100%',
-                      objectFit: 'cover', // 確保圖片按比例填滿
+                      objectFit: 'cover',
                     }}
                   />
                 </div>
               </Carousel.Item>
             ))}
           </Carousel>
-        ) : (
-        <LoadingSpinner />
         )}
       </Modal.Body>
     </Modal>

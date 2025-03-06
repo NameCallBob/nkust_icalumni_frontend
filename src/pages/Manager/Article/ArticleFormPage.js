@@ -1,369 +1,368 @@
 import React, { useState, useEffect } from "react";
-import { Button, Form, Container, Spinner, Row, Col, Modal } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Container,
+  Row,
+  Col,
+  Modal,
+  Spinner,
+  Badge,
+} from "react-bootstrap";
 import Axios from "common/Axios";
 import ReactQuill from "react-quill";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-quill/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.css";
-import 'css/manage/article/form.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
 import LoadingSpinner from "components/LoadingSpinner";
+import "css/manage/article/form.css"; // 自訂樣式文件
 
 const ArticleForm = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [newTitle, setNewTitle] = useState("");
-    const [newContent, setNewContent] = useState("");
-    const [active, setActive] = useState(false);
-    const [publishAt, setPublishAt] = useState("");
-    const [expireAt, setExpireAt] = useState("");
-    const [link, setLink] = useState("");
-    const [imageFiles, setImageFiles] = useState([]); // 原始圖片
-    const [newImages, setNewImages] = useState([]); // 新上傳的圖片
-    const [removedImages, setRemovedImages] = useState([]); // 被移除的原始圖片
-    const [showImageModal, setShowImageModal] = useState(false);
-    const [imageSize, setImageSize] = useState("small");
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [active, setActive] = useState(false);
+  const [publishAt, setPublishAt] = useState("");
+  const [expireAt, setExpireAt] = useState("");
+  const [link, setLink] = useState("");
+  const [imageFiles, setImageFiles] = useState([]); // 原始圖片
+  const [newImages, setNewImages] = useState([]); // 新增圖片
+  const [removedImages, setRemovedImages] = useState([]); // 被移除的圖片
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageSize, setImageSize] = useState("small");
+  const [originalData, setOriginalData] = useState({});
 
-    // 用來保存從後端獲取的原始文章數據
-    const [originalArticleData, setOriginalArticleData] = useState({});
+  useEffect(() => {
+    setPublishAt(getTaipeiTime());
+    setExpireAt("2099-12-31T12:00");
+    if (id) fetchArticleById(id);
+  }, [id]);
 
-    useEffect(() => {
-        setPublishAt(getTaipeiTime());
-        setExpireAt("2099-12-31T12:00");
+  const getTaipeiTime = () => {
+    const now = new Date();
+    const offset = 8 * 60; // 台北時區 UTC+8
+    const localTime = new Date(now.getTime() + offset * 60 * 1000);
+    return localTime.toISOString().slice(0, 16);
+  };
 
-        if (id) {
-            fetchArticleById(id);
-        }
-    }, [id]);
+  const fetchArticleById = async (articleId) => {
+    setLoading(true);
+    try {
+      const response = await Axios().get(`/article/all/get_one/`, {
+        params: { id: articleId },
+      });
+      const article = response.data;
+      setTitle(article.title);
+      setContent(article.content);
+      setActive(article.active);
+      setPublishAt(article.publish_at.slice(0, 16));
+      setExpireAt(article.expire_at.slice(0, 16));
+      setLink(article.link || "");
+      setImageFiles(
+        article.images.map((img) => ({
+          id: img.id,
+          url: `${process.env.REACT_APP_BASE_URL}${img.image}`,
+          size: img.pic_type,
+        }))
+      );
+      setOriginalData(article);
+    } catch (error) {
+      console.error("載入文章失敗:", error);
+      toast.error("文章載入失敗");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // 將當前時間設定為台北時間，並格式化為 YYYY-MM-DDTHH:mm
-    const getTaipeiTime = () => {
-        const now = new Date(); // 獲取當前時間
-        const offset = 8 * 60; // 台北時區 +8 小時，轉換為分鐘
-        const localTime = new Date(now.getTime() + offset * 60 * 1000);
-        const isoString = localTime.toISOString();
-        return isoString.slice(0, 16); // 格式化為 YYYY-MM-DDTHH:mm
-    };
+  const getChangedFields = (original, newData) => {
+    const changedFields = {};
+    Object.keys(newData).forEach((key) => {
+      if (key !== "images" && newData[key] !== original[key]) {
+        changedFields[key] = newData[key];
+      }
+    });
+    if (newImages.length > 0 || removedImages.length > 0) {
+      changedFields.images = [
+        ...imageFiles.filter((img) => !removedImages.some((r) => r.id === img.id)),
+        ...newImages.map((img) => ({ image: img.file, pic_type: img.size })),
+      ];
+    }
+    return changedFields;
+  };
 
-    const fetchArticleById = async (articleId) => {
-        setLoading(true);
-        try {
-            const response = await Axios().get(`/article/all/get_one/`, { params: { id: articleId } });
-            const article = response.data;
-            setNewTitle(article.title);
-            setNewContent(article.content);
-            setActive(article.active);
-            setPublishAt(article.publish_at);
-            setExpireAt(article.expire_at);
-            setLink(article.link);
+  const handleSave = async () => {
+    if (!title || !content) {
+      toast.error("標題與內容為必填項");
+      return;
+    }
+    setLoading(true);
+    try {
+      const articleData = {
+        title,
+        content,
+        active,
+        publish_at: publishAt,
+        expire_at: expireAt,
+        link,
+        images: [
+          ...imageFiles.filter((img) => !removedImages.some((r) => r.id === img.id)),
+          ...newImages.map((img) => ({ image: img.file, pic_type: img.size })),
+        ],
+      };
 
-            // 轉換後端返回的圖片URL為完整的可預覽URL
-            const processedImages = article.images.map((image) => ({
-                id: image.id,
-                url: `${process.env.REACT_APP_BASE_URL+image.image}`, // 假設圖片存放在 /static 目錄
-                size: image.pic_type
-            }));
-            setImageFiles(processedImages); // 保存轉換後的圖片預覽數據
-
-            // 保存原始的文章數據
-            setOriginalArticleData(article);
-        } catch (error) {
-            console.error("載入文章失敗:", error);
-            toast.error("文章載入失敗");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // 比對新資料與原資料，返回不同的字段
-    const getChangedFields = (originalData, newData) => {
-        const changedFields = {};
-
-        // 檢查非圖片字段
-        Object.keys(newData).forEach((key) => {
-            if (key !== 'images' && newData[key] !== originalData[key]) {
-                changedFields[key] = newData[key];
-            }
-        });
-
-        // 檢查圖片的變更（新增或移除）
-        const originalImageIds = originalData.images ? originalData.images.map(img => img.id) : [];
-        const newImageIds = newData.images ? newData.images.map(img => img.id) : [];
-
-        if (
-            newImageIds.length !== originalImageIds.length ||
-            !newImageIds.every((id) => originalImageIds.includes(id))
-        ) {
-            changedFields.images = newData.images; // 標記圖片為已變更
-        }
-
-        return changedFields;
-    };
-
-
-    const handleSave = async () => {
-        setLoading(true);
-        try {
-            // 結合保留的原始圖片和新增的圖片
-            const allImages = [
-                ...imageFiles.filter((img) => !removedImages.includes(img)), // 移除被標記為刪除的圖片
-                ...newImages.map((img) => ({
-                    image: img.file, // Base64 格式
-                    pic_type: img.size,
-                })),
-            ];
-
-            const articleData = {
-                title: newTitle,
-                content: newContent,
-                active: active,
-                publish_at: publishAt,
-                expire_at: expireAt,
-                link: link,
-                images: allImages, // 全部的圖片（包含保留和新增的）
-            };
-
-            if (id) {
-                const changedFields = getChangedFields(originalArticleData, articleData);
-                if (Object.keys(changedFields).length > 0) {
-                    changedFields['id'] = id; // 加上文章 ID
-                    await Axios().patch(`/article/all/change/`, changedFields);
-                    toast.success("文章保存成功");
-                } else {
-                    toast.info("沒有變更的內容需要保存");
-                }
-            } else {
-                await Axios().post("/article/all/new/", articleData);
-                toast.success("文章新增成功");
-            }
-
-            // 添加延遲，確保 toast 訊息彈出
-            setTimeout(() => {
-                navigate("/alumni/manage/article/");
-            }, 1000); // 延遲 0.5 秒
-        } catch (error) {
-            console.error("保存文章失敗:", error);
-            toast.error("保存文章失敗");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-
-    const handleImageUpload = async (e) => {
-        const files = Array.from(e.target.files);
-
-        const readFilesAsBase64 = files.map((file) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    resolve({
-                        url: reader.result,
-                        file: reader.result, // Base64 編碼
-                        size: imageSize,
-                    });
-                };
-                reader.onerror = (error) => reject(error);
-            });
-        });
-
-        try {
-            const uploadedImages = await Promise.all(readFilesAsBase64);
-            setNewImages((prevImages) => [...prevImages, ...uploadedImages]);
-        } catch (error) {
-            console.error("圖片加載失敗:", error);
-        }
-    };
-
-    const handleRemoveImage = (index, isOriginal = false) => {
-        if (isOriginal) {
-            setRemovedImages([...removedImages, imageFiles[index]]); // 標記原始圖片為已刪除
-            setImageFiles(imageFiles.filter((_, i) => i !== index)); // 從顯示列表移除
+      if (id) {
+        const changedFields = getChangedFields(originalData, articleData);
+        if (Object.keys(changedFields).length > 0) {
+          changedFields.id = id;
+          await Axios().patch(`/article/all/change/`, changedFields);
+          toast.success("文章更新成功");
         } else {
-            setNewImages((prevImages) => prevImages.filter((_, i) => i !== index)); // 從新增列表移除
+          toast.info("無變更內容");
         }
-    };
+      } else {
+        await Axios().post("/article/all/new/", articleData);
+        toast.success("文章新增成功");
+      }
+      setTimeout(() => navigate("/alumni/manage/article/"), 1000);
+    } catch (error) {
+      console.error("保存失敗:", error);
+      toast.error("保存失敗");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    const readFiles = files.map((file) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () =>
+          resolve({ url: reader.result, file: reader.result, size: imageSize });
+        reader.readAsDataURL(file);
+      });
+    });
+    const uploadedImages = await Promise.all(readFiles);
+    setNewImages((prev) => [...prev, ...uploadedImages]);
+  };
 
-    return (
-        <Container>
-            <h2>{id ? "編輯文章" : "新增文章"}</h2>
-            {loading ? (
-                <div className="text-center">
-                    <LoadingSpinner></LoadingSpinner>
+  const handleRemoveImage = (index, isOriginal = false) => {
+    if (isOriginal) {
+      const removed = imageFiles[index];
+      setRemovedImages((prev) => [...prev, removed]);
+      setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      setNewImages((prev) => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  return (
+    <Container fluid className="py-4">
+      <Row className="mb-4 align-items-center">
+        <Col>
+          <h2 className="fw-bold">{id ? "編輯文章" : "新增文章"}</h2>
+          <p className="text-muted">填寫文章資訊並保存</p>
+        </Col>
+        <Col className="text-end">
+          <Button
+            variant="outline-secondary"
+            onClick={() => navigate("/alumni/manage/article/")}
+            className="me-2"
+          >
+            <i className="bi bi-arrow-left"></i> 返回
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            disabled={loading || !title || !content}
+          >
+            {loading ? <Spinner size="sm" /> : <i className="bi bi-save"></i>} 保存
+          </Button>
+        </Col>
+      </Row>
+
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <Form className="bg-light p-4 rounded shadow-sm">
+          <Row>
+            <Col md={12}>
+              <Form.Group className="mb-4">
+                <Form.Label>
+                  標題 <span className="text-danger">*</span>
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="輸入文章標題"
+                  required
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={4}>
+              <Form.Group className="mb-4">
+                <Form.Label>是否公開</Form.Label>
+                <Form.Check
+                  type="switch"
+                  label={active ? "公開" : "不公開"}
+                  checked={active}
+                  onChange={(e) => setActive(e.target.checked)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group className="mb-4">
+                <Form.Label>發布時間</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={publishAt}
+                  onChange={(e) => setPublishAt(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group className="mb-4">
+                <Form.Label>截止時間</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={expireAt}
+                  onChange={(e) => setExpireAt(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={12}>
+              <Form.Group className="mb-4">
+                <Form.Label>文章連結（選填）</Form.Label>
+                <Form.Control
+                  type="url"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  placeholder="輸入外部連結（如有）"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={12}>
+              <Form.Group className="mb-4">
+                <Form.Label>
+                  內容 <span className="text-danger">*</span>
+                </Form.Label>
+                <ReactQuill
+                  value={content}
+                  onChange={setContent}
+                  theme="snow"
+                  placeholder="輸入文章內容..."
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      ["link", "image"],
+                      ["clean"],
+                    ],
+                  }}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={12}>
+              <Form.Group className="mb-4">
+                <Form.Label>圖片管理</Form.Label>
+                <Button
+                  variant="outline-primary"
+                  onClick={() => setShowImageModal(true)}
+                  className="mb-3"
+                >
+                  <i className="bi bi-upload"></i> 上傳圖片
+                </Button>
+                <div className="image-preview-container">
+                  {imageFiles.map((image, index) => (
+                    <div key={index} className="image-preview">
+                      <img src={image.url} alt={`original-${index}`} />
+                      <Badge bg="info" className="mt-1">
+                        {image.size === "small" ? "小圖" : "大圖"}
+                      </Badge>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleRemoveImage(index, true)}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </Button>
+                    </div>
+                  ))}
+                  {newImages.map((image, index) => (
+                    <div key={index} className="image-preview">
+                      <img src={image.url} alt={`new-${index}`} />
+                      <Badge bg="info" className="mt-1">
+                        {image.size === "small" ? "小圖" : "大圖"}
+                      </Badge>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleRemoveImage(index, false)}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-            ) : (
-                <Form>
-                    <Row>
-                        <Col md={12}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>標題</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={newTitle}
-                                    onChange={(e) => setNewTitle(e.target.value)}
-                                    required
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
+              </Form.Group>
+            </Col>
+          </Row>
+        </Form>
+      )}
 
-                    <Row>
-                        <Col md={4}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>是否公開</Form.Label>
-                                <Form.Check
-                                    type="checkbox"
-                                    label="公開"
-                                    checked={active}
-                                    onChange={(e) => setActive(e.target.checked)}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>發布時間</Form.Label>
-                                <Form.Control
-                                    type="datetime-local"
-                                    value={publishAt}
-                                    onChange={(e) => setPublishAt(e.target.value)}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>截止時間</Form.Label>
-                                <Form.Control
-                                    type="datetime-local"
-                                    value={expireAt}
-                                    onChange={(e) => setExpireAt(e.target.value)}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
-                    <Row>
-                        <Col md={12}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>文章連結</Form.Label>
-                                <Form.Control
-                                    type="url"
-                                    value={link}
-                                    onChange={(e) => setLink(e.target.value)}
-                                    placeholder="可選，若有外部連結"
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
-
-                    <Row>
-                        <Col md={12}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>內容</Form.Label>
-                                <ReactQuill
-                                    value={newContent}
-                                    onChange={setNewContent}
-                                    className="quill-editor-container"
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
-
-                    <Row className="mb-3">
-                        <Col md={12}>
-                            <Button
-                                variant="info"
-                                onClick={() => setShowImageModal(true)}
-                            >
-                                上傳圖片
-                            </Button>
-                        </Col>
-                    </Row>
-
-                    <Row>
-                        <Col md={12}>
-                            <div className="image-preview-container">
-                                {imageFiles.map((image, index) => (
-                                    <div key={index} className="image-preview">
-                                        <img src={image.url} alt={`original-${index}`} />
-                                        <p>{image.size === "small" ? "小圖" : "大圖"}</p>
-                                        <Button
-                                            variant="danger"
-                                            size="sm"
-                                            onClick={() => handleRemoveImage(index, true)}
-                                        >
-                                            刪除
-                                        </Button>
-                                    </div>
-                                ))}
-                                {newImages.map((image, index) => (
-                                    <div key={index} className="image-preview">
-                                        <img src={image.url} alt={`uploaded-${index}`} />
-                                        <p>{image.size === "small" ? "小圖" : "大圖"}</p>
-                                        <Button
-                                            variant="danger"
-                                            size="sm"
-                                            onClick={() => handleRemoveImage(index, false)}
-                                        >
-                                            刪除
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        </Col>
-                    </Row>
-
-                    <Row className="mt-3">
-                        <Col md={12}>
-                            <Button
-                                variant="primary"
-                                onClick={handleSave}
-                                disabled={!newTitle || !newContent}
-                            >
-                                {loading ? "保存中..." : "儲存"}
-                            </Button>
-                        </Col>
-                    </Row>
-                </Form>
-            )}
-
-            <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-
-            <Modal show={showImageModal} onHide={() => setShowImageModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>上傳圖片</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Group>
-                        <Form.Label>選擇圖片大小</Form.Label>
-                        <Form.Select
-                            value={imageSize}
-                            onChange={(e) => setImageSize(e.target.value)}
-                        >
-                            <option value="small">小圖</option>
-                            <option value="large">大圖</option>
-                        </Form.Select>
-                    </Form.Group>
-                    <Form.Group className="mt-3">
-                        <Form.Label>選擇圖片</Form.Label>
-                        <Form.Control
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                        />
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowImageModal(false)}>
-                        關閉
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </Container>
-    );
+      <Modal show={showImageModal} onHide={() => setShowImageModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>上傳圖片</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label>圖片大小</Form.Label>
+            <Form.Select
+              value={imageSize}
+              onChange={(e) => setImageSize(e.target.value)}
+            >
+              <option value="small">小圖</option>
+              <option value="large">大圖</option>
+            </Form.Select>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>選擇圖片</Form.Label>
+            <Form.Control
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowImageModal(false)}>
+            關閉
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </Container>
+  );
 };
 
 export default ArticleForm;
