@@ -14,6 +14,7 @@ import AlumniListPage from 'pages/User/AlumniListPage';
 import RecruitPage from 'pages/User/RecruitPage';
 import ForgotPasswordFlow from 'pages/User/func_forgot/ForgotStep';
 import NotFoundPage from 'pages/NotFoundPage';
+import TermsAndConditionsPage from 'pages/User/TermsPage';
 
 // 管理端頁面
 import ManagerNav from 'components/Manage/ManagerNav.js';
@@ -38,6 +39,7 @@ import OutstandingAlumniPage from 'pages/Manager/OutstandingMemberManaPage';
 import GoogleAnalyticsWrapper from 'GA';
 import PosterModal from 'components/User/Home/PosterModal';
 import ProductManagement from 'pages/Manager/ProductListManaPage';
+import AllRecruitManaPage from 'pages/Manager/AllRecruitManaPage';
 
 function App() {
   return (
@@ -136,7 +138,13 @@ function App() {
         <AlumniListPage />
       </>
     } />
-
+    {/* 條款頁面 */}
+    <Route path="/website/terms/" element={
+      <>
+        <UserNav />
+        <TermsAndConditionsPage />
+      </>
+    } />
     {/* 招聘頁面 */}
     <Route path="/recruit" element={
       <>
@@ -244,6 +252,13 @@ function App() {
       <>
         <ManagerNav />
         <OutstandingAlumniPage></OutstandingAlumniPage>
+      </>
+    } />
+        {/* 招募總管理 */}
+        <Route path="/alumni/manage/recruit/all/" element={
+      <>
+        <ManagerNav />
+        <AllRecruitManaPage></AllRecruitManaPage>
       </>
     } />
     {/* 文章管理 */}

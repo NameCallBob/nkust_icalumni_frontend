@@ -1,128 +1,273 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Col, Row, Spinner } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Modal, Button, Form, Col, Row, Spinner, ProgressBar, Alert } from 'react-bootstrap';
+import { debounce } from 'lodash';
 
-const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loading, setLoading }) => {
+const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, loading, setLoading }) => {
+  const [activeStep, setActiveStep] = useState(1); // 分段表單步驟
+  const [formProgress, setFormProgress] = useState(0); // 填寫進度
+  const [submitAttempted, setSubmitAttempted] = useState(false); // 是否嘗試提交表單
+  const [apiErrors, setApiErrors] = useState({}); // 存儲API返回的錯誤
+  const [focusedField, setFocusedField] = useState(''); // 當前聚焦的欄位
+  const [serverValidating, setServerValidating] = useState(false); // 後端驗證中
+  const [isSubmitting, setIsSubmitting] = useState(false); // 提交防抖變數
+
+  // 初始化表單數據
   const [formData, setFormData] = useState(
     isEditMode
-      ? { ...parentData, graduate: parentData.graduate || { grade: '', school: '國立高雄科技大學智慧商務系', student_id: '' } }
-      : { name: '', gender: '', birth_date: '', mobile_phone: '', home_phone: '', address: '', intro: '', photo: '', is_show: false, graduate: { grade: '', school: '國立高雄科技大學智慧商務系', student_id: '' } }
+      ? { 
+          ...parentData, 
+          graduate: parentData.graduate || { 
+            grade: '113', 
+            school: '國立高雄科技大學智慧商務系', 
+            student_id: 'J110256100' 
+          } 
+        }
+      : { 
+          name: '', 
+          gender: '', 
+          birth_date: '', 
+          mobile_phone: '', 
+          home_phone: '', 
+          address: '', 
+          intro: '', 
+          photo: '', 
+          is_show: false, 
+          graduate: { 
+            grade: '113', 
+            school: '國立高雄科技大學智慧商務系', 
+            student_id: 'J110256100' 
+          } 
+        }
   );
-  const [errors, setErrors] = useState({}); // 儲存錯誤訊息
 
-  const [hint ,setHint] = useState("")
-
-  const handleFocus = (field) => {
-    setErrors((prevState) => {
-      const { [field]: _, ...rest } = prevState; // 移除特定欄位錯誤
-      return rest;
-    });
-
-    switch (field) {
-      case "name":
-        setHint("請輸入您的真實姓名，例如：王小明，最多 50 個字。");
-        break;
-      case "gender":
-        setHint("請選擇您的性別，例如：男性、女性或其他。");
-        break;
-      case "birth_date":
-        setHint("請選擇出生日期，例如：1990-01-01。");
-        break;
-      case "mobile_phone":
-        setHint("請輸入有效的行動電話號碼，例如：0912345678。");
-        break;
-      case "home_phone":
-        setHint("請輸入市內電話號碼，例如：07-1234567。");
-        break;
-      case "address":
-        setHint("請輸入詳細住址，例如：高雄市鼓山區博愛一路123號。");
-        break;
-      case "intro":
-        setHint("請輸入有關於您的自我介紹，可說明專長、職業以利於被搜尋到．限定200字");
-        break;
-      case "school":
-        setHint("請輸入畢業學校，例如：國立高雄科技大學 智慧商務系。");
-        break;
-      case "grade":
-        setHint("請輸入入學學年，例如：113。");
-        break;
-      case "student_id":
-        setHint("請輸入學號，例如：S12345678。");
-        break;
-      default:
-        setHint("");
-        break;
-    }
-  };
-
-  const validateFields = (name, value) => {
-    const errors = {};
-
-    if (name === "name" && (!value || value.trim() === "")) {
-      errors.name = ["姓名為必填項目"];
-    }
-    if (name === "home_phone" && value && !/^\d{6,10}$/.test(value)) {
-      errors.home_phone = ["市內電話格式不正確，應為6-10位數字"];
-    }
-    if (name === "mobile_phone" && (!value || !/^09\d{8}$/.test(value))) {
-      errors.mobile_phone = ["行動電話為必填，且需為有效的台灣手機號碼"];
-    }
-    if (name === "gender" && (!value || value === "")) {
-      errors.gender = ["性別為必選項"];
-    }
-    if (name === "birth_date" && (!value || new Date(value) > new Date())) {
-      errors.birth_date = ["生日必填且不能是未來日期"];
-    }
-    if (name === "graduate_year" && value && !/^\d{3}$/.test(value)) {
-      errors.graduate_year = ["畢業學年應為3位數"];
-    }
-    if (name === "photo" && value && value.size > 2 * 1024 * 1024) {
-      errors.photo = ["照片大小不可超過 2MB"];
-    }
-
-    return errors;
-  };
-
-
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    setHint(""); // 失焦時清空提示
+  // 表單驗證錯誤
+  const [errors, setErrors] = useState({}); 
   
-    // 檢查當前錯誤是否仍然有效
-    const fieldErrors = validateFields(name, value);
-    setErrors((prevState) => ({
-      ...prevState,
-      [name]: fieldErrors[name] ? fieldErrors[name] : undefined,
-    }));
+  // 表單分段
+  const formSteps = [
+    {
+      title: '基本資料',
+      fields: ['name', 'gender', 'birth_date', 'mobile_phone', 'home_phone'],
+      percent: 33
+    },
+    {
+      title: '聯絡與學校資料',
+      fields: ['address', 'graduate.grade', 'graduate.school', 'graduate.student_id'],
+      percent: 66
+    },
+    {
+      title: '個人介紹與設定',
+      fields: ['photo', 'intro', 'is_show'],
+      percent: 100
+    }
+  ];
+
+  // 表單欄位提示信息
+  const fieldHints = {
+    name: "請輸入您的真實姓名，例如：王小明，最多 50 個字。",
+    gender: "請選擇您的性別，例如：男性、女性或其他。",
+    birth_date: "請選擇出生日期，例如：1990-01-01。",
+    mobile_phone: "請輸入有效的行動電話號碼，例如：0912345678。",
+    home_phone: "請輸入市內電話號碼，例如：07-1234567（可選）。",
+    address: "請輸入詳細住址，例如：高雄市鼓山區博愛一路123號。",
+    intro: "請輸入有關於您的自我介紹，可說明專長、職業以利於被搜尋到，限定200字。",
+    "graduate.school": "請輸入畢業學校，例如：國立高雄科技大學智慧商務系。",
+    "graduate.grade": "請輸入入學學年，例如：113。",
+    "graduate.student_id": "請輸入學號，例如：J12345678。",
+    photo: "請上傳您的照片，檔案大小不可超過2MB。",
+    is_show: "勾選此項後，您的資料將會顯示在官網上。"
   };
 
+  // 欄位驗證規則
+  const validationRules = {
+    name: (value) => {
+      if (!value || value.trim() === "") return ["姓名為必填項目"];
+      if (value.length > 50) return ["姓名不可超過50個字"];
+      return null;
+    },
+    gender: (value) => {
+      if (!value || value === "") return ["性別為必選項"];
+      return null;
+    },
+    birth_date: (value) => {
+      if (!value) return ["生日為必填項"];
+      if (new Date(value) > new Date()) return ["生日不能是未來日期"];
+      return null;
+    },
+    mobile_phone: (value) => {
+      if (!value) return ["行動電話為必填項"];
+      if (!/^09\d{8}$/.test(value)) return ["請輸入有效的台灣手機號碼，例如：0912345678"];
+      return null;
+    },
+    home_phone: (value) => {
+      if (!value) return null; // 非必填
+      if (!/^\d{6,10}$/.test(value)) return ["市內電話格式不正確，應為6-10位數字"];
+      return null;
+    },
+    "graduate.grade": (value) => {
+      if (!value || value.trim() === "") return ["入學學年為必填項"];
+      if (!/^\d{3}$/.test(value)) return ["入學學年應為3位數"];
+      return null;
+    },
+    "graduate.school": (value) => {
+      if (!value || value.trim() === "") return ["畢業學校為必填項"];
+      return null;
+    },
+    "graduate.student_id": (value) => {
+      if (!value || value.trim() === "") return ["學號為必填項"];
+      return null;
+    },
+    photo: (file) => {
+      if (!file) return ["照片為必填項"];
+      if (file && typeof file === 'object' && file.size > 2 * 1024 * 1024) {
+        return ["照片大小不可超過 2MB"];
+      }
+      return null;
+    }
+  };
 
+  // 計算表單完成度
+  useEffect(() => {
+    const requiredFields = ['name', 'gender', 'birth_date', 'mobile_phone', 'graduate.grade', 'graduate.school', 'graduate.student_id', 'photo'];
+    let completed = 0;
+    
+    requiredFields.forEach(field => {
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
+        if (formData[parent]?.[child] && formData[parent][child].trim() !== '') {
+          completed++;
+        }
+      } else if (field === 'photo') {
+        if (formData[field]) {
+          completed++;
+        }
+      } else if (formData[field] && formData[field].trim !== undefined && formData[field].trim() !== '') {
+        completed++;
+      } else if (formData[field]) {
+        completed++;
+      }
+    });
+    
+    setFormProgress(Math.floor((completed / requiredFields.length) * 100));
+  }, [formData]);
 
   // 當 parentData 或 isEditMode 變更時，更新 formData
   useEffect(() => {
     if (isEditMode) {
-      setFormData({ ...parentData, graduate: parentData.graduate || { grade: '', school: '', student_id: '' } });
+      setFormData({ ...parentData, graduate: parentData.graduate || { grade: '', school: '國立高雄科技大學智慧商務系', student_id: '' } });
     } else {
-      setFormData({ name: '', gender: '', birth_date: '', mobile_phone: '', home_phone: '', address: '', intro: '', photo: '', is_show: false, graduate: { grade: '', school: '', student_id: '' } });
+      setFormData({ name: '', gender: '', birth_date: '', mobile_phone: '', home_phone: '', address: '', intro: '', photo: '', is_show: false, graduate: { grade: '', school: '國立高雄科技大學智慧商務系', student_id: '' } });
     }
-  }, [parentData, isEditMode]);
+    
+    // 重置步驟和錯誤
+    setActiveStep(1);
+    setErrors({});
+    setApiErrors({});
+    setSubmitAttempted(false);
+  }, [parentData, isEditMode, show]);
 
+  // 處理API錯誤響應，將Django REST框架錯誤格式轉換為本地格式
+  const handleApiErrors = (apiResponse) => {
+    if (!apiResponse || !apiResponse.errors) return {};
+
+    const formattedErrors = {};
+    
+    // 處理一般錯誤
+    Object.keys(apiResponse.errors).forEach(key => {
+      if (key === 'graduate') {
+        // 處理嵌套錯誤
+        formattedErrors.graduate = {};
+        Object.keys(apiResponse.errors.graduate).forEach(nestedKey => {
+          formattedErrors.graduate[nestedKey] = apiResponse.errors.graduate[nestedKey];
+        });
+      } else {
+        formattedErrors[key] = apiResponse.errors[key];
+      }
+    });
+    
+    return formattedErrors;
+  };
+
+  // 模擬後端字段實時驗證 - 移除學號和電話號碼的驗證
+  const validateFieldWithServer = useCallback(
+    debounce((fieldName, value) => {
+      // 這裡模擬發送到後端API的請求
+      setServerValidating(true);
+      
+      // 模擬API延遲
+      setTimeout(() => {
+        // 不再檢測電話和學號
+        setServerValidating(false);
+      }, 600);
+    }, 800),
+    []
+  );
+
+  // 驗證單個字段
+  const validateField = (name, value) => {
+    // 處理嵌套字段
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      // 確保使用正確的路徑驗證
+      return validationRules[name] ? validationRules[name](value) : null;
+    }
+    
+    // 一般字段
+    return validationRules[name] ? validationRules[name](value) : null;
+  };
+
+  // 處理表單欄位變更
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    
+    // 處理不同類型的輸入
+    if (name.includes('.')) {
+      // 處理嵌套欄位（如 graduate.grade）
+      const [parent, child] = name.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: type === 'file' ? files[0] : value
+        }
+      }));
+    } else if (name === 'photo' && files && files[0]) {
+      // 處理照片上傳
+      handleFileChange(files[0]);
+    } else {
+      // 處理常規欄位
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    }
+    
+    // 實時驗證
+    const fieldValue = type === 'checkbox' ? checked : (files && files[0] ? files[0] : value);
+    const fieldName = name.includes('.') ? name : name;
+    const fieldErrors = validateField(fieldName, fieldValue);
+    
+    setErrors(prev => ({
+      ...prev,
+      [fieldName]: fieldErrors
+    }));
+  };
+  
   // 處理照片上傳並轉換為 base64
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-
+  const handleFileChange = (file) => {
     if (file && file.size > 2 * 1024 * 1024) {
-      setErrors((prevState) => ({
-        ...prevState,
-        photo: ["照片大小不可超過 2MB"],
+      setErrors(prev => ({
+        ...prev,
+        photo: ["照片大小不可超過 2MB"]
       }));
       return;
     }
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setFormData((prevState) => ({
-        ...prevState,
-        photo: reader.result,
+      setFormData(prev => ({
+        ...prev,
+        photo: reader.result
       }));
     };
 
@@ -131,365 +276,659 @@ const MemberModal = ({ show, handleClose, isEditMode,handleSave, parentData, loa
     }
   };
 
-  // 對比 formData 和 parentData，找出變更
+  // 處理欄位聚焦，顯示提示
+  const handleFocus = (fieldName) => {
+    setFocusedField(fieldName);
+    
+    // 清除錯誤
+    setErrors(prev => {
+      const { [fieldName]: _, ...rest } = prev;
+      return rest;
+    });
+    
+    // 清除API錯誤
+    setApiErrors(prev => {
+      const { [fieldName]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  // 處理欄位失焦，檢查錯誤
+  const handleBlur = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    setFocusedField('');
+    
+    // 驗證字段
+    const fieldValue = type === 'checkbox' ? checked : (files && files[0] ? files[0] : value);
+    const fieldErrors = validateField(name, fieldValue);
+    
+    // 更新錯誤狀態
+    setErrors(prev => ({
+      ...prev,
+      [name]: fieldErrors
+    }));
+  };
+
+  // 驗證所有欄位
   const validateAllFields = () => {
     const newErrors = {};
-
-    Object.keys(formData).forEach((key) => {
-      if (key === "graduate") {
-        Object.keys(formData.graduate).forEach((nestedKey) => {
-          const error = validateFields(nestedKey, formData.graduate[nestedKey]);
-          if (error[nestedKey]) {
+    let hasErrors = false;
+    
+    // 更新必填欄位列表，添加學校相關欄位和照片
+    const requiredFields = ['name', 'gender', 'birth_date', 'mobile_phone', 'graduate.grade', 'graduate.school', 'graduate.student_id', 'photo'];
+    
+    // 驗證一般欄位
+    Object.keys(formData).forEach(key => {
+      if (key === 'graduate') {
+        // 驗證嵌套欄位
+        Object.keys(formData.graduate).forEach(nestedKey => {
+          const fullKey = `graduate.${nestedKey}`;
+          const errors = validateField(fullKey, formData.graduate[nestedKey]);
+          if (errors) {
             if (!newErrors.graduate) newErrors.graduate = {};
-            newErrors.graduate[nestedKey] = error[nestedKey];
+            newErrors.graduate[nestedKey] = errors;
+            hasErrors = true;
           }
         });
       } else {
-        const error = validateFields(key, formData[key]);
-        if (error[key]) {
-          newErrors[key] = error[key];
+        // 驗證一般欄位
+        const errors = validateField(key, formData[key]);
+        if (errors) {
+          newErrors[key] = errors;
+          hasErrors = true;
         }
       }
     });
-
+    
+    // 設置新的錯誤
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // 回傳是否沒有錯誤
+    
+    // 檢查是否有API錯誤
+    const hasApiErrors = Object.keys(apiErrors).length > 0;
+    
+    return !hasErrors && !hasApiErrors;
   };
 
+  // 判斷當前步驟是否可以繼續
+  const canProceedToNextStep = () => {
+    const currentStepFields = formSteps[activeStep - 1].fields;
+    let canProceed = true;
+    
+    // 檢查當前步驟的所有字段
+    currentStepFields.forEach(field => {
+      if (field.includes('.')) {
+        // 檢查嵌套字段
+        const [parent, child] = field.split('.');
+        const value = formData[parent]?.[child];
+        const fieldErrors = validateField(field, value);
+        
+        if (fieldErrors) {
+          canProceed = false;
+        }
+      } else {
+        // 檢查一般字段
+        const value = formData[field];
+        const fieldErrors = validateField(field, value);
+        
+        if (field === 'home_phone' || field === 'address' || field === 'intro' || field === 'is_show') {
+          // 這些是非必填字段，即使為空也可以繼續
+          if (fieldErrors && value) canProceed = false;
+        } else if (fieldErrors) {
+          canProceed = false;
+        }
+      }
+    });
+    
+    // 檢查API錯誤
+    currentStepFields.forEach(field => {
+      if (apiErrors[field]) canProceed = false;
+    });
+    
+    return canProceed;
+  };
 
-  const handleSubmit = () => {
+  // 處理下一步按鈕點擊
+  const handleNextStep = () => {
+    // 臨時標記為嘗試提交，觸發當前步驟的驗證
+    setSubmitAttempted(true);
+    
+    if (canProceedToNextStep()) {
+      setActiveStep(prev => Math.min(prev + 1, formSteps.length));
+      setSubmitAttempted(false);
+    }
+  };
+
+  // 處理上一步按鈕點擊
+  const handlePrevStep = () => {
+    setActiveStep(prev => Math.max(prev - 1, 1));
+    setSubmitAttempted(false);
+  };
+
+  // 處理表單提交
+  const handleSubmit = async () => {
+    setSubmitAttempted(true);
+    
     if (!validateAllFields()) {
-      return; // 若驗證未通過，則阻止提交
-    }
-
-    setLoading(true);
-    const changedData = isEditMode ? getChangedData() : formData;
-
-    setTimeout(() => {
-      handleSave(formData, changedData);
-      setLoading(false);
-    }, 2000);
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-  
-    if (['graduate_year', 'graduate', 'student_id'].includes(name)) {
-      const graduateField = name === 'graduate_year' ? 'grade' : name === 'graduate' ? 'school' : 'student_id';
-      setFormData((prevState) => ({
-        ...prevState,
-        graduate: {
-          ...prevState.graduate,
-          [graduateField]: value,
-        },
-      }));
-    } else {
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: type === 'checkbox' ? checked : value,
-      }));
-    }
-  
-    // 立即驗證並更新錯誤訊息
-    const fieldErrors = validateFields(name, value);
-    setErrors((prevState) => ({
-      ...prevState,
-      [name]: fieldErrors[name] ? fieldErrors[name] : undefined, // 確保錯誤訊息被清除
-    }));
-  };
-  
-
-  const getChangedData = () => {
-    return Object.keys(formData).reduce((changedData, key) => {
-      if (typeof formData[key] === 'object' && formData[key] !== null) {
-        const nestedChanges = Object.keys(formData[key]).reduce((nested, nestedKey) => {
-          if (formData[key][nestedKey] !== (parentData[key]?.[nestedKey] ?? undefined)) {
-            nested[nestedKey] = formData[key][nestedKey];
+      // 找出哪一步有錯誤，並跳轉到該步驟
+      for (let i = 0; i < formSteps.length; i++) {
+        const stepFields = formSteps[i].fields;
+        let stepHasErrors = false;
+        
+        for (const field of stepFields) {
+          if (field.includes('.')) {
+            const [parent, child] = field.split('.');
+            if (errors[parent]?.[child] || apiErrors[field]) {
+              stepHasErrors = true;
+              break;
+            }
+          } else if (errors[field] || apiErrors[field]) {
+            stepHasErrors = true;
+            break;
           }
-          return nested;
-        }, {});
+        }
+        
+        if (stepHasErrors) {
+          setActiveStep(i + 1);
+          return;
+        }
+      }
+      
+      return; // 防止提交
+    }
 
-        if (Object.keys(nestedChanges).length > 0) {
+    // 避免重複提交
+    if (loading || isSubmitting) return;
+
+    // 開始提交
+    setLoading(true);
+    setIsSubmitting(true);
+    
+    try {
+      if (isEditMode) {
+        // 編輯模式下，只發送已變更的欄位（用於 PATCH 請求）
+        const changedData = getChangedData();
+        await handleSave(formData, changedData); 
+      } else {
+        // 新增模式下，發送完整數據
+        await handleSave(formData, formData);
+      }
+    } catch (error) {
+      console.error("提交表單時發生錯誤:", error);
+      setApiErrors(handleApiErrors(error.response?.data) || {});
+    } finally {
+      setLoading(false);
+      // 延遲重置提交狀態，防止立即重複點擊
+      setTimeout(() => {
+        setIsSubmitting(false);
+      }, 800);
+    }
+  };
+
+  // 獲取已變更的數據 - 這個函數保留但不再使用，我們直接發送完整表單數據
+  const getChangedData = () => {
+    const changedData = {};
+    
+    Object.keys(formData).forEach(key => {
+      // 特殊處理 photo 欄位
+      if (key === 'photo') {
+        // 檢查是否為新上傳照片 (base64 格式)
+        if (formData.photo && formData.photo.startsWith('data:image')) {
+          changedData.photo = formData.photo;
+        }
+        // 其他情況不傳送 photo 參數
+      } 
+      // 處理嵌套物件
+      else if (typeof formData[key] === 'object' && formData[key] !== null && !Array.isArray(formData[key])) {
+        const nestedChanges = {};
+        let hasNestedChanges = false;
+        
+        Object.keys(formData[key]).forEach(nestedKey => {
+          if (formData[key][nestedKey] !== (parentData[key]?.[nestedKey] ?? '')) {
+            nestedChanges[nestedKey] = formData[key][nestedKey];
+            hasNestedChanges = true;
+          }
+        });
+
+        if (hasNestedChanges) {
           changedData[key] = nestedChanges;
         }
-      } else if (formData[key] !== (parentData[key] ?? undefined)) {
+      } 
+      // 處理其他一般欄位
+      else if (formData[key] !== (parentData[key] ?? '')) {
         changedData[key] = formData[key];
       }
+    });
 
-      return changedData;
-    }, {});
+    return changedData;
   };
 
+  // 渲染當前步驟的表單欄位
+  const renderFormFields = () => {
+    if (loading) {
+      return (
+        <div className="text-center p-5">
+          <Spinner animation="border" role="status" className="mb-3">
+            <span className="visually-hidden">處理中...</span>
+          </Spinner>
+          <p>資料處理中，請稍候...</p>
+        </div>
+      );
+    }
+
+    const currentStep = formSteps[activeStep - 1];
+    
+    return (
+      <div className="form-step">
+        {/* 步驟導航 */}
+        <div className="step-indicator mb-4">
+          <ProgressBar now={currentStep.percent} label={`${currentStep.percent}%`} />
+          <div className="d-flex justify-content-between mt-2">
+            {formSteps.map((step, index) => (
+              <Button 
+                key={index} 
+                variant={activeStep === index + 1 ? "primary" : "outline-secondary"}
+                size="sm"
+                onClick={() => setActiveStep(index + 1)}
+                disabled={loading}
+              >
+                {index + 1}. {step.title}
+              </Button>
+            ))}
+          </div>
+        </div>
+        
+        {/* 欄位提示區 */}
+        {focusedField && fieldHints[focusedField] && (
+          <Alert variant="info" className="mb-3">
+            <i className="bi bi-info-circle me-2"></i>
+            {fieldHints[focusedField]}
+          </Alert>
+        )}
+        
+        {/* API錯誤提示 */}
+        {Object.keys(apiErrors).length > 0 && (
+          <Alert variant="danger" className="mb-3">
+            <i className="bi bi-exclamation-triangle me-2"></i>
+            表單驗證失敗，請檢查以下欄位:
+            <ul className="mb-0 mt-2">
+              {Object.keys(apiErrors).map(key => (
+                <li key={key}>
+                  {key.includes('.') 
+                    ? `${key.split('.')[0]} ${key.split('.')[1]}: ${apiErrors[key]}`
+                    : `${key}: ${apiErrors[key]}`}
+                </li>
+              ))}
+            </ul>
+          </Alert>
+        )}
+        
+        {/* 表單欄位 */}
+        <Form>
+          {currentStep.title === '基本資料' && (
+            <>
+              <Row>
+                {/* 姓名 */}
+                <Col xs={12} md={6}>
+                  <Form.Group controlId="name" className="mb-3">
+                    <Form.Label>
+                      姓名 <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("name")}
+                      onBlur={handleBlur}
+                      isInvalid={(submitAttempted && errors.name) || apiErrors.name}
+                      placeholder="請輸入真實姓名"
+                      autoComplete="name"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.name || apiErrors.name}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+
+                {/* 性別 */}
+                <Col xs={12} md={6}>
+                  <Form.Group controlId="gender" className="mb-3">
+                    <Form.Label>
+                      性別 <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      as="select"
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("gender")}
+                      onBlur={handleBlur}
+                      isInvalid={(submitAttempted && errors.gender) || apiErrors.gender}
+                    >
+                      <option value="">請選擇性別</option>
+                      <option value="M">男性</option>
+                      <option value="F">女性</option>
+                      <option value="O">其他</option>
+                    </Form.Control>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.gender || apiErrors.gender}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Row>
+                {/* 生日 */}
+                <Col xs={12} md={6}>
+                  <Form.Group controlId="birth_date" className="mb-3">
+                    <Form.Label>
+                      生日 <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      type="date"
+                      name="birth_date"
+                      value={formData.birth_date}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("birth_date")}
+                      onBlur={handleBlur}
+                      isInvalid={(submitAttempted && errors.birth_date) || apiErrors.birth_date}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.birth_date || apiErrors.birth_date}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+
+                {/* 行動電話 */}
+                <Col xs={12} md={6}>
+                  <Form.Group controlId="mobile_phone" className="mb-3">
+                    <Form.Label>
+                      行動電話 <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="mobile_phone"
+                      value={formData.mobile_phone}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("mobile_phone")}
+                      onBlur={handleBlur}
+                      isInvalid={(submitAttempted && errors.mobile_phone) || apiErrors.mobile_phone}
+                      placeholder="09開頭的10位數字"
+                      autoComplete="tel"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.mobile_phone || apiErrors.mobile_phone}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              {/* 市內電話 */}
+              <Row>
+                <Col xs={12}>
+                  <Form.Group controlId="home_phone" className="mb-3">
+                    <Form.Label>市內電話（選填）</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="home_phone"
+                      value={formData.home_phone}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("home_phone")}
+                      onBlur={handleBlur}
+                      isInvalid={(submitAttempted && errors.home_phone) || apiErrors.home_phone}
+                      placeholder="不含區碼的6-10位數字（選填）"
+                      autoComplete="tel"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.home_phone || apiErrors.home_phone}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+            </>
+          )}
+
+          {currentStep.title === '聯絡與學校資料' && (
+            <>
+              {/* 地址 */}
+              <Form.Group controlId="address" className="mb-3">
+                <Form.Label>地址（選填）</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus("address")}
+                  onBlur={handleBlur}
+                  isInvalid={(submitAttempted && errors.address) || apiErrors.address}
+                  placeholder="請輸入您的詳細地址"
+                  autoComplete="street-address"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.address || apiErrors.address}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Row>
+                {/* 入學學年 */}
+                <Col xs={12} md={6}>
+                  <Form.Group controlId="graduate.grade" className="mb-3">
+                    <Form.Label>
+                      入學學年 <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="graduate.grade"
+                      value={formData.graduate?.grade || ""}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("graduate.grade")}
+                      onBlur={handleBlur}
+                      isInvalid={(submitAttempted && errors.graduate?.grade) || apiErrors["graduate.grade"]}
+                      placeholder="例如：113"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.graduate?.grade || apiErrors["graduate.grade"]}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+
+                {/* 畢業學校 */}
+                <Col xs={12} md={6}>
+                  <Form.Group controlId="graduate.school" className="mb-3">
+                    <Form.Label>
+                      畢業學校 <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="graduate.school"
+                      value={formData.graduate?.school || ""}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("graduate.school")}
+                      onBlur={handleBlur}
+                      isInvalid={(submitAttempted && errors.graduate?.school) || apiErrors["graduate.school"]}
+                      placeholder="例如：國立高雄科技大學智慧商務系"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.graduate?.school || apiErrors["graduate.school"]}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              {/* 學號 */}
+              <Form.Group controlId="graduate.student_id" className="mb-3">
+                <Form.Label>
+                  學號 <span className="text-danger">*</span>
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  name="graduate.student_id"
+                  value={formData.graduate?.student_id || ""}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus("graduate.student_id")}
+                  onBlur={handleBlur}
+                  isInvalid={(submitAttempted && errors.graduate?.student_id) || apiErrors["graduate.student_id"]}
+                  placeholder="例如：J12345678"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.graduate?.student_id || apiErrors["graduate.student_id"]}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </>
+          )}
+
+          {currentStep.title === '個人介紹與設定' && (
+            <>
+              {/* 照片 */}
+              <Form.Group controlId="photo" className="mb-4">
+                <Form.Label>
+                  照片 <span className="text-danger">*</span>
+                </Form.Label>
+                <div className="d-flex align-items-center">
+                  <div className="me-3">
+                    {formData.photo ? (
+                      <img 
+                        src={formData.photo.startsWith('data:') ? formData.photo : process.env.REACT_APP_BASE_URL+formData.photo} 
+                        alt="預覽" 
+                        className="img-thumbnail" 
+                        style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+                      />
+                    ) : (
+                      <div 
+                        className="bg-light d-flex align-items-center justify-content-center" 
+                        style={{ width: '100px', height: '100px', border: '1px dashed #ccc' }}
+                      >
+                        <span className="text-muted">無照片</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-grow-1">
+                    <Form.Control
+                      type="file"
+                      name="photo"
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("photo")}
+                      onBlur={handleBlur}
+                      isInvalid={(submitAttempted && errors.photo) || apiErrors.photo}
+                      accept="image/*"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.photo || apiErrors.photo}
+                    </Form.Control.Feedback>
+                    <Form.Text className="text-muted">
+                      請上傳不超過2MB的照片
+                    </Form.Text>
+                  </div>
+                </div>
+              </Form.Group>
+
+              {/* 自我介紹 */}
+              <Form.Group controlId="intro" className="mb-3">
+                <Form.Label>自我介紹（選填）</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={4}
+                  name="intro"
+                  value={formData.intro}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus("intro")}
+                  onBlur={handleBlur}
+                  isInvalid={(submitAttempted && errors.intro) || apiErrors.intro}
+                  placeholder="請輸入有關於您的自我介紹，可說明專長、職業以利於被搜尋到"
+                  maxLength={200}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.intro || apiErrors.intro}
+                </Form.Control.Feedback>
+                <Form.Text className="text-end d-block">
+                  {formData.intro ? formData.intro.length : 0}/200
+                </Form.Text>
+              </Form.Group>
+
+              {/* 是否展現於官網 */}
+              <Form.Group className="mb-3" controlId="is_show">
+                <Form.Check
+                  type="checkbox"
+                  name="is_show"
+                  label="是否展現於官網"
+                  checked={formData.is_show}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus("is_show")}
+                  onBlur={handleBlur}
+                />
+                <Form.Text className="text-muted">
+                  勾選此項後，您的資料將會顯示在官網上
+                </Form.Text>
+              </Form.Group>
+            </>
+          )}
+        </Form>
+      </div>
+    );
+  };
 
   return (
-<Modal show={show} onHide={handleClose} size="lg" centered>
-  <Modal.Header closeButton>
-    <Modal.Title>{isEditMode ? '編輯會員資料' : '新增會員資料'}</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    {hint && (
-      <div className="p-2 mb-3 bg-light text-secondary border rounded">
-        {hint}
-      </div>
-    )}
-    {loading ? (
-      <div className="text-center">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </div>
-    ) : (
-      <Form>
-        <Row>
-          {/* 姓名 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="name">
-              <Form.Label>姓名</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                onFocus={() => handleFocus("name")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.name}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.name}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-
-          {/* 市內電話 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="home_phone">
-              <Form.Label>市內電話</Form.Label>
-              <Form.Control
-                type="text"
-                name="home_phone"
-                value={formData.home_phone}
-                onChange={handleChange}
-                onFocus={() => handleFocus("home_phone")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.home_phone}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.home_phone}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
-
-        <Row>
-          {/* 行動電話 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="mobile_phone">
-              <Form.Label>行動電話</Form.Label>
-              <Form.Control
-                type="text"
-                name="mobile_phone"
-                value={formData.mobile_phone}
-                onChange={handleChange}
-                onFocus={() => handleFocus("mobile_phone")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.mobile_phone}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.mobile_phone}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-
-          {/* 性別 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="gender">
-              <Form.Label>性別</Form.Label>
-              <Form.Control
-                as="select"
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                onFocus={() => handleFocus("gender")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.gender}
+    <Modal show={show} onHide={handleClose} size="lg" centered backdrop="static">
+      <Modal.Header closeButton>
+        <Modal.Title>{isEditMode ? '編輯會員資料' : '新增會員資料'}</Modal.Title>
+      </Modal.Header>
+      
+      <Modal.Body className="p-4">
+        {/* 表單進度指示器 */}
+        {!loading && (
+          <div className="mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <h5>{formSteps[activeStep - 1].title}</h5>
+              <small className="text-muted">步驟 {activeStep}/{formSteps.length}</small>
+            </div>
+          </div>
+        )}
+        
+        {/* 表單欄位 */}
+        {renderFormFields()}
+      </Modal.Body>
+      
+      <Modal.Footer>
+        <div className="w-100 d-flex justify-content-between">
+          <Button 
+            variant="outline-secondary" 
+            onClick={activeStep > 1 ? handlePrevStep : handleClose}
+            disabled={loading}
+          >
+            {activeStep > 1 ? '上一步' : '取消'}
+          </Button>
+          
+          <div>
+            {activeStep < formSteps.length ? (
+              <Button 
+                variant="primary" 
+                onClick={handleNextStep}
+                disabled={loading || !canProceedToNextStep()}
               >
-                <option value="">選擇性別</option>
-                <option value="M">男性</option>
-                <option value="F">女性</option>
-                <option value="O">其他</option>
-              </Form.Control>
-              <Form.Control.Feedback type="invalid">
-                {errors.gender}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
-
-        <Row>
-          {/* 生日 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="birth_date">
-              <Form.Label>生日</Form.Label>
-              <Form.Control
-                type="date"
-                name="birth_date"
-                value={formData.birth_date}
-                onChange={handleChange}
-                onFocus={() => handleFocus("birth_date")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.birth_date}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.birth_date}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-
-          {/* 地址 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="address">
-              <Form.Label>地址</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={2}
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                onFocus={() => handleFocus("address")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.address}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.address}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
-
-        <Row>
-          {/* 入學學年 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="graduate_year">
-              <Form.Label>入學學年</Form.Label>
-              <Form.Control
-                type="text"
-                name="graduate_year"
-                value={formData.graduate?.grade || ""}
-                onChange={handleChange}
-                onFocus={() => handleFocus("graduate_year")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.graduate?.grade}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.graduate?.grade}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-
-          {/* 畢業學校 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="graduate">
-              <Form.Label>畢業學校</Form.Label>
-              <Form.Control
-                type="text"
-                name="graduate"
-                value={formData.graduate?.school || ""}
-                onChange={handleChange}
-                onFocus={() => handleFocus("graduate")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.graduate?.school}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.graduate?.school}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
-
-        <Row>
-          {/* 學號 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="student_id">
-              <Form.Label>學號</Form.Label>
-              <Form.Control
-                type="text"
-                name="student_id"
-                value={formData.graduate?.student_id || ""}
-                onChange={handleChange}
-                onFocus={() => handleFocus("student_id")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.graduate?.student_id}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.graduate?.student_id}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-
-          {/* 照片 */}
-          <Col xs={12} md={6}>
-            <Form.Group controlId="photo">
-              <Form.Label>照片</Form.Label>
-              <Form.Control
-                type="file"
-                name="photo"
-                onChange={handleFileChange}
-                onFocus={() => handleFocus("photo")}
-                onBlur={handleBlur}
-                isInvalid={!!errors.photo}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.photo}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
-
-        {/* 自我介紹 */}
-        <Form.Group controlId="intro">
-          <Form.Label>自我介紹</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            name="intro"
-            value={formData.intro}
-            onChange={handleChange}
-            onFocus={() => handleFocus("intro")}
-            onBlur={handleBlur}
-            isInvalid={!!errors.intro}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.intro}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        {/* 是否展現於官網 */}
-        <Form.Group className="mb-3" controlId="formShow">
-          <Form.Check
-            type="checkbox"
-            name="is_show"
-            label="是否展現於官網"
-            checked={formData.is_show}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                is_show: e.target.checked,
-              }))
-            }
-          />
-        </Form.Group>
-      </Form>
-    )}
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="secondary" onClick={handleClose} disabled={loading}>
-      取消
-    </Button>
-    <Button variant="primary" onClick={handleSubmit} disabled={loading}>
-      {loading ? "保存中..." : isEditMode ? "保存" : "新增"}
-    </Button>
-  </Modal.Footer>
-</Modal>
+                下一步
+              </Button>
+            ) : (
+              <Button 
+                variant="success" 
+                onClick={handleSubmit}
+                disabled={loading || isSubmitting}
+                style={{ minWidth: '120px' }}
+              >
+                {loading ? (
+                  <>
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                    處理中...
+                  </>
+                ) : (
+                  isEditMode ? '保存修改' : '新增會員'
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

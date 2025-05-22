@@ -119,46 +119,48 @@ function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, ha
           </Table>
 
           {/* 行動版表格 */}
-          <Table striped bordered hover responsive className="d-md-none">
-            <thead>
-              <tr>
-                <th>級別</th>
-                <th>職位</th>
-                <th>姓名</th>
-                <th>功能權限</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.graduate?.grade}</td>
-                  <td>{user.position?.title}</td>
-                  <td>{user.name}</td>
-                  <td>
-                    <Button
-                      variant="info"
-                      size="sm"
-                      onClick={() => handleEdit(user.id)}
-                      className="me-2"
-                      title="編輯使用者資訊"
-                    >
-                      <FaEdit />&nbsp;編輯
-                    </Button>
-                    <Button
-                      variant={user.is_paid ? 'warning' : 'success'}
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handlePaymentStatus(user.id, user.is_paid)}
-                      title={user.is_paid ? '標記為未付款' : '標記為已付款'}
-                    >
-                      <FaMoneyBillWave />
-                      &nbsp;付款？
-                    </Button>
-                  </td>
+          <div className="table-responsive">
+            <Table striped bordered hover responsive className="d-md-none">
+              <thead>
+                <tr>
+                  <th>級別</th>
+                  <th>職位</th>
+                  <th>姓名</th>
+                  <th>功能權限</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {currentUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.graduate?.grade}</td>
+                    <td>{user.position?.title}</td>
+                    <td>{user.name}</td>
+                    <td>
+                      <Button
+                        variant="info"
+                        size="sm"
+                        onClick={() => handleEdit(user.id)}
+                        className="me-2"
+                        title="編輯使用者資訊"
+                      >
+                        <FaEdit />&nbsp;編輯
+                      </Button>
+                      <Button
+                        variant={user.is_paid ? 'warning' : 'success'}
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handlePaymentStatus(user.id, user.is_paid)}
+                        title={user.is_paid ? '標記為未付款' : '標記為已付款'}
+                      >
+                        <FaMoneyBillWave />
+                        &nbsp;付款？
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </>
       )}
       {/* 依照資料進行分頁 */}

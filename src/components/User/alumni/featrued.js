@@ -24,14 +24,13 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
 
     return (
         <div>
-            <h2 className="text-center my-4">傑出系友</h2>
             <Row className="mb-4">
                 {currentAlumni.map((alumni) => (
                     <Col key={alumni.id} xs={12} md={6} className="mb-4">
                         <Card
                             className="h-100 shadow d-flex flex-row"
                             style={{ cursor: 'pointer' }}
-                            onClick={() => (window.location.href = `/alumni/${alumni.id}`)}
+                            onClick={() => (window.location.href = `/alumni/${alumni.member}`)}
                         >
                             <Card.Img
                                 variant="left"
