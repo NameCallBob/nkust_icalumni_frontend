@@ -49,7 +49,7 @@ const OutstandingAlumniPage = () => {
       setShowAddModal(false);
       fetchAlumniList();
     } catch (err) {
-      console.error("Error adding alumni:", err);
+      // console.error("Error adding alumni:", err);
       toast.error("新增失敗，請稍後再試");
     }
   };
@@ -61,7 +61,7 @@ const OutstandingAlumniPage = () => {
       setShowEditModal(false);
       fetchAlumniList();
     } catch (err) {
-      console.error("Error editing alumni:", err);
+      // console.error("Error editing alumni:", err);
       toast.error("更新失敗，請稍後再試");
     }
   };
@@ -74,7 +74,7 @@ const OutstandingAlumniPage = () => {
       toast.success(`已${alumni.is_featured ? "取消" : "設置"}展示於官網`);
       fetchAlumniList();
     } catch (err) {
-      console.error("Error toggling featured status:", err);
+      // console.error("Error toggling featured status:", err);
       toast.error("無法更新展示狀態");
     }
   };
@@ -88,7 +88,7 @@ const OutstandingAlumniPage = () => {
           fetchAlumniList();
         })
         .catch((err) => {
-          console.error("Error deleting alumni:", err);
+          // console.error("Error deleting alumni:", err);
           toast.error("刪除失敗，請稍後再試");
         });
     }
