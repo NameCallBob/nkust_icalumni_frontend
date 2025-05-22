@@ -1,16 +1,247 @@
-/* 調整表格行高 */
+/* 全局基本樣式設定 */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2980b9;
+  --accent-color: #e74c3c;
+  --light-bg: #f8f9fa;
+  --border-color: #e0e0e0;
+  --text-color: #333;
+  --text-muted: #6c757d;
+}
+
+body {
+  color: var(--text-color);
+  font-family: 'Microsoft JhengHei', Arial, sans-serif;
+}
+
+.recruit-page {
+  padding-bottom: 3rem;
+}
+
+/* 標題區塊樣式 */
+.recruit-page h1 {
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.recruit-page h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+/* 無職位提示區塊 */
+.no-job {
+  border-radius: 8px;
+  padding: 3rem 1rem;
+  background-color: var(--light-bg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.no-job h2 {
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* 職位表格樣式 */
+.job-table {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.job-table thead {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.job-table th {
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: none;
+}
+
 .job-row {
-    height: 60px; /* 增加行高 */
-    cursor: pointer;
-  }
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
 
-  .job-table th, .job-table td {
-    vertical-align: middle;
-  }
+.job-row:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+  transform: translateY(-2px);
+}
 
-  /* 調整小螢幕時表格的樣式 */
-  @media (max-width: 768px) {
-    .job-row {
-      height: 80px; /* 小螢幕行高調整 */
-    }
+/* 職位卡片樣式 */
+.job-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.job-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
+}
+
+.job-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.job-card .card-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.job-card .card-footer {
+  background-color: transparent;
+  padding-top: 0;
+}
+
+.job-card .badge {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  vertical-align: middle;
+}
+
+/* 模態框樣式 */
+.modal-header {
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.modal-title {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.detail-card {
+  min-height: 180px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.detail-card h5 {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.job-description h5 {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.job-content {
+  line-height: 1.6;
+}
+
+/* 照片輪播樣式 */
+.carousel-img-container {
+  border-radius: 8px;
+  overflow: hidden;
+  height: 300px; /* 固定高度 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--light-bg);
+}
+
+.carousel-img-container img {
+  object-fit: contain; /* 保持圖片比例 */
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.job-carousel .carousel-control-prev,
+.job-carousel .carousel-control-next {
+  width: 10%;
+  opacity: 0.7;
+  background-color: rgba(0, 0, 0, 0.2);
+  height: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 4px;
+}
+
+.job-carousel .carousel-indicators {
+  margin-bottom: -1rem;
+}
+
+/* RWD 響應式調整 */
+@media (max-width: 767.98px) {
+  .recruit-page {
+    padding: 0 0.5rem 2rem;
   }
+  
+  .recruit-page h1 {
+    font-size: 1.5rem;
+  }
+  
+  .job-table th, 
+  .job-table td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .detail-card {
+    min-height: auto;
+    margin-bottom: 1rem;
+  }
+  
+  .carousel-img-container {
+    height: 200px;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+}
+
+/* 平板裝置 */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .job-card .card-title {
+    font-size: 1rem;
+  }
+  
+  .job-card .card-subtitle {
+    font-size: 0.85rem;
+  }
+}
+
+/* 載入中動畫樣式 */
+.loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* 分頁控制樣式 */
+.pagination .page-item .page-link {
+  color: var(--primary-color);
+  border-color: var(--border-color);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: var(--light-bg);
+}

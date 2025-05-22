@@ -1,76 +1,94 @@
+// Search.jsx
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Nav, Card, Container, Row, Col, Form, Button, Fade, Spinner } from 'react-bootstrap';
+import { 
+  Nav, Card, Container, Row, Col, Form, Button, 
+  InputGroup, Dropdown, Badge, Fade, Spinner 
+} from 'react-bootstrap';
+import CompanyCard from 'components/User/search/Companycard';
 import LoadingSpinner from 'components/LoadingSpinner';
 import SEO from 'SEO';
-import { BsSearch } from "react-icons/bs";
+import { 
+  BsSearch, BsFilter, BsArrowDown, BsArrowUp, 
+  BsExclamationCircle, BsBuilding, BsList 
+} from "react-icons/bs";
 
 const Search = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // 用來處理導航
-  const [activeCategory, setActiveCategory] = useState(0);
+  const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [showNoResults, setShowNoResults] = useState(false); // 控制淡出動畫的狀態
-  const [selectedType, setSelectedType] = useState(null); // 儲存選擇的類型
-  const [loading, setLoading] = useState(false); // 加載狀態
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [showNoResults, setShowNoResults] = useState(false);
+  const [selectedType, setSelectedType] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' 或 'list'
+  const [sortBy, setSortBy] = useState('newest'); // 排序選項
+  const [showFilters, setShowFilters] = useState(true);
   const { type_id, search_text } = location.state || { type_id: null, search_text: null };
-  console.log(location.state)
 
   useEffect(() => {
-    // industry輸入中，預設取得所有的分類
+    // 獲取所有行業分類
     Axios().get('company/industry/all/')
       .then((res) => {
-        setCategories(res.data);
+        setCategories([{ id: 0, title: '全部行業' }, ...res.data]);
+      })
+      .catch(error => {
+        console.error("獲取行業分類失敗:", error);
       });
-    // 檢查是否有傳來的搜尋參數，並預設查詢
+
+    // 檢查是否有預設搜尋參數
     if (type_id || search_text) {
       const initialQuery = {};
       if (type_id) {
         setSelectedType(type_id);
-
         initialQuery['industry'] = type_id;
       }
       if (search_text) {
         setSearchTerm(search_text);
-        initialQuery['name'] = search_text;
+        initialQuery['search'] = search_text;
       }
-      console.log(initialQuery)
-      handleSearch(initialQuery); // 預設查詢
-    }else{
-      handleSearch()
+      handleSearch(initialQuery);
+    } else {
+      handleSearch();
     }
   }, []);
 
-  // 處理類型搜尋
+  useEffect(() => {
+    // 當搜索結果或排序方式改變時，重新排序結果
+    if (searchResults.length > 0) {
+      sortResults(sortBy);
+    }
+  }, [searchResults, sortBy]);
+
+  // 處理行業分類搜尋
   const handleTypeSearch = (categoryId) => {
     setSelectedType(categoryId);
     const query = {};
 
-    // 如果有輸入的搜尋條件則加入查詢
     if (searchTerm) {
-      query['name'] = searchTerm;
+      query['search'] = searchTerm;
     }
 
-    // 添加類型條件
-    query['industry'] = categoryId;
+    if (categoryId !== 0) { // 0 表示"全部行業"
+      query['industry'] = categoryId;
+    }
 
     handleSearch(query);
   };
 
-  // 處理輸入搜尋
+  // 處理關鍵字搜尋
   const handleInputSearch = (e) => {
     e.preventDefault();
     const query = {};
 
-    // 如果有選擇的類型則加入查詢
-    if (selectedType) {
+    if (selectedType && selectedType !== 0) {
       query['industry'] = selectedType;
     }
 
-    // 添加輸入條件
     if (searchTerm) {
       query['search'] = searchTerm;
     }
@@ -78,139 +96,317 @@ const Search = () => {
     handleSearch(query);
   };
 
-  // 處理聯合搜尋並串接後端
-  const handleSearch = (searchQuery=null) => {
-    setLoading(true); // 開始加載資料
-    console.log(searchQuery)
+  // 處理搜尋請求
+  const handleSearch = (searchQuery = null) => {
+    setLoading(true);
+    
     Axios().get('company/search_any/', { params: searchQuery })
       .then((res) => {
         if (res.data.results.length === 0) {
           setShowNoResults(true);
           setSearchResults([]);
+          setFilteredResults([]);
         } else {
           setShowNoResults(false);
           setSearchResults(res.data.results);
+          setFilteredResults(res.data.results);
         }
       })
       .catch((error) => {
-        console.error("Error fetching search results:", error);
+        console.error("搜尋結果獲取失敗:", error);
       })
       .finally(() => {
-        setLoading(false); // 加載完成
+        setLoading(false);
       });
   };
 
+  // 處理排序
+  const sortResults = (sortOption) => {
+    setSortBy(sortOption);
+    
+    let sorted = [...searchResults];
+    switch (sortOption) {
+      case 'newest':
+        sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        break;
+      case 'oldest':
+        sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        break;
+      case 'nameAsc':
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'nameDesc':
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      default:
+        break;
+    }
+    
+    setFilteredResults(sorted);
+  };
+
   // 處理卡片點擊
-  const handleCardClick = (result) => {
-    navigate(`/alumni/${result.member}`); // 假設公司詳細頁面是這樣的路徑
+  const handleCardClick = (company) => {
+    navigate(`/alumni/${company.member}`, { state: { companyData: company } });
+  };
+
+  // 渲染排序下拉選單
+  // const renderSortDropdown = () => {
+  //   return (
+  //     <Dropdown>
+  //       <Dropdown.Toggle variant="outline-secondary" size="sm" id="dropdown-sort">
+  //         <BsArrowDown className="me-1" />排序: {
+  //           sortBy === 'newest' ? '最新' :
+  //           sortBy === 'oldest' ? '最舊' :
+  //           sortBy === 'nameAsc' ? '公司名稱 A-Z' :
+  //           '公司名稱 Z-A'
+  //         }
+  //       </Dropdown.Toggle>
+  //       <Dropdown.Menu>
+  //         <Dropdown.Item active={sortBy === 'newest'} onClick={() => sortResults('newest')}>
+  //           <BsArrowDown className="me-2" />最新
+  //         </Dropdown.Item>
+  //         <Dropdown.Item active={sortBy === 'oldest'} onClick={() => sortResults('oldest')}>
+  //           <BsArrowUp className="me-2" />最舊
+  //         </Dropdown.Item>
+  //         <Dropdown.Item active={sortBy === 'nameAsc'} onClick={() => sortResults('nameAsc')}>
+  //           <BsArrowDown className="me-2" />公司名稱 A-Z
+  //         </Dropdown.Item>
+  //         <Dropdown.Item active={sortBy === 'nameDesc'} onClick={() => sortResults('nameDesc')}>
+  //           <BsArrowUp className="me-2" />公司名稱 Z-A
+  //         </Dropdown.Item>
+  //       </Dropdown.Menu>
+  //     </Dropdown>
+  //   );
+  // };
+
+  // 渲染視圖模式切換按鈕
+  const renderViewToggle = () => {
+    return (
+      <div className="d-flex">
+        <Button 
+          variant={viewMode === 'grid' ? 'primary' : 'outline-secondary'} 
+          size="sm" 
+          className="me-2"
+          onClick={() => setViewMode('grid')}
+        >
+          <i className="bi bi-grid"></i>
+        </Button>
+        <Button 
+          variant={viewMode === 'list' ? 'primary' : 'outline-secondary'} 
+          size="sm"
+          onClick={() => setViewMode('list')}
+        >
+          <BsList />
+        </Button>
+      </div>
+    );
+  };
+
+  // 渲染搜尋結果
+  const renderSearchResults = () => {
+    if (loading) {
+      return (
+        <Col xs={12} className="text-center py-5">
+          <LoadingSpinner />
+        </Col>
+      );
+    }
+
+    if (filteredResults.length === 0) {
+      return (
+        <Fade in={showNoResults}>
+          <Col xs={12} className="d-flex justify-content-center py-5">
+            <Card className="text-center shadow-sm" style={{ maxWidth: "500px", padding: "20px" }}>
+              <Row className="justify-content-center">
+                <Col xs="auto">
+                  <BsExclamationCircle size={50} className="text-muted" />
+                </Col>
+              </Row>
+              <Card.Body>
+                <Card.Title className="mt-3">找不到相關結果</Card.Title>
+                <Card.Text>
+                  {searchTerm ? (
+                    <>
+                      沒有找到與 <strong>{searchTerm}</strong> 相關的內容，請換個關鍵詞搜尋!
+                    </>
+                  ) : (
+                    "請嘗試輸入其他關鍵字或選擇不同行業分類。"
+                  )}
+                </Card.Text>
+                <Button variant="outline-primary" onClick={() => handleTypeSearch(0)}>
+                  查看所有公司
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Fade>
+      );
+    }
+
+    return (
+      <>
+        <Col xs={12} className="mb-3">
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <Badge bg="info" className="me-2">
+                共 {filteredResults.length} 個結果
+              </Badge>
+              {selectedType !== null && selectedType !== 0 && (
+                <Badge bg="primary">
+                  {categories.find(c => c.id === selectedType)?.title || ''}
+                </Badge>
+              )}
+            </div>
+            <div className="d-flex">
+              {/* {renderSortDropdown()} */}
+              <div className="ms-2 d-none d-md-block">
+                {renderViewToggle()}
+              </div>
+            </div>
+          </div>
+        </Col>
+
+        {viewMode === 'grid' ? (
+          // 網格視圖
+          filteredResults.map((company, index) => (
+            <Col xs={12} sm={6} md={4} lg={4} key={index} className="mb-4">
+              <CompanyCard 
+                company={company} 
+                onClick={() => handleCardClick(company)} 
+              />
+            </Col>
+          ))
+        ) : (
+          // 列表視圖
+          <Col xs={12}>
+            {filteredResults.map((company, index) => (
+              <Card 
+                key={index} 
+                className="mb-3 shadow-sm" 
+                onClick={() => handleCardClick(company)}
+                style={{ cursor: 'pointer' }}
+              >
+                <Card.Body>
+                  <Row>
+                    <Col xs={12} md={3}>
+                      <img 
+                        src={company.photo} 
+                        alt={company.name} 
+                        style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '8px' }} 
+                      />
+                    </Col>
+                    <Col xs={12} md={9}>
+                      <div className="d-flex justify-content-between align-items-start">
+                        <h5 className="mb-2 fw-bold text-primary">
+                          <BsBuilding className="me-2" />{company.name}
+                        </h5>
+                        {company.industry_title && (
+                          <Badge bg="primary">{company.industry_title}</Badge>
+                        )}
+                      </div>
+                      <p className="mb-2 text-truncate" style={{ fontSize: '0.9rem' }}>
+                        {company.description || company.products || '暫無公司描述'}
+                      </p>
+                      <div className="mt-2">
+                        <small className="text-muted">
+                          系友：{company.member_name} 
+                          {company.position && ` | 職位：${company.position}`}
+                        </small>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            ))}
+          </Col>
+        )}
+      </>
+    );
   };
 
   return (
     <Container className='my-4'>
       <SEO
-      main ={false}
-      title="招募查詢"
-      description="了解智慧商務系友會中系友們的招募需求與最新機會，加入我們，共創未來。"
-      keywords={["智慧商務", "招募", "招聘", "加入系友會"]}
-    />
-      <Row className="d-flex flex-column flex-md-row">
-        <Col md={3} className="mb-3 mb-md-0">
-          <Nav variant="pills" className="flex-md-column justify-content-center">
-            {categories.map((category, index) => (
-              <Nav.Item key={index}>
-                <Nav.Link
-                  active={category.id === selectedType}
-                  onClick={() => { setActiveCategory(index); handleTypeSearch(category.id); }}
-                  className="text-center"
-                >
-                  {category.title}
-                </Nav.Link>
-              </Nav.Item>
-            ))}
-          </Nav>
-        </Col>
-        <Col md={9}>
+        main={false}
+        title="公司 查詢"
+        description="了解智慧商務系友會中系友們的招募需求與最新機會，加入我們，共創未來。"
+        keywords={["智慧商務", "招募", "招聘", "加入系友會"]}
+      />
+      <Card className="mb-4 shadow-sm border-0">
+        <Card.Body className="p-4">
+          <h2 className="mb-4 text-center fw-bold">公司查詢</h2>
           <Form className="mb-4" onSubmit={handleInputSearch}>
-            <Row>
-              <Col xs={8} md={10}>
-                <Form.Control
-                  type="text"
-                  placeholder="搜尋..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            <Row className="g-2">
+              <Col xs={12} md={10}>
+                <InputGroup>
+                  <InputGroup.Text>
+                    <BsSearch />
+                  </InputGroup.Text>
+                  <Form.Control
+                    type="text"
+                    placeholder="輸入公司名稱、產品或關鍵字..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </InputGroup>
               </Col>
-              <Col xs={4} md={2}>
+              <Col xs={12} md={2}>
                 <Button variant="primary" type="submit" className="w-100">
                   搜尋
                 </Button>
               </Col>
             </Row>
+            <div className="mt-3 d-flex justify-content-between align-items-center">
+              <Button 
+                variant="link" 
+                className="text-decoration-none p-0" 
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <BsFilter className="me-1" />
+                {showFilters ? '隱藏篩選' : '顯示篩選'}
+              </Button>
+              <div className="d-block d-md-none">
+                {renderViewToggle()}
+              </div>
+            </div>
           </Form>
-
-          {/* 搜索結果展示區域 */}
-          <Row>
-            {loading ? (
-              <Col xs={12} className="text-center">
-                <LoadingSpinner></LoadingSpinner>
-              </Col>
-            ) : searchResults.length > 0 ? (
-              searchResults.map((result, index) => (
-                <Col xs={12} md={4} key={index}>
-                  <Card
-                    className="mb-4 shadow-sm"
-                    style={{ borderRadius: '10px', cursor: 'pointer' }}
-                    onClick={() => handleCardClick(result)} // 點擊整個卡片
-                  >
-                    <Card.Img
-                      variant="top"
-                      src={result.photo}
-                      alt={result.name}
-                      style={{ objectFit: 'cover', height: '200px', borderTopLeftRadius: '10px', borderTopRightRadius: '10px' }}
-                    />
-                    <Card.Body>
-                      <Card.Title className="text-truncate" style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{result.name}</Card.Title>
-                      <Card.Text className="text-truncate" style={{ fontSize: '1rem', color: '#6c757d' }}>
-                        系友： {result.member_name}
-                      </Card.Text>
-                      <Card.Text>
-                        {result.products}
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))
-            ) : (
-              <Fade in={showNoResults}>
-                  <Container
-    className="d-flex justify-content-center align-items-center"
-    style={{ height: "100vh" }} // 全螢幕高度
-  >
-    <Col xs={12} md={8} lg={6}> {/* 控制卡片最大寬度 */}
-      <Card className="text-center shadow-sm" style={{ maxWidth: "500px", padding: "20px" }}>
-        <Row className="justify-content-center">
-          <Col xs="auto">
-            <BsSearch size={50} className="text-muted" />
-          </Col>
-        </Row>
-        <Card.Body>
-          <Card.Title className="mt-3">找不到相關結果</Card.Title>
-          <Card.Text>
-            {searchTerm ? (
-              <>
-                沒有找到與 <strong>{searchTerm}</strong> 相關的內容，請換個關鍵詞搜尋!
-              </>
-            ) : (
-              "請嘗試輸入其他關鍵字或稍後再試。"
-            )}
-          </Card.Text>
         </Card.Body>
       </Card>
-    </Col>
-  </Container>
-              </Fade>
-            )}
-          </Row>
+
+      <Row>
+        {/* 行業分類篩選區塊，在大螢幕永遠顯示，在小螢幕時根據showFilters判斷是否顯示 */}
+                <Col md={3} className={`mb-4 ${showFilters ? 'd-block' : 'd-none d-md-block'}`}>
+          <Card className="shadow-sm border-0">
+            <Card.Body>
+              <h5 className="mb-3 fw-bold">行業分類</h5>
+              <Nav variant="pills" className="flex-column">
+                {categories.map((category, index) => (
+                  <Nav.Item key={index} className="mb-2">
+                    <Nav.Link
+                      active={category.id === selectedType}
+                      onClick={() => { setActiveCategory(index); handleTypeSearch(category.id); }}
+                      className="d-flex justify-content-between align-items-center"
+                    >
+                      {category.title}
+                      {category.count && <Badge bg="light" text="dark">{category.count}</Badge>}
+                    </Nav.Link>
+                  </Nav.Item>
+                ))}
+              </Nav>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* 搜尋結果區塊，根據篩選區域是否顯示來決定寬度 */}
+        <Col md={showFilters ? 9 : 12} className="col-12">
+          <Card className="shadow-sm border-0 h-100">
+            <Card.Body className="p-3">
+              <Row>
+                {renderSearchResults()}
+              </Row>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
     </Container>

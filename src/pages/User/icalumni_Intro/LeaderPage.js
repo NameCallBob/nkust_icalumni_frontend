@@ -32,7 +32,7 @@ const LeaderPage = () => {
       } catch (err) {
         setError('載入內容時發生錯誤');
         setIsLoading(false);
-        console.error('Error fetching HTML content:', err);
+        // console.error('Error fetching HTML content:', err);
       }
     };
 

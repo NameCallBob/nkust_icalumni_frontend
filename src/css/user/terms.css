@@ -1,0 +1,130 @@
+/* TermsAndConditionsPage.css */
+
+/* 整體容器樣式 */
+.terms-container {
+    position: relative;
+    padding-bottom: 60px;
+  }
+  
+  /* 標題區塊樣式 */
+  .terms-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 側邊欄樣式 */
+  .terms-sidebar {
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  
+  .sidebar-wrapper {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 側邊欄導航項目樣式 */
+  .terms-sidebar .nav-link {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+  }
+  
+  .terms-sidebar .nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .terms-sidebar .nav-link.active {
+    font-weight: bold;
+  }
+  
+  /* 主要內容區塊樣式 */
+  .terms-content {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 章節標題樣式 */
+  .section-header {
+    margin-bottom: 1rem;
+  }
+  
+  /* 內容區塊樣式 */
+  .content-block {
+    padding-left: 1rem;
+    border-left: 3px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 返回頂部按鈕樣式 */
+  .back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+  
+  /* 移動裝置上的側邊欄切換樣式 */
+  @media (max-width: 991.98px) {
+    .terms-sidebar {
+      position: relative;
+      top: 0;
+      height: auto;
+      transition: max-height 0.3s ease;
+      overflow: hidden;
+    }
+  
+    .terms-sidebar.show-mobile {
+      max-height: 1000px;
+      margin-bottom: 1.5rem;
+    }
+  
+    .terms-sidebar.hide-mobile {
+      max-height: 0;
+    }
+    
+    .back-to-top {
+      bottom: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+    }
+  }
+  
+  /* 列表樣式改進 */
+  .content-block ul {
+    padding-left: 1.25rem;
+  }
+  
+  .content-block ul li {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* 強調重要內容 */
+  .section-body p strong {
+    font-weight: bold;
+    color: #222;
+  }
+  
+  /* 頁面底部空間 */
+  .terms-content {
+    margin-bottom: 2rem;
+  }
+  
+  /* 章節之間的間隔 */
+  section {
+    scroll-margin-top: 80px;
+  }
+  
+  /* 活動項目高亮顯示 */
+  .terms-sidebar .nav-link.active {
+    transform: translateX(5px);
+  }

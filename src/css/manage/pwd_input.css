@@ -1,0 +1,183 @@
+/* PwdUpdateModal.css */
+
+/* 整體模態框樣式 */
+.password-modal .modal-content {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+  }
+  
+  .password-modal .modal-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* 表單樣式 */
+  .password-form {
+    padding: 10px;
+  }
+  
+  /* 輸入框樣式 */
+  .password-input-container {
+    position: relative;
+  }
+  
+  .form-control {
+    padding: 12px 16px;
+    border: 1.5px solid #e0e0e0;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    height: auto;
+  }
+  
+  .form-control.form-control-lg {
+    font-size: 1.1rem;
+  }
+  
+  .form-control:focus {
+    border-color: #6d9ee1;
+    box-shadow: 0 0 0 0.2rem rgba(109, 158, 225, 0.15);
+  }
+  
+  .form-control.is-invalid {
+    background-image: none;
+    padding-right: 16px;
+    border-color: #dc3545;
+  }
+  
+  .form-control.is-valid {
+    background-image: none;
+    padding-right: 16px;
+    border-color: #28a745;
+  }
+  
+  /* 密碼顯示/隱藏圖標 */
+  .password-toggle-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #777;
+    z-index: 10;
+  }
+  
+  .password-toggle-icon:hover {
+    color: #333;
+  }
+  
+  .pr-eye-icon {
+    padding-right: 45px !important;
+  }
+  
+  /* 標籤樣式 */
+  .form-label {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: #444;
+  }
+  
+  /* 密碼強度相關樣式 */
+  .password-strength-meter {
+    height: 8px;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 密碼規則樣式 */
+  .password-rules {
+    background-color: #f1f3f5;
+    padding: 10px 12px;
+    margin-top: 8px;
+  }
+  
+  .rules-toggle-btn {
+    color: #6c757d;
+  }
+  
+  .rules-toggle-btn:hover {
+    color: #4285f4;
+  }
+  
+  .rules-list {
+    margin: 0;
+    padding-left: 18px;
+  }
+  
+  .rule-item-small {
+    font-size: 0.85rem;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .rule-item-small i {
+    margin-right: 5px;
+    font-size: 0.8rem;
+  }
+  
+  /* 按鈕樣式 */
+  .btn {
+    padding: 8px 24px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 0;
+  }
+  
+  .btn-primary {
+    background-color: #4285f4;
+    border-color: #4285f4;
+  }
+  
+  .btn-primary:hover {
+    background-color: #3367d6;
+    border-color: #3367d6;
+    transform: translateY(-1px);
+  }
+  
+  .btn-outline-secondary {
+    color: #555;
+    border-color: #d0d0d0;
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: #f5f5f5;
+    color: #333;
+    border-color: #c0c0c0;
+  }
+  
+  .btn:disabled {
+    opacity: 0.6;
+    transform: none !important;
+  }
+  
+  /* 提示文字樣式 */
+  .form-text {
+    font-size: 0.8rem;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* 警告提示 */
+  .alert {
+    border-radius: 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* 動畫效果 */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .password-strength, 
+  #password-rules-collapse, 
+  .form-text, 
+  .alert {
+    animation: fadeIn 0.3s ease-out;
+  }

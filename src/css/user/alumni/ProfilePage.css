@@ -1,0 +1,498 @@
+/* ProfilePage.css - 使用現代 CSS 技術 */
+
+/* 全局樣式 */
+.profile-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+/* 載入動畫 */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #0d6efd;
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 頂部個人資料卡片 */
+.profile-card {
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.profile-image-container {
+  height: 100%;
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.profile-image-wrapper {
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.profile-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  padding: 2rem;
+}
+
+.profile-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.profile-badges {
+  margin-bottom: 1rem;
+}
+
+.profile-badges .badge {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+}
+
+.profile-intro {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+.social-links a {
+  color: #6c757d;
+  transition: color 0.3s ease, transform 0.3s ease;
+  display: inline-block;
+}
+
+.social-links a:hover {
+  color: #0d6efd;
+  transform: translateY(-3px);
+}
+
+/* 標題樣式 */
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+  border-left: 5px solid #0d6efd;
+  padding-left: 15px;
+}
+
+/* 照片集錦 - 更新的樣式 */
+.photo-album-container {
+  margin-bottom: 2rem;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 照片網格佈局 */
+.photo-grid {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+/* 照片列樣式 */
+.photo-col {
+  padding: 0 10px;
+  margin-bottom: 20px;
+}
+
+/* 照片卡片樣式 */
+.photo-card {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.photo-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 照片容器 */
+.photo-img-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-top: 75%; /* 4:3 比例 */
+  overflow: hidden;
+}
+
+/* 照片圖片 */
+.photo-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.photo-card:hover .photo-img {
+  transform: scale(1.05);
+}
+
+/* 照片標題容器 */
+.photo-caption {
+  padding: 12px;
+  background-color: #fff;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 0 0 10px 10px;
+}
+
+.photo-caption h5 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* 標題單行顯示 */
+  color: #333;
+}
+
+.photo-caption p {
+  font-size: 0.85rem;
+  margin-bottom: 0;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 描述最多兩行 */
+  -webkit-box-orient: vertical;
+  max-height: 2.5em;
+}
+
+/* 燈箱樣式 */
+.lightbox-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
+
+.lightbox-caption h4 {
+  margin-bottom: 5px;
+  font-size: 1.2rem;
+}
+
+.lightbox-caption p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+/* 公司資訊樣式 */
+.company-header {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.company-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.company-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.company-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+.company-contact-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.contact-item .icon {
+  margin-right: 10px;
+  color: #0d6efd;
+}
+
+.product-info-card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.product-info-card .card-header {
+  background-color: #0d6efd;
+  color: white;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+}
+
+/* Swiper 輪播樣式 */
+.product-slider-container {
+  padding: 15px 5px 50px 5px;
+  position: relative;
+}
+
+.product-slider {
+  width: 100%;
+}
+
+.product-slide {
+  cursor: pointer;
+  height: 100%;
+  padding: 10px;
+}
+
+.product-card {
+  height: 100%;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.product-img-container {
+  height: 200px;
+  overflow: hidden;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.05);
+}
+
+.map-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.company-map {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* 標籤頁樣式 */
+.profile-tabs .nav-link {
+  color: #495057;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.profile-tabs .nav-link.active {
+  color: #0d6efd;
+  background-color: transparent;
+}
+
+.profile-tabs .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background-color: #0d6efd;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.profile-tabs .nav-link.active::after {
+  width: 80%;
+}
+
+.profile-tabs .nav-link:hover:not(.active) {
+  background-color: #f8f9fa;
+}
+
+/* Yet-another-react-lightbox 自訂樣式 */
+.yarl__container {
+  --yarl__color_backdrop: rgba(0, 0, 0, 0.9);
+}
+
+.yarl__slide {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* 無公司資訊樣式 */
+.no-company-info {
+  color: #6c757d;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+/* 響應式調整 */
+@media (max-width: 992px) {
+  .profile-image-container {
+    padding: 1.5rem;
+  }
+  
+  .profile-name {
+    font-size: 2rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  /* 照片集錦響應式 */
+  .photo-caption h5 {
+    font-size: 0.95rem;
+  }
+  
+  .photo-caption p {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-card {
+    flex-direction: column;
+  }
+  
+  .profile-image-container {
+    height: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  .profile-image-wrapper {
+    width: 60%;
+    padding-bottom: 60%;
+    margin: 0 auto;
+  }
+  
+  .company-contact-info {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .photo-caption {
+    padding: 10px;
+  }
+  
+  .photo-col {
+    padding: 0 5px;
+    margin-bottom: 15px;
+  }
+}
+
+/* 空資料提示樣式 */
+.empty-data-hint {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 1.2rem;
+  color: #6c757d;
+  border-left: 4px solid #dee2e6;
+}
+
+.empty-data-hint h5 {
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.empty-data-hint p {
+  margin-bottom: 0;
+}
+
+.empty-data-hint small {
+  font-size: 85%;
+  opacity: 0.8;
+}
+
+.empty-data-hint .hint-icon {
+  font-size: 2rem;
+  color: #adb5bd;
+}
+
+/* 照片為空時的提示樣式 */
+.photo-album-container:empty::after,
+.product-slider-container:empty::after {
+  content: "尚無照片資料";
+  display: block;
+  text-align: center;
+  padding: 3rem 0;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  color: #6c757d;
+}
