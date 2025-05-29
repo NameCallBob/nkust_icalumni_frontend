@@ -43,56 +43,91 @@ const AlumniListPage = () => {
     const handleParentKeyChange = (key) => {
         setError(null);
         setParentKey(key);
-        setChildKey('全部');
+        
+        // 重置 childOptions 和 childKey，避免數據結構不匹配
+        setChildOptions([]);
+        
+        // 根據不同的父級類型設置正確的初始 childKey
+        if (key === '級別') {
+            setChildKey('全部');
+        } else {
+            setChildKey('all');
+        }
+        
         fetchChildOptions(key);
     };
 
-    // 2. 修改 handleChildKeyChange 函數以處理職位"全部"的情況
+    // 修改 handleChildKeyChange 函數，加強類型檢查和處理
     const handleChildKeyChange = (key) => {
         setError(null);
-        setChildKey(key);
+        // 確保 key 是字串類型，以保持與 Tab eventKey 的一致性
+        const stringKey = String(key);
+        console.log('Child key changed:', { originalKey: key, stringKey, parentKey });
+        setChildKey(stringKey);
         setCurrentPage(1); // 重置分頁
         
-        // 處理職位"全部"的特殊情況
-        if (parentKey === '職位' && key === 'all') {
-            fetchAlumniList_normal(parentKey, null);
-        } else {
-            fetchAlumniList_normal(parentKey, key);
+        // 根據父級類型和子級 key 來決定如何處理
+        if (parentKey === '級別') {
+            // 級別處理：key 應該是字符串
+            if (stringKey === '全部') {
+                fetchAlumniList_normal(parentKey, '全部');
+            } else {
+                fetchAlumniList_normal(parentKey, stringKey);
+            }
+        } else if (parentKey === '職位') {
+            // 職位處理：key 應該是 ID
+            if (stringKey === 'all') {
+                fetchAlumniList_normal(parentKey, null);
+            } else {
+                fetchAlumniList_normal(parentKey, stringKey);
+            }
         }
     };
 
 
-// 1. 修改 fetchChildOptions 函數
+// 修改 fetchChildOptions 函數，加強數據類型檢查
 const fetchChildOptions = (key) => {
     setLoading(true);
     setError(null);
-    const endpoint = key === '級別' ? 'member/graduate/unique-grades/' : 'member/position/get-all/';
+    const endpoint = key === '級別' ? 'member/graduate/unique-grades/' : 'member/position/show-page/';
     
     Axios().get(endpoint)
         .then((res) => {
             if (key === '級別') {
-                setChildOptions(['全部', ...res.data]);
-            } else {
-                // 確保數據格式正確
-                const positions = res.data && Array.isArray(res.data) 
-                    ? [{ id: 'all', title: '全部' }, ...res.data]
-                    : [{ id: 'all', title: '全部' }];
-                setChildOptions(positions);
-            }
-            setEmptyResult(false);
-            
-            // 在獲取新選項後，自動選擇"全部"選項
-            if (key === '級別') {
+                // 確保級別數據是字符串陣列
+                const grades = res.data && Array.isArray(res.data) ? res.data : [];
+                const validGrades = grades.filter(grade => typeof grade === 'string' || typeof grade === 'number');
+                setChildOptions(['全部', ...validGrades]);
+                
+                // 設置正確的 childKey 並獲取數據
                 setChildKey('全部');
                 fetchAlumniList_normal('級別', '全部');
             } else {
-                setChildKey('all');  // 使用 'all' 作為職位的全部選項ID
+                // 確保職位數據格式正確
+                const positions = res.data && Array.isArray(res.data) ? res.data : [];
+                const validPositions = positions.filter(pos => 
+                    typeof pos === 'object' && 
+                    pos !== null && 
+                    pos.id !== undefined && 
+                    pos.title !== undefined
+                );
+                setChildOptions([{ id: 'all', title: '全部' }, ...validPositions]);
+                
+                // 設置正確的 childKey 並獲取數據
+                setChildKey('all');
                 fetchAlumniList_normal('職位', 'all');
             }
+            setEmptyResult(false);
         })
         .catch((error) => {
             setError(`無法獲取${key === '級別' ? '級別' : '職位'}資料，請稍後再試。`);
             setChildOptions([]);
+            // 即使出錯也要設置正確的 childKey
+            if (key === '級別') {
+                setChildKey('全部');
+            } else {
+                setChildKey('all');
+            }
         })
         .finally(() => {
             setLoading(false);
@@ -418,37 +453,100 @@ const fetchChildOptions = (key) => {
                             </Alert>
                         ) : (
                             <div className="child-tabs-container">
-                                <Tabs
-                                    id="child-tabs"
-                                    activeKey={childKey}
-                                    onSelect={(key) => handleChildKeyChange(key)}
-                                    className="child-tabs"
-                                >
-                                    {childOptions.map((option) => {
-                                        if (parentKey === '級別') {
-                                            // 級別是字符串
-                                            return (
-                                                <Tab 
-                                                    eventKey={option} 
-                                                    title={option === '全部' ? '全部' : `${option}級`} 
-                                                    key={option} 
-                                                />
-                                            );
-                                        } else {
-                                            // 職位是對象，檢查確保有必要的屬性
-                                            if (typeof option === 'object' && option !== null) {
-                                                return (
-                                                    <Tab 
-                                                        eventKey={option.id} 
-                                                        title={option.title || '未知職位'} 
-                                                        key={option.id || Math.random().toString()} 
-                                                    />
-                                                );
+                                {/* 只有當 childOptions 有數據且與 parentKey 匹配時才渲染 */}
+                                {childOptions.length > 0 && (
+                                    <Tabs
+                                        id="child-tabs"
+                                        activeKey={childKey}
+                                        onSelect={(key) => handleChildKeyChange(key)}
+                                        className="child-tabs my-3 px-2"
+                                        style={{ 
+                                            padding: '0.75rem 0',
+                                            borderRadius: '0.5rem',
+                                            backgroundColor: '#f8f9fa'
+                                        }}
+                                    >
+                                        {childOptions.map((option) => {
+                                            if (parentKey === '級別') {
+                                                // 級別是字符串，確保 option 是字符串類型
+                                                if (typeof option === 'string' || typeof option === 'number') {
+                                                    const optionStr = String(option);
+                                                    // 跳過 000 和未填寫的選項
+                                                    if (optionStr === '000' || optionStr === '尚未填寫' || !optionStr) {
+                                                        return null;
+                                                    }
+                                                    // 如果是 "全部" 則直接返回
+                                                    if (optionStr === '全部') {
+                                                        return (
+                                                            <Tab
+                                                                eventKey={optionStr}
+                                                                title="全部"
+                                                                key={optionStr}
+                                                                className="mx-1"
+                                                            />
+                                                        );
+                                                    }
+                                                    // 將數字級別轉換為數字以進行排序
+                                                    const numericValue = parseInt(optionStr);
+                                                    if (!isNaN(numericValue)) {
+                                                        // 檢查是否已經渲染過此選項
+                                                        const isDuplicate = childOptions.findIndex((item, idx) => {
+                                                            return String(item) === optionStr && idx < childOptions.indexOf(option);
+                                                        }) !== -1;
+
+                                                        if (isDuplicate) {
+                                                            return null;
+                                                        }
+
+                                                        // 先將所有有效的數字級別排序
+                                                        const validOptions = childOptions
+                                                            .filter(opt => {
+                                                                const num = parseInt(opt);
+                                                                return !isNaN(num) && opt !== '000' && opt !== '尚未填寫';
+                                                            })
+                                                            .map(opt => String(opt));
+
+                                                        // 移除重複項目
+                                                        const uniqueOptions = [...new Set(validOptions)];
+                                                        
+                                                        // 按照數字大小降序排序
+                                                        const sortedOptions = uniqueOptions
+                                                            .sort((a, b) => parseInt(b) - parseInt(a));
+
+                                                        // 如果當前選項不在排序後的列表中，則跳過
+                                                        if (!sortedOptions.includes(optionStr)) {
+                                                            return null;
+                                                        }
+                                                    }
+                                                    return (
+                                                        <Tab
+                                                            eventKey={optionStr}
+                                                            title={`${optionStr}級`}
+                                                            key={optionStr}
+                                                            className="mx-1"
+                                                        />
+                                                    );
+                                                }
+                                                return null;
+                                            } else if (parentKey === '職位') {
+                                                // 職位是對象，檢查確保有必要的屬性
+                                                if (typeof option === 'object' && option !== null && option.id !== undefined) {
+                                                    const optionIdStr = String(option.id);
+                                                    return (
+                                                        <Tab 
+                                                            eventKey={optionIdStr} 
+                                                            title={option.title || '未知職位'} 
+                                                            key={optionIdStr}
+                                                            className="mx-1" 
+                                                        />
+                                                    );
+                                                }
+                                                return null;
                                             }
                                             return null;
-                                        }
-                                    })}
-                                </Tabs>
+                                        }).filter(Boolean)}
+                                    </Tabs>
+                                )}
                             </div>
                         )}
                     </Card.Body>
