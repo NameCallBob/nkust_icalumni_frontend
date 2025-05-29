@@ -4,7 +4,7 @@ import Axios from "common/Axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SEO from "SEO";
 
-const AlumniAssociationBylaws = () => {
+const JoinUsPage_v2 = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,8 +14,7 @@ const AlumniAssociationBylaws = () => {
   useEffect(() => {
     const fetchPdf = async () => {
       try {
-        // 從後端取得 PDF 文件與介紹內容
-        const response = await Axios().get("info/constitutions/latest/");
+        const response = await Axios().get("info/requirement-v2/latest/");
         setBodyContent(response.data.description);
         setPdfFile(`${process.env.REACT_APP_BASE_URL}static/${response.data.pdf_file}`);
       } catch (err) {
@@ -41,7 +40,7 @@ const AlumniAssociationBylaws = () => {
     return (
       <Container className="py-5">
         <Alert variant="danger" className="text-center">
-          無法載入章程 PDF：{error}
+          無法載入加入說明：{error}
         </Alert>
       </Container>
     );
@@ -51,15 +50,15 @@ const AlumniAssociationBylaws = () => {
     <Container fluid className="py-4">
       <SEO
         main={false}
-        title="章程"
-        description="瀏覽智慧商務系友會的章程與規範，了解我們的運作方式與核心價值。"
-        keywords={["智慧商務", "章程", "規範"]}
+        title="加入我們"
+        description="成為智慧商務系友會的一員，獲取資源、商務合作，並與系友共同成長。立即加入！"
+        keywords={["智慧商務", "加入", "交流"]}
       />
       <Row className="justify-content-center">
         <Col md={10}>
           {/* 介紹文字區塊 */}
           <section className="mb-4">
-            <h2 className="text-center bg-primary text-white py-2">系友會章程</h2>
+            <h2 className="text-center bg-primary text-white py-2">加入系友會</h2>
             <div
               className="mt-3"
               style={{ lineHeight: "1.8" }}
@@ -96,4 +95,4 @@ const AlumniAssociationBylaws = () => {
   );
 };
 
-export default AlumniAssociationBylaws;
+export default JoinUsPage_v2;
