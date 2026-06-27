@@ -5,7 +5,15 @@ import AppModal from "components/common/AppModal";
 import { Button, Spinner } from "components/common/ui";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import {
+  BsPlusLg,
+  BsEye,
+  BsPencil,
+  BsTrash,
+  BsFileEarmarkText,
+  BsXLg,
+  BsCheck2,
+} from "react-icons/bs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -173,7 +181,7 @@ const RuleManaPage = () => {
             className="rounded-full px-4"
             style={rwd.getButtonStyle()}
           >
-            <i className="bi bi-plus-lg mr-2"></i> 新增章程
+            <BsPlusLg className="mr-2" /> 新增章程
           </Button>
         </div>
       </div>
@@ -206,7 +214,7 @@ const RuleManaPage = () => {
                         onClick={() => handleView(rule)}
                         style={rwd.getButtonStyle()}
                       >
-                        <i className="bi bi-eye"></i> 查看
+                        <BsEye /> 查看
                       </Button>
                       <Button
                         variant="outline"
@@ -215,7 +223,7 @@ const RuleManaPage = () => {
                         onClick={() => handleShow(rule)}
                         style={rwd.getButtonStyle()}
                       >
-                        <i className="bi bi-pencil"></i> 編輯
+                        <BsPencil /> 編輯
                       </Button>
                       <Button
                         variant="error"
@@ -224,7 +232,7 @@ const RuleManaPage = () => {
                         onClick={() => handleDelete(rule.id)}
                         style={rwd.getButtonStyle()}
                       >
-                        <i className="bi bi-trash"></i> 刪除
+                        <BsTrash /> 刪除
                       </Button>
                     </td>
                   </tr>
@@ -269,11 +277,11 @@ const RuleManaPage = () => {
         size="lg"
         variant="admin"
         title={isEditing ? "編輯章程" : "新增章程"}
-        icon={<i className="bi bi-file-earmark-text"></i>}
+        icon={<BsFileEarmarkText />}
         footer={
           <>
             <Button variant="ghost" onClick={handleClose} disabled={loading} style={rwd.getButtonStyle()}>
-              <i className="bi bi-x-lg"></i> 取消
+              <BsXLg /> 取消
             </Button>
             <Button
               variant="primary"
@@ -284,7 +292,7 @@ const RuleManaPage = () => {
               {loading ? (
                 <Spinner size="sm" />
               ) : (
-                <i className="bi bi-check2"></i>
+                <BsCheck2 />
               )}{" "}
               {isEditing ? "更新" : "新增"}
             </Button>
@@ -346,10 +354,10 @@ const RuleManaPage = () => {
         size="lg"
         variant="admin"
         title="查看章程"
-        icon={<i className="bi bi-eye"></i>}
+        icon={<BsEye />}
         footer={
           <Button variant="ghost" onClick={handleCloseViewModal} style={rwd.getButtonStyle()}>
-            <i className="bi bi-x-lg"></i> 關閉
+            <BsXLg /> 關閉
           </Button>
         }
       >

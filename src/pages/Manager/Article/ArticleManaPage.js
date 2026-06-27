@@ -4,7 +4,7 @@ import { Button, Spinner } from "components/common/ui";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { toast } from "react-toastify";
-import "bootstrap-icons/font/bootstrap-icons.css"; // 確保引入 Bootstrap Icons
+import { BsPlusLg, BsSearch, BsThreeDots, BsPencil, BsTrash } from "react-icons/bs";
 import useRWD from 'hooks/useRWD';
 
 const ArticleEditor = () => {
@@ -86,7 +86,7 @@ const ArticleEditor = () => {
             className="rounded-full px-4"
             style={rwd.getButtonStyle()}
           >
-            <i className="bi bi-plus-lg mr-2"></i>新增文章
+            <BsPlusLg className="mr-2" />新增文章
           </Button>
         </div>
       </div>
@@ -96,7 +96,7 @@ const ArticleEditor = () => {
         <div className="col-span-12 md:col-span-4">
           <div className="join w-full">
             <span className="join-item flex items-center px-3 bg-base-100 border border-base-300">
-              <i className="bi bi-search"></i>
+              <BsSearch />
             </span>
             <input
               type="text"
@@ -186,7 +186,7 @@ const ArticleEditor = () => {
                               className="btn btn-outline btn-sm"
                               style={rwd.getButtonStyle()}
                             >
-                              <i className="bi bi-three-dots"></i>
+                              <BsThreeDots />
                             </label>
                             <ul
                               tabIndex={0}
@@ -194,7 +194,7 @@ const ArticleEditor = () => {
                             >
                               <li>
                                 <a onClick={() => handleEdit(article)}>
-                                  <i className="bi bi-pencil mr-2"></i>編輯
+                                  <BsPencil className="mr-2" />編輯
                                 </a>
                               </li>
                               <li>
@@ -202,7 +202,7 @@ const ArticleEditor = () => {
                                   className="text-error"
                                   onClick={() => handleDelete(article.id)}
                                 >
-                                  <i className="bi bi-trash mr-2"></i>刪除
+                                  <BsTrash className="mr-2" />刪除
                                 </a>
                               </li>
                             </ul>
@@ -216,7 +216,7 @@ const ArticleEditor = () => {
                               onClick={() => handleEdit(article)}
                               style={rwd.getButtonStyle()}
                             >
-                              <i className="bi bi-pencil"></i>
+                              <BsPencil />
                             </Button>
                             <Button
                               variant="outline"
@@ -225,7 +225,7 @@ const ArticleEditor = () => {
                               onClick={() => handleDelete(article.id)}
                               style={rwd.getButtonStyle()}
                             >
-                              <i className="bi bi-trash"></i>
+                              <BsTrash />
                             </Button>
                           </>
                         )}

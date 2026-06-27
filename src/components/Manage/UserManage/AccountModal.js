@@ -1,6 +1,7 @@
 import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
 import { Users } from "lucide-react";
+import { BsArrowUp, BsArrowDown } from "react-icons/bs";
 import { toast } from "react-toastify";
 import AppModal from "components/common/AppModal";
 import { Button, Field, Spinner } from "components/common/ui";
@@ -219,9 +220,9 @@ const AccountManageModal = ({ show, handleClose }) => {
               <Button variant="ghost" size="sm" className="mb-2" onClick={handleSortChange}>
                 排列最近登入時間
                 {sortOrder === "desc" ? (
-                    <i className="bi bi-arrow-down"></i>
+                    <BsArrowDown />
                 ) : (
-                    <i className="bi bi-arrow-up"></i>
+                    <BsArrowUp />
                 )}
               </Button>
               <div className="overflow-x-auto">
@@ -245,7 +246,7 @@ const AccountManageModal = ({ show, handleClose }) => {
                         <td>
                           <button
                             type="button"
-                            className="btn btn-warning btn-sm me-2"
+                            className="btn btn-warning btn-sm mr-2"
                             onClick={() => setSelectedUserId(user.id)}
                           >
                             編輯

@@ -103,7 +103,7 @@ const ImageWithSEO = ({
 
       {/* 圖片說明文字 */}
       {caption && (
-        <figcaption className="text-center text-muted mt-2">
+        <figcaption className="text-center text-base-content/60 mt-2">
           {caption}
         </figcaption>
       )}

@@ -88,7 +88,7 @@ function Home() {
             </div>
             {/* 簡單自動輪播 */}
             <div className="flex flex-col md:flex-row gap-4 mb-4">
-                <div className="w-full md:w-1/2 mb-3 mb-md-0">
+                <div className="w-full md:w-1/2 mb-3 md:mb-0">
                     <SimpleAutoCarousel title={"最新上架"}></SimpleAutoCarousel>
                 </div>
                 <div className="w-full md:w-1/2">

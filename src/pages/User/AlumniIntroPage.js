@@ -290,17 +290,17 @@ const ProfilePage = () => {
 
                   {/* <div className="social-links mt-3">
                     {profileData.social_links && profileData.social_links.linkedin && (
-                      <a href={profileData.social_links.linkedin} className="me-3" target="_blank" rel="noopener noreferrer">
+                      <a href={profileData.social_links.linkedin} className="mr-3" target="_blank" rel="noopener noreferrer">
                         <FaLinkedin size={24} />
                       </a>
                     )}
                     {profileData.social_links && profileData.social_links.github && (
-                      <a href={profileData.social_links.github} className="me-3" target="_blank" rel="noopener noreferrer">
+                      <a href={profileData.social_links.github} className="mr-3" target="_blank" rel="noopener noreferrer">
                         <FaGithub size={24} />
                       </a>
                     )}
                     {profileData.social_links && profileData.social_links.instagram && (
-                      <a href={profileData.social_links.instagram} className="me-3" target="_blank" rel="noopener noreferrer">
+                      <a href={profileData.social_links.instagram} className="mr-3" target="_blank" rel="noopener noreferrer">
                         <FaInstagram size={24} />
                       </a>
                     )}

@@ -1,4 +1,12 @@
 import React from "react";
+import {
+  BsGeoAlt,
+  BsTelephone,
+  BsEnvelope,
+  BsFacebook,
+  BsLine,
+  BsInstagram,
+} from "react-icons/bs";
 import "css/Footer.css";
 
 const Footer = () => {
@@ -22,9 +30,9 @@ const Footer = () => {
           <div className="info-block">
             <div className="info-title">聯絡我們</div>
             <div className="info-content">
-              <div className="info-item"><i className="bi bi-geo-alt"></i> 807高雄市三民區建工路415號</div>
-              <div className="info-item"><i className="bi bi-telephone"></i> 07-3814526 轉 17501</div>
-              <div className="info-item"><i className="bi bi-envelope"></i> icdaa2019@nkust.edu.tw</div>
+              <div className="info-item"><BsGeoAlt className="inline-block" /> 807高雄市三民區建工路415號</div>
+              <div className="info-item"><BsTelephone className="inline-block" /> 07-3814526 轉 17501</div>
+              <div className="info-item"><BsEnvelope className="inline-block" /> icdaa2019@nkust.edu.tw</div>
             </div>
           </div>
           
@@ -47,16 +55,16 @@ const Footer = () => {
             <div className="info-title">關注我們</div>
             <div className="social-icons">
               <a href="https://www.facebook.com/ic.nkust/?locale=zh_TW" aria-label="Facebook">
-                <i className="bi bi-facebook"></i>
+                <BsFacebook />
               </a>
               <a href="https://line.me/R/ti/p/@261cygls" aria-label="Line">
-                <i className="bi bi-line"></i>
+                <BsLine />
               </a>
               <a href="https://www.instagram.com/ic.nkust/" aria-label="Instagram">
-                <i className="bi bi-instagram"></i>
+                <BsInstagram />
               </a>
               <a href="mailto:icdaa2019@nkust.edu.tw" aria-label="Email">
-                <i className="bi bi-envelope"></i>
+                <BsEnvelope />
               </a>
             </div>
           </div>

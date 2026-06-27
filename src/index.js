@@ -6,7 +6,6 @@ import App from './App';
 import reportWebVitals, { reportAdvancedWebVitals } from './reportWebVitals';
 import { fontOptimization } from './utils/FontOptimization';
 import { criticalCSSManager } from './utils/CriticalCSS';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/tailwind.css';
 
 // 初始化效能優化

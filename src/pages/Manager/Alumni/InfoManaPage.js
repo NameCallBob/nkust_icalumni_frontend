@@ -6,7 +6,7 @@ import AppModal from "components/common/AppModal";
 import { Button, Spinner } from "components/common/ui";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { BsPlusLg, BsPencil, BsPause, BsPlay, BsTrash, BsXLg, BsSave } from "react-icons/bs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSearchParams } from "react-router-dom";
@@ -219,7 +219,7 @@ const InfoManager = () => {
             style={rwd.getButtonStyle()}
             onClick={activeTab === "content" ? handleAddContent : handleAddPhoto}
           >
-            <i className="bi bi-plus-lg mr-2"></i>
+            <BsPlusLg className="mr-2" />
             {activeTab === "content" ? "新增紀錄" : "新增照片"}
           </Button>
         </div>
@@ -281,7 +281,7 @@ const InfoManager = () => {
                             size="sm"
                             onClick={() => handleEditContent(record)}
                           >
-                            <i className="bi bi-pencil"></i> 編輯
+                            <BsPencil /> 編輯
                           </Button>
                         </td>
                       </tr>
@@ -336,9 +336,7 @@ const InfoManager = () => {
                             className="mr-2"
                             onClick={() => handlePhotoStatus(image.id)}
                           >
-                            <i
-                              className={`bi ${image.is_active ? "bi-pause" : "bi-play"}`}
-                            ></i>{" "}
+                            {image.is_active ? <BsPause /> : <BsPlay />}{" "}
                             {image.is_active ? "停用" : "啟用"}
                           </Button>
                           <Button
@@ -346,7 +344,7 @@ const InfoManager = () => {
                             size="sm"
                             onClick={() => handlePhotoDelete(image.id)}
                           >
-                            <i className="bi bi-trash"></i> 刪除
+                            <BsTrash /> 刪除
                           </Button>
                         </td>
                       </tr>
@@ -373,10 +371,10 @@ const InfoManager = () => {
               disabled={loading}
               style={rwd.getButtonStyle()}
             >
-              <i className="bi bi-x-lg"></i> 取消
+              <BsXLg /> 取消
             </Button>
             <Button variant="primary" onClick={handleSaveContent} loading={loading} disabled={loading} style={rwd.getButtonStyle()}>
-              <i className="bi bi-save"></i>{" "}
+              <BsSave />{" "}
               {currentRecord ? "保存" : "新增"}
             </Button>
           </>

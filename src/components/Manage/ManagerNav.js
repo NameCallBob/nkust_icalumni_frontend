@@ -91,7 +91,7 @@ function ManagerNav() {
         <>
             <ToastContainer />
             <nav className="navbar-custom shadow-sm w-full fixed top-0 inset-x-0 z-[1030]">
-                <div className="container-fluid px-3 px-lg-5 mx-auto flex items-center flex-wrap">
+                <div className="w-full px-3 lg:px-5 mx-auto flex items-center flex-wrap">
                     {/* Logo 區塊 */}
                     <a href="/" className="navbar-brand py-2 mr-0">
                         <img

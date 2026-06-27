@@ -8,6 +8,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PwdUpdateModal from 'components/Manage/Center/PwdUpdateModal';
 import ThankYouModal from 'components/Manage/Center/introModal';
+import { BsPencilSquare, BsKey, BsMortarboardFill } from 'react-icons/bs';
 
 /**
  * 會員中心 
@@ -147,7 +148,7 @@ function MemberCenter() {
                                 onClick={handleShowEditModal}
                                 disabled={error || loading}
                             >
-                                <i className="bi bi-pencil-square mr-2"></i>
+                                <BsPencilSquare className="mr-2" />
                                 編輯個人資料
                             </Button>
                             <Button
@@ -156,7 +157,7 @@ function MemberCenter() {
                                 onClick={handleShowPwdModal}
                                 disabled={error || loading}
                             >
-                                <i className="bi bi-key mr-2"></i>
+                                <BsKey className="mr-2" />
                                 修改密碼
                             </Button>
                         </div>
@@ -205,7 +206,7 @@ function MemberCenter() {
             <div className="card-body p-6">
                 <div className="flex items-center mb-3">
                     <div className="rounded-full bg-primary/10 p-3 mr-3">
-                        <i className="bi bi-mortarboard-fill text-primary text-2xl"></i>
+                        <BsMortarboardFill className="text-primary text-2xl" />
                     </div>
                     <div>
                         <h4 className="mb-0" style={{ fontSize: rwd.getFontSize('h4') }}>歡迎回來，{userData.name || '系友'}！</h4>

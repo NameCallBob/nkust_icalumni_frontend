@@ -7,7 +7,7 @@ import LoadingSpinner from 'components/LoadingSpinner';
 import SEO from 'SEO';
 import {
   BsSearch, BsFilter, BsArrowDown, BsArrowUp,
-  BsExclamationCircle, BsBuilding, BsList
+  BsExclamationCircle, BsBuilding, BsList, BsGrid
 } from "react-icons/bs";
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
 
@@ -165,7 +165,7 @@ const Search = () => {
             fontWeight: '500',
           }}
         >
-          <i className="bi bi-grid"></i>
+          <BsGrid />
         </button>
         <button
           type="button"

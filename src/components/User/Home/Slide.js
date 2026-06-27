@@ -388,7 +388,7 @@ function Slide() {
         size="xl"
         variant="showcase"
         title={
-          <div className="d-flex align-items-center control-buttons">
+          <div className="flex items-center control-buttons">
             <div className="image-counter mr-2 text-white">
               {slideImage.length > 1 && (
                 <span>

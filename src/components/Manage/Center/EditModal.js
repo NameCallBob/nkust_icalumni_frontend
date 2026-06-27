@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { UserCog, UserPlus } from 'lucide-react';
+import { BsArrowLeftCircleFill, BsInfoCircle, BsExclamationTriangle } from 'react-icons/bs';
 import { debounce } from 'lodash';
 import AppModal from 'components/common/AppModal';
 import { Button, Field, Spinner } from 'components/common/ui';
@@ -585,7 +586,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
           zIndex: 1000
         }}>
           <div className="text-error">
-            <i className="bi bi-arrow-left-circle-fill" style={{ fontSize: '1.5rem' }}></i>
+            <BsArrowLeftCircleFill style={{ fontSize: '1.5rem' }} />
           </div>
         </div>
       );
@@ -639,7 +640,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         {/* 欄位提示區 */}
         {focusedField && fieldHints[focusedField] && (
           <div className="alert alert-info mb-3">
-            <i className="bi bi-info-circle"></i>
+            <BsInfoCircle />
             <span>{fieldHints[focusedField]}</span>
           </div>
         )}
@@ -647,7 +648,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         {/* 未完成提示 */}
         {!stepCompletionStatus[activeStep] && (
           <div className="alert alert-warning mb-3">
-            <i className="bi bi-exclamation-triangle"></i>
+            <BsExclamationTriangle />
             <span>請完成所有必填欄位後再繼續</span>
           </div>
         )}
@@ -656,7 +657,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         {Object.keys(apiErrors).length > 0 && (
           <div className="alert alert-error mb-3 flex-col items-start">
             <div>
-              <i className="bi bi-exclamation-triangle mr-2"></i>
+              <BsExclamationTriangle className="mr-2 inline" />
               表單驗證失敗，請檢查以下欄位:
             </div>
             <ul className="mb-0 mt-2 list-disc pl-5">
@@ -1002,7 +1003,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
     >
       {/* 必填欄位說明 */}
       <div className="alert alert-info mb-3">
-        <i className="bi bi-info-circle"></i>
+        <BsInfoCircle />
         <span>標記 <span className="text-error">*</span> 的欄位為必填項目</span>
       </div>
 

@@ -311,7 +311,7 @@ function RecruitPage() {
       <div className="container mx-auto px-4 recruit-page" style={{ paddingTop: '32px', paddingBottom: '48px' }}>
         {/* View Toggle */}
         <div className="flex justify-between items-center mb-4">
-          <div className="btn-group" role="group" aria-label="切換視圖">
+          <div className="inline-flex" role="group" aria-label="切換視圖">
             <button
               type="button"
               onClick={() => setViewMode('table')}

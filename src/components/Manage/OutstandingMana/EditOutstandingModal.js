@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Award } from 'lucide-react';
+import { BsXLg, BsCheck2 } from 'react-icons/bs';
 import AppModal from 'components/common/AppModal';
 import { Button, Field } from 'components/common/ui';
 import Axios from 'common/Axios';
@@ -44,14 +45,14 @@ const EditOutstandingAlumniModal = ({ show, onClose, data, onSubmit }) => {
             footer={
                 <>
                     <Button variant="ghost" onClick={onClose}>
-                        <i className="bi bi-x-lg"></i> 取消
+                        <BsXLg /> 取消
                     </Button>
                     <Button
                         variant="primary"
                         onClick={handleSubmit}
                         disabled={!alumniData.highlight}
                     >
-                        <i className="bi bi-check2"></i> 儲存
+                        <BsCheck2 /> 儲存
                     </Button>
                 </>
             }

@@ -99,9 +99,9 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                                         <FaStar className={styles.crownIcon} />
                                     </div> */}
 
-                                    <div className={`${styles.cardContent} row g-0`}>
+                                    <div className={`${styles.cardContent} flex flex-wrap`}>
                                         {/* 圖片區域 - 左側 */}
-                                        <div className="col-4">
+                                        <div className="w-1/3">
                                             <div className={styles.imageSection}>
                                                 <img
                                                     src={getImageSrc(alumni.photo, 'avatar')}
@@ -115,7 +115,7 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                                         </div>
 
                                         {/* 內容區域 - 右側 */}
-                                        <div className="col-8">
+                                        <div className="w-2/3">
                                             <div className={styles.contentSection}>
                                                 <div className={styles.contentWrapper}>
                                                     <h3 className={styles.alumniName}>

@@ -8,7 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import useRWD from 'hooks/useRWD';
 import "react-quill/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { BsArrowLeft, BsSave, BsUpload, BsTrash } from "react-icons/bs";
 import LoadingSpinner from "components/LoadingSpinner";
 import "css/manage/article/form.css"; // 自訂樣式文件
 
@@ -167,14 +167,14 @@ const ArticleForm = () => {
           <h2 className="font-bold text-2xl">{id ? "編輯文章" : "新增文章"}</h2>
           <p className="text-base-content/60">填寫文章資訊並保存</p>
         </div>
-        <div className={rwd.isMobile ? "text-start mt-2 w-full" : "text-end"}>
+        <div className={rwd.isMobile ? "text-left mt-2 w-full" : "text-right"}>
           <Button
             variant="secondary"
             onClick={() => navigate("/alumni/manage/article/")}
             className={`btn-outline ${rwd.isMobile ? "mb-2 w-full" : "mr-2"}`}
             style={rwd.getButtonStyle()}
           >
-            <i className="bi bi-arrow-left"></i> 返回
+            <BsArrowLeft className="inline-block" /> 返回
           </Button>
           <Button
             variant="primary"
@@ -183,7 +183,7 @@ const ArticleForm = () => {
             className={rwd.isMobile ? "w-full" : ""}
             style={rwd.getButtonStyle()}
           >
-            {loading ? <Spinner size="sm" /> : <i className="bi bi-save"></i>} 保存
+            {loading ? <Spinner size="sm" /> : <BsSave className="inline-block" />} 保存
           </Button>
         </div>
       </div>
@@ -302,7 +302,7 @@ const ArticleForm = () => {
                   className={rwd.isMobile ? "mb-3 w-full" : "mb-3"}
                   style={rwd.getButtonStyle()}
                 >
-                  <i className="bi bi-upload"></i> 上傳圖片
+                  <BsUpload className="inline-block" /> 上傳圖片
                 </Button>
                 <div className="image-preview-container" style={{
                   display: 'grid',
@@ -322,7 +322,7 @@ const ArticleForm = () => {
                         onClick={() => handleRemoveImage(index, true)}
                         style={rwd.getButtonStyle()}
                       >
-                        <i className="bi bi-trash"></i>
+                        <BsTrash />
                       </Button>
                     </div>
                   ))}
@@ -339,7 +339,7 @@ const ArticleForm = () => {
                         onClick={() => handleRemoveImage(index, false)}
                         style={rwd.getButtonStyle()}
                       >
-                        <i className="bi bi-trash"></i>
+                        <BsTrash />
                       </Button>
                     </div>
                   ))}

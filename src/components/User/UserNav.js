@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import logo from 'assets/logo.png'; // 請替換為你的 logo 圖片路徑
 import 'css/nav.css'; // 我們會建立這個檔案來包含所有自定義樣式
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
+import { BsChevronDown, BsBoxArrowInRight } from 'react-icons/bs';
 
 /**
  * 現代化深藍色系友會導航欄 - 改進版
@@ -115,7 +116,7 @@ function UserNav() {
                                             onClick={() => handleDropdownToggle('intro')}
                                         >
                                             <span className="nav-link-text">系友會介紹</span>
-                                            <i className="bi bi-chevron-down ml-1 text-xs"></i>
+                                            <BsChevronDown className="ml-1 text-xs" />
                                         </button>
                                         {activeDropdown === 'intro' && (
                                             <div className="dropdown-content min-[992px]:absolute min-[992px]:top-full min-[992px]:right-0 min-[992px]:z-[1050]">
@@ -157,12 +158,12 @@ function UserNav() {
                                             onClick={() => handleDropdownToggle('member')}
                                         >
                                             <span className="nav-link-text">系友專區</span>
-                                            <i className="bi bi-chevron-down ml-1 text-xs"></i>
+                                            <BsChevronDown className="ml-1 text-xs" />
                                         </button>
                                         {activeDropdown === 'member' && (
                                             <div className="dropdown-content min-[992px]:absolute min-[992px]:top-full min-[992px]:right-0 min-[992px]:z-[1050]">
                                                 <a href="/login" className="dropdown-item-custom block" onClick={handleDropdownItemClick}>
-                                                    <i className="bi bi-box-arrow-in-right mr-2"></i>登入
+                                                    <BsBoxArrowInRight className="mr-2 inline-block" />登入
                                                 </a>
                                             </div>
                                         )}

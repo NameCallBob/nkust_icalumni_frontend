@@ -3,7 +3,14 @@ import React, { useState, useEffect } from "react";
 import AppModal from "components/common/AppModal";
 import { Button, Field, Spinner } from "components/common/ui";
 import { UserPlus } from "lucide-react";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import {
+  BsXLg,
+  BsArrowRight,
+  BsArrowLeft,
+  BsCheck2,
+  BsSearch,
+  BsCheckLg,
+} from "react-icons/bs";
 
 const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
   const [step, setStep] = useState(1);
@@ -73,7 +80,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
   const footer = (
     <>
       <Button variant="ghost" onClick={resetForm}>
-        <i className="bi bi-x-lg"></i> 取消
+        <BsXLg /> 取消
       </Button>
       {step === 1 && (
         <Button
@@ -81,20 +88,20 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
           disabled={!selectedMember || loading}
           onClick={handleNextStep}
         >
-          <i className="bi bi-arrow-right"></i> 下一步
+          <BsArrowRight /> 下一步
         </Button>
       )}
       {step === 2 && (
         <>
-          <Button variant="outline" onClick={() => setStep(1)} className="me-2">
-            <i className="bi bi-arrow-left"></i> 上一步
+          <Button variant="outline" onClick={() => setStep(1)} className="mr-2">
+            <BsArrowLeft /> 上一步
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
             disabled={!alumniData.highlight}
           >
-            <i className="bi bi-check2"></i> 新增
+            <BsCheck2 /> 新增
           </Button>
         </>
       )}
@@ -116,7 +123,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
       {step === 1 && (
         <>
           <label className="input input-bordered flex items-center gap-2 mb-3">
-            <i className="bi bi-search"></i>
+            <BsSearch />
             <input
               type="text"
               className="grow"
@@ -158,7 +165,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
                               size="sm"
                               onClick={() => setSelectedMember(member)}
                             >
-                              <i className="bi bi-check-lg"></i>{" "}
+                              <BsCheckLg />{" "}
                               {selectedMember?.id === member.id ? "已選" : "選擇"}
                             </Button>
                           </td>

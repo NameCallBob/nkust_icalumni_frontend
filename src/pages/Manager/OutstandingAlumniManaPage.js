@@ -2,7 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Button, Spinner } from "components/common/ui";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import {
+  BsSortUp,
+  BsSortDown,
+  BsArrowDownUp,
+  BsSortAlphaDown,
+  BsPlusLg,
+  BsArrowUp,
+  BsArrowDown,
+  BsPencil,
+  BsTrash,
+} from "react-icons/bs";
 import Axios from "common/Axios";
 import useRWD from "hooks/useRWD";
 import AddOutstandingAlumniModal from "components/Manage/OutstandingAlumniMana/OutstandingAlumniModal";
@@ -163,12 +173,12 @@ const OutstandingAlumniManaPage = () => {
   const getSortIcon = (field) => {
     if (sortField === field) {
       return sortDirection === "asc" ? (
-        <i className="bi bi-sort-up ml-1"></i>
+        <BsSortUp className="ml-1 inline-block" />
       ) : (
-        <i className="bi bi-sort-down ml-1"></i>
+        <BsSortDown className="ml-1 inline-block" />
       );
     }
-    return <i className="bi bi-arrow-down-up ml-1 text-base-content/60"></i>;
+    return <BsArrowDownUp className="ml-1 inline-block text-base-content/60" />;
   };
 
   return (
@@ -187,7 +197,7 @@ const OutstandingAlumniManaPage = () => {
                 className="btn btn-outline btn-neutral"
                 style={rwd.getButtonStyle()}
               >
-                <i className="bi bi-sort-alpha-down mr-2"></i>
+                <BsSortAlphaDown className="mr-2 inline-block" />
                 排序：{sortField === "name" ? "姓名" : sortField === "sort_order" ? "順序" : "展示狀態"}
               </label>
               <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
@@ -214,7 +224,7 @@ const OutstandingAlumniManaPage = () => {
               className="rounded-full px-4"
               style={rwd.getButtonStyle()}
             >
-              <i className="bi bi-plus-lg mr-2"></i> 新增傑出校友
+              <BsPlusLg className="mr-2 inline-block" /> 新增傑出校友
             </Button>
           </div>
         </div>
@@ -267,7 +277,7 @@ const OutstandingAlumniManaPage = () => {
                             title="向上移動"
                             style={rwd.getButtonStyle()}
                           >
-                            <i className="bi bi-arrow-up"></i>
+                            <BsArrowUp />
                           </Button>
                           <Button
                             variant="outline"
@@ -278,7 +288,7 @@ const OutstandingAlumniManaPage = () => {
                             title="向下移動"
                             style={rwd.getButtonStyle()}
                           >
-                            <i className="bi bi-arrow-down"></i>
+                            <BsArrowDown />
                           </Button>
                         </div>
                       </div>
@@ -293,7 +303,7 @@ const OutstandingAlumniManaPage = () => {
                           }}
                           style={rwd.getButtonStyle()}
                         >
-                          <i className="bi bi-pencil"></i> 編輯
+                          <BsPencil className="inline-block" /> 編輯
                         </Button>
                         <Button
                           variant="outline"
@@ -302,7 +312,7 @@ const OutstandingAlumniManaPage = () => {
                           onClick={() => handleDeleteAlumni(alumni.id)}
                           style={rwd.getButtonStyle()}
                         >
-                          <i className="bi bi-trash"></i> 刪除
+                          <BsTrash className="inline-block" /> 刪除
                         </Button>
                       </div>
                     </div>
@@ -371,7 +381,7 @@ const OutstandingAlumniManaPage = () => {
                               title="向上移動"
                               style={rwd.getButtonStyle()}
                             >
-                              <i className="bi bi-arrow-up"></i>
+                              <BsArrowUp />
                             </Button>
                             <Button
                               variant="outline"
@@ -382,7 +392,7 @@ const OutstandingAlumniManaPage = () => {
                               title="向下移動"
                               style={rwd.getButtonStyle()}
                             >
-                              <i className="bi bi-arrow-down"></i>
+                              <BsArrowDown />
                             </Button>
                           </div>
                         </td>
@@ -397,7 +407,7 @@ const OutstandingAlumniManaPage = () => {
                             }}
                             style={rwd.getButtonStyle()}
                           >
-                            <i className="bi bi-pencil"></i> 編輯
+                            <BsPencil className="inline-block" /> 編輯
                           </Button>
                           <Button
                             variant="outline"
@@ -406,7 +416,7 @@ const OutstandingAlumniManaPage = () => {
                             onClick={() => handleDeleteAlumni(alumni.id)}
                             style={rwd.getButtonStyle()}
                           >
-                            <i className="bi bi-trash"></i> 刪除
+                            <BsTrash className="inline-block" /> 刪除
                           </Button>
                         </td>
                       </tr>
