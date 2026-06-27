@@ -162,7 +162,7 @@ const ArticleForm = () => {
 
   return (
     <div className="min-h-screen bg-base-200/40">
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <PageHeader
           title={id ? "編輯文章" : "新增文章"}
           subtitle="填寫文章資訊並保存"

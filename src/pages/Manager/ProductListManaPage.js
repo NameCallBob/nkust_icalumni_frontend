@@ -276,10 +276,7 @@ const ProductManagement = () => {
     );
 
     return (
-        <div
-            className="container mx-auto px-4 py-6 max-w-7xl"
-            style={rwd.getContainerStyle()}
-        >
+        <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <PageHeader
                 title="產品管理中心"
                 subtitle="管理公司所有產品，包括新增、編輯、刪除及分類"

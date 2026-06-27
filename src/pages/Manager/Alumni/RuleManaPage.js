@@ -225,7 +225,7 @@ const RuleManaPage = () => {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6" style={rwd.getContainerStyle()}>
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8" style={rwd.getContainerStyle()}>
       <PageHeader
         title="章程管理"
         subtitle="管理章程資料與相關 PDF 文件"

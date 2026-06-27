@@ -265,7 +265,7 @@ const CompanyForm = () => {
 
   return (
     <div className="min-h-screen bg-base-200/40" style={rwd.getContainerStyle()}>
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <PageHeader
           title="公司資料維護"
           subtitle="完善公司資料，提升曝光度與專業形象。所有欄位皆為選填，可隨時儲存。"

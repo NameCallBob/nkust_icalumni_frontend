@@ -64,7 +64,7 @@ const ActivityList = () => {
   ];
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-6">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <PageHeader
         title="活動列表"
         subtitle="管理校友會活動的建立、編輯與發布"

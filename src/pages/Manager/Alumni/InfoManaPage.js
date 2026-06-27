@@ -291,7 +291,7 @@ const InfoManager = () => {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <PageHeader
         title={`${title}管理`}
         subtitle="管理介紹內容與相關照片"

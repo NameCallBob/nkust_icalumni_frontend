@@ -124,7 +124,7 @@ const ArticleEditor = () => {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <PageHeader
         title="文章管理"
         subtitle="管理已發布與未發布的文章"

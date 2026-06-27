@@ -222,20 +222,20 @@ function MemberCenter() {
 
     return (
         <div className="min-h-screen bg-base-200/40">
-            <div className="container mx-auto px-4 py-6 sm:py-8" style={rwd.getContainerStyle()}>
+            <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <PageHeader
                     title="會員中心"
                     subtitle="管理您的個人資料與帳號設定"
                     icon={<BsMortarboardFill className="text-xl" />}
                 />
 
-                <div className="grid grid-cols-12 gap-6">
-                    <div className="col-span-12 md:col-span-5 lg:col-span-4">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="min-w-0 lg:col-span-4">
                         {/* 左側會員資料卡片 */}
                         {renderProfileCard()}
                     </div>
 
-                    <div className="col-span-12 md:col-span-7 lg:col-span-8">
+                    <div className="min-w-0 lg:col-span-8">
                         {/* 右側內容區 */}
                         <div className="flex flex-col gap-6 h-full">
                             {/* 歡迎卡片 */}

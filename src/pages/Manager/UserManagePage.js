@@ -249,7 +249,7 @@ function UserManagement() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8" style={rwd.getContainerStyle()}>
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <PageHeader
         title="使用者管理"
         subtitle="管理校友會帳號、繳費與啟用狀態，並可批次匯入系友資料"

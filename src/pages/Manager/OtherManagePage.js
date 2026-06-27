@@ -46,7 +46,7 @@ const OtherManage = () => {
     ];
 
     return (
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <PageHeader
           title="系統設定管理"
           subtitle="管理公司產業別與系友會職稱等基礎設定項目"

@@ -22,12 +22,10 @@ import {
   Trash2,
 } from "lucide-react";
 import Axios from "common/Axios";
-import useRWD from "hooks/useRWD";
 import AddOutstandingAlumniModal from "components/Manage/OutstandingAlumniMana/OutstandingAlumniModal";
 import EditOutstandingAlumniModal from "components/Manage/OutstandingAlumniMana/EditOutstandingAlumniModal";
 
 const OutstandingAlumniManaPage = () => {
-  const rwd = useRWD();
   const [alumniList, setAlumniList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -310,7 +308,7 @@ const OutstandingAlumniManaPage = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-6" style={rwd.getContainerStyle()}>
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <PageHeader
         title="傑出校友管理"
         subtitle="管理傑出校友資料並設置展示順序與狀態"

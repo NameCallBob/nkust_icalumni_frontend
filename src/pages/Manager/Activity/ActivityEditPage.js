@@ -49,7 +49,7 @@ const ActivityEdit = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <PageHeader
         title="編輯活動"
         subtitle="填寫活動資訊與內容，可先保存草稿或直接送出。"

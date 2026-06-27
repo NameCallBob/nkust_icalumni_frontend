@@ -92,7 +92,7 @@ const PhotoManager = () => {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* 側邊欄：分類與使用指引 */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 min-w-0 space-y-4">
             <Card padding="none" className="overflow-hidden">
               <div className="border-b border-base-300/70 bg-base-200/40 px-4 py-3">
                 <h2 className="text-sm font-semibold text-base-content">照片分類</h2>
@@ -162,7 +162,7 @@ const PhotoManager = () => {
           </div>
 
           {/* 主面板 */}
-          <div className="lg:col-span-9">
+          <div className="lg:col-span-9 min-w-0">
             {/* 類別說明與操作工具列 */}
             <Card padding="md" className="mb-6">
               <Toolbar
