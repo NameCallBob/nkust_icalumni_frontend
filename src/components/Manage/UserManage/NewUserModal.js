@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Spinner, Accordion } from "react-bootstrap";
 import Axios from "common/Axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { modes } from "react-transition-group/SwitchTransition";
+import { UserPlus } from "lucide-react";
+import AppModal from "components/common/AppModal";
+import { Button, Field, Spinner } from "components/common/ui";
 
 function NewUserModal({
   showModal,
@@ -227,239 +229,198 @@ function NewUserModal({
   };
 
   return (
-    <Modal show={showModal} onHide={handleClose} size="lg">
-      <Modal.Header closeButton>
-        <Modal.Title>
-          {userId ? "編輯帳號" : isComplex ? "新增複雜帳號" : "新增簡單帳號"}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
+    <AppModal
+      show={showModal}
+      onHide={handleClose}
+      size="lg"
+      variant="admin"
+      title={userId ? "編輯帳號" : isComplex ? "新增複雜帳號" : "新增簡單帳號"}
+      icon={<UserPlus size={18} />}
+    >
       {/* 輸入提示區域 */}
       {hint && (
-        <div className="p-2 mb-3 bg-light text-secondary border rounded">
+        <div className="p-2 mb-3 bg-base-200 text-base-content/70 border border-base-300 rounded">
           {hint}
         </div>
       )}
       {/* 表單內容 */}
-        {loading ? (
-          <div className="text-center">
-            <Spinner animation="border" />
-          </div>
-        ) : isComplex ? (
-          <Form onSubmit={handleComplexSubmit}>
-            <Accordion defaultActiveKey="0">
-              {/* 基本資訊 */}
-              <Accordion.Item eventKey="0">
-                <Accordion.Header>基本資訊</Accordion.Header>
-                <Accordion.Body>
-                  <Form.Group className="mb-3" controlId="formName">
-                    <Form.Label>姓名</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onFocus={() => handleFocus("name")}
-                      onChange={handleChange}
-                      placeholder="輸入姓名"
-                    />
-                    {errors.name && (
-                      <div className="text-danger">{errors.name[0]}</div>
-                    )}
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formGender">
-                    <Form.Label>性別</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="gender"
-                      onFocus={() => handleFocus("gender")}
-                      value={formData.gender}
-                      onChange={handleChange}
-                    >
-                      <option value="">選擇性別</option>
-                      <option value="M">男性</option>
-                      <option value="F">女性</option>
-                      <option value="O">其他</option>
-                    </Form.Control>
-                    {errors.gender && (
-                      <div className="text-danger">{errors.gender[0]}</div>
-                    )}
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBirthDate">
-                    <Form.Label>出生日期</Form.Label>
-                    <Form.Control
-                      type="date"
-                      name="birth_date"
-                      value={formData.birth_date}
-                      onFocus={() => handleFocus("birth_data")}
-                      onChange={handleChange}
-                      placeholder="選擇出生日期"
-                    />
-                    {errors.birth_date && (
-                      <div className="text-danger">{errors.birth_date[0]}</div>
-                    )}
-                  </Form.Group>
-                </Accordion.Body>
-              </Accordion.Item>
+      {loading ? (
+        <Spinner center />
+      ) : isComplex ? (
+        <form onSubmit={handleComplexSubmit}>
+          <div className="join join-vertical w-full">
+            {/* 基本資訊 */}
+            <div className="collapse collapse-arrow join-item border border-base-300 bg-base-100">
+              <input type="radio" name="newuser-accordion" defaultChecked />
+              <div className="collapse-title font-medium">基本資訊</div>
+              <div className="collapse-content">
+                <Field
+                  label="姓名"
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onFocus={() => handleFocus("name")}
+                  onChange={handleChange}
+                  placeholder="輸入姓名"
+                  error={errors.name && errors.name[0]}
+                />
+                <Field
+                  as="select"
+                  label="性別"
+                  name="gender"
+                  onFocus={() => handleFocus("gender")}
+                  value={formData.gender}
+                  onChange={handleChange}
+                  error={errors.gender && errors.gender[0]}
+                >
+                  <option value="">選擇性別</option>
+                  <option value="M">男性</option>
+                  <option value="F">女性</option>
+                  <option value="O">其他</option>
+                </Field>
+                <Field
+                  label="出生日期"
+                  type="date"
+                  name="birth_date"
+                  value={formData.birth_date}
+                  onFocus={() => handleFocus("birth_data")}
+                  onChange={handleChange}
+                  placeholder="選擇出生日期"
+                  error={errors.birth_date && errors.birth_date[0]}
+                />
+              </div>
+            </div>
 
-              {/* 聯絡資訊 */}
-              <Accordion.Item eventKey="1">
-                <Accordion.Header>聯絡資訊</Accordion.Header>
-                <Accordion.Body>
-                  <Form.Group className="mb-3" controlId="formMobilePhone">
-                    <Form.Label>行動電話</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="mobile_phone"
-                      value={formData.mobile_phone}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("mobile_phone")}
-                      placeholder="輸入行動電話"
-                    />
-                    {errors.mobile_phone && (
-                      <div className="text-danger">
-                        {errors.mobile_phone[0]}
-                      </div>
-                    )}
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formHomePhone">
-                    <Form.Label>市內電話</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="home_phone"
-                      value={formData.home_phone}
-                      onFocus={() => handleFocus("home_phone")}
-                      onChange={handleChange}
-                      placeholder="輸入市內電話"
-                    />
-                    {errors.home_phone && (
-                      <div className="text-danger">{errors.home_phone[0]}</div>
-                    )}
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formAddress">
-                    <Form.Label>住址</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("address")}
-                      placeholder="輸入住址"
-                    />
-                  </Form.Group>
-                  {errors.address && (
-                      <div className="text-danger">{errors.address[0]}</div>
-                    )}
-                </Accordion.Body>
-              </Accordion.Item>
+            {/* 聯絡資訊 */}
+            <div className="collapse collapse-arrow join-item border border-base-300 bg-base-100">
+              <input type="radio" name="newuser-accordion" />
+              <div className="collapse-title font-medium">聯絡資訊</div>
+              <div className="collapse-content">
+                <Field
+                  label="行動電話"
+                  type="text"
+                  name="mobile_phone"
+                  value={formData.mobile_phone}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus("mobile_phone")}
+                  placeholder="輸入行動電話"
+                  error={errors.mobile_phone && errors.mobile_phone[0]}
+                />
+                <Field
+                  label="市內電話"
+                  type="text"
+                  name="home_phone"
+                  value={formData.home_phone}
+                  onFocus={() => handleFocus("home_phone")}
+                  onChange={handleChange}
+                  placeholder="輸入市內電話"
+                  error={errors.home_phone && errors.home_phone[0]}
+                />
+                <Field
+                  label="住址"
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus("address")}
+                  placeholder="輸入住址"
+                />
+                {errors.address && (
+                  <div className="text-error">{errors.address[0]}</div>
+                )}
+              </div>
+            </div>
 
-              {/* 學籍與職位 */}
-              <Accordion.Item eventKey="2">
-                <Accordion.Header>學籍與職位</Accordion.Header>
-                <Accordion.Body>
-                  <Form.Group className="mb-3" controlId="formPosition">
-                    <Form.Label>職位</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="position"
-                      value={
-                        positions.find(
-                          (pos) => pos.title === formData.position.title
-                        )?.id || ""
-                      }
-                      onChange={handleChange}
-                    >
-                      <option value="">選擇職位</option>
-                      {positions.map((position) => (
-                        <option key={position.id} value={position.id}>
-                          {position.title}
-                        </option>
-                      ))}
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formSchool">
-                    <Form.Label>就學學校</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="school"
-                      value={formData.graduate.school}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("school")}
-                      placeholder="輸入就學學校"
-                    />
-                    {errors.graduate?.school && (
-                      <div className="text-danger">{errors.graduate.school[0]}</div>
-                    )}
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formGrade">
-                    <Form.Label>入學學年</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="grade"
-                      value={formData.graduate.grade}
-                      onFocus={() => handleFocus("grade")}
-                      onChange={handleChange}
-                      placeholder="輸入入學學年"
-                    />
-                    {errors.graduate?.year && (
-                      <div className="text-danger">{errors.graduate.year[0]}</div>
-                    )}
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formStudentId">
-                    <Form.Label>學號</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="student_id"
-                      value={formData.graduate.student_id}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("student_id")}
-                      placeholder="輸入學號"
-                    />
-                    {errors.graduate?.student_id && (
-                      <div className="text-danger">{errors.graduate.student_id[0]}</div>
-                    )}
-                  </Form.Group>
-                </Accordion.Body>
-              </Accordion.Item>
+            {/* 學籍與職位 */}
+            <div className="collapse collapse-arrow join-item border border-base-300 bg-base-100">
+              <input type="radio" name="newuser-accordion" />
+              <div className="collapse-title font-medium">學籍與職位</div>
+              <div className="collapse-content">
+                <Field
+                  as="select"
+                  label="職位"
+                  name="position"
+                  value={
+                    positions.find(
+                      (pos) => pos.title === formData.position.title
+                    )?.id || ""
+                  }
+                  onChange={handleChange}
+                >
+                  <option value="">選擇職位</option>
+                  {positions.map((position) => (
+                    <option key={position.id} value={position.id}>
+                      {position.title}
+                    </option>
+                  ))}
+                </Field>
+                <Field
+                  label="就學學校"
+                  type="text"
+                  name="school"
+                  value={formData.graduate.school}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus("school")}
+                  placeholder="輸入就學學校"
+                  error={errors.graduate?.school && errors.graduate.school[0]}
+                />
+                <Field
+                  label="入學學年"
+                  type="text"
+                  name="grade"
+                  value={formData.graduate.grade}
+                  onFocus={() => handleFocus("grade")}
+                  onChange={handleChange}
+                  placeholder="輸入入學學年"
+                  error={errors.graduate?.year && errors.graduate.year[0]}
+                />
+                <Field
+                  label="學號"
+                  type="text"
+                  name="student_id"
+                  value={formData.graduate.student_id}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus("student_id")}
+                  placeholder="輸入學號"
+                  error={errors.graduate?.student_id && errors.graduate.student_id[0]}
+                />
+              </div>
+            </div>
 
-              {/* 其他資訊 */}
-              <Accordion.Item eventKey="3">
-                <Accordion.Header>其他資訊</Accordion.Header>
-                <Accordion.Body>
-                  <Form.Group className="mb-3" controlId="formEmail">
-                    <Form.Label>電子郵件</Form.Label>
-                    <Form.Control
+            {/* 其他資訊 */}
+            <div className="collapse collapse-arrow join-item border border-base-300 bg-base-100">
+              <input type="radio" name="newuser-accordion" />
+              <div className="collapse-title font-medium">其他資訊</div>
+              <div className="collapse-content">
+                <Field
+                  label="電子郵件"
+                  type="text"
+                  name="email"
+                  value={formData.private_input.email}
+                  onChange={handleChange}
+                  placeholder="輸入電子郵件"
+                  onFocus={() => handleFocus("email")}
+                  error={errors.private_input?.email && errors.private_input.email[0]}
+                />
+                {!userId && (
+                  <>
+                    <Field
+                      label="帳號密碼"
                       type="text"
-                      name="email"
-                      value={formData.private_input.email}
+                      name="password"
+                      value={formData.private_input.password}
                       onChange={handleChange}
-                      placeholder="輸入電子郵件"
-                      onFocus={() => handleFocus("email")}
+                      placeholder="輸入帳號密碼"
+                      onFocus={() => handleFocus("password")}
                     />
-                    {errors.private_input?.email && (
-                      <div className="text-danger">{errors.private_input.email[0]}</div>
-                    )}
-
-                    </Form.Group>
-                  {!userId && (
-                    <>
-                      <Form.Group className="mb-3" controlId="formPassword">
-                        <Form.Label>帳號密碼</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="password"
-                          value={formData.private_input.password}
-                          onChange={handleChange}
-                          placeholder="輸入帳號密碼"
-                          onFocus={() => handleFocus("password")}
-                        />
-                      </Form.Group>
-                    </>
-                  )}
-                  <Form.Group className="mb-3" controlId="formPaid">
-                    <Form.Check
+                  </>
+                )}
+                <div className="form-control mb-3">
+                  <label className="label cursor-pointer justify-start gap-3">
+                    <input
                       type="checkbox"
+                      className="checkbox checkbox-primary"
                       name="is_paid"
-                      label="是否繳費"
                       checked={formData.is_paid}
                       onChange={(e) =>
                         setFormData((prev) => ({
@@ -468,12 +429,15 @@ function NewUserModal({
                         }))
                       }
                     />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formShow">
-                    <Form.Check
+                    <span className="label-text">是否繳費</span>
+                  </label>
+                </div>
+                <div className="form-control mb-3">
+                  <label className="label cursor-pointer justify-start gap-3">
+                    <input
                       type="checkbox"
+                      className="checkbox checkbox-primary"
                       name="is_show"
-                      label="是否展現於官網"
                       checked={formData.is_show}
                       onChange={(e) =>
                         setFormData((prev) => ({
@@ -482,60 +446,54 @@ function NewUserModal({
                         }))
                       }
                     />
-                  </Form.Group>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-
-            <div className="d-flex justify-content-end mt-3">
-              <Button variant="secondary" onClick={handleClose}>
-                取消
-              </Button>
-              <Button
-                variant="primary"
-                type="submit"
-                className="ms-2"
-                disabled={loading}
-              >
-                {loading ? <Spinner animation="border" size="sm" /> : "保存"}
-              </Button>
+                    <span className="label-text">是否展現於官網</span>
+                  </label>
+                </div>
+              </div>
             </div>
-          </Form>
-        ) : (
-          // 簡單帳號表單
-          <Form onSubmit={handleSimpleSubmit}>
-            <Form.Group className="mb-3" controlId="formEmailSimple">
-              <Form.Label>電子郵件</Form.Label>
-              <Form.Control
-                type="email"
-                value={simple_email}
-                onChange={(e) => setSimpleEmail(e.target.value)}
-                placeholder="輸入電子郵件"
-                onFocus={() => handleFocus("email")}
-              />
-            </Form.Group>
+          </div>
 
-            <Form.Group className="mb-3" controlId="formGender">
-                    <Form.Label>是否為管理員</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="is_superuser"
-                      value={simple_userType}
-                      onChange={(e) => setUserType(e.target.value)}
-                    >
-                      <option value="N">否</option>
-                      <option value="Y">是</option>
-                    </Form.Control>
-                  </Form.Group>
-            <Button variant="primary" type="submit" disabled={loading}>
-              {loading ? <Spinner animation="border" size="sm" /> : '新增帳號'}
+          <div className="flex justify-end mt-3 gap-2">
+            <Button variant="secondary" onClick={handleClose}>
+              取消
             </Button>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? <Spinner size="sm" /> : "保存"}
+            </Button>
+          </div>
+        </form>
+      ) : (
+        // 簡單帳號表單
+        <form onSubmit={handleSimpleSubmit}>
+          <Field
+            label="電子郵件"
+            type="email"
+            value={simple_email}
+            onChange={(e) => setSimpleEmail(e.target.value)}
+            placeholder="輸入電子郵件"
+            onFocus={() => handleFocus("email")}
+          />
 
-          </Form>
-
-        )}
-      </Modal.Body>
-    </Modal>
+          <Field
+            as="select"
+            label="是否為管理員"
+            name="is_superuser"
+            value={simple_userType}
+            onChange={(e) => setUserType(e.target.value)}
+          >
+            <option value="N">否</option>
+            <option value="Y">是</option>
+          </Field>
+          <Button variant="primary" type="submit" disabled={loading}>
+            {loading ? <Spinner size="sm" /> : '新增帳號'}
+          </Button>
+        </form>
+      )}
+    </AppModal>
   );
 }
 

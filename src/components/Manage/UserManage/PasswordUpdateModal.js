@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
+import { KeyRound } from 'lucide-react';
+import AppModal from 'components/common/AppModal';
+import { Button } from 'components/common/ui';
 
 function ChangePasswordModal({ showModal, handleClose, handleChangePassword }) {
   const [newPassword, setNewPassword] = useState('');
@@ -11,7 +13,7 @@ function ChangePasswordModal({ showModal, handleClose, handleChangePassword }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
-    
+
     if (newPassword !== confirmPassword) {
       setErrorMessage('新密碼與重複新密碼不一致');
       return;
@@ -33,39 +35,51 @@ function ChangePasswordModal({ showModal, handleClose, handleChangePassword }) {
   };
 
   return (
-    <Modal show={showModal} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>修改密碼</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="formNewPassword">
-            <Form.Label>新密碼</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="輸入新密碼"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </Form.Group>
+    <AppModal
+      show={showModal}
+      onHide={handleClose}
+      title="修改密碼"
+      icon={<KeyRound size={20} />}
+      size="sm"
+      variant="admin"
+    >
+      {errorMessage && (
+        <div className="alert alert-error mb-3">{errorMessage}</div>
+      )}
+      <form onSubmit={handleSubmit}>
+        <div className="form-control w-full mb-3">
+          <label className="label pb-1" htmlFor="formNewPassword">
+            <span className="label-text font-medium text-base-content">新密碼</span>
+          </label>
+          <input
+            id="formNewPassword"
+            type="password"
+            className="input input-bordered w-full"
+            placeholder="輸入新密碼"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
 
-          <Form.Group className="mb-3" controlId="formConfirmPassword">
-            <Form.Label>重複新密碼</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="再次輸入新密碼"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </Form.Group>
+        <div className="form-control w-full mb-3">
+          <label className="label pb-1" htmlFor="formConfirmPassword">
+            <span className="label-text font-medium text-base-content">重複新密碼</span>
+          </label>
+          <input
+            id="formConfirmPassword"
+            type="password"
+            className="input input-bordered w-full"
+            placeholder="再次輸入新密碼"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </div>
 
-          <Button variant="primary" type="submit" disabled={loading}>
-            {loading ? <Spinner animation="border" size="sm" /> : '修改密碼'}
-          </Button>
-        </Form>
-      </Modal.Body>
-    </Modal>
+        <Button variant="primary" type="submit" loading={loading} disabled={loading}>
+          修改密碼
+        </Button>
+      </form>
+    </AppModal>
   );
 }
 

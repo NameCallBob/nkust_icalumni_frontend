@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Package } from 'lucide-react';
+import AppModal from 'components/common/AppModal';
+import { Button, Field } from 'components/common/ui';
 
 function ProductFormModal({ product, show, handleClose }) {
     const [formData, setFormData] = useState({
@@ -50,59 +52,57 @@ function ProductFormModal({ product, show, handleClose }) {
     };
 
     return (
-        <Modal show={show} onHide={() => handleClose(null)}>
-            <Modal.Header closeButton>
-                <Modal.Title>{product ? '編輯產品' : '新增產品'}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formProductName">
-                        <Form.Label>產品名稱</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formProductDescription">
-                        <Form.Label>產品簡介</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formProductPhotos">
-                        <Form.Label>產品照片</Form.Label>
-                        <Form.Control
-                            type="file"
-                            onChange={handleFileChange}
-                            multiple // 允許多張圖片上傳
-                        />
-                    </Form.Group>
-                    
-                    {/* 圖片預覽區塊 */}
-                    <div className="image-previews">
-                        {previews.map((preview, index) => (
-                            <img
-                                key={index}
-                                src={preview}
-                                alt={`preview ${index}`}
-                                style={{ width: '100px', height: '100px', margin: '5px' }}
-                            />
-                        ))}
-                    </div>
+        <AppModal
+            show={show}
+            onHide={() => handleClose(null)}
+            title={product ? '編輯產品' : '新增產品'}
+            icon={<Package size={18} />}
+            variant="admin"
+            footer={
+                <Button variant="primary" type="submit" form="productForm">
+                    {product ? '更新產品' : '新增產品'}
+                </Button>
+            }
+        >
+            <form id="productForm" onSubmit={handleSubmit}>
+                <Field
+                    as="input"
+                    type="text"
+                    label="產品名稱"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                />
+                <Field
+                    as="textarea"
+                    label="產品簡介"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                />
+                <Field
+                    as="input"
+                    type="file"
+                    label="產品照片"
+                    onChange={handleFileChange}
+                    multiple // 允許多張圖片上傳
+                />
 
-                    <Button variant="primary" type="submit">
-                        {product ? '更新產品' : '新增產品'}
-                    </Button>
-                </Form>
-            </Modal.Body>
-        </Modal>
+                {/* 圖片預覽區塊 */}
+                <div className="image-previews flex flex-wrap">
+                    {previews.map((preview, index) => (
+                        <img
+                            key={index}
+                            src={preview}
+                            alt={`preview ${index}`}
+                            style={{ width: '100px', height: '100px', margin: '5px' }}
+                        />
+                    ))}
+                </div>
+            </form>
+        </AppModal>
     );
 }
 

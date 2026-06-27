@@ -1,7 +1,11 @@
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Carousel } from 'react-bootstrap';
-import "css/user/poster.css"
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Autoplay } from 'swiper/modules';
+import { Megaphone } from 'lucide-react';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import AppModal from 'components/common/AppModal';
 import LoadingSpinner from 'components/LoadingSpinner';
 
 const PosterModal = () => {
@@ -12,7 +16,7 @@ const PosterModal = () => {
   useEffect(() => {
     // 檢查使用者是否已經看過海報
     const hasSeenPoster = localStorage.getItem('hasSeenPoster');
-    
+
     // 使用 Axios 從 API 取得資料
     const fetchPosters = async () => {
       try {
@@ -30,7 +34,7 @@ const PosterModal = () => {
           setShow(false);
         }
       } catch (err) {
-        console.error("Error fetching posters:", err);
+        console.error('Error fetching posters:', err);
         // 在載入失敗時明確設置不顯示
         setShow(false);
       } finally {
@@ -54,63 +58,50 @@ const PosterModal = () => {
   }
 
   return (
-    <Modal
+    <AppModal
       show={show}
       onHide={handleClose}
-      centered
       size="lg"
-      backdrop="static"
-      contentClassName="custom-modal-content"
+      variant="showcase"
+      title="最新公告"
+      icon={<Megaphone size={18} />}
+      closeOnBackdrop={false}
     >
-      <Button
-        variant="light"
-        className="close-btn"
-        onClick={handleClose}
-        aria-label="Close"
-      >
-        ✖
-      </Button>
-      <Modal.Body className="p-0 custom-modal-body">
-        {loading ? (
+      {loading ? (
+        <div className="py-10">
           <LoadingSpinner />
-        ) : (
-          <Carousel>
-            {posterImages.map((image, index) => (
-              <Carousel.Item key={index}>
-                <div
-                  style={{
-                    width: '30vw',
-                    margin: 'auto',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <img
-                    src={process.env.REACT_APP_BASE_URL+image.image} // 假設 API 回傳的物件有 `image` 欄位
-                    alt={`Poster ${index + 1}`}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                    onError={() => {
-                      // 圖片載入失敗時，移除該圖片
-                      const newImages = [...posterImages];
-                      newImages.splice(index, 1);
-                      setPosterImages(newImages);
-                      
-                      // 如果移除後沒有圖片了，關閉 Modal
-                      if (newImages.length === 0) {
-                        setShow(false);
-                      }
-                    }}
-                  />
-                </div>
-              </Carousel.Item>
-            ))}
-          </Carousel>
-        )}
-      </Modal.Body>
-    </Modal>
+        </div>
+      ) : (
+        <Swiper
+          modules={[Pagination, Autoplay]}
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 4000, disableOnInteraction: false }}
+          loop={posterImages.length > 1}
+          className="w-full"
+        >
+          {posterImages.map((image, index) => (
+            <SwiperSlide key={index}>
+              <img
+                src={process.env.REACT_APP_BASE_URL + image.image} // 假設 API 回傳的物件有 `image` 欄位
+                alt={`Poster ${index + 1}`}
+                className="block w-full max-h-[70vh] object-contain bg-base-200"
+                onError={() => {
+                  // 圖片載入失敗時，移除該圖片
+                  const newImages = [...posterImages];
+                  newImages.splice(index, 1);
+                  setPosterImages(newImages);
+
+                  // 如果移除後沒有圖片了，關閉 Modal
+                  if (newImages.length === 0) {
+                    setShow(false);
+                  }
+                }}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      )}
+    </AppModal>
   );
 };
 

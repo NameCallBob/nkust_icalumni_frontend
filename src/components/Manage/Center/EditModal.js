@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Modal, Button, Form, Col, Row, Spinner, ProgressBar, Alert } from 'react-bootstrap';
+import { UserCog, UserPlus } from 'lucide-react';
 import { debounce } from 'lodash';
+import AppModal from 'components/common/AppModal';
+import { Button, Field, Spinner } from 'components/common/ui';
 
 const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, loading, setLoading }) => {
   const [activeStep, setActiveStep] = useState(1); // 分段表單步驟
@@ -21,35 +23,35 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   // 初始化表單數據
   const [formData, setFormData] = useState(
     isEditMode
-      ? { 
-          ...parentData, 
-          graduate: parentData.graduate || { 
-            grade: '113', 
-            school: '國立高雄科技大學智慧商務系', 
-            student_id: 'J110256100' 
-          } 
+      ? {
+          ...parentData,
+          graduate: parentData.graduate || {
+            grade: '113',
+            school: '國立高雄科技大學智慧商務系',
+            student_id: 'J110256100'
+          }
         }
-      : { 
-          name: '', 
-          gender: '', 
-          birth_date: '', 
-          mobile_phone: '', 
-          home_phone: '', 
-          address: '', 
-          intro: '', 
-          photo: '', 
-          is_show: false, 
-          graduate: { 
-            grade: '113', 
-            school: '國立高雄科技大學智慧商務系', 
-            student_id: 'J110256100' 
-          } 
+      : {
+          name: '',
+          gender: '',
+          birth_date: '',
+          mobile_phone: '',
+          home_phone: '',
+          address: '',
+          intro: '',
+          photo: '',
+          is_show: false,
+          graduate: {
+            grade: '113',
+            school: '國立高雄科技大學智慧商務系',
+            student_id: 'J110256100'
+          }
         }
   );
 
   // 表單驗證錯誤
-  const [errors, setErrors] = useState({}); 
-  
+  const [errors, setErrors] = useState({});
+
   // 表單分段
   const formSteps = [
     {
@@ -137,7 +139,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   useEffect(() => {
     const requiredFields = ['name', 'gender', 'birth_date', 'mobile_phone', 'graduate.grade', 'graduate.school', 'graduate.student_id', 'photo'];
     let completed = 0;
-    
+
     requiredFields.forEach(field => {
       if (field.includes('.')) {
         const [parent, child] = field.split('.');
@@ -154,7 +156,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         completed++;
       }
     });
-    
+
     setFormProgress(Math.floor((completed / requiredFields.length) * 100));
   }, [formData]);
 
@@ -165,7 +167,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
     } else {
       setFormData({ name: '', gender: '', birth_date: '', mobile_phone: '', home_phone: '', address: '', intro: '', photo: '', is_show: false, graduate: { grade: '', school: '國立高雄科技大學智慧商務系', student_id: '' } });
     }
-    
+
     // 重置步驟和錯誤
     setActiveStep(1);
     setErrors({});
@@ -178,7 +180,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
     if (!apiResponse || !apiResponse.errors) return {};
 
     const formattedErrors = {};
-    
+
     // 處理一般錯誤
     Object.keys(apiResponse.errors).forEach(key => {
       if (key === 'graduate') {
@@ -191,7 +193,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         formattedErrors[key] = apiResponse.errors[key];
       }
     });
-    
+
     return formattedErrors;
   };
 
@@ -200,7 +202,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
     debounce((fieldName, value) => {
       // 這裡模擬發送到後端API的請求
       setServerValidating(true);
-      
+
       // 模擬API延遲
       setTimeout(() => {
         // 不再檢測電話和學號
@@ -218,7 +220,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
       // 確保使用正確的路徑驗證
       return validationRules[name] ? validationRules[name](value) : null;
     }
-    
+
     // 一般字段
     return validationRules[name] ? validationRules[name](value) : null;
   };
@@ -226,7 +228,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   // 處理表單欄位變更
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
-    
+
     // 處理不同類型的輸入
     if (name.includes('.')) {
       // 處理嵌套欄位（如 graduate.grade）
@@ -248,18 +250,18 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         [name]: type === 'checkbox' ? checked : value
       }));
     }
-    
+
     // 實時驗證
     const fieldValue = type === 'checkbox' ? checked : (files && files[0] ? files[0] : value);
     const fieldName = name.includes('.') ? name : name;
     const fieldErrors = validateField(fieldName, fieldValue);
-    
+
     setErrors(prev => ({
       ...prev,
       [fieldName]: fieldErrors
     }));
   };
-  
+
   // 處理照片上傳並轉換為 base64
   const handleFileChange = (file) => {
     if (file && file.size > 2 * 1024 * 1024) {
@@ -286,13 +288,13 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   // 處理欄位聚焦，顯示提示
   const handleFocus = (fieldName) => {
     setFocusedField(fieldName);
-    
+
     // 清除錯誤
     setErrors(prev => {
       const { [fieldName]: _, ...rest } = prev;
       return rest;
     });
-    
+
     // 清除API錯誤
     setApiErrors(prev => {
       const { [fieldName]: _, ...rest } = prev;
@@ -304,11 +306,11 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   const handleBlur = (e) => {
     const { name, value, type, checked, files } = e.target;
     setFocusedField('');
-    
+
     // 驗證字段
     const fieldValue = type === 'checkbox' ? checked : (files && files[0] ? files[0] : value);
     const fieldErrors = validateField(name, fieldValue);
-    
+
     // 更新錯誤狀態
     setErrors(prev => ({
       ...prev,
@@ -320,10 +322,10 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   const validateAllFields = () => {
     const newErrors = {};
     let hasErrors = false;
-    
+
     // 更新必填欄位列表，添加學校相關欄位和照片
     const requiredFields = ['name', 'gender', 'birth_date', 'mobile_phone', 'graduate.grade', 'graduate.school', 'graduate.student_id', 'photo'];
-    
+
     // 驗證一般欄位
     Object.keys(formData).forEach(key => {
       if (key === 'graduate') {
@@ -346,13 +348,13 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         }
       }
     });
-    
+
     // 設置新的錯誤
     setErrors(newErrors);
-    
+
     // 檢查是否有API錯誤
     const hasApiErrors = Object.keys(apiErrors).length > 0;
-    
+
     return !hasErrors && !hasApiErrors;
   };
 
@@ -360,7 +362,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   const canProceedToNextStep = () => {
     const currentStepFields = formSteps[activeStep - 1].fields;
     let canProceed = true;
-    
+
     // 檢查當前步驟的所有字段
     currentStepFields.forEach(field => {
       if (field.includes('.')) {
@@ -368,7 +370,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         const [parent, child] = field.split('.');
         const value = formData[parent]?.[child];
         const fieldErrors = validateField(field, value);
-        
+
         if (fieldErrors) {
           canProceed = false;
         }
@@ -376,7 +378,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         // 檢查一般字段
         const value = formData[field];
         const fieldErrors = validateField(field, value);
-        
+
         if (field === 'home_phone' || field === 'address' || field === 'intro' || field === 'is_show') {
           // 這些是非必填字段，即使為空也可以繼續
           if (fieldErrors && value) canProceed = false;
@@ -385,12 +387,12 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         }
       }
     });
-    
+
     // 檢查API錯誤
     currentStepFields.forEach(field => {
       if (apiErrors[field]) canProceed = false;
     });
-    
+
     return canProceed;
   };
 
@@ -398,7 +400,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   const handleNextStep = () => {
     // 臨時標記為嘗試提交，觸發當前步驟的驗證
     setSubmitAttempted(true);
-    
+
     if (canProceedToNextStep()) {
       setActiveStep(prev => Math.min(prev + 1, formSteps.length));
       setSubmitAttempted(false);
@@ -414,13 +416,13 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   // 處理表單提交
   const handleSubmit = async () => {
     setSubmitAttempted(true);
-    
+
     if (!validateAllFields()) {
       // 找出哪一步有錯誤，並跳轉到該步驟
       for (let i = 0; i < formSteps.length; i++) {
         const stepFields = formSteps[i].fields;
         let stepHasErrors = false;
-        
+
         for (const field of stepFields) {
           if (field.includes('.')) {
             const [parent, child] = field.split('.');
@@ -433,13 +435,13 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
             break;
           }
         }
-        
+
         if (stepHasErrors) {
           setActiveStep(i + 1);
           return;
         }
       }
-      
+
       return; // 防止提交
     }
 
@@ -449,12 +451,12 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
     // 開始提交
     setLoading(true);
     setIsSubmitting(true);
-    
+
     try {
       if (isEditMode) {
         // 編輯模式下，只發送已變更的欄位（用於 PATCH 請求）
         const changedData = getChangedData();
-        await handleSave(formData, changedData); 
+        await handleSave(formData, changedData);
       } else {
         // 新增模式下，發送完整數據
         await handleSave(formData, formData);
@@ -474,7 +476,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   // 獲取已變更的數據 - 這個函數保留但不再使用，我們直接發送完整表單數據
   const getChangedData = () => {
     const changedData = {};
-    
+
     Object.keys(formData).forEach(key => {
       // 特殊處理 photo 欄位
       if (key === 'photo') {
@@ -483,12 +485,12 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
           changedData.photo = formData.photo;
         }
         // 其他情況不傳送 photo 參數
-      } 
+      }
       // 處理嵌套物件
       else if (typeof formData[key] === 'object' && formData[key] !== null && !Array.isArray(formData[key])) {
         const nestedChanges = {};
         let hasNestedChanges = false;
-        
+
         Object.keys(formData[key]).forEach(nestedKey => {
           if (formData[key][nestedKey] !== (parentData[key]?.[nestedKey] ?? '')) {
             nestedChanges[nestedKey] = formData[key][nestedKey];
@@ -499,7 +501,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         if (hasNestedChanges) {
           changedData[key] = nestedChanges;
         }
-      } 
+      }
       // 處理其他一般欄位
       else if (formData[key] !== (parentData[key] ?? '')) {
         changedData[key] = formData[key];
@@ -513,20 +515,20 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   const checkStepCompletion = (stepNumber) => {
     const currentStepFields = formSteps[stepNumber - 1].fields;
     let isComplete = true;
-    
+
     currentStepFields.forEach(field => {
       if (field.includes('.')) {
         const [parent, child] = field.split('.');
         const value = formData[parent]?.[child];
         const fieldErrors = validateField(field, value);
-        
+
         if (fieldErrors) {
           isComplete = false;
         }
       } else {
         const value = formData[field];
         const fieldErrors = validateField(field, value);
-        
+
         if (field === 'home_phone' || field === 'address' || field === 'intro' || field === 'is_show') {
           if (fieldErrors && value) isComplete = false;
         } else if (fieldErrors) {
@@ -534,7 +536,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         }
       }
     });
-    
+
     return isComplete;
   };
 
@@ -576,13 +578,13 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
 
     if (shouldShowArrow()) {
       return (
-        <div className="position-absolute" style={{
+        <div className="absolute" style={{
           right: '-30px',
           top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 1000
         }}>
-          <div className="text-danger">
+          <div className="text-error">
             <i className="bi bi-arrow-left-circle-fill" style={{ fontSize: '1.5rem' }}></i>
           </div>
         </div>
@@ -593,13 +595,14 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
 
   // 修改步驟導航渲染
   const renderStepNavigation = () => (
-    <div className="step-indicator mb-4 position-relative">
-      <ProgressBar now={formSteps[activeStep - 1].percent} label={`${formSteps[activeStep - 1].percent}%`} />
-      <div className="d-flex justify-content-between mt-2">
+    <div className="step-indicator mb-4 relative">
+      <progress className="progress progress-primary w-full" value={formSteps[activeStep - 1].percent} max="100" />
+      <div className="text-xs text-right text-base-content/60">{`${formSteps[activeStep - 1].percent}%`}</div>
+      <div className="flex justify-between mt-2">
         {formSteps.map((step, index) => (
-          <div key={index} className="position-relative">
-            <Button 
-              variant={activeStep === index + 1 ? "primary" : "outline-secondary"}
+          <div key={index} className="relative">
+            <Button
+              variant={activeStep === index + 1 ? "primary" : "outline"}
               size="sm"
               onClick={() => setActiveStep(index + 1)}
               disabled={loading || (!stepCompletionStatus[index + 1] && index + 1 > activeStep)}
@@ -620,433 +623,402 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
     if (loading) {
       return (
         <div className="text-center p-5">
-          <Spinner animation="border" role="status" className="mb-3">
-            <span className="visually-hidden">處理中...</span>
-          </Spinner>
-          <p>資料處理中，請稍候...</p>
+          {/* 處理中... */}
+          <Spinner size="lg" center label="資料處理中，請稍候..." />
         </div>
       );
     }
 
     const currentStep = formSteps[activeStep - 1];
-    
+
     return (
       <div className="form-step">
         {/* 步驟導航 */}
         {renderStepNavigation()}
-        
+
         {/* 欄位提示區 */}
         {focusedField && fieldHints[focusedField] && (
-          <Alert variant="info" className="mb-3">
-            <i className="bi bi-info-circle me-2"></i>
-            {fieldHints[focusedField]}
-          </Alert>
+          <div className="alert alert-info mb-3">
+            <i className="bi bi-info-circle"></i>
+            <span>{fieldHints[focusedField]}</span>
+          </div>
         )}
-        
+
         {/* 未完成提示 */}
         {!stepCompletionStatus[activeStep] && (
-          <Alert variant="warning" className="mb-3">
-            <i className="bi bi-exclamation-triangle me-2"></i>
-            請完成所有必填欄位後再繼續
-          </Alert>
+          <div className="alert alert-warning mb-3">
+            <i className="bi bi-exclamation-triangle"></i>
+            <span>請完成所有必填欄位後再繼續</span>
+          </div>
         )}
-        
+
         {/* API錯誤提示 */}
         {Object.keys(apiErrors).length > 0 && (
-          <Alert variant="danger" className="mb-3">
-            <i className="bi bi-exclamation-triangle me-2"></i>
-            表單驗證失敗，請檢查以下欄位:
-            <ul className="mb-0 mt-2">
+          <div className="alert alert-error mb-3 flex-col items-start">
+            <div>
+              <i className="bi bi-exclamation-triangle mr-2"></i>
+              表單驗證失敗，請檢查以下欄位:
+            </div>
+            <ul className="mb-0 mt-2 list-disc pl-5">
               {Object.keys(apiErrors).map(key => (
                 <li key={key}>
-                  {key.includes('.') 
+                  {key.includes('.')
                     ? `${key.split('.')[0]} ${key.split('.')[1]}: ${apiErrors[key]}`
                     : `${key}: ${apiErrors[key]}`}
                 </li>
               ))}
             </ul>
-          </Alert>
+          </div>
         )}
-        
+
         {/* 表單欄位 */}
-        <Form>
+        <form>
           {currentStep.title === '基本資料' && (
             <>
-              <Row>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                 {/* 姓名 */}
-                <Col xs={12} md={6}>
-                  <Form.Group controlId="name" className="mb-3 position-relative">
-                    <Form.Label>
-                      姓名 <span className="text-danger">*</span>
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("name")}
-                      onBlur={handleBlur}
-                      isInvalid={(submitAttempted && errors.name) || apiErrors.name}
-                      placeholder="請輸入真實姓名"
-                      autoComplete="name"
-                    />
-                    <RequiredFieldArrow fieldName="name" />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.name || apiErrors.name}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
+                <div className="relative">
+                  <Field
+                    label="姓名"
+                    required
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    onFocus={() => handleFocus("name")}
+                    onBlur={handleBlur}
+                    error={((submitAttempted && errors.name) || apiErrors.name) ? (errors.name || apiErrors.name) : undefined}
+                    placeholder="請輸入真實姓名"
+                    autoComplete="name"
+                  />
+                  <RequiredFieldArrow fieldName="name" />
+                </div>
 
                 {/* 性別 */}
-                <Col xs={12} md={6}>
-                  <Form.Group controlId="gender" className="mb-3 position-relative">
-                    <Form.Label>
-                      性別 <span className="text-danger">*</span>
-                    </Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("gender")}
-                      onBlur={handleBlur}
-                      isInvalid={(submitAttempted && errors.gender) || apiErrors.gender}
-                    >
-                      <option value="">請選擇性別</option>
-                      <option value="M">男性</option>
-                      <option value="F">女性</option>
-                      <option value="O">其他</option>
-                    </Form.Control>
-                    <RequiredFieldArrow fieldName="gender" />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.gender || apiErrors.gender}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              </Row>
+                <div className="relative">
+                  <Field
+                    as="select"
+                    label="性別"
+                    required
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    onFocus={() => handleFocus("gender")}
+                    onBlur={handleBlur}
+                    error={((submitAttempted && errors.gender) || apiErrors.gender) ? (errors.gender || apiErrors.gender) : undefined}
+                  >
+                    <option value="">請選擇性別</option>
+                    <option value="M">男性</option>
+                    <option value="F">女性</option>
+                    <option value="O">其他</option>
+                  </Field>
+                  <RequiredFieldArrow fieldName="gender" />
+                </div>
+              </div>
 
-              <Row>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                 {/* 生日 */}
-                <Col xs={12} md={6}>
-                  <Form.Group controlId="birth_date" className="mb-3 position-relative">
-                    <Form.Label>
-                      生日 <span className="text-danger">*</span>
-                    </Form.Label>
-                    <Form.Control
-                      type="date"
-                      name="birth_date"
-                      value={formData.birth_date}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("birth_date")}
-                      onBlur={handleBlur}
-                      isInvalid={(submitAttempted && errors.birth_date) || apiErrors.birth_date}
-                    />
-                    <RequiredFieldArrow fieldName="birth_date" />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.birth_date || apiErrors.birth_date}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
+                <div className="relative">
+                  <Field
+                    label="生日"
+                    required
+                    type="date"
+                    name="birth_date"
+                    value={formData.birth_date}
+                    onChange={handleChange}
+                    onFocus={() => handleFocus("birth_date")}
+                    onBlur={handleBlur}
+                    error={((submitAttempted && errors.birth_date) || apiErrors.birth_date) ? (errors.birth_date || apiErrors.birth_date) : undefined}
+                  />
+                  <RequiredFieldArrow fieldName="birth_date" />
+                </div>
 
                 {/* 行動電話 */}
-                <Col xs={12} md={6}>
-                  <Form.Group controlId="mobile_phone" className="mb-3 position-relative">
-                    <Form.Label>
-                      行動電話 <span className="text-danger">*</span>
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="mobile_phone"
-                      value={formData.mobile_phone}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("mobile_phone")}
-                      onBlur={handleBlur}
-                      isInvalid={(submitAttempted && errors.mobile_phone) || apiErrors.mobile_phone}
-                      placeholder="09開頭的10位數字"
-                      autoComplete="tel"
-                    />
-                    <RequiredFieldArrow fieldName="mobile_phone" />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.mobile_phone || apiErrors.mobile_phone}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              </Row>
+                <div className="relative">
+                  <Field
+                    label="行動電話"
+                    required
+                    type="text"
+                    name="mobile_phone"
+                    value={formData.mobile_phone}
+                    onChange={handleChange}
+                    onFocus={() => handleFocus("mobile_phone")}
+                    onBlur={handleBlur}
+                    error={((submitAttempted && errors.mobile_phone) || apiErrors.mobile_phone) ? (errors.mobile_phone || apiErrors.mobile_phone) : undefined}
+                    placeholder="09開頭的10位數字"
+                    autoComplete="tel"
+                  />
+                  <RequiredFieldArrow fieldName="mobile_phone" />
+                </div>
+              </div>
 
               {/* 市內電話 */}
-              <Row>
-                <Col xs={12}>
-                  <Form.Group controlId="home_phone" className="mb-3 position-relative">
-                    <Form.Label>市內電話（選填）</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="home_phone"
-                      value={formData.home_phone}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("home_phone")}
-                      onBlur={handleBlur}
-                      isInvalid={(submitAttempted && errors.home_phone) || apiErrors.home_phone}
-                      placeholder="不含區碼的6-10位數字（選填）"
-                      autoComplete="tel"
-                    />
-                    <RequiredFieldArrow fieldName="home_phone" />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.home_phone || apiErrors.home_phone}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              </Row>
+              <div className="grid grid-cols-1">
+                <div className="relative">
+                  <Field
+                    label="市內電話（選填）"
+                    type="text"
+                    name="home_phone"
+                    value={formData.home_phone}
+                    onChange={handleChange}
+                    onFocus={() => handleFocus("home_phone")}
+                    onBlur={handleBlur}
+                    error={((submitAttempted && errors.home_phone) || apiErrors.home_phone) ? (errors.home_phone || apiErrors.home_phone) : undefined}
+                    placeholder="不含區碼的6-10位數字（選填）"
+                    autoComplete="tel"
+                  />
+                  <RequiredFieldArrow fieldName="home_phone" />
+                </div>
+              </div>
             </>
           )}
 
           {currentStep.title === '聯絡與學校資料' && (
             <>
               {/* 地址 */}
-              <Form.Group controlId="address" className="mb-3 position-relative">
-                <Form.Label>地址（選填）</Form.Label>
-                <Form.Control
+              <div className="relative">
+                <Field
                   as="textarea"
                   rows={2}
+                  label="地址（選填）"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                   onFocus={() => handleFocus("address")}
                   onBlur={handleBlur}
-                  isInvalid={(submitAttempted && errors.address) || apiErrors.address}
+                  error={((submitAttempted && errors.address) || apiErrors.address) ? (errors.address || apiErrors.address) : undefined}
                   placeholder="請輸入您的詳細地址"
                   autoComplete="street-address"
                 />
                 <RequiredFieldArrow fieldName="address" />
-                <Form.Control.Feedback type="invalid">
-                  {errors.address || apiErrors.address}
-                </Form.Control.Feedback>
-              </Form.Group>
+              </div>
 
-              <Row>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                 {/* 入學學年 */}
-                <Col xs={12} md={6}>
-                  <Form.Group controlId="graduate.grade" className="mb-3 position-relative">
-                    <Form.Label>入學學年（選填）</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="graduate.grade"
-                      value={formData.graduate?.grade || ""}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("graduate.grade")}
-                      onBlur={handleBlur}
-                      isInvalid={(submitAttempted && errors.graduate?.grade) || apiErrors["graduate.grade"]}
-                      placeholder="例如：113"
-                    />
-                    <RequiredFieldArrow fieldName="graduate.grade" />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.graduate?.grade || apiErrors["graduate.grade"]}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
+                <div className="relative">
+                  <Field
+                    label="入學學年（選填）"
+                    type="text"
+                    name="graduate.grade"
+                    value={formData.graduate?.grade || ""}
+                    onChange={handleChange}
+                    onFocus={() => handleFocus("graduate.grade")}
+                    onBlur={handleBlur}
+                    error={((submitAttempted && errors.graduate?.grade) || apiErrors["graduate.grade"]) ? (errors.graduate?.grade || apiErrors["graduate.grade"]) : undefined}
+                    placeholder="例如：113"
+                  />
+                  <RequiredFieldArrow fieldName="graduate.grade" />
+                </div>
 
                 {/* 畢業學校 */}
-                <Col xs={12} md={6}>
-                  <Form.Group controlId="graduate.school" className="mb-3 position-relative">
-                    <Form.Label>畢業學校（選填）</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="graduate.school"
-                      value={formData.graduate?.school || ""}
-                      onChange={handleChange}
-                      onFocus={() => handleFocus("graduate.school")}
-                      onBlur={handleBlur}
-                      isInvalid={(submitAttempted && errors.graduate?.school) || apiErrors["graduate.school"]}
-                      placeholder="例如：國立高雄科技大學智慧商務系"
-                    />
-                    <RequiredFieldArrow fieldName="graduate.school" />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.graduate?.school || apiErrors["graduate.school"]}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              </Row>
+                <div className="relative">
+                  <Field
+                    label="畢業學校（選填）"
+                    type="text"
+                    name="graduate.school"
+                    value={formData.graduate?.school || ""}
+                    onChange={handleChange}
+                    onFocus={() => handleFocus("graduate.school")}
+                    onBlur={handleBlur}
+                    error={((submitAttempted && errors.graduate?.school) || apiErrors["graduate.school"]) ? (errors.graduate?.school || apiErrors["graduate.school"]) : undefined}
+                    placeholder="例如：國立高雄科技大學智慧商務系"
+                  />
+                  <RequiredFieldArrow fieldName="graduate.school" />
+                </div>
+              </div>
 
               {/* 學號 */}
-              <Form.Group controlId="graduate.student_id" className="mb-3 position-relative">
-                <Form.Label>學號（選填）</Form.Label>
-                <Form.Control
+              <div className="relative">
+                <Field
+                  label="學號（選填）"
                   type="text"
                   name="graduate.student_id"
                   value={formData.graduate?.student_id || ""}
                   onChange={handleChange}
                   onFocus={() => handleFocus("graduate.student_id")}
                   onBlur={handleBlur}
-                  isInvalid={(submitAttempted && errors.graduate?.student_id) || apiErrors["graduate.student_id"]}
+                  error={((submitAttempted && errors.graduate?.student_id) || apiErrors["graduate.student_id"]) ? (errors.graduate?.student_id || apiErrors["graduate.student_id"]) : undefined}
                   placeholder="例如：J12345678"
                 />
                 <RequiredFieldArrow fieldName="graduate.student_id" />
-                <Form.Control.Feedback type="invalid">
-                  {errors.graduate?.student_id || apiErrors["graduate.student_id"]}
-                </Form.Control.Feedback>
-              </Form.Group>
+              </div>
             </>
           )}
 
           {currentStep.title === '個人介紹與設定' && (
             <>
               {/* 照片 */}
-              <Form.Group controlId="photo" className="mb-4 position-relative">
-                <Form.Label>
-                  照片 <span className="text-danger">*</span>
-                </Form.Label>
-                <div className="d-flex align-items-center">
-                  <div className="me-3">
+              <div className="form-control w-full mb-4 relative">
+                <label className="label pb-1">
+                  <span className="label-text font-medium text-base-content">
+                    照片 <span className="text-error">*</span>
+                  </span>
+                </label>
+                <div className="flex items-center">
+                  <div className="mr-3">
                     {formData.photo ? (
-                      <img 
-                        src={formData.photo.startsWith('data:') ? formData.photo : process.env.REACT_APP_BASE_URL+formData.photo} 
-                        alt="預覽" 
-                        className="img-thumbnail" 
-                        style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+                      <img
+                        src={formData.photo.startsWith('data:') ? formData.photo : process.env.REACT_APP_BASE_URL+formData.photo}
+                        alt="預覽"
+                        className="rounded-lg border border-base-300 p-1"
+                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                       />
                     ) : (
-                      <div 
-                        className="bg-light d-flex align-items-center justify-content-center" 
+                      <div
+                        className="bg-base-200 flex items-center justify-center"
                         style={{ width: '100px', height: '100px', border: '1px dashed #ccc' }}
                       >
-                        <span className="text-muted">無照片</span>
+                        <span className="text-base-content/50">無照片</span>
                       </div>
                     )}
                   </div>
-                  <div className="flex-grow-1">
-                    <Form.Control
+                  <div className="flex-grow">
+                    <input
                       type="file"
                       name="photo"
                       onChange={handleChange}
                       onFocus={() => handleFocus("photo")}
                       onBlur={handleBlur}
-                      isInvalid={(submitAttempted && errors.photo) || apiErrors.photo}
                       accept="image/*"
+                      className={`file-input file-input-bordered w-full ${((submitAttempted && errors.photo) || apiErrors.photo) ? 'file-input-error' : ''}`}
                     />
                     <RequiredFieldArrow fieldName="photo" />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.photo || apiErrors.photo}
-                    </Form.Control.Feedback>
-                    <Form.Text className="text-muted">
+                    {((submitAttempted && errors.photo) || apiErrors.photo) && (
+                      <span className="label-text-alt text-error mt-1 block">
+                        {errors.photo || apiErrors.photo}
+                      </span>
+                    )}
+                    <span className="label-text-alt text-base-content/60 mt-1 block">
                       請上傳不超過2MB的照片
-                    </Form.Text>
+                    </span>
                   </div>
                 </div>
-              </Form.Group>
+              </div>
 
               {/* 自我介紹 */}
-              <Form.Group controlId="intro" className="mb-3 position-relative">
-                <Form.Label>自我介紹（選填）</Form.Label>
-                <Form.Control
-                  as="textarea"
+              <div className="form-control w-full mb-4 relative">
+                <label className="label pb-1">
+                  <span className="label-text font-medium text-base-content">自我介紹（選填）</span>
+                </label>
+                <textarea
+                  className={`textarea textarea-bordered w-full ${((submitAttempted && errors.intro) || apiErrors.intro) ? 'border-error' : ''}`}
                   rows={4}
                   name="intro"
                   value={formData.intro}
                   onChange={handleChange}
                   onFocus={() => handleFocus("intro")}
                   onBlur={handleBlur}
-                  isInvalid={(submitAttempted && errors.intro) || apiErrors.intro}
                   placeholder="請輸入有關於您的自我介紹，可說明專長、職業以利於被搜尋到"
                   maxLength={200}
                 />
                 <RequiredFieldArrow fieldName="intro" />
-                <Form.Control.Feedback type="invalid">
-                  {errors.intro || apiErrors.intro}
-                </Form.Control.Feedback>
-                <Form.Text className="text-end d-block">
+                {((submitAttempted && errors.intro) || apiErrors.intro) && (
+                  <span className="label-text-alt text-error mt-1 block">
+                    {errors.intro || apiErrors.intro}
+                  </span>
+                )}
+                <span className="label-text-alt text-base-content/60 block text-right">
                   {formData.intro ? formData.intro.length : 0}/200
-                </Form.Text>
-              </Form.Group>
+                </span>
+              </div>
 
               {/* 是否展現於官網 */}
-              <Form.Group className="mb-3 position-relative" controlId="is_show">
-                <Form.Check
-                  type="checkbox"
-                  name="is_show"
-                  label="是否展現於官網"
-                  checked={formData.is_show}
-                  onChange={handleChange}
-                  onFocus={() => handleFocus("is_show")}
-                  onBlur={handleBlur}
-                />
+              <div className="form-control w-full mb-4 relative">
+                <label className="label cursor-pointer justify-start gap-2">
+                  <input
+                    type="checkbox"
+                    name="is_show"
+                    className="checkbox checkbox-primary"
+                    checked={formData.is_show}
+                    onChange={handleChange}
+                    onFocus={() => handleFocus("is_show")}
+                    onBlur={handleBlur}
+                  />
+                  <span className="label-text">是否展現於官網</span>
+                </label>
                 <RequiredFieldArrow fieldName="is_show" />
-                <Form.Text className="text-muted">
+                <span className="label-text-alt text-base-content/60 block">
                   勾選此項後，您的資料將會顯示在官網上
-                </Form.Text>
-              </Form.Group>
+                </span>
+              </div>
             </>
           )}
-        </Form>
+        </form>
       </div>
     );
   };
 
-  return (
-    <Modal show={show} onHide={handleClose} size="lg" centered backdrop="static">
-      <Modal.Header closeButton>
-        <Modal.Title>{isEditMode ? '編輯會員資料' : '新增會員資料'}</Modal.Title>
-      </Modal.Header>
-      
-      <Modal.Body className="p-4">
-        {/* 必填欄位說明 */}
-        <Alert variant="info" className="mb-3">
-          <i className="bi bi-info-circle me-2"></i>
-          標記 <span className="text-danger">*</span> 的欄位為必填項目
-        </Alert>
+  // 底部按鈕
+  const footer = (
+    <div className="w-full flex justify-between">
+      <Button
+        variant="outline"
+        onClick={activeStep > 1 ? handlePrevStep : handleClose}
+        disabled={loading}
+      >
+        {activeStep > 1 ? '上一步' : '取消'}
+      </Button>
 
-        {/* 表單進度指示器 */}
-        {!loading && (
-          <div className="mb-4">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <h5>{formSteps[activeStep - 1].title}</h5>
-              <small className="text-muted">步驟 {activeStep}/{formSteps.length}</small>
-            </div>
-          </div>
-        )}
-        
-        {/* 表單欄位 */}
-        {renderFormFields()}
-      </Modal.Body>
-      
-      <Modal.Footer>
-        <div className="w-100 d-flex justify-content-between">
-          <Button 
-            variant="outline-secondary" 
-            onClick={activeStep > 1 ? handlePrevStep : handleClose}
-            disabled={loading}
+      <div>
+        {activeStep < formSteps.length ? (
+          <Button
+            variant="primary"
+            onClick={handleNextStep}
+            disabled={loading || !canProceedToNextStep()}
           >
-            {activeStep > 1 ? '上一步' : '取消'}
+            下一步
           </Button>
-          
-          <div>
-            {activeStep < formSteps.length ? (
-              <Button 
-                variant="primary" 
-                onClick={handleNextStep}
-                disabled={loading || !canProceedToNextStep()}
-              >
-                下一步
-              </Button>
+        ) : (
+          <Button
+            variant="success"
+            onClick={handleSubmit}
+            disabled={loading || isSubmitting}
+            loading={loading}
+            className="min-w-[120px]"
+          >
+            {loading ? (
+              '處理中...'
             ) : (
-              <Button 
-                variant="success" 
-                onClick={handleSubmit}
-                disabled={loading || isSubmitting}
-                style={{ minWidth: '120px' }}
-              >
-                {loading ? (
-                  <>
-                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                    處理中...
-                  </>
-                ) : (
-                  isEditMode ? '保存修改' : '新增會員'
-                )}
-              </Button>
+              isEditMode ? '保存修改' : '新增會員'
             )}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <AppModal
+      show={show}
+      onHide={handleClose}
+      size="lg"
+      variant="admin"
+      title={isEditMode ? '編輯會員資料' : '新增會員資料'}
+      icon={isEditMode ? <UserCog size={18} /> : <UserPlus size={18} />}
+      steps={formSteps.map((s) => s.title)}
+      currentStep={activeStep - 1}
+      closeOnBackdrop={false}
+      footer={footer}
+    >
+      {/* 必填欄位說明 */}
+      <div className="alert alert-info mb-3">
+        <i className="bi bi-info-circle"></i>
+        <span>標記 <span className="text-error">*</span> 的欄位為必填項目</span>
+      </div>
+
+      {/* 表單進度指示器 */}
+      {!loading && (
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <h5 className="text-lg font-semibold">{formSteps[activeStep - 1].title}</h5>
+            <small className="text-base-content/60">步驟 {activeStep}/{formSteps.length}</small>
           </div>
         </div>
-      </Modal.Footer>
-    </Modal>
+      )}
+
+      {/* 表單欄位 */}
+      {renderFormFields()}
+    </AppModal>
   );
 };
 

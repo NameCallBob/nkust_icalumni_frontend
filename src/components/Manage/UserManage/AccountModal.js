@@ -1,7 +1,9 @@
 import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Table, Button, Form, Modal, Spinner, Pagination } from "react-bootstrap";
+import { Users } from "lucide-react";
 import { toast } from "react-toastify";
+import AppModal from "components/common/AppModal";
+import { Button, Field, Spinner } from "components/common/ui";
 import 'css/manage/private_modal.css'
 
 const AccountManageModal = ({ show, handleClose }) => {
@@ -28,7 +30,7 @@ const AccountManageModal = ({ show, handleClose }) => {
     try {
       // 修正 HTTP 為 HTTPS
       const fixedUrl = url.startsWith("http://") ? url.replace("http://", "https://") : url;
-      
+
       const res = await Axios().get(fixedUrl);
       setUsers(res.data.results || []);
       setNextPageUrl(res.data.next);
@@ -113,7 +115,7 @@ const AccountManageModal = ({ show, handleClose }) => {
   const handleSearch = () => {
     fetchUsers();
   };
-  
+
   const handleDelete = async (id) => {
     if (!window.confirm("確定要刪除嗎？")) return;
     setActionLoading("delete");
@@ -185,177 +187,183 @@ const AccountManageModal = ({ show, handleClose }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleCloseModal} size="xl" dialogClassName="modal-dialog-scrollable">
-      <Modal.Header closeButton>
-        <Modal.Title>使用者管理</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-      <Form className="d-flex mb-3">
-              <Form.Control
-                type="text"
-                placeholder="輸入 Email 進行搜尋"
-                value={searchEmail}
-                onChange={(e) => setSearchEmail(e.target.value)}
-              />
-              <Button variant="primary" className="ms-2" onClick={handleSearch}>搜尋</Button>
-            </Form>
-        <Row>
-          {/* 左側表格 */}
-          <Col md={7} className="mb-3">
-            {isLoading ? (
-              <div className="text-center">
-                <Spinner animation="border" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </Spinner>
-              </div>
-            ) : (
-              <>
-                <Button variant="link" className="mb-2" onClick={handleSortChange}>
+    <AppModal
+      show={show}
+      onHide={handleCloseModal}
+      size="xl"
+      variant="admin"
+      title="使用者管理"
+      icon={<Users size={18} />}
+    >
+      {/* 搜尋列 */}
+      <div className="flex mb-4 gap-2">
+        <input
+          type="text"
+          className="input input-bordered w-full"
+          placeholder="輸入 Email 進行搜尋"
+          value={searchEmail}
+          onChange={(e) => setSearchEmail(e.target.value)}
+        />
+        <Button variant="primary" onClick={handleSearch}>搜尋</Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* 左側表格 */}
+        <div className="md:col-span-7 mb-4">
+          {isLoading ? (
+            <div className="text-center">
+              <Spinner center label="Loading..." />
+            </div>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" className="mb-2" onClick={handleSortChange}>
                 排列最近登入時間
                 {sortOrder === "desc" ? (
                     <i className="bi bi-arrow-down"></i>
                 ) : (
                     <i className="bi bi-arrow-up"></i>
                 )}
+              </Button>
+              <div className="overflow-x-auto">
+                <table className="table table-zebra table-sm">
+                  <thead>
+                    <tr>
+                      <th>Email</th>
+                      <th>啟用狀態</th>
+                      <th>創立時間</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user) => (
+                      <tr key={user.id}>
+                        <td className={user.is_active ? "email-active" : "email-inactive"}>
+                          {user.email}
+                        </td>
+                        <td>{user.is_active ? "啟用" : "停用"}</td>
+                        <td>{formatDate(user.date_joined)}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn btn-warning btn-sm me-2"
+                            onClick={() => setSelectedUserId(user.id)}
+                          >
+                            編輯
+                          </button>
+                          <Button
+                            variant="error"
+                            size="sm"
+                            onClick={() => handleDelete(user.id)}
+                          >
+                            刪除
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex justify-between">
+                <Button variant="secondary" disabled={!prevPageUrl} onClick={() => fetchUsers(prevPageUrl)}>
+                  上一頁
                 </Button>
-                <Table striped bordered hover responsive="sm">
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>啟用狀態</th>
-                <th>創立時間</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td className={user.is_active ? "email-active" : "email-inactive"}>
-                    {user.email}
-                  </td>
-                  <td>{user.is_active ? "啟用" : "停用"}</td>
-                  <td>{formatDate(user.date_joined)}</td>
-                  <td>
-                    <Button
-                      variant="warning"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => setSelectedUserId(user.id)}
-                    >
-                      編輯
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(user.id)}
-                    >
-                      刪除
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-              <div className="d-flex justify-content-between">
-                  <Button variant="secondary" disabled={!prevPageUrl} onClick={() => fetchUsers(prevPageUrl)}>
-                    上一頁
-                  </Button>
-                  <Button variant="secondary" disabled={!nextPageUrl} onClick={() => fetchUsers(nextPageUrl)}>
-                    下一頁
-                  </Button>
-                </div>
-              </>
-            )}
-          </Col>
+                <Button variant="secondary" disabled={!nextPageUrl} onClick={() => fetchUsers(nextPageUrl)}>
+                  下一頁
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
 
-          {/* 右側功能區 */}
-          <Col md={5} className="mb-3">
-            <Form>
-              <Form.Group className="mb-3" controlId="email">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="輸入 Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="isActive">
-                <Form.Check
+        {/* 右側功能區 */}
+        <div className="md:col-span-5 mb-4">
+          <div>
+            <Field
+              as="input"
+              label="Email"
+              type="email"
+              placeholder="輸入 Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            {/* 啟用 checkbox */}
+            <div className="form-control mb-4">
+              <label className="label cursor-pointer justify-start gap-2">
+                <input
                   type="checkbox"
-                  label="啟用"
+                  className="checkbox checkbox-primary"
                   name="isActive"
                   checked={formData.isActive}
                   onChange={handleChange}
                 />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="createdAt">
-                <Form.Label>創立時間</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={formatDate(formData.createdAt)}
-                  disabled
-                  readOnly
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="lastLogin">
-                <Form.Label>最近登入</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={formatDate(formData.lastLogin)}
-                  disabled
-                  readOnly
-                />
-              </Form.Group>
-              <div className="d-flex justify-content-between">
-                {isEditMode && (
-                  <>
-                    <Button
-                      variant="warning"
-                      onClick={handlePasswordChange}
-                      disabled={actionLoading === "password"}
-                    >
-                      {actionLoading === "password" ? (
-                        <Spinner animation="border" size="sm" />
-                      ) : (
-                        "更改密碼"
-                      )}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleToggleActive(selectedUserId, formData.isActive)}
-                      disabled={actionLoading === "toggle"}
-                    >
-                      {actionLoading === "toggle" ? (
-                        <Spinner animation="border" size="sm" />
-                      ) : formData.isActive ? (
-                        "停用"
-                      ) : (
-                        "啟用"
-                      )}
-                    </Button>
-                  </>
+                <span className="label-text">啟用</span>
+              </label>
+            </div>
+            <Field
+              as="input"
+              label="創立時間"
+              type="text"
+              value={formatDate(formData.createdAt)}
+              disabled
+              readOnly
+            />
+            <Field
+              as="input"
+              label="最近登入"
+              type="text"
+              value={formatDate(formData.lastLogin)}
+              disabled
+              readOnly
+            />
+            <div className="flex justify-between">
+              {isEditMode && (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={handlePasswordChange}
+                    disabled={actionLoading === "password"}
+                  >
+                    {actionLoading === "password" ? (
+                      <Spinner size="sm" />
+                    ) : (
+                      "更改密碼"
+                    )}
+                  </button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleToggleActive(selectedUserId, formData.isActive)}
+                    disabled={actionLoading === "toggle"}
+                  >
+                    {actionLoading === "toggle" ? (
+                      <Spinner size="sm" />
+                    ) : formData.isActive ? (
+                      "停用"
+                    ) : (
+                      "啟用"
+                    )}
+                  </Button>
+                </>
+              )}
+              <Button
+                variant="primary"
+                onClick={handleSave}
+                disabled={actionLoading === "save"}
+              >
+                {actionLoading === "save" ? (
+                  <Spinner size="sm" />
+                ) : isEditMode ? (
+                  "儲存變更"
+                ) : (
+                  "新增"
                 )}
-                <Button
-                  variant="primary"
-                  onClick={handleSave}
-                  disabled={actionLoading === "save"}
-                >
-                  {actionLoading === "save" ? (
-                    <Spinner animation="border" size="sm" />
-                  ) : isEditMode ? (
-                    "儲存變更"
-                  ) : (
-                    "新增"
-                  )}
-                </Button>
-              </div>
-            </Form>
-          </Col>
-        </Row>
-      </Modal.Body>
-    </Modal>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AppModal>
   );
 };
 

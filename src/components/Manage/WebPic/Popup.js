@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Container, Alert, Tooltip, OverlayTrigger, Badge, Spinner } from "react-bootstrap";
 import Axios from "common/Axios";
 import { toast } from "react-toastify";
 import { FaImage, FaEdit, FaTrash, FaToggleOn, FaToggleOff, FaInfoCircle, FaPlus, FaQuestionCircle, FaEye } from "react-icons/fa";
+import AppModal from "components/common/AppModal";
+import { Button, Spinner } from "components/common/ui";
 
 const PopupAdManager = () => {
   const [ads, setAds] = useState([]);
@@ -13,10 +14,10 @@ const PopupAdManager = () => {
   const [adToDelete, setAdToDelete] = useState(null);
   const [showHelp, setShowHelp] = useState(true);
   const [previewImage, setPreviewImage] = useState(null);
-  
+
   const [formData, setFormData] = useState({
-    id: null, 
-    image: "", 
+    id: null,
+    image: "",
     active: true
   });
 
@@ -41,7 +42,7 @@ const PopupAdManager = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.image && !currentAd) newErrors.image = "請上傳圖片";
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -49,19 +50,19 @@ const PopupAdManager = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     // 檢查檔案大小 (限制為 2MB)
     if (file.size > 2 * 1024 * 1024) {
       setErrors({...errors, image: "圖片檔案過大，請上傳 2MB 以下的圖片"});
       return;
     }
-    
+
     // 檢查檔案類型
     if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
       setErrors({...errors, image: "只能上傳 JPG、PNG 或 GIF 格式的圖片"});
       return;
     }
-    
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setFormData({ ...formData, image: reader.result });
@@ -79,7 +80,7 @@ const PopupAdManager = () => {
 
   const handleSave = async () => {
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
       if (formData.id) {
@@ -105,7 +106,7 @@ const PopupAdManager = () => {
 
   const handleDelete = async () => {
     if (!adToDelete) return;
-    
+
     setLoading(true);
     try {
       await Axios().delete(`picture/popup-ads/${adToDelete.id}/`);
@@ -139,21 +140,23 @@ const PopupAdManager = () => {
     setPreviewImage(ad);
   };
 
-  const renderTooltip = (props, text) => (
-    <Tooltip id="button-tooltip" {...props}>
-      {text}
-    </Tooltip>
-  );
-
   return (
-    <Container className="py-4">
-      <h1 className="text-center mb-4">網站彈出廣告管理</h1>
-      
+    <div className="container mx-auto py-4 px-4">
+      <h1 className="text-center mb-4 text-2xl font-bold">網站彈出廣告管理</h1>
+
       {showHelp && (
-        <Alert variant="info" onClose={() => setShowHelp(false)} dismissible>
-          <Alert.Heading><FaInfoCircle className="me-2" />使用說明</Alert.Heading>
+        <div className="alert alert-info flex-col items-start relative">
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm btn-circle absolute top-2 right-2"
+            aria-label="關閉"
+            onClick={() => setShowHelp(false)}
+          >
+            ✕
+          </button>
+          <h4 className="font-bold flex items-center"><FaInfoCircle className="mr-2" />使用說明</h4>
           <p>這裡可以管理網站的彈出廣告。您可以：</p>
-          <ul>
+          <ul className="list-disc ml-6">
             <li>點擊「新增廣告」按鈕來上傳新的廣告圖片</li>
             <li>點擊「查看」按鈕預覽已上傳的廣告圖片</li>
             <li>點擊「編輯」按鈕修改現有廣告的圖片</li>
@@ -161,49 +164,45 @@ const PopupAdManager = () => {
             <li>點擊「刪除」按鈕移除不需要的廣告</li>
           </ul>
           <p>啟用的廣告會在網站訪客瀏覽時彈出顯示，請確保您上傳的圖片符合海報比例以獲得最佳顯示效果。</p>
-        </Alert>
+        </div>
       )}
 
-      <div className="d-flex justify-content-between align-items-center my-4">
-        <Button 
-          variant="success" 
+      <div className="flex justify-between items-center my-4">
+        <Button
+          variant="success"
           onClick={() => handleShowModal()}
-          className="d-flex align-items-center"
+          className="flex items-center"
         >
-          <FaPlus className="me-2" /> 新增廣告
+          <FaPlus className="mr-2" /> 新增廣告
         </Button>
-        
-        <OverlayTrigger
-          placement="left"
-          delay={{ show: 250, hide: 400 }}
-          overlay={(props) => renderTooltip(props, "顯示使用說明")}
-        >
-          <Button 
-            variant="outline-info" 
+
+        <div className="tooltip tooltip-left" data-tip="顯示使用說明">
+          <button
+            type="button"
+            className="btn btn-outline btn-info btn-circle"
             onClick={() => setShowHelp(true)}
-            className="rounded-circle"
           >
             <FaQuestionCircle />
-          </Button>
-        </OverlayTrigger>
+          </button>
+        </div>
       </div>
 
       {loading && !showModal && !showDeleteConfirm ? (
         <div className="text-center py-5">
-          <Spinner animation="border" role="status" variant="primary" />
+          <Spinner size="lg" />
           <p className="mt-3">資料載入中，請稍候...</p>
         </div>
       ) : ads.length === 0 ? (
-        <Alert variant="warning">
-          <div className="text-center py-5">
-            <FaImage size={48} className="mb-3 text-muted" />
-            <h4>目前沒有彈出廣告</h4>
+        <div className="alert alert-warning">
+          <div className="text-center py-5 w-full">
+            <FaImage size={48} className="mb-3 mx-auto opacity-60" />
+            <h4 className="text-lg font-semibold">目前沒有彈出廣告</h4>
             <p>點擊「新增廣告」按鈕來上傳您的第一張廣告圖片。</p>
           </div>
-        </Alert>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <Table striped hover>
+        <div className="overflow-x-auto">
+          <table className="table table-zebra w-full">
             <thead>
               <tr>
                 <th style={{ width: '5%' }}>#</th>
@@ -215,295 +214,265 @@ const PopupAdManager = () => {
             </thead>
             <tbody>
               {ads.map((ad, index) => (
-                <tr key={ad.id}>
+                <tr key={ad.id} className="hover">
                   <td>{index + 1}</td>
                   <td>
                     <div className="thumbnail-container" style={{ width: '200px', height: '120px', overflow: 'hidden' }}>
-                      <img 
-                        src={ad.image || "https://via.placeholder.com/300x150.png?text=No+Image+Available"} 
+                      <img
+                        src={ad.image || "https://via.placeholder.com/300x150.png?text=No+Image+Available"}
                         alt="廣告圖片"
-                        className="img-fluid rounded"
+                        className="rounded"
                         style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
                         onClick={() => showImagePreview(ad)}
                       />
                     </div>
                   </td>
                   <td>
-                    <Badge bg={ad.active ? "success" : "danger"}>
+                    <span className={`badge ${ad.active ? "badge-success" : "badge-error"}`}>
                       {ad.active ? "使用中" : "已停用"}
-                    </Badge>
+                    </span>
                   </td>
                   <td>
                     {ad.created_at ? new Date(ad.created_at).toLocaleDateString('zh-TW') : '未知日期'}
                   </td>
                   <td>
-                    <div className="d-flex gap-1">
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={(props) => renderTooltip(props, "查看廣告圖片")}
-                      >
-                        <Button 
-                          variant="info" 
+                    <div className="flex gap-1">
+                      <div className="tooltip tooltip-top" data-tip="查看廣告圖片">
+                        <Button
+                          variant="accent"
                           size="sm"
                           onClick={() => showImagePreview(ad)}
                         >
                           <FaEye />
                         </Button>
-                      </OverlayTrigger>
-                    
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={(props) => renderTooltip(props, "編輯廣告圖片")}
-                      >
-                        <Button 
-                          variant="primary" 
+                      </div>
+
+                      <div className="tooltip tooltip-top" data-tip="編輯廣告圖片">
+                        <Button
+                          variant="primary"
                           size="sm"
                           onClick={() => handleShowModal(ad)}
                         >
                           <FaEdit />
                         </Button>
-                      </OverlayTrigger>
-                      
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={(props) => renderTooltip(props, ad.active ? "停用此廣告" : "啟用此廣告")}
-                      >
-                        <Button 
-                          variant={ad.active ? "warning" : "success"} 
+                      </div>
+
+                      <div className="tooltip tooltip-top" data-tip={ad.active ? "停用此廣告" : "啟用此廣告"}>
+                        <Button
+                          variant={ad.active ? "secondary" : "success"}
                           size="sm"
                           onClick={() => toggleActive(ad.id, ad.active)}
                         >
                           {ad.active ? <FaToggleOff /> : <FaToggleOn />}
                         </Button>
-                      </OverlayTrigger>
-                      
-                      <OverlayTrigger
-                        placement="top"
-                        overlay={(props) => renderTooltip(props, "刪除此廣告")}
-                      >
-                        <Button 
-                          variant="danger" 
+                      </div>
+
+                      <div className="tooltip tooltip-top" data-tip="刪除此廣告">
+                        <Button
+                          variant="error"
                           size="sm"
                           onClick={() => confirmDelete(ad)}
                         >
                           <FaTrash />
                         </Button>
-                      </OverlayTrigger>
+                      </div>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </Table>
+          </table>
         </div>
       )}
 
       {/* 新增/編輯廣告的表單 */}
-      <Modal 
-        show={showModal} 
+      <AppModal
+        show={showModal}
         onHide={() => setShowModal(false)}
-        backdrop="static"
+        closeOnBackdrop={false}
         size="lg"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {currentAd ? "編輯彈出廣告" : "新增彈出廣告"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-4">
-              <Form.Label>上傳廣告圖片 <span className="text-danger">*</span></Form.Label>
-              <div className="border rounded p-3 text-center bg-light">
-                {(formData.image) ? (
-                  <div className="position-relative">
-                    <img 
-                      src={formData.image} 
-                      alt="預覽" 
-                      className="img-fluid mb-3 rounded" 
-                      style={{ maxHeight: '300px' }} 
-                    />
-                    <div className="position-absolute top-0 end-0 m-2">
-                      <Button 
-                        variant="light" 
-                        size="sm" 
-                        className="rounded-circle p-1 shadow"
-                        onClick={() => setFormData({ ...formData, image: "" })}
-                      >
-                        <FaTrash color="red" />
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="py-4">
-                    <FaImage size={36} className="mb-2 text-muted" />
-                    <p className="text-muted">點擊下方按鈕選擇圖片</p>
-                  </div>
-                )}
-                
-                <div>
-                  <Form.Control
-                    type="file"
-                    accept="image/jpeg,image/png,image/gif"
-                    onChange={handleImageUpload}
-                    isInvalid={!!errors.image}
-                    className="d-none"
-                    id="image-upload"
-                  />
-                  <Button 
-                    variant="outline-primary" 
-                    onClick={() => document.getElementById('image-upload').click()}
-                    className="d-flex align-items-center mx-auto"
-                  >
-                    <FaImage className="me-2" /> 選擇圖片檔案
-                  </Button>
-                </div>
-                <Form.Text className="text-muted mt-2">
-                  建議使用<strong>海報比例</strong>的圖片，檔案大小不超過 2MB。
-                  <br />
-                  支援的檔案格式：JPG、PNG、GIF
-                </Form.Text>
-                {errors.image && (
-                  <Alert variant="danger" className="mt-2 small">
-                    {errors.image}
-                  </Alert>
-                )}
-              </div>
-            </Form.Group>
-            
-            <Form.Group className="mb-3">
-              <div className="d-flex align-items-center">
-                <Form.Check 
-                  type="switch"
-                  id="active-switch"
-                  label="立即啟用此廣告"
-                  checked={formData.active} 
-                  onChange={(e) => setFormData({ ...formData, active: e.target.checked })} 
-                />
-              </div>
-              <Form.Text className="text-muted ms-4">
-                啟用後，此廣告將會在訪客瀏覽網站時彈出顯示。您可以隨時更改此設定。
-              </Form.Text>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <div className="w-100 d-flex justify-content-between">
-            <Button 
-              variant="outline-secondary" 
+        variant="admin"
+        title={currentAd ? "編輯彈出廣告" : "新增彈出廣告"}
+        icon={<FaImage size={18} />}
+        footer={
+          <div className="w-full flex justify-between">
+            <Button
+              variant="ghost"
               onClick={() => setShowModal(false)}
               disabled={loading}
             >
               取消
             </Button>
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               onClick={handleSave}
+              loading={loading}
               disabled={loading}
             >
-              {loading ? (
-                <>
-                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                  處理中...
-                </>
-              ) : (
-                <>儲存</>
-              )}
+              {loading ? "處理中..." : "儲存"}
             </Button>
           </div>
-        </Modal.Footer>
-      </Modal>
+        }
+      >
+        <form>
+          <div className="form-control mb-4">
+            <label className="label pb-1">
+              <span className="label-text font-medium">上傳廣告圖片 <span className="text-error">*</span></span>
+            </label>
+            <div className="border rounded p-3 text-center bg-base-200">
+              {(formData.image) ? (
+                <div className="relative">
+                  <img
+                    src={formData.image}
+                    alt="預覽"
+                    className="mb-3 rounded mx-auto"
+                    style={{ maxHeight: '300px' }}
+                  />
+                  <div className="absolute top-0 right-0 m-2">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-circle bg-base-100 shadow"
+                      onClick={() => setFormData({ ...formData, image: "" })}
+                    >
+                      <FaTrash color="red" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-4">
+                  <FaImage size={36} className="mb-2 mx-auto opacity-60" />
+                  <p className="opacity-60">點擊下方按鈕選擇圖片</p>
+                </div>
+              )}
+
+              <div>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => document.getElementById('image-upload').click()}
+                  className="flex items-center mx-auto"
+                >
+                  <FaImage className="mr-2" /> 選擇圖片檔案
+                </Button>
+              </div>
+              <p className="text-sm opacity-60 mt-2">
+                建議使用<strong>海報比例</strong>的圖片，檔案大小不超過 2MB。
+                <br />
+                支援的檔案格式：JPG、PNG、GIF
+              </p>
+              {errors.image && (
+                <div className="alert alert-error mt-2 text-sm py-2">
+                  {errors.image}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="form-control mb-3">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="active-switch"
+                className="toggle toggle-primary"
+                checked={formData.active}
+                onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+              />
+              <label htmlFor="active-switch" className="cursor-pointer">立即啟用此廣告</label>
+            </div>
+            <p className="text-sm opacity-60 ml-12">
+              啟用後，此廣告將會在訪客瀏覽網站時彈出顯示。您可以隨時更改此設定。
+            </p>
+          </div>
+        </form>
+      </AppModal>
 
       {/* 刪除確認對話框 */}
-      <Modal
+      <AppModal
         show={showDeleteConfirm}
         onHide={() => setShowDeleteConfirm(false)}
-        backdrop="static"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>確認刪除</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="text-center py-3">
-            <FaTrash size={36} className="text-danger mb-3" />
-            <h4>您確定要刪除這張廣告圖片嗎？</h4>
-            {adToDelete && (
-              <div className="mt-3">
-                <img
-                  src={adToDelete.image || "https://via.placeholder.com/300x150.png?text=No+Image+Available"}
-                  alt="廣告圖片"
-                  className="img-fluid rounded mt-2"
-                  style={{ maxHeight: '150px' }}
-                />
-              </div>
-            )}
-            <Alert variant="warning" className="mt-3">
-              <FaInfoCircle className="me-2" />
-              此操作無法復原，刪除後廣告將永久移除。
-            </Alert>
+        closeOnBackdrop={false}
+        title="確認刪除"
+        icon={<FaTrash size={18} />}
+        footer={
+          <div className="w-full flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)}>
+              取消
+            </Button>
+            <Button
+              variant="error"
+              onClick={handleDelete}
+              loading={loading}
+              disabled={loading}
+            >
+              {loading ? "處理中..." : "確認刪除"}
+            </Button>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setShowDeleteConfirm(false)}>
-            取消
-          </Button>
-          <Button 
-            variant="danger" 
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                處理中...
-              </>
-            ) : (
-              <>確認刪除</>
-            )}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        }
+      >
+        <div className="text-center py-3">
+          <FaTrash size={36} className="text-error mb-3 mx-auto" />
+          <h4 className="text-lg font-semibold">您確定要刪除這張廣告圖片嗎？</h4>
+          {adToDelete && (
+            <div className="mt-3">
+              <img
+                src={adToDelete.image || "https://via.placeholder.com/300x150.png?text=No+Image+Available"}
+                alt="廣告圖片"
+                className="rounded mt-2 mx-auto"
+                style={{ maxHeight: '150px' }}
+              />
+            </div>
+          )}
+          <div className="alert alert-warning mt-3">
+            <FaInfoCircle className="mr-2" />
+            此操作無法復原，刪除後廣告將永久移除。
+          </div>
+        </div>
+      </AppModal>
 
       {/* 圖片預覽對話框 */}
-      <Modal
+      <AppModal
         show={!!previewImage}
         onHide={() => setPreviewImage(null)}
         size="lg"
-        centered
+        title="廣告圖片預覽"
+        icon={<FaEye size={18} />}
+        footer={
+          <div className="w-full flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setPreviewImage(null)}>
+              關閉
+            </Button>
+            {previewImage && (
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setPreviewImage(null);
+                  handleShowModal(previewImage);
+                }}
+              >
+                編輯此廣告
+              </Button>
+            )}
+          </div>
+        }
       >
-        <Modal.Header closeButton>
-          <Modal.Title>廣告圖片預覽</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center py-4">
+        <div className="text-center py-4">
           {previewImage && (
             <img
               src={previewImage.image || "https://via.placeholder.com/800x600.png?text=No+Image+Available"}
               alt="廣告圖片"
-              className="img-fluid rounded"
+              className="rounded mx-auto"
               style={{ maxHeight: '70vh' }}
             />
           )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setPreviewImage(null)}>
-            關閉
-          </Button>
-          {previewImage && (
-            <Button 
-              variant="primary" 
-              onClick={() => {
-                setPreviewImage(null);
-                handleShowModal(previewImage);
-              }}
-            >
-              編輯此廣告
-            </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-    </Container>
+        </div>
+      </AppModal>
+    </div>
   );
 };
 

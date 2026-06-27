@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Award } from 'lucide-react';
+import AppModal from 'components/common/AppModal';
+import { Button, Field } from 'components/common/ui';
 import Axios from 'common/Axios';
 
 const EditOutstandingAlumniModal = ({ show, onClose, data, onSubmit }) => {
@@ -32,70 +34,67 @@ const EditOutstandingAlumniModal = ({ show, onClose, data, onSubmit }) => {
     };
 
     return (
-        <Modal show={show} onHide={onClose} size="lg" centered>
-            <Modal.Header closeButton>
-                <Modal.Title>編輯傑出校友資料</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>
-                            摘要 <span className="text-danger">*</span>
-                        </Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="輸入摘要"
-                            value={alumniData.highlight}
-                            onChange={(e) => handleChange('highlight', e.target.value)}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>詳細成就</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={4}
-                            placeholder="輸入詳細成就"
-                            value={alumniData.achievements}
-                            onChange={(e) => handleChange('achievements', e.target.value)}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>顯示順序</Form.Label>
-                        <Form.Control
-                            type="number"
-                            min="0"
-                            placeholder="輸入顯示順序（數字越小越前面）"
-                            value={alumniData.sort_order}
-                            onChange={(e) => handleChange('sort_order', parseInt(e.target.value) || 0)}
-                        />
-                        <Form.Text className="text-muted">
-                            順序數字越小，在列表中顯示越前面
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Check
-                            type="switch"
-                            label="展示於官網"
-                            checked={alumniData.is_featured}
-                            onChange={(e) => handleChange('is_featured', e.target.checked)}
-                        />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
-                    <i className="bi bi-x-lg"></i> 取消
-                </Button>
-                <Button
-                    variant="primary"
-                    onClick={handleSubmit}
-                    disabled={!alumniData.highlight}
-                >
-                    <i className="bi bi-check2"></i> 儲存
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        <AppModal
+            show={show}
+            onHide={onClose}
+            title="編輯傑出校友資料"
+            icon={<Award size={20} />}
+            size="lg"
+            variant="admin"
+            footer={
+                <>
+                    <Button variant="secondary" onClick={onClose}>
+                        <i className="bi bi-x-lg"></i> 取消
+                    </Button>
+                    <Button
+                        variant="primary"
+                        onClick={handleSubmit}
+                        disabled={!alumniData.highlight}
+                    >
+                        <i className="bi bi-check2"></i> 儲存
+                    </Button>
+                </>
+            }
+        >
+            <Field
+                as="input"
+                type="text"
+                label="摘要"
+                required
+                placeholder="輸入摘要"
+                value={alumniData.highlight}
+                onChange={(e) => handleChange('highlight', e.target.value)}
+            />
+            <Field
+                as="textarea"
+                label="詳細成就"
+                rows={4}
+                placeholder="輸入詳細成就"
+                value={alumniData.achievements}
+                onChange={(e) => handleChange('achievements', e.target.value)}
+            />
+            <Field
+                as="input"
+                type="number"
+                label="顯示順序"
+                min="0"
+                placeholder="輸入顯示順序（數字越小越前面）"
+                value={alumniData.sort_order}
+                onChange={(e) => handleChange('sort_order', parseInt(e.target.value) || 0)}
+                help="順序數字越小，在列表中顯示越前面"
+            />
+            <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3">
+                    <input
+                        type="checkbox"
+                        className="toggle toggle-primary"
+                        checked={alumniData.is_featured}
+                        onChange={(e) => handleChange('is_featured', e.target.checked)}
+                    />
+                    <span className="label-text font-medium">展示於官網</span>
+                </label>
+            </div>
+        </AppModal>
     );
 };
 

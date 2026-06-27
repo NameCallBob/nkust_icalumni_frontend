@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Button, Modal, Form, Spinner } from "react-bootstrap";
 import Axios from "common/Axios";
 import { toast } from "react-toastify";
+import { ImagePlus } from "lucide-react";
+import AppModal from "components/common/AppModal";
+import { Button, Field, Spinner } from "components/common/ui";
 
 const UploadImageModal = ({ show, onClose, onUploadSuccess , page_type }) => {
   const [base64Image, setBase64Image] = useState("");
@@ -48,50 +50,53 @@ const UploadImageModal = ({ show, onClose, onUploadSuccess , page_type }) => {
   };
 
   return (
-    <Modal show={show} onHide={onClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>新增照片</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          <Form.Group className="mb-3">
-            <Form.Label>圖片類型</Form.Label>
-            <Form.Select
-              value={imageType}
-              onChange={(e) => setImageType(e.target.value)}
-            >
-              <option value="large">大圖</option>
-              <option value="small">小圖</option>
-            </Form.Select>
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>選擇圖片檔案</Form.Label>
-            <Form.Control type="file" accept="image/*" onChange={handleFileChange} />
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onClose} disabled={isUploading}>
-          取消
-        </Button>
-        <Button variant="primary" onClick={handleUpload} disabled={isUploading}>
-          {isUploading ? (
-            <>
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
-              />{" "}
-              上傳中...
-            </>
-          ) : (
-            "保存"
-          )}
-        </Button>
-      </Modal.Footer>
-    </Modal>
+    <AppModal
+      show={show}
+      onHide={onClose}
+      title="新增照片"
+      icon={<ImagePlus size={18} />}
+      variant="admin"
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={isUploading}>
+            取消
+          </Button>
+          <Button variant="primary" onClick={handleUpload} disabled={isUploading}>
+            {isUploading ? (
+              <>
+                <Spinner size="sm" /> 上傳中...
+              </>
+            ) : (
+              "保存"
+            )}
+          </Button>
+        </>
+      }
+    >
+      {/* 圖片類型 */}
+      <Field
+        as="select"
+        label="圖片類型"
+        value={imageType}
+        onChange={(e) => setImageType(e.target.value)}
+      >
+        <option value="large">大圖</option>
+        <option value="small">小圖</option>
+      </Field>
+
+      {/* 選擇圖片檔案 */}
+      <div className="form-control w-full mb-4">
+        <label className="label pb-1">
+          <span className="label-text font-medium text-base-content">選擇圖片檔案</span>
+        </label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="file-input file-input-bordered w-full"
+        />
+      </div>
+    </AppModal>
   );
 };
 
