@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Button } from 'react-bootstrap';
+import { Button } from 'components/common/ui';
 import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
 const FeaturedAlumni = ({ featuredAlumni }) => {
@@ -32,49 +32,42 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
 
     return (
         <div>
-            <Row className="mb-4">
+            <div className="grid grid-cols-12 gap-4 mb-4">
                 {currentAlumni.map((alumni) => (
-                    <Col key={alumni.id} xs={12} md={6} className="mb-4">
-                        <Card
-                            className="h-100 shadow d-flex flex-row"
-                            style={{ cursor: 'pointer' }}
+                    <div key={alumni.id} className="col-span-12 md:col-span-6 mb-4">
+                        <div
+                            className="card card-bordered card-side h-full shadow cursor-pointer flex-row"
                             onClick={() => (window.location.href = `/alumni/${alumni.member}`)}
                         >
-                            <Card.Img
-                                variant="left"
+                            <img
                                 src={getImageSrc(alumni.photo, 'avatar')}
                                 alt={alumni.name}
-                                style={{ width:'200px' , height: '200px', objectFit: 'cover' }}
+                                className="object-cover rounded-l-lg"
+                                style={{ width: '200px', height: '200px' }}
                                 onError={(e) => handleImageError(e, 'avatar')}
                             />
-                            <Card.Body>
-                                <Card.Title>
+                            <div className="card-body">
+                                <h2 className="card-title">
                                     {alumni.name}&nbsp;{alumni?.position?.title}
-                                </Card.Title>
+                                </h2>
                                 {/* 強調的成就 */}
-                                <Card.Text style={{ fontWeight: 'bold', color: '#007bff' }}>
+                                <p className="font-bold text-primary">
                                     {alumni.achievements}
-                                </Card.Text>
+                                </p>
                                 {/* 可滾動的亮點描述 */}
-                                <Card.Text
-                                    style={{
-                                        maxHeight: '80px',
-                                        overflowY: 'auto',
-                                        border: '1px solid #ddd',
-                                        padding: '5px',
-                                        borderRadius: '5px',
-                                        backgroundColor: '#f9f9f9',
-                                    }}
+                                <p
+                                    className="overflow-y-auto border border-base-300 rounded p-1.5 bg-base-200"
+                                    style={{ maxHeight: '80px' }}
                                 >
                                     {alumni.highlight}
-                                </Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </Col>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 ))}
-            </Row>
+            </div>
             {sortedAlumni.length > itemsPerPage && (
-                <div className="d-flex justify-content-between">
+                <div className="flex justify-between">
                     <Button
                         variant="primary"
                         onClick={handlePreviousPage}

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Axios from 'common/Axios';
 import { handleImageError, getImageSrc, DEFAULT_IMAGES } from '../../../utils/imageDefaults';
 

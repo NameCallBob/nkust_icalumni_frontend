@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Image, Card, Badge, Tabs, Tab, Button, Dropdown, DropdownButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaGlobe, FaLinkedin, FaGithub, FaInstagram, FaShareAlt, FaFacebookF, FaTwitter, FaLink, FaLine } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -33,13 +32,15 @@ const ProfilePage = () => {
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notfound, setNotfound] = useState(false);
-  
+
   // 照片查看狀態
   const [openLightbox, setOpenLightbox] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [activeGallery, setActiveGallery] = useState('personal'); // 'personal' 或 'company'
   const [shareUrl, setShareUrl] = useState('');
   const [showCopyTooltip, setShowCopyTooltip] = useState(false);
+  // 內容標籤頁切換狀態（取代 react-bootstrap Tabs 的內建狀態）
+  const [activeTab, setActiveTab] = useState('gallery'); // 'gallery' 或 'company'
 
   // 動態效果設定
   const fadeInVariants = {
@@ -69,7 +70,7 @@ const ProfilePage = () => {
   // 格式化照片數據用於 PhotoAlbum 組件
   const formatPhotosForAlbum = (images, type) => {
     if (!images || images.length === 0) return [];
-    
+
     return images.map((image, index) => ({
       src: `${process.env.REACT_APP_BASE_URL}${image.image}`,
       width: 4,
@@ -83,7 +84,7 @@ const ProfilePage = () => {
   // 格式化照片數據用於燈箱
   const formatPhotosForLightbox = (images) => {
     if (!images || images.length === 0) return [];
-    
+
     return images.map(image => ({
       src: `${process.env.REACT_APP_BASE_URL}${image.image}`,
       title: image.title,
@@ -126,34 +127,34 @@ const ProfilePage = () => {
 
   if (notfound) {
     return (
-      <Container className={`${styles.notFoundContainer} py-5 text-center`}>
+      <div className={`${styles.notFoundContainer} container mx-auto px-4 py-5 text-center`}>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <img 
+          <img
             src={notfoundpic}
             alt="資料未開放"
-            className="img-fluid"
+            className="max-w-full h-auto"
           />
           <h3 className="mt-4">此系友資料目前暫不開放</h3>
         </motion.div>
-      </Container>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Container className={`${styles.loadingContainer} py-5 text-center`}>
+      <div className={`${styles.loadingContainer} container mx-auto px-4 py-5 text-center`}>
         <div className={styles.loadingSpinner}></div>
         <p className={`${styles.loadingText} mt-3`}>正在載入系友資料，請稍候...</p>
-      </Container>
+      </div>
     );
   }
 
   return (
-    <Container className="profile-page-container py-5 my-5">
+    <div className="profile-page-container container mx-auto px-4 py-5 my-5">
       {profileData && (
         <SEO
           main={false}
@@ -162,7 +163,7 @@ const ProfilePage = () => {
           keywords={["智慧商務", "系友詳細", profileData.name, "會員資訊"]}
         />
       )}
-      
+
       {profileData && (() => {
         // 照片數據準備 - 只在 profileData 存在時執行
         const personalPhotos = profileData.self_images ?
@@ -184,15 +185,15 @@ const ProfilePage = () => {
             animate="visible"
             variants={fadeInVariants}
           >
-            <Card className="shadow-lg border-0">
-              <Card.Body className="p-0">
-                <Row className="g-0">
+            <div className="card bg-base-100 shadow-lg border-0 overflow-hidden">
+              <div className="card-body p-0">
+                <div className="grid grid-cols-12">
                   {/* Navy header column with circular avatar */}
-                  <Col lg={4} style={{ background: '#1e3a8a', minHeight: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 2rem' }}>
+                  <div className="col-span-12 lg:col-span-4" style={{ background: '#1e3a8a', minHeight: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 2rem' }}>
                     <div style={{ textAlign: 'center' }}>
-                      <Image
+                      <img
                         src={profileData.photo ? process.env.REACT_APP_BASE_URL + profileData.photo : 'https://via.placeholder.com/300x300/e9ecef/495057?text=No+Photo'}
-                        className="rounded-circle"
+                        className="rounded-full"
                         alt={profileData.name || '系友'}
                         style={{
                           width: '200px',
@@ -206,7 +207,7 @@ const ProfilePage = () => {
                         }}
                       />
                       {/* Name & position below avatar on mobile / overlapping for md+ */}
-                      <div className="d-lg-none mt-3">
+                      <div className="lg:hidden mt-3">
                         <h1 style={{ color: '#ffffff', fontWeight: '700', fontSize: '1.5rem', marginBottom: '0.375rem' }}>{profileData.name || '姓名未提供'}</h1>
                         {profileData.position && profileData.position.title && (
                           <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.95rem', marginBottom: '0.5rem', fontWeight: '400' }}>{profileData.position.title}</p>
@@ -218,70 +219,75 @@ const ProfilePage = () => {
                         )}
                       </div>
                     </div>
-                  </Col>
-                  <Col lg={8}>
+                  </div>
+                  <div className="col-span-12 lg:col-span-8">
                     <div className="profile-info p-4">
                       <div className="profile-header mb-3">
-                        <div className="d-flex justify-content-between align-items-start flex-wrap">
-                          <div className="mb-2 d-none d-lg-block">
-                            <h1 className="profile-name fw-bold mb-2" style={{ fontSize: '2rem', color: '#0f172a', letterSpacing: '-0.5px' }}>{profileData.name || '姓名未提供'}</h1>
-                            <div className="profile-badges d-flex flex-wrap gap-2">
+                        <div className="flex justify-between items-start flex-wrap">
+                          <div className="mb-2 hidden lg:block">
+                            <h1 className="profile-name font-bold mb-2" style={{ fontSize: '2rem', color: '#0f172a', letterSpacing: '-0.5px' }}>{profileData.name || '姓名未提供'}</h1>
+                            <div className="profile-badges flex flex-wrap gap-2">
                               {profileData.position && profileData.position.title && (
-                                <Badge style={{ background: '#1e3a8a', color: '#ffffff', padding: '0.45rem 1rem', borderRadius: '4px', fontSize: '0.875rem', fontWeight: '600' }}>{profileData.position.title}</Badge>
+                                <span style={{ background: '#1e3a8a', color: '#ffffff', padding: '0.45rem 1rem', borderRadius: '4px', fontSize: '0.875rem', fontWeight: '600' }}>{profileData.position.title}</span>
                               )}
                               {profileData.graduate && (
-                                <Badge style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe', padding: '0.45rem 1rem', borderRadius: '4px', fontSize: '0.875rem', fontWeight: '600' }}>
+                                <span style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe', padding: '0.45rem 1rem', borderRadius: '4px', fontSize: '0.875rem', fontWeight: '600' }}>
                                   {profileData.graduate.school || '學校未知'} · {profileData.graduate.grade || '年級未知'} 級
-                                </Badge>
+                                </span>
                               )}
                             </div>
                           </div>
-                          <DropdownButton
-                            id="dropdown-share-button"
-                            title={<><FaShareAlt /> 分享</>}
-                            variant="outline-primary"
-                            className="share-dropdown"
-                            size="sm"
-                          >
-                        <Dropdown.Item onClick={() => handleShare('facebook')}>
-                          <FaFacebookF className="me-2" /> Facebook
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={() => handleShare('line')}>
-                          <FaLine className="me-2" /> LINE
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={() => handleShare('twitter')}>
-                          <FaTwitter className="me-2" /> Twitter
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <OverlayTrigger
-                          placement="left"
-                          show={showCopyTooltip}
-                          overlay={<Tooltip>已複製！</Tooltip>}
-                        >
-                          <Dropdown.Item onClick={() => handleShare('copy')}>
-                            <FaLink className="me-2" /> 複製連結
-                          </Dropdown.Item>
-                        </OverlayTrigger>
-                      </DropdownButton>
+                          {/* 分享下拉選單（DaisyUI dropdown 取代 react-bootstrap DropdownButton） */}
+                          <div className="dropdown dropdown-end share-dropdown">
+                            <label tabIndex={0} className="btn btn-sm btn-outline btn-primary gap-1">
+                              <FaShareAlt /> 分享
+                            </label>
+                            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box shadow-lg z-10 w-44 p-2 mt-1">
+                              <li>
+                                <button type="button" onClick={() => handleShare('facebook')}>
+                                  <FaFacebookF className="mr-2" /> Facebook
+                                </button>
+                              </li>
+                              <li>
+                                <button type="button" onClick={() => handleShare('line')}>
+                                  <FaLine className="mr-2" /> LINE
+                                </button>
+                              </li>
+                              <li>
+                                <button type="button" onClick={() => handleShare('twitter')}>
+                                  <FaTwitter className="mr-2" /> Twitter
+                                </button>
+                              </li>
+                              <div className="divider my-1"></div>
+                              <li
+                                className={`tooltip tooltip-left ${showCopyTooltip ? 'tooltip-open' : ''}`}
+                                data-tip="已複製！"
+                              >
+                                <button type="button" onClick={() => handleShare('copy')}>
+                                  <FaLink className="mr-2" /> 複製連結
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
                     </div>
                   </div>
-                  
+
                       <hr className="my-4" />
 
-                      <Row>
-                        <Col md={12}>
-                          <h3 className="section-title h4 mb-3">個人簡介</h3>
+                      <div className="grid grid-cols-12">
+                        <div className="col-span-12">
+                          <h3 className="section-title text-xl font-semibold mb-3">個人簡介</h3>
                           {profileData.intro ? (
-                            <p className="profile-intro text-muted lh-lg">{profileData.intro}</p>
+                            <p className="profile-intro text-base-content/60 leading-loose">{profileData.intro}</p>
                           ) : (
-                            <div className="alert alert-light border" role="alert">
-                              <h6 className="alert-heading">尚未提供個人簡介</h6>
-                              <p className="mb-0 small text-muted">系友可在個人設定中完善個人資料，讓更多人了解您的專業與特長</p>
+                            <div className="rounded-lg border border-base-300 bg-base-200 p-4" role="alert">
+                              <h6 className="font-semibold mb-1">尚未提供個人簡介</h6>
+                              <p className="mb-0 text-sm text-base-content/60">系友可在個人設定中完善個人資料，讓更多人了解您的專業與特長</p>
                             </div>
                           )}
-                        </Col>
-                      </Row>
-                  
+                        </div>
+                      </div>
+
                   {/* <div className="social-links mt-3">
                     {profileData.social_links && profileData.social_links.linkedin && (
                       <a href={profileData.social_links.linkedin} className="me-3" target="_blank" rel="noopener noreferrer">
@@ -301,10 +307,10 @@ const ProfilePage = () => {
                   </div> */}
 
                     </div>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* 主要內容區 - 使用標籤頁切換不同內容 */}
@@ -314,46 +320,45 @@ const ProfilePage = () => {
             variants={fadeInVariants}
             className="main-content mb-5"
           >
-            <Card style={{ border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}>
-              <Card.Body>
-                <style>{`
-                  .nav-pills .nav-link {
-                    color: #475569;
-                    background-color: #f8fafc;
-                    border-radius: 6px;
-                    font-weight: 600;
-                    transition: all 0.2s ease;
-                    border: 1px solid #e2e8f0;
-                    font-size: 0.95rem;
-                  }
-                  .nav-pills .nav-link.active {
-                    background-color: #1e3a8a;
-                    color: white !important;
-                    font-weight: 600;
-                    border-color: #1e3a8a;
-                    box-shadow: none;
-                  }
-                  .nav-pills .nav-link:hover:not(.active) {
-                    background-color: #eff6ff;
-                    color: #1e3a8a;
-                    border-color: #bfdbfe;
-                    transform: none;
-                  }
-                `}</style>
-                <Tabs
-                  defaultActiveKey="gallery"
-                  className="mb-4"
-                  variant="pills"
-                  fill
-                >
-                  {/* 照片集錦標籤頁 */}
-                  <Tab eventKey="gallery" title="照片集錦" className="py-4">
-                    <h3 className="section-title h4 mb-4">系友照片集錦</h3>
+            <div className="card bg-base-100" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}>
+              <div className="card-body">
+                {/* 標籤頁導覽（DaisyUI/Tailwind 取代 react-bootstrap Tabs pills） */}
+                <div role="tablist" className="grid grid-cols-2 gap-3 mb-6">
+                  <button
+                    type="button"
+                    role="tab"
+                    onClick={() => setActiveTab('gallery')}
+                    className={`py-3 rounded-md font-semibold text-[0.95rem] border transition-all duration-200 ${
+                      activeTab === 'gallery'
+                        ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
+                        : 'bg-[#f8fafc] text-[#475569] border-[#e2e8f0] hover:bg-[#eff6ff] hover:text-[#1e3a8a] hover:border-[#bfdbfe]'
+                    }`}
+                  >
+                    照片集錦
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    onClick={() => setActiveTab('company')}
+                    className={`py-3 rounded-md font-semibold text-[0.95rem] border transition-all duration-200 ${
+                      activeTab === 'company'
+                        ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
+                        : 'bg-[#f8fafc] text-[#475569] border-[#e2e8f0] hover:bg-[#eff6ff] hover:text-[#1e3a8a] hover:border-[#bfdbfe]'
+                    }`}
+                  >
+                    公司資訊
+                  </button>
+                </div>
+
+                {/* 照片集錦標籤頁 */}
+                {activeTab === 'gallery' && (
+                  <div className="py-4">
+                    <h3 className="section-title text-xl font-semibold mb-4">系友照片集錦</h3>
                 {personalPhotos.length > 0 ? (
                   <div className="photo-album-container">
-                    <Row className="photo-grid">
+                    <div className="grid grid-cols-12 gap-4 photo-grid">
                       {personalPhotos.map((photo, index) => (
-                        <Col xs={12} sm={6} md={4} lg={3} key={photo.key} className="photo-col mb-4">
+                        <div className="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 photo-col mb-4" key={photo.key}>
                           <motion.div
                             whileHover={{ scale: 1.03, boxShadow: "0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)" }}
                             transition={{ duration: 0.3 }}
@@ -361,9 +366,9 @@ const ProfilePage = () => {
                             onClick={() => handleOpenLightbox('personal', index)}
                           >
                             <div className="photo-img-container">
-                              <img 
-                                src={photo.src} 
-                                alt={photo.title || '系友照片'} 
+                              <img
+                                src={photo.src}
+                                alt={photo.title || '系友照片'}
                                 className="photo-img"
                               />
                             </div>
@@ -374,99 +379,99 @@ const ProfilePage = () => {
                               </div>
                             )}
                           </motion.div>
-                        </Col>
+                        </div>
                       ))}
-                    </Row>
+                    </div>
                   </div>
                   ) : (
-                    <div className="alert alert-info text-center py-5" role="alert">
+                    <div className="alert alert-info flex-col text-center py-12" role="alert">
                       <div className="mb-3" style={{ fontSize: '48px' }}>📷</div>
-                      <h5 className="alert-heading">目前沒有個人照片</h5>
+                      <h5 className="font-semibold">目前沒有個人照片</h5>
                       <p className="mb-0">系友尚未上傳照片集錦，您可以稍後再回來查看</p>
                     </div>
                   )}
-                  </Tab>
-                  {/* 公司資訊標籤頁 */}
-                  <Tab eventKey="company" title="公司資訊" className="py-4">
+                  </div>
+                )}
+                {/* 公司資訊標籤頁 */}
+                {activeTab === 'company' && (
+                  <div className="py-4">
                 {profileData.company ? (
                   <>
-                      <Row className="company-header mb-4">
-                        <Col md={4} className="mb-4">
+                      <div className="grid grid-cols-12 gap-4 company-header mb-4">
+                        <div className="col-span-12 md:col-span-4 mb-4">
                           <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
-                            <Image
+                            <img
                               src={profileData.company.photo ? `${process.env.REACT_APP_BASE_URL}${profileData.company.photo}` : 'https://via.placeholder.com/400x300/e9ecef/495057?text=No+Company+Photo'}
-                              rounded
-                              fluid
-                              className="company-image shadow"
+                              className="company-image shadow rounded w-full max-w-full h-auto"
                               alt={profileData.company.name || '公司'}
                               onError={(e) => {
                                 e.target.src = 'https://via.placeholder.com/400x300/e9ecef/495057?text=No+Company+Photo';
                               }}
                             />
                           </motion.div>
-                        </Col>
-                        <Col md={8}>
-                          <h2 className="company-title h3 mb-3">{profileData.company.name || '公司名稱未提供'}</h2>
-                          <p className="company-description text-muted lh-lg">
+                        </div>
+                        <div className="col-span-12 md:col-span-8">
+                          <h2 className="company-title text-2xl font-semibold mb-3">{profileData.company.name || '公司名稱未提供'}</h2>
+                          <p className="company-description text-base-content/60 leading-loose">
                             {profileData.company.description || '尚未提供公司描述'}
                           </p>
-                        
+
                           <div className="company-contact-info mt-4">
-                            <Row>
-                              <Col md={6} className="mb-3">
-                                <div className="d-flex align-items-center">
-                                  <FaMapMarkerAlt className="text-primary me-2" />
-                                  <span className="text-muted">{profileData.company.address || "未提供地址"}</span>
+                            <div className="grid grid-cols-12 gap-4">
+                              <div className="col-span-12 md:col-span-6 mb-3">
+                                <div className="flex items-center">
+                                  <FaMapMarkerAlt className="text-primary mr-2" />
+                                  <span className="text-base-content/60">{profileData.company.address || "未提供地址"}</span>
                                 </div>
-                              </Col>
-                              <Col md={6} className="mb-3">
-                                <div className="d-flex align-items-center">
-                                  <FaPhoneAlt className="text-primary me-2" />
-                                  <span className="text-muted">{profileData.company.phone_number || "未提供聯絡電話"}</span>
+                              </div>
+                              <div className="col-span-12 md:col-span-6 mb-3">
+                                <div className="flex items-center">
+                                  <FaPhoneAlt className="text-primary mr-2" />
+                                  <span className="text-base-content/60">{profileData.company.phone_number || "未提供聯絡電話"}</span>
                                 </div>
-                              </Col>
-                              <Col md={6} className="mb-3">
-                                <div className="d-flex align-items-center">
-                                  <FaEnvelope className="text-primary me-2" />
-                                  <span className="text-muted">{profileData.company.email || "未提供電子郵件"}</span>
+                              </div>
+                              <div className="col-span-12 md:col-span-6 mb-3">
+                                <div className="flex items-center">
+                                  <FaEnvelope className="text-primary mr-2" />
+                                  <span className="text-base-content/60">{profileData.company.email || "未提供電子郵件"}</span>
                                 </div>
-                              </Col>
-                              <Col md={6} className="mb-3">
-                                <div className="d-flex align-items-center">
-                                  <FaGlobe className="text-primary me-2" />
+                              </div>
+                              <div className="col-span-12 md:col-span-6 mb-3">
+                                <div className="flex items-center">
+                                  <FaGlobe className="text-primary mr-2" />
                                   {profileData.company.website ? (
-                                    <a href={profileData.company.website} target="_blank" rel="noopener noreferrer" className="text-decoration-none">
+                                    <a href={profileData.company.website} target="_blank" rel="noopener noreferrer" className="no-underline">
                                       {profileData.company.website}
                                     </a>
                                   ) : (
-                                    <span className="text-muted">未提供網站</span>
+                                    <span className="text-base-content/60">未提供網站</span>
                                   )}
                                 </div>
-                              </Col>
-                            </Row>
+                              </div>
+                            </div>
                           </div>
-                      </Col>
-                    </Row>
+                      </div>
+                    </div>
 
-                      <Row className="mb-5">
-                        <Col>
-                          <Card className="product-info-card" style={{ border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
-                            <Card.Header as="h5" style={{ background: '#1e3a8a', color: '#ffffff', fontWeight: '700', border: 'none', padding: '0.875rem 1.5rem', fontSize: '1rem' }}>
+                      <div className="mb-5">
+                        <div>
+                          <div className="product-info-card" style={{ border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
+                            <h5 style={{ background: '#1e3a8a', color: '#ffffff', fontWeight: '700', border: 'none', padding: '0.875rem 1.5rem', fontSize: '1rem', margin: 0 }}>
                               我們的產品
-                            </Card.Header>
-                            <Card.Body>
-                              <Card.Title className="h6">
+                            </h5>
+                            <div className="p-4">
+                              <div className="font-semibold text-base mb-2">
                                 {profileData.company.products || "尚未提供產品資訊"}
-                              </Card.Title>
-                              <Card.Text className="text-muted">
+                              </div>
+                              <p className="text-base-content/60">
                                 {profileData.company.product_description || "尚未提供產品描述"}
-                              </Card.Text>
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                      </Row>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
-                      <h3 className="section-title h4 mb-4">商品展示</h3>
+                      <h3 className="section-title text-xl font-semibold mb-4">商品展示</h3>
                     {companyPhotos.length > 0 ? (
                       <div className="product-slider-container mb-5">
                         <SwiperReact
@@ -496,38 +501,37 @@ const ProfilePage = () => {
                                 className="product-slide"
                                 onClick={() => handleOpenLightbox('company', index)}
                               >
-                                <Card className="product-card">
+                                <div className="card product-card">
                                   <div className="product-img-container">
-                                    <Card.Img 
-                                      variant="top" 
+                                    <img
                                       src={photo.src}
                                       alt={photo.title}
                                       className="product-img"
                                     />
                                   </div>
-                                  <Card.Body>
-                                    <Card.Title>{photo.title}</Card.Title>
-                                    {photo.description && <Card.Text>{photo.description}</Card.Text>}
-                                  </Card.Body>
-                                </Card>
+                                  <div className="card-body">
+                                    <h5 className="card-title">{photo.title}</h5>
+                                    {photo.description && <p>{photo.description}</p>}
+                                  </div>
+                                </div>
                               </motion.div>
                             </SwiperSlide>
                           ))}
                         </SwiperReact>
                       </div>
                       ) : (
-                        <div className="alert alert-light border" role="alert">
-                          <h5 className="alert-heading">尚未提供公司更多照片</h5>
+                        <div className="rounded-lg border border-base-300 bg-base-200 p-4" role="alert">
+                          <h5 className="font-semibold mb-1">尚未提供公司更多照片</h5>
                           <p className="mb-0">系友可以在設定頁面添加公司產品相關資訊</p>
-                        </div>                    
-                  
+                        </div>
+
                   )}
 
                       <ProductDisplay memberId={id} className="mt-5" />
 
-                      <h3 className="section-title h4 mt-5 mb-4">我們的位置</h3>
-                      <Card className="map-card shadow-sm border-0">
-                        <Card.Body className="p-0">
+                      <h3 className="section-title text-xl font-semibold mt-5 mb-4">我們的位置</h3>
+                      <div className="card map-card shadow-sm border-0 overflow-hidden">
+                        <div className="card-body p-0">
                           <div className="company-map">
                           <iframe
                             title="Company Location"
@@ -541,20 +545,20 @@ const ProfilePage = () => {
                               loading="lazy"
                             ></iframe>
                         </div>
-                      </Card.Body>
-                    </Card>
+                      </div>
+                    </div>
                   </>
                   ) : (
-                    <div className="alert alert-info text-center py-5" role="alert">
+                    <div className="alert alert-info flex-col text-center py-12" role="alert">
                       <div className="mb-3" style={{ fontSize: '48px' }}>🏢</div>
-                      <h4 className="alert-heading">系友尚未添加公司資訊</h4>
+                      <h4 className="font-semibold">系友尚未添加公司資訊</h4>
                       <p className="mb-0">此系友目前未提供任何公司相關資訊</p>
                     </div>
                   )}
-                  </Tab>
-                </Tabs>
-              </Card.Body>
-            </Card>
+                  </div>
+                )}
+              </div>
+            </div>
           </motion.div>
 
           {/* 照片燈箱 */}
@@ -588,7 +592,7 @@ const ProfilePage = () => {
         </>
         );
       })()}
-    </Container>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Spinner, Container, Row, Col, Alert, InputGroup } from 'react-bootstrap';
+import { Button } from 'components/common/ui';
 import Axios from 'common/Axios';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
@@ -181,62 +181,65 @@ const Login = () => {
       />
       <div className="login-page-wrapper">
         <div className="login-background-overlay"></div>
-        <Container className="login-container my-5 rounded shadow">
-          <Row className="justify-content-md-center">
-            <Col md={8} lg={7}>
+        <div className="container mx-auto px-4 login-container my-5 rounded shadow">
+          <div className="flex justify-center">
+            <div className="w-full md:w-2/3 lg:w-7/12">
               <div className="text-center mb-5">
                 <h1 className="elite-title">
                   {loginStage === 'email' ? '歡迎回來~' : welcomeMessage}
                 </h1>
-                <p className="text-muted subtitle">
-                  {loginStage === 'email' 
-                    ? '請輸入您的電子郵件以繼續' 
+                <p className="text-base-content/60 subtitle">
+                  {loginStage === 'email'
+                    ? '請輸入您的電子郵件以繼續'
                     : '請輸入您的密碼完成登入'}
                 </p>
               </div>
-              
-              {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
-              
+
+              {error && <div className="alert alert-error mb-4">{error}</div>}
+
               {blockTimeLeft > 0 && (
-                <Alert variant="warning" className="elegant-alert mb-4">
-                  <div className="d-flex align-items-center">
-                    <div className="alert-icon me-3">
+                <div className="alert alert-warning elegant-alert mb-4">
+                  <div className="flex items-center">
+                    <div className="alert-icon mr-3">
                       <i className="fas fa-exclamation-triangle"></i>
                     </div>
                     <div>
                       <strong>基於安全考量，登入暫時受限。</strong>
                       <div className="countdown-timer">
-                        請等待 <span className="time-number">{Math.floor(blockTimeLeft / 60)}</span> 分 
+                        請等待 <span className="time-number">{Math.floor(blockTimeLeft / 60)}</span> 分
                         <span className="time-number">{blockTimeLeft % 60}</span> 秒後再試
                       </div>
                     </div>
                   </div>
-                </Alert>
+                </div>
               )}
-              
-              <Form onSubmit={loginStage === 'password' ? handleLogin : (e) => {e.preventDefault(); handleEmailContinue();}}>
+
+              <form onSubmit={loginStage === 'password' ? handleLogin : (e) => {e.preventDefault(); handleEmailContinue();}}>
                 {loginStage === 'email' ? (
                   <>
-                    <Form.Group controlId="formBasicEmail" className="mb-4">
-                      <Form.Label className="elegant-label">電子郵件 <span className="text-accent">*</span></Form.Label>
-                      <Form.Control
+                    <div className="form-control mb-4">
+                      <label htmlFor="formBasicEmail" className="label pb-1">
+                        <span className="elegant-label">電子郵件 <span className="text-accent">*</span></span>
+                      </label>
+                      <input
+                        id="formBasicEmail"
                         type="email"
                         placeholder="請輸入您的電子郵件"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="form-input elegant-input"
+                        className="input input-bordered form-input elegant-input w-full"
                         autoFocus
                       />
-                      <Form.Text className="text-muted mt-2">
+                      <span className="label-text-alt text-base-content/60 mt-2">
                         請輸入您註冊時使用的電子郵件地址
-                      </Form.Text>
-                    </Form.Group>
-                    
+                      </span>
+                    </div>
+
                     <Button
                       variant="primary"
                       type="submit"
-                      className="w-100 mb-4 elegant-button"
+                      className="w-full mb-4 elegant-button"
                       disabled={!email || blockTimeLeft > 0}
                     >
                       繼續
@@ -245,11 +248,11 @@ const Login = () => {
                 ) : (
                   <>
                     <div className="user-email-display mb-4" onClick={handleBackToEmail}>
-                      <div className="d-flex align-items-center">
+                      <div className="flex items-center">
                         <div className="email-icon">
                           <i className="fas fa-user-circle"></i>
                         </div>
-                        <div className="ms-3">
+                        <div className="ml-3">
                           <div className="email-text">{email}</div>
                           <Button variant="link" className="edit-button p-0">
                             <small>編輯</small>
@@ -257,56 +260,61 @@ const Login = () => {
                         </div>
                       </div>
                     </div>
-                    
-                    <Form.Group controlId="formBasicPassword" className="mb-4">
-                      <Form.Label className="elegant-label">密碼 <span className="text-accent">*</span></Form.Label>
-                      <InputGroup>
-                        <Form.Control
+
+                    <div className="form-control mb-4">
+                      <label htmlFor="formBasicPassword" className="label pb-1">
+                        <span className="elegant-label">密碼 <span className="text-accent">*</span></span>
+                      </label>
+                      <div className="join w-full">
+                        <input
+                          id="formBasicPassword"
                           type={passwordVisible ? 'text' : 'password'}
                           placeholder="請輸入您的密碼"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
-                          className="form-input elegant-input"
+                          className="input input-bordered form-input elegant-input join-item w-full"
                           autoFocus
                         />
                         <Button
-                          variant="outline-secondary"
+                          variant="outline"
                           onClick={() => setPasswordVisible(!passwordVisible)}
                           aria-label="切換密碼顯示"
-                          className="elegant-toggle-button"
+                          className="elegant-toggle-button join-item"
                         >
                           {passwordVisible ? '隱藏' : '顯示'}
                         </Button>
-                      </InputGroup>
-                    </Form.Group>
-                    
-                    <Form.Group controlId="formBasicCheckbox" className="mb-4 d-flex justify-content-between align-items-center">
-                      <Form.Check 
-                        type="checkbox" 
-                        label="記住我" 
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="elegant-checkbox"
-                      />
+                      </div>
+                    </div>
+
+                    <div className="mb-4 flex justify-between items-center">
+                      <label className="label cursor-pointer gap-2 elegant-checkbox">
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-sm"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                        />
+                        <span className="label-text">記住我</span>
+                      </label>
                       <Button
                         variant="link"
-                        className="p-0 text-decoration-none forgot-password"
+                        className="p-0 no-underline forgot-password"
                         onClick={() => navigator('/forgot')}
                       >
                         忘記密碼？
                       </Button>
-                    </Form.Group>
+                    </div>
 
                     <Button
                       variant="primary"
                       type="submit"
-                      className="w-100 mb-4 elegant-button"
+                      className="w-full mb-4 elegant-button"
                       disabled={isLoading || blockTimeLeft > 0}
                     >
                       {isLoading ? (
                         <>
-                          <Spinner animation="border" size="sm" className="me-2" />
+                          <span className="loading loading-spinner loading-sm mr-2" />
                           登入中...
                         </>
                       ) : (
@@ -315,10 +323,10 @@ const Login = () => {
                     </Button>
                   </>
                 )}
-              </Form>
-            </Col>
-          </Row>
-        </Container>
+              </form>
+            </div>
+          </div>
+        </div>
 
       </div>
       

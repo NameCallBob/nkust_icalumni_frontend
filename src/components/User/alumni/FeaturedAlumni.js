@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button, Row, Col } from 'react-bootstrap';
 import { FaChevronLeft, FaChevronRight, FaArrowRight, FaStar, FaAward, FaQuoteLeft } from 'react-icons/fa';
 import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 import styles from './FeaturedAlumni.module.css';
@@ -80,9 +79,9 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                     animate="visible"
                     exit="hidden"
                 >
-                    <Row className="g-3">
+                    <div className="grid grid-cols-12 gap-3">
                         {currentAlumni.map((alumni, index) => (
-                            <Col key={alumni.id} lg={6} md={6} sm={12} xs={12}>
+                            <div key={alumni.id} className="col-span-12 md:col-span-6 lg:col-span-6">
                                 <motion.div
                                     className={styles.outstandingCard}
                                     variants={cardVariants}
@@ -142,7 +141,8 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                                                 </div>
 
                                                 {/* 查看詳情按鈕 - 固定在內容區域右下角 */}
-                                                <Button
+                                                <button
+                                                    type="button"
                                                     className={styles.viewProfileBtn}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -151,14 +151,14 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                                                     title="查看詳細資訊"
                                                 >
                                                     <FaArrowRight />
-                                                </Button>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 </motion.div>
-                            </Col>
+                            </div>
                         ))}
-                    </Row>
+                    </div>
                 </motion.div>
             </AnimatePresence>
 
@@ -170,27 +170,29 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
                 >
-                    <Button
+                    <button
+                        type="button"
                         className={styles.paginationBtn}
                         onClick={handlePreviousPage}
                         disabled={currentPage === 1}
                     >
                         <FaChevronLeft />
                         上一頁
-                    </Button>
+                    </button>
 
                     <div className={styles.paginationInfo}>
                         第 {currentPage} 頁，共 {totalPages} 頁
                     </div>
 
-                    <Button
+                    <button
+                        type="button"
                         className={styles.paginationBtn}
                         onClick={handleNextPage}
                         disabled={currentPage === totalPages}
                     >
                         下一頁
                         <FaChevronRight />
-                    </Button>
+                    </button>
                 </motion.div>
             )}
 

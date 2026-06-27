@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Pagination, Alert } from 'react-bootstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { useNavigate } from 'react-router-dom';
 import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
@@ -316,33 +315,30 @@ const CompanyListWithPagination = ({ companies }) => {
   };
   
   return (
-    <Container fluid style={{ padding: '0 2rem' }}>
+    <div className="w-full" style={{ padding: '0 2rem' }}>
       {totalItems === 0 ? (
-        <Alert 
-          variant="warning" 
+        <div
+          className="alert alert-warning justify-center text-center"
           style={{
             marginTop: '2rem',
             borderRadius: '8px',
             padding: '1rem 1.5rem',
             fontSize: '1rem',
-            textAlign: 'center',
           }}
         >
           沒有找到此類別的公司資料。
-        </Alert>
+        </div>
       ) : (
         <>
-          <Row style={{ marginTop: '2rem' }}>
+          <div className="flex flex-wrap" style={{ marginTop: '2rem' }}>
             <TransitionGroup component={null}>
               {currentCompanies.map((company, index) => (
                 <CSSTransition key={index} timeout={500} classNames="fade">
-                  <Col 
-                    xs={12} 
-                    md={isMobile ? 12 : 6} 
-                    lg={3} 
+                  <div
+                    className={`w-full ${isMobile ? 'md:w-full' : 'md:w-1/2'} lg:w-1/4`}
                     style={cardContainerStyle}
                   >
-                    <CompanyCard 
+                    <CompanyCard
                       company={company}
                       onCardClick={handleItemClick}
                       cardStyle={cardStyle}
@@ -357,12 +353,12 @@ const CompanyListWithPagination = ({ companies }) => {
                       infoValueStyle={infoValueStyle}
                       productTagStyle={productTagStyle}
                     />
-                  </Col>
+                  </div>
                 </CSSTransition>
               ))}
             </TransitionGroup>
-          </Row>
-          
+          </div>
+
           {/* 分頁控制 */}
           {totalPages > 1 && renderPagination(totalPages)}
         </>
@@ -389,7 +385,7 @@ const CompanyListWithPagination = ({ companies }) => {
           transition: opacity 500ms, transform 500ms;
         }
       `}</style>
-    </Container>
+    </div>
   );
 };
 

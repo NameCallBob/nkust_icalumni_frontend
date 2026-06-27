@@ -1,5 +1,4 @@
 import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { FileText, Users, Building, UserPlus, MessageCircle } from 'lucide-react';
 import './AboutSection.css';
 
@@ -58,25 +57,25 @@ function AboutSection() {
 
     return (
         <section id="about" className="about-section py-5">
-            <Container>
-                <Row className="text-center mb-5">
-                    <Col>
+            <div className="container mx-auto px-4">
+                <div className="grid grid-cols-12 text-center mb-5">
+                    <div className="col-span-12">
                         <div className="section-header">
                             <h2 className="section-title">關於系友會</h2>
                             <p className="section-subtitle">
                                 深入了解智慧商務系系友會，探索我們的理念與服務
                             </p>
                         </div>
-                    </Col>
-                </Row>
+                    </div>
+                </div>
 
-                <Row className="g-4">
+                <div className="grid grid-cols-12 gap-4">
                     {aboutCards.map((card, index) => {
                         const IconComponent = card.icon;
                         return (
-                            <Col lg={4} md={6} key={card.id}>
-                                <Card
-                                    className="about-card h-100"
+                            <div className="col-span-12 md:col-span-6 lg:col-span-4" key={card.id}>
+                                <div
+                                    className="card card-bordered about-card h-full"
                                     style={{ '--card-gradient': card.gradient }}
                                 >
                                     <div className="card-header-custom">
@@ -86,7 +85,7 @@ function AboutSection() {
                                         <h4 className="card-title">{card.title}</h4>
                                     </div>
 
-                                    <Card.Body className="d-flex flex-column">
+                                    <div className="card-body flex flex-col">
                                         <p className="card-description">{card.description}</p>
 
                                         <ul className="card-features">
@@ -96,48 +95,45 @@ function AboutSection() {
                                         </ul>
 
                                         <div className="mt-auto">
-                                            <Button
+                                            <a
                                                 href={card.link}
-                                                className="card-btn w-100"
-                                                variant="outline-primary"
+                                                className="btn card-btn w-full"
                                             >
                                                 了解更多
-                                            </Button>
+                                            </a>
                                         </div>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
+                                    </div>
+                                </div>
+                            </div>
                         );
                     })}
-                </Row>
+                </div>
 
                 {/* 快速聯絡區域 */}
-                <Row className="mt-5">
-                    <Col>
+                <div className="grid grid-cols-12 mt-5">
+                    <div className="col-span-12">
                         <div className="quick-contact-section">
-                            <Row className="align-items-center">
-                                <Col md={8}>
+                            <div className="grid grid-cols-12 items-center">
+                                <div className="col-span-12 md:col-span-8">
                                     <h4 className="mb-2">有任何問題嗎？</h4>
-                                    <p className="mb-0 text-muted">
+                                    <p className="mb-0 text-base-content/60">
                                         歡迎隨時聯絡我們，系友會團隊將竭誠為您服務
                                     </p>
-                                </Col>
-                                <Col md={4} className="text-md-end mt-3 mt-md-0">
-                                    <Button
+                                </div>
+                                <div className="col-span-12 md:col-span-4 text-center md:text-right mt-3 md:mt-0">
+                                    <a
                                         href="/IC/contactUs"
-                                        variant="primary"
-                                        size="lg"
-                                        className="contact-btn"
+                                        className="btn btn-primary btn-lg contact-btn"
                                     >
-                                        <MessageCircle size={20} className="me-2" />
+                                        <MessageCircle size={20} className="mr-2" />
                                         立即聯絡
-                                    </Button>
-                                </Col>
-                            </Row>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </Col>
-                </Row>
-            </Container>
+                    </div>
+                </div>
+            </div>
         </section>
     );
 }

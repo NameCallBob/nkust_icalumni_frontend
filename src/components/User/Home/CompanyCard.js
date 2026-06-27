@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Card, Button, Badge } from "react-bootstrap";
 import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
 const CompanyCard = ({ company }) => {
     // 使用狀態追蹤卡片是否被懸停
     const [isHovered, setIsHovered] = useState(false);
-    
+
     // 基本卡片樣式
     const cardStyle = {
         width: "250px",
@@ -14,8 +13,8 @@ const CompanyCard = ({ company }) => {
         overflow: "hidden",
         transition: "all 0.3s ease-in-out",
         transform: isHovered ? "translateY(-10px)" : "translateY(0)",
-        boxShadow: isHovered 
-            ? "0 12px 20px rgba(0, 0, 0, 0.15)" 
+        boxShadow: isHovered
+            ? "0 12px 20px rgba(0, 0, 0, 0.15)"
             : "0 4px 8px rgba(0, 0, 0, 0.1)",
         cursor: "pointer",
         position: "relative",
@@ -23,7 +22,7 @@ const CompanyCard = ({ company }) => {
 
     // 圖片樣式
     const imageStyle = {
-        objectFit: "cover", 
+        objectFit: "cover",
         height: "150px",
         width: "100%",
         transition: "transform 0.5s ease",
@@ -78,10 +77,14 @@ const CompanyCard = ({ company }) => {
     const buttonStyle = {
         background: isHovered ? "#0056b3" : "#0275d8",
         borderColor: isHovered ? "#004494" : "#0275d8",
+        color: "#fff",
         transition: "all 0.3s ease",
         boxShadow: isHovered ? "0 4px 8px rgba(2, 117, 216, 0.3)" : "none",
         padding: "0.375rem 0.75rem",
         fontSize: "0.9rem",
+        borderRadius: "0.375rem",
+        borderWidth: "1px",
+        borderStyle: "solid",
     };
 
     // 校友標籤樣式
@@ -101,9 +104,20 @@ const CompanyCard = ({ company }) => {
         transform: isHovered ? "scale(1.05)" : "scale(1)",
     };
 
+    // 分類標籤樣式（依懸停切換配色）
+    const categoryBadgeStyle = {
+        background: isHovered ? "#0dcaf0" : "#f8f9fa",
+        color: isHovered ? "#fff" : "#212529",
+        padding: "0.3rem 0.6rem",
+        borderRadius: "0.375rem",
+        fontSize: "0.75rem",
+        fontWeight: "600",
+        transition: "all 0.3s ease",
+    };
+
     return (
-        <Card 
-            className="company-card" 
+        <div
+            className="company-card"
             style={cardStyle}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -112,56 +126,51 @@ const CompanyCard = ({ company }) => {
             {/* 校友標籤 */}
             {company.alumni && (
                 <div style={badgeStyle}>
-                    <i className="fa fa-user-graduate me-1"></i> {company.alumni}
+                    <i className="fa fa-user-graduate mr-1"></i> {company.alumni}
                 </div>
             )}
-            
+
             {/* 公司圖片 */}
             <div style={{ overflow: "hidden" }}>
-                <Card.Img
-                    variant="top"
+                <img
                     src={getImageSrc(company.imageUrl, 'company')}
                     style={imageStyle}
                     alt={`${company.name}公司圖片`}
                     onError={(e) => handleImageError(e, 'company')}
                 />
             </div>
-            
-            <Card.Body style={cardBodyStyle}>
+
+            <div style={cardBodyStyle}>
                 {/* 公司名稱 */}
-                <Card.Title style={titleStyle}>
+                <h5 style={titleStyle}>
                     {company.name}
-                </Card.Title>
-                
+                </h5>
+
                 {/* 公司描述 */}
-                <Card.Text style={descriptionStyle}>
+                <p style={descriptionStyle}>
                     {company.description}
-                </Card.Text>
-                
+                </p>
+
                 {/* 產品信息 */}
-                <Card.Text style={productStyle}>
+                <p style={productStyle}>
                     <span style={{ fontWeight: "500" }}>產品製作:</span> {company.product}
-                </Card.Text>
-                
+                </p>
+
                 {/* 按鈕區域 */}
                 <div style={buttonContainerStyle}>
-                    <Badge 
-                        bg={isHovered ? "info" : "light"} 
-                        text={isHovered ? "white" : "dark"}
-                        style={{ transition: "all 0.3s ease" }}
-                    >
+                    <span style={categoryBadgeStyle}>
                         {company.category || "企業"}
-                    </Badge>
-                    <Button 
-                        variant="primary" 
+                    </span>
+                    <button
+                        type="button"
                         style={buttonStyle}
                         aria-label={`瞭解更多關於${company.name}的信息`}
                     >
-                        瞭解更多 {isHovered && <i className="fas fa-arrow-right ms-1"></i>}
-                    </Button>
+                        瞭解更多 {isHovered && <i className="fas fa-arrow-right ml-1"></i>}
+                    </button>
                 </div>
-            </Card.Body>
-        </Card>
+            </div>
+        </div>
     );
 };
 

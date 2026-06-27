@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Container, Pagination } from "react-bootstrap";
 import Axios from "common/Axios";
 import { useNavigate } from "react-router-dom";
 import "css/user/homepage/News.css";
@@ -260,9 +259,9 @@ function News() {
   }, []);
 
   return (
-    <Container className="my-4">
+    <div className="container mx-auto px-4 my-4">
       <h3 className="news-title">最新消息</h3>
-      
+
       {currentData.map((item, index) => (
         <NewsItem
           key={index}
@@ -272,35 +271,54 @@ function News() {
           index={index}
         />
       ))}
-      
-      <Pagination>
-        <Pagination.First 
-          onClick={() => handlePageChange(1)} 
-          disabled={currentPage === 1} 
-        />
-        <Pagination.Prev
+
+      <div className="join mt-6 flex flex-wrap justify-center">
+        <button
+          type="button"
+          className="join-item btn btn-sm"
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
+        >
+          «
+        </button>
+        <button
+          type="button"
+          className="join-item btn btn-sm"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-        />
+        >
+          ‹
+        </button>
         {Array.from({ length: totalPages }, (_, i) => (
-          <Pagination.Item
+          <button
+            type="button"
             key={i + 1}
-            active={i + 1 === currentPage}
+            className={`join-item btn btn-sm ${
+              i + 1 === currentPage ? "btn-primary" : ""
+            }`}
             onClick={() => handlePageChange(i + 1)}
           >
             {i + 1}
-          </Pagination.Item>
+          </button>
         ))}
-        <Pagination.Next
+        <button
+          type="button"
+          className="join-item btn btn-sm"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-        />
-        <Pagination.Last
+        >
+          ›
+        </button>
+        <button
+          type="button"
+          className="join-item btn btn-sm"
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
-        />
-      </Pagination>
-    </Container>
+        >
+          »
+        </button>
+      </div>
+    </div>
   );
 }
 

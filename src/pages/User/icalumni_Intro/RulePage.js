@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
+import { Button, Spinner } from "components/common/ui";
 import Axios from "common/Axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "css/user/AlumniAssociation.css";
 import SEO from "SEO";
 
@@ -30,45 +29,43 @@ const AlumniAssociationBylaws = () => {
 
   if (loading) {
     return (
-      <Container className="text-center py-5">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">載入中...</span>
-        </Spinner>
-      </Container>
+      <div className="container mx-auto px-4 text-center py-12">
+        <Spinner center label="載入中..." />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Container className="py-5">
-        <Alert variant="danger" className="text-center">
+      <div className="container mx-auto px-4 py-12">
+        <div className="alert alert-error justify-center text-center">
           無法載入章程 PDF：{error}
-        </Alert>
-      </Container>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Container fluid className="py-4">
+    <div className="w-full px-4 py-4">
       <SEO
         main={false}
         title="章程"
         description="瀏覽智慧商務系友會的章程與規範，了解我們的運作方式與核心價值。"
         keywords={["智慧商務", "章程", "規範"]}
       />
-      <Row className="justify-content-center">
-        <Col md={10}>
+      <div className="flex justify-center">
+        <div className="w-full md:w-5/6">
           {/* 介紹文字區塊 */}
           <section className="mb-4">
-            <h2 className="text-center bg-primary text-white py-2">系友會章程</h2>
+            <h2 className="text-center bg-primary text-primary-content py-2">系友會章程</h2>
             <div
               className="mt-3"
               style={{ lineHeight: "1.8" }}
               dangerouslySetInnerHTML={{ __html: bodyContent }}
             />
             {pdfFile && (
-              <div className="d-flex justify-content-center mt-3">
-                <Button variant="outline-primary" onClick={() => setShowPDF(!showPDF)}>
+              <div className="flex justify-center mt-3">
+                <Button variant="outline" onClick={() => setShowPDF(!showPDF)}>
                   {showPDF ? "隱藏 PDF" : "顯示 PDF"}
                 </Button>
               </div>
@@ -78,7 +75,7 @@ const AlumniAssociationBylaws = () => {
           {/* PDF 顯示區：使用原生內建 PDF 檢視器 */}
           {pdfFile && showPDF && (
             <section className="shadow-sm" style={{ marginBottom: "1rem" }}>
-              <h3 className="bg-secondary text-white text-center py-2">預覽文件</h3>
+              <h3 className="bg-secondary text-secondary-content text-center py-2">預覽文件</h3>
               <div style={{ height: "90vh", padding: "0" }}>
                 <object
                   data={`${pdfFile}#toolbar=0`}
@@ -91,9 +88,9 @@ const AlumniAssociationBylaws = () => {
               </div>
             </section>
           )}
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Dropdown, ButtonGroup, Badge } from 'react-bootstrap';
+import React, { useEffect, useRef, useState } from 'react';
 import Axios from 'common/Axios';
 import { useNavigate } from 'react-router-dom';
 import 'css/user/homepage/CategoryDropdown.css';
@@ -9,6 +8,7 @@ function CategoryDropdown() {
   const [categories, setCategories] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const navigator = useNavigate();
+  const dropdownRef = useRef(null);
   const itemsPerPage = 11;
 
   const totalPages = Math.ceil(categories.length / itemsPerPage);
@@ -55,58 +55,77 @@ function CategoryDropdown() {
       });
   }, []);
 
+  // 點擊下拉選單外部時關閉（取代 react-bootstrap 內建的 onToggle 收合行為）
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
   return (
-    <Dropdown as={ButtonGroup} className="w-100 category-dropdown-container" show={isOpen} onToggle={(isOpen) => setIsOpen(isOpen)}>
-      <Dropdown.Toggle
-        variant="primary"
+    <div
+      ref={dropdownRef}
+      className={`dropdown w-full category-dropdown-container ${isOpen ? 'show dropdown-open' : ''}`}
+    >
+      <button
+        type="button"
         id="category-dropdown"
-        className="w-100 py-2 dropdown-toggle-animated"
+        className="btn w-full py-2 dropdown-toggle-animated"
         style={{ fontSize: '16px', fontWeight: '600' }}
         onClick={toggleDropdown}
       >
         行業別
-      </Dropdown.Toggle>
+      </button>
 
-      <Dropdown.Menu className="w-100 dropdown-menu-animated">
-        <div className="categories-container">
-          {currentItems.map((category) => (
-            <Dropdown.Item
-              key={category.id}
-              onClick={() => handleOnClick(category.id)}
-              className="py-2 dropdown-item-animated text-center"
+      {isOpen && (
+        <div className="dropdown-content w-full dropdown-menu-animated bg-base-100 z-[1000]">
+          <div className="categories-container">
+            {currentItems.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => handleOnClick(category.id)}
+                className="dropdown-item-animated w-full block py-2 text-center"
+              >
+                {category.title}
+              </button>
+            ))}
+          </div>
+
+          <div className="pagination-controls flex justify-between items-center px-2 mt-2 pt-2">
+            <button
+              type="button"
+              className={`btn btn-sm ${currentPage === 0 ? 'btn-disabled disabled' : 'btn-outline btn-primary'}`}
+              onClick={handlePrevPage}
+              disabled={currentPage === 0}
             >
-              {category.title}
-            </Dropdown.Item>
-          ))}
-        </div>
+              上一頁
+            </button>
 
-        <div className="pagination-controls d-flex justify-content-between align-items-center px-2 mt-2 border-top pt-2">
-          <button
-            className={`btn btn-sm ${currentPage === 0 ? 'btn-light disabled' : 'btn-outline-primary'}`}
-            onClick={handlePrevPage}
-            disabled={currentPage === 0}
-          >
-            上一頁
-          </button>
-          
-          <span className="current-page">
-            {currentPage + 1} / {totalPages}
-          </span>
-          
-          <button
-            className={`btn btn-sm ${currentPage === totalPages - 1 ? 'btn-light disabled' : 'btn-outline-primary'}`}
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages - 1}
-          >
-            下一頁
-          </button>
+            <span className="current-page">
+              {currentPage + 1} / {totalPages}
+            </span>
+
+            <button
+              type="button"
+              className={`btn btn-sm ${currentPage === totalPages - 1 ? 'btn-disabled disabled' : 'btn-outline btn-primary'}`}
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages - 1}
+            >
+              下一頁
+            </button>
+          </div>
         </div>
-      </Dropdown.Menu>
-    </Dropdown>
+      )}
+    </div>
   );
 }
 

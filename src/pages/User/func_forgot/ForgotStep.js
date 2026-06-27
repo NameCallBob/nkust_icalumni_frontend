@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Alert, Card, ProgressBar, Row, Col } from 'react-bootstrap';
 import ForgotPassword from 'pages/User/func_forgot/ForgotPassPage';
 import ResetPassword from 'pages/User/func_forgot/ResetPassPage';
 import Axios from 'common/Axios';
@@ -15,7 +14,7 @@ const ForgotPasswordFlow = () => {
     show: false,
     message: '',
     variant: 'success',
-    icon: <CheckCircleFill className="me-2" />
+    icon: <CheckCircleFill className="mr-2" />
   });
   
   // 載入狀態
@@ -61,9 +60,9 @@ const ForgotPasswordFlow = () => {
   
   // 統一的提示訊息顯示函數
   const showNotification = (message, variant) => {
-    const icon = variant === 'success' ? 
-      <CheckCircleFill className="me-2" /> : 
-      <XCircleFill className="me-2" />;
+    const icon = variant === 'success' ?
+      <CheckCircleFill className="mr-2" /> :
+      <XCircleFill className="mr-2" />;
     
     setNotification({
       show: true,
@@ -95,61 +94,72 @@ const ForgotPasswordFlow = () => {
   
   // 獲取當前步驟的圖示
   const getStepIcon = () => {
-    return step === 1 ? <EnvelopeFill className="me-2" /> : <KeyFill className="me-2" />;
+    return step === 1 ? <EnvelopeFill className="mr-2" /> : <KeyFill className="mr-2" />;
   };
 
   return (
-    <Container fluid="md" className="py-4">
-      <Row className="justify-content-center">
-        <Col md={10} lg={8} xl={7}>
-          <Card className="border-0 shadow-sm">
-            <Card.Header className="bg-white border-0 pt-4 pb-0">
-              <h4 className="text-center mb-3">{getStepIcon()} {getStepTitle()}</h4>
-              <ProgressBar 
-                now={getProgressPercentage()} 
-                variant="primary" 
-                className="mb-4" 
+    <div className="container mx-auto px-4 py-4">
+      <div className="flex justify-center">
+        <div className="w-full md:w-10/12 lg:w-8/12 xl:w-7/12">
+          <div className="card card-bordered border-0 bg-base-100 shadow-sm">
+            {/* 卡片標題：步驟標題與進度條 */}
+            <div className="px-6 pt-4 pb-0">
+              <h4 className="text-center text-xl font-semibold mb-3 flex items-center justify-center text-primary">
+                {getStepIcon()} {getStepTitle()}
+              </h4>
+              <progress
+                className="progress progress-primary mb-4 w-full"
+                value={getProgressPercentage()}
+                max="100"
                 style={{ height: '8px' }}
-              />
-            </Card.Header>
-            
-            <Card.Body className="px-1 py-1">
+              ></progress>
+            </div>
+
+            {/* 卡片內容 */}
+            <div className="card-body px-1 py-1">
               {notification.show && (
-                <Alert 
-                  variant={notification.variant}
-                  dismissible
-                  onClose={clearNotification}
-                  className="d-flex align-items-center"
+                <div
+                  className={`alert ${notification.variant === 'success' ? 'alert-success' : 'alert-error'} flex items-center`}
+                  role="alert"
                 >
                   {notification.icon}
-                  {notification.message}
-                </Alert>
+                  <span className="flex-1">{notification.message}</span>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-xs btn-circle"
+                    onClick={clearNotification}
+                    aria-label="關閉"
+                  >
+                    ✕
+                  </button>
+                </div>
               )}
-              
+
               {step === 1 ? (
                 <ForgotPassword onNext={handleNext} isLoading={isLoading} />
               ) : (
-                <ResetPassword 
-                  email={email} 
+                <ResetPassword
+                  email={email}
                   onBack={handleBack}
                   onResetSuccess={handleResetSuccess}
                 />
               )}
-            </Card.Body>
-            
-            <Card.Footer className="bg-white border-0 text-center pb-4">
-              <small className="text-muted">
-                {step === 1 ? 
-                  '輸入您的電子郵件後，我們將發送一封含有驗證碼的郵件給您' : 
+            </div>
+
+            {/* 卡片底部說明文字 */}
+            <div className="border-0 text-center pb-4 px-6">
+              <small className="text-base-content/60">
+                {step === 1 ?
+                  '輸入您的電子郵件後，我們將發送一封含有驗證碼的郵件給您' :
                   '請檢查您的信箱並輸入收到的驗證碼，然後設定新密碼'
                 }
               </small>
-            </Card.Footer>
-          </Card>
-          
-        </Col>
-      </Row>
-    </Container>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,7 +1,12 @@
-import { Container, Spinner, Alert, Carousel } from 'react-bootstrap';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import DOMPurify from 'dompurify';
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
+import { Spinner } from 'components/common/ui';
 import SEO from 'SEO';
 
 const StructurePage = () => {
@@ -22,7 +27,7 @@ const StructurePage = () => {
         await Axios().get('info/structure-images/query_active_images/')
         .then((res) => {
           pic_response = res.data
-        })      
+        })
         // 根據 image_type 分類
         const largeImages = pic_response.filter((img) => img.image_type === 'large');
         const smallImages = pic_response.filter((img) => img.image_type === 'small');
@@ -45,24 +50,22 @@ const StructurePage = () => {
 
   if (isLoading) {
     return (
-      <Container className="text-center my-5">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">載入中...</span>
-        </Spinner>
-      </Container>
+      <div className="container mx-auto px-4 text-center my-12">
+        <Spinner center label="載入中..." />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Container>
-        <Alert variant="danger">{error}</Alert>
-      </Container>
+      <div className="container mx-auto px-4">
+        <div className="alert alert-error">{error}</div>
+      </div>
     );
   }
 
   return (
-    <Container className="my-5">
+    <div className="container mx-auto px-4 my-12">
           <SEO
       main={false}
       title="組織架構"
@@ -71,23 +74,31 @@ const StructurePage = () => {
     />
       {/* 幻燈片元件 */}
       {slides.largeImages.length > 0 ? (
-        <Carousel>
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          navigation={slides.largeImages.length > 1}
+          pagination={slides.largeImages.length > 1 ? { clickable: true } : false}
+          loop={slides.largeImages.length > 1}
+          className="rounded-2xl overflow-hidden shadow-lg"
+        >
           {slides.largeImages.map((image, index) => (
-            <Carousel.Item key={`large-${index}`}>
-              <img
-                className="d-block w-100"
-                src={image.file}
-                alt={image.alt || `Slide ${index + 1}`}
-                style={{ maxHeight: '300px', objectFit: 'cover' }}
-              />
-              {image.caption && (
-                <Carousel.Caption>
-                  <h3>{image.caption}</h3>
-                </Carousel.Caption>
-              )}
-            </Carousel.Item>
+            <SwiperSlide key={`large-${index}`}>
+              <div className="relative">
+                <img
+                  className="block w-full"
+                  src={image.file}
+                  alt={image.alt || `Slide ${index + 1}`}
+                  style={{ maxHeight: '300px', objectFit: 'cover' }}
+                />
+                {image.caption && (
+                  <div className="absolute bottom-6 left-0 right-0 text-center text-white">
+                    <h3 className="text-xl font-semibold drop-shadow">{image.caption}</h3>
+                  </div>
+                )}
+              </div>
+            </SwiperSlide>
           ))}
-        </Carousel>
+        </Swiper>
       ) : (
         <p className="text-center my-4">無展示圖片</p>
       )}
@@ -99,9 +110,9 @@ const StructurePage = () => {
       </br>
       {/* 小圖展示 */}
       <div className="mt-4">
-        <h4 className="text-center">相關圖片</h4>
+        <h4 className="text-center text-lg font-semibold">相關圖片</h4>
         {slides.smallImages.length > 0 ? (
-          <div className="d-flex flex-wrap justify-content-center">
+          <div className="flex flex-wrap justify-center">
             {slides.smallImages.map((image, index) => (
               <div
                 key={`small-${index}`}
@@ -109,7 +120,7 @@ const StructurePage = () => {
                 style={{ width: '600px' }}
               >
                 <img
-                  className="d-block w-100"
+                  className="block w-full"
                   src={image.file}
                   alt={image.alt || `Small Image ${index + 1}`}
                   style={{ objectFit: 'contain' }} // 保持圖片完整
@@ -121,7 +132,7 @@ const StructurePage = () => {
           <p className="text-center">無相關圖片</p>
         )}
       </div>
-    </Container>
+    </div>
   );
 };
 

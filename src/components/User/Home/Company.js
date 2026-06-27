@@ -1,6 +1,8 @@
 import Axios from "common/Axios";
 import React, { useEffect, useState } from "react";
-import { Card, Button, Container, Carousel, Row, Col } from "react-bootstrap";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
 import { useNavigate } from "react-router-dom";
 import "css/user/homepage/CompanyList.css"; // 添加樣式
 import { handleImageError, getImageSrc } from "../../../utils/imageDefaults";
@@ -29,33 +31,28 @@ function Company() {
   };
 
   return (
-    <Container
-      className="py-3 my-2"
+    <div
+      className="container mx-auto px-4 py-3 my-2"
       style={{ backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}
     >
-      <Row>
-        <Col>
-          <h2 style={{ textAlign: "left", color: "#1e3a8a", fontWeight: "700", borderBottom: "2px solid #e2e8f0", paddingBottom: "0.75rem" }} className="my-2">
-            系友公司
-          </h2>
-        </Col>
-      </Row>
-      <Carousel interval={3000} pause={false}>
+      <div>
+        <h2 style={{ textAlign: "left", color: "#1e3a8a", fontWeight: "700", borderBottom: "2px solid #e2e8f0", paddingBottom: "0.75rem" }} className="my-2">
+          系友公司
+        </h2>
+      </div>
+      <Swiper
+        modules={[Autoplay]}
+        autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: false }}
+        loop={groupedCompanies.length > 1}
+        className="w-full"
+      >
         {groupedCompanies.map((group, index) => (
-          <Carousel.Item key={index}>
-            <Row>
+          <SwiperSlide key={index}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {group.map((company, idx) => (
-                <Col
-                  key={idx}
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={3}
-                  className="mb-5 px-3"
-                >
+                <div key={idx} className="mb-5 px-3">
                   <div
-                    className="text-center p-3 border"
-                    style={{ cursor: "pointer" }}
+                    className="text-center p-3 border cursor-pointer"
                     onClick={() => handleItemClick(company.member)}
                   >
                     <img
@@ -88,14 +85,14 @@ function Company() {
                       {company.products}
                     </p>
                   </div>
-                </Col>
+                </div>
               ))}
-            </Row>
-          </Carousel.Item>
+            </div>
+          </SwiperSlide>
         ))}
-      </Carousel>
-      <Row className="justify-content-center">
-        <Col className="text-center">
+      </Swiper>
+      <div className="flex justify-center">
+        <div className="text-center">
           <button
             onClick={handleNavi}
             aria-label="探索更多系友企業資訊"
@@ -121,9 +118,9 @@ function Company() {
           >
             探索系友企業
           </button>
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }
 

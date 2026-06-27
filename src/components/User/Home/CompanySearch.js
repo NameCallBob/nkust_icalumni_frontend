@@ -4,7 +4,6 @@ import CompanyListWithPagination from 'components/User/Home/CompanyList';
 import "css/user/homepage/CompanySearch.css"
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
-import { Container } from 'react-bootstrap';
 
 const CompanyTabsSearch = () => {
 
@@ -49,7 +48,7 @@ const CompanyTabsSearch = () => {
     }
 
     return (
-      <Container>
+      <div className="container mx-auto px-4">
         <TabsComponent
           categories={categories}
           onCategorySelect={setSelectedCategory}
@@ -58,7 +57,7 @@ const CompanyTabsSearch = () => {
         <CompanyListWithPagination
           companies={companies || []}
         />
-      </Container>
+      </div>
     );
   };
 

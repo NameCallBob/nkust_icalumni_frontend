@@ -1,6 +1,5 @@
 import React from "react";
 import LoadingSpinner from "components/LoadingSpinner";
-import {Container , Row , Col, Button} from "react-bootstrap";
 import Slide from "components/User/Home/Slide";
 import News from "components/User/Home/News";
 import Company from "components/User/Home/Company";
@@ -57,55 +56,47 @@ function Home() {
           ]
         }}
         />
-        <Container className="my-3">
+        <div className="container mx-auto px-4 my-3">
 
-            <Row className="my-2 d-flex align-items-center">
-                <Col md={3} className="my-1">
+            <div className="grid grid-cols-12 gap-4 my-2 items-center">
+                <div className="col-span-12 md:col-span-3 my-1">
                     {/* 產業別 */}
                     <CategoryDropdown></CategoryDropdown>
-                </Col>
-                <Col md={9} >
+                </div>
+                <div className="col-span-12 md:col-span-9">
                     <SearchBar></SearchBar>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    {/* 照片輪播 */}
-                    <Slide></Slide>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    {/* 最新消息 */}
-                    <News></News>
-                </Col>
-            </Row>
-            <Row className="mb-4">
-                <Col >
-                    {/* 公司介紹 */}
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <h3 style={{ color: '#1e3a8a', fontWeight: '700', borderLeft: '4px solid #1e3a8a', paddingLeft: '0.75rem', margin: 0 }}>系友企業</h3>
-                    </div>
-                    <Company></Company>
-                </Col>
-            </Row>
+                </div>
+            </div>
+            <div>
+                {/* 照片輪播 */}
+                <Slide></Slide>
+            </div>
+            <div>
+                {/* 最新消息 */}
+                <News></News>
+            </div>
+            <div className="mb-4">
+                {/* 公司介紹 */}
+                <div className="flex justify-between items-center mb-3">
+                    <h3 style={{ color: '#1e3a8a', fontWeight: '700', borderLeft: '4px solid #1e3a8a', paddingLeft: '0.75rem', margin: 0 }}>系友企業</h3>
+                </div>
+                <Company></Company>
+            </div>
             <h3 style={{ color: '#1e3a8a', fontWeight: '700', borderLeft: '4px solid #1e3a8a', paddingLeft: '0.75rem', marginBottom: '1rem' }}>公司類別</h3>
-            <Row>
-                <Col>
+            <div>
                 <CompanyTabsSearch></CompanyTabsSearch>
-                </Col>
-            </Row>
+            </div>
             {/* 簡單自動輪播 */}
-            <Row className="d-flex flex-column flex-md-row mb-4">
-                <Col md={6} className="mb-3 mb-md-0">
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
+                <div className="w-full md:w-1/2 mb-3 mb-md-0">
                     <SimpleAutoCarousel title={"最新上架"}></SimpleAutoCarousel>
-                </Col>
-                <Col md={6}>
+                </div>
+                <div className="w-full md:w-1/2">
                     <SimpleAutoCarousel title={"最多點閱"}></SimpleAutoCarousel>
-                </Col>
-            </Row>
+                </div>
+            </div>
 
-        </Container>
+        </div>
         </>
     )
 }
