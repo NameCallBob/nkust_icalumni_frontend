@@ -1,7 +1,14 @@
 import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
 import AppModal from "components/common/AppModal";
-import { Button, Field, Spinner } from "components/common/ui";
+import {
+  Button,
+  Field,
+  Spinner,
+  ModalSection,
+  ModalGrid,
+  InfoItem,
+} from "components/common/ui";
 import { UserPlus } from "lucide-react";
 import {
   BsXLg,
@@ -217,57 +224,65 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
       )}
       {step === 2 && (
         <form>
-          <Field
-            as="input"
-            type="text"
-            label="摘要"
-            required
-            placeholder="輸入校友的簡要介紹"
-            value={alumniData.highlight}
-            onChange={(e) =>
-              setAlumniData({ ...alumniData, highlight: e.target.value })
-            }
-          />
-          <Field
-            as="textarea"
-            label="詳細成就"
-            rows={4}
-            placeholder="輸入校友的詳細成就（選填）"
-            value={alumniData.achievements}
-            onChange={(e) =>
-              setAlumniData({ ...alumniData, achievements: e.target.value })
-            }
-          />
-          <Field
-            as="input"
-            type="number"
-            min="0"
-            label="顯示順序"
-            placeholder="輸入顯示順序（數字越小越前面）"
-            help="順序數字越小，在列表中顯示越前面"
-            value={alumniData.sort_order}
-            onChange={(e) =>
-              setAlumniData({ ...alumniData, sort_order: parseInt(e.target.value) || 0 })
-            }
-          />
-          <div className="form-control">
-            <label className="label cursor-pointer justify-start gap-3">
-              <input
-                type="checkbox"
-                className="toggle toggle-primary"
-                checked={alumniData.is_featured}
+          <ModalSection title="傑出校友資料">
+            <Field
+              as="input"
+              type="text"
+              label="摘要"
+              required
+              placeholder="輸入校友的簡要介紹"
+              value={alumniData.highlight}
+              onChange={(e) =>
+                setAlumniData({ ...alumniData, highlight: e.target.value })
+              }
+            />
+            <Field
+              as="textarea"
+              label="詳細成就"
+              rows={4}
+              placeholder="輸入校友的詳細成就（選填）"
+              value={alumniData.achievements}
+              onChange={(e) =>
+                setAlumniData({ ...alumniData, achievements: e.target.value })
+              }
+            />
+            <ModalGrid cols={2}>
+              <Field
+                as="input"
+                type="number"
+                min="0"
+                label="顯示順序"
+                placeholder="輸入顯示順序（數字越小越前面）"
+                help="順序數字越小，在列表中顯示越前面"
+                value={alumniData.sort_order}
                 onChange={(e) =>
-                  setAlumniData({ ...alumniData, is_featured: e.target.checked })
+                  setAlumniData({ ...alumniData, sort_order: parseInt(e.target.value) || 0 })
                 }
               />
-              <span className="label-text">展示於官網</span>
-            </label>
-          </div>
+              <div className="form-control w-full mb-4">
+                <label className="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                    checked={alumniData.is_featured}
+                    onChange={(e) =>
+                      setAlumniData({ ...alumniData, is_featured: e.target.checked })
+                    }
+                  />
+                  <span className="label-text font-medium text-base-content">
+                    展示於官網
+                  </span>
+                </label>
+              </div>
+            </ModalGrid>
+          </ModalSection>
+
           {selectedMember && (
-            <div className="mt-3 p-3 bg-base-200 rounded">
-              <strong>已選擇校友：</strong> {selectedMember.name} (
-              {selectedMember.email || "無"})
-            </div>
+            <ModalSection title="已選擇校友">
+              <InfoItem icon={<UserPlus size={14} />} label="校友">
+                {selectedMember.name}（{selectedMember.email || "無"}）
+              </InfoItem>
+            </ModalSection>
           )}
         </form>
       )}

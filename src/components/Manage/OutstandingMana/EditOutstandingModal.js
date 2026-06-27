@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Award, X, Check } from 'lucide-react';
+import { Award, X, Check, FileText, Settings } from 'lucide-react';
 import AppModal from 'components/common/AppModal';
-import { Button, Field } from 'components/common/ui';
+import { Button, Field, ModalSection, ModalGrid } from 'components/common/ui';
 import Axios from 'common/Axios';
 
 const EditOutstandingAlumniModal = ({ show, onClose, data, onSubmit }) => {
@@ -56,45 +56,52 @@ const EditOutstandingAlumniModal = ({ show, onClose, data, onSubmit }) => {
                 </>
             }
         >
-            <Field
-                as="input"
-                type="text"
-                label="摘要"
-                required
-                placeholder="輸入摘要"
-                value={alumniData.highlight}
-                onChange={(e) => handleChange('highlight', e.target.value)}
-            />
-            <Field
-                as="textarea"
-                rows={4}
-                label="詳細成就"
-                placeholder="輸入詳細成就"
-                value={alumniData.achievements}
-                onChange={(e) => handleChange('achievements', e.target.value)}
-            />
-            <Field
-                as="input"
-                type="number"
-                min="0"
-                label="顯示順序"
-                placeholder="輸入顯示順序（數字越小越前面）"
-                value={alumniData.sort_order}
-                onChange={(e) => handleChange('sort_order', parseInt(e.target.value) || 0)}
-                help="順序數字越小，在列表中顯示越前面"
-            />
-            {/* 展示於官網開關 */}
-            <div className="form-control">
-                <label className="label cursor-pointer justify-start gap-3">
-                    <input
-                        type="checkbox"
-                        className="toggle toggle-primary"
-                        checked={alumniData.is_featured}
-                        onChange={(e) => handleChange('is_featured', e.target.checked)}
+            <ModalSection title="傑出系友內容" icon={<FileText size={18} />}>
+                <Field
+                    as="input"
+                    type="text"
+                    label="摘要"
+                    required
+                    placeholder="輸入摘要"
+                    value={alumniData.highlight}
+                    onChange={(e) => handleChange('highlight', e.target.value)}
+                />
+                <Field
+                    as="textarea"
+                    rows={4}
+                    label="詳細成就"
+                    placeholder="輸入詳細成就"
+                    value={alumniData.achievements}
+                    onChange={(e) => handleChange('achievements', e.target.value)}
+                />
+            </ModalSection>
+
+            <ModalSection title="顯示設定" icon={<Settings size={18} />}>
+                <ModalGrid cols={2}>
+                    <Field
+                        as="input"
+                        type="number"
+                        min="0"
+                        label="顯示順序"
+                        placeholder="輸入顯示順序（數字越小越前面）"
+                        value={alumniData.sort_order}
+                        onChange={(e) => handleChange('sort_order', parseInt(e.target.value) || 0)}
+                        help="順序數字越小，在列表中顯示越前面"
                     />
-                    <span className="label-text font-medium">展示於官網</span>
-                </label>
-            </div>
+                    {/* 展示於官網開關 */}
+                    <div className="form-control">
+                        <label className="label cursor-pointer justify-start gap-3">
+                            <input
+                                type="checkbox"
+                                className="toggle toggle-primary"
+                                checked={alumniData.is_featured}
+                                onChange={(e) => handleChange('is_featured', e.target.checked)}
+                            />
+                            <span className="label-text font-medium">展示於官網</span>
+                        </label>
+                    </div>
+                </ModalGrid>
+            </ModalSection>
         </AppModal>
     );
 };

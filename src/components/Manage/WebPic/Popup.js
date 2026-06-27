@@ -3,7 +3,7 @@ import Axios from "common/Axios";
 import { toast } from "react-toastify";
 import { FaImage, FaEdit, FaTrash, FaToggleOn, FaToggleOff, FaInfoCircle, FaPlus, FaQuestionCircle, FaEye } from "react-icons/fa";
 import AppModal from "components/common/AppModal";
-import { Button, Spinner } from "components/common/ui";
+import { Button, Spinner, ModalSection } from "components/common/ui";
 
 const PopupAdManager = () => {
   const [ads, setAds] = useState([]);
@@ -314,10 +314,7 @@ const PopupAdManager = () => {
         }
       >
         <form>
-          <div className="form-control mb-4">
-            <label className="label pb-1">
-              <span className="label-text font-medium">上傳廣告圖片 <span className="text-error">*</span></span>
-            </label>
+          <ModalSection title="上傳廣告圖片" icon={<FaImage />} description="必填">
             <div className="border rounded p-3 text-center bg-base-200">
               {(formData.image) ? (
                 <div className="relative">
@@ -370,9 +367,9 @@ const PopupAdManager = () => {
                 </div>
               )}
             </div>
-          </div>
+          </ModalSection>
 
-          <div className="form-control mb-3">
+          <ModalSection title="顯示設定" icon={<FaToggleOn />}>
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -386,7 +383,7 @@ const PopupAdManager = () => {
             <p className="text-sm opacity-60 ml-12">
               啟用後，此廣告將會在訪客瀏覽網站時彈出顯示。您可以隨時更改此設定。
             </p>
-          </div>
+          </ModalSection>
         </form>
       </AppModal>
 

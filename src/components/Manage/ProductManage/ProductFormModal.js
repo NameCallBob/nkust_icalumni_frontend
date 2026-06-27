@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Package } from 'lucide-react';
 import AppModal from 'components/common/AppModal';
-import { Button, Field } from 'components/common/ui';
+import { Button, Field, ModalSection } from 'components/common/ui';
 
 function ProductFormModal({ product, show, handleClose }) {
     const [formData, setFormData] = useState({
@@ -69,43 +69,48 @@ function ProductFormModal({ product, show, handleClose }) {
                 </div>
             }
         >
-            <form id="productForm" onSubmit={handleSubmit} className="flex flex-col gap-1">
-                <Field
-                    as="input"
-                    type="text"
-                    label="產品名稱"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                />
-                <Field
-                    as="textarea"
-                    label="產品簡介"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                />
-                <Field
-                    as="input"
-                    type="file"
-                    label="產品照片"
-                    onChange={handleFileChange}
-                    multiple // 允許多張圖片上傳
-                />
+            <form id="productForm" onSubmit={handleSubmit}>
+                <ModalSection title="產品資訊" icon={<Package size={18} />}>
+                    <Field
+                        as="input"
+                        type="text"
+                        label="產品名稱"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                    />
+                    <Field
+                        as="textarea"
+                        label="產品簡介"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        required
+                    />
+                </ModalSection>
 
-                {/* 圖片預覽區塊 */}
-                <div className="flex flex-wrap gap-2 mt-2">
-                    {previews.map((preview, index) => (
-                        <img
-                            key={index}
-                            src={preview}
-                            alt={`preview ${index}`}
-                            className="w-24 h-24 rounded-lg border border-base-300 object-cover"
-                        />
-                    ))}
-                </div>
+                <ModalSection title="產品照片">
+                    <Field
+                        as="input"
+                        type="file"
+                        label="產品照片"
+                        onChange={handleFileChange}
+                        multiple // 允許多張圖片上傳
+                    />
+
+                    {/* 圖片預覽區塊 */}
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {previews.map((preview, index) => (
+                            <img
+                                key={index}
+                                src={preview}
+                                alt={`preview ${index}`}
+                                className="w-24 h-24 rounded-lg border border-base-300 object-cover"
+                            />
+                        ))}
+                    </div>
+                </ModalSection>
             </form>
         </AppModal>
     );

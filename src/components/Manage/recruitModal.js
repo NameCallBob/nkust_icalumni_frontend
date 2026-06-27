@@ -3,7 +3,7 @@ import { HelpCircle, ChevronLeft, ChevronRight, Briefcase } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import AppModal from 'components/common/AppModal';
-import { Button, Field } from 'components/common/ui';
+import { Button, Field, ModalSection, ModalGrid } from 'components/common/ui';
 
 const RecruitFormModal = ({
   show,
@@ -258,7 +258,7 @@ const RecruitFormModal = ({
               />
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ModalGrid cols={2}>
               <Field
                 label="發布時間"
                 required
@@ -280,7 +280,7 @@ const RecruitFormModal = ({
                 error={validated ? stepErrors.deadline : ''}
                 help="職缺停止顯示的日期"
               />
-            </div>
+            </ModalGrid>
           </div>
         );
 
@@ -383,18 +383,15 @@ const RecruitFormModal = ({
               <span>{steps[2].description}</span>
             </div>
 
-            <div className="card card-bordered bg-base-100 mb-3">
-              <div className="card-body p-4">
-                <h3 className="card-title text-base">填寫技巧</h3>
-                <p>優秀的職缺說明應包含以下部分：</p>
-                <ul className="list-disc list-inside">
-                  <li>職責範圍：此職位的主要工作內容</li>
-                  <li>資格要求：應徵者需具備的技能與經驗</li>
-                  <li>工作福利：提供的薪資範圍、獎金制度或其他福利</li>
-                  <li>工作環境：工作地點、時間、遠端工作機會等</li>
-                </ul>
-              </div>
-            </div>
+            <ModalSection title="填寫技巧">
+              <p>優秀的職缺說明應包含以下部分：</p>
+              <ul className="list-disc list-inside">
+                <li>職責範圍：此職位的主要工作內容</li>
+                <li>資格要求：應徵者需具備的技能與經驗</li>
+                <li>工作福利：提供的薪資範圍、獎金制度或其他福利</li>
+                <li>工作環境：工作地點、時間、遠端工作機會等</li>
+              </ul>
+            </ModalSection>
 
             {/* 詳細資料說明（ReactQuill） */}
             <div className="form-control w-full mb-4">
@@ -431,18 +428,15 @@ const RecruitFormModal = ({
               <span>{steps[3].description}</span>
             </div>
 
-            <div className="card card-bordered bg-base-100 mb-3">
-              <div className="card-body p-4">
-                <h3 className="card-title text-base">圖片上傳指南</h3>
-                <p>您可以上傳與職缺相關的圖片，例如：</p>
-                <ul className="list-disc list-inside">
-                  <li>公司環境照片</li>
-                  <li>團隊活動照片</li>
-                  <li>相關產品或服務照片</li>
-                </ul>
-                <p className="mb-0">建議上傳清晰、專業的圖片，尺寸不超過 2MB</p>
-              </div>
-            </div>
+            <ModalSection title="圖片上傳指南">
+              <p>您可以上傳與職缺相關的圖片，例如：</p>
+              <ul className="list-disc list-inside">
+                <li>公司環境照片</li>
+                <li>團隊活動照片</li>
+                <li>相關產品或服務照片</li>
+              </ul>
+              <p className="mb-0">建議上傳清晰、專業的圖片，尺寸不超過 2MB</p>
+            </ModalSection>
 
             {/* 上傳照片 */}
             <div className="form-control w-full mb-3">
@@ -538,11 +532,9 @@ const RecruitFormModal = ({
       footer={footer}
     >
       <form id="recruitForm" noValidate onSubmit={handleFormSubmit}>
-        <h4 className="text-lg font-bold mb-3">
-          {steps[currentStep].icon} {steps[currentStep].title}
-        </h4>
-
-        {renderStepContent()}
+        <ModalSection title={steps[currentStep].title} icon={steps[currentStep].icon}>
+          {renderStepContent()}
+        </ModalSection>
       </form>
     </AppModal>
   );

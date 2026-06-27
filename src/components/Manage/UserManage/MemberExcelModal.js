@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { FileSpreadsheet } from 'lucide-react';
 import AppModal from 'components/common/AppModal';
-import { Button } from 'components/common/ui';
+import { Button, ModalSection } from 'components/common/ui';
 import ExampleImage from 'assets/example/ExcelFileExample.png'
 
 
@@ -140,16 +140,14 @@ const UploadExcelModal = ({ show, handleClose }) => {
         }
       >
         {/* 選擇 Excel 檔案區塊 */}
-        <div className="form-control w-full mb-4">
-          <label className="label pb-1">
-            <span className="label-text font-medium text-base-content">
-              選擇您的Excel（只接受 *.xlsx）
-            </span>
-          </label>
+        <ModalSection title="選擇 Excel 檔案" icon={<FileSpreadsheet size={16} />}>
+          <p className="text-sm font-medium text-base-content mb-2">
+            選擇您的Excel（只接受 *.xlsx）
+          </p>
           <p className="text-sm text-base-content/60 mb-2">範例如下：</p>
           <img
             src={ExampleImage}
-            className="h-[200px] w-auto max-w-full rounded-lg border border-base-300 mb-2"
+            className="h-[200px] w-auto max-w-full rounded-lg border border-base-300 mb-3"
             alt="Excel 範例"
           />
           <input
@@ -157,16 +155,16 @@ const UploadExcelModal = ({ show, handleClose }) => {
             onChange={handleFileChange}
             className="file-input file-input-bordered w-full"
           />
-        </div>
-
-        <Button variant="primary" onClick={handleUpload} loading={loading} className="mb-4">
-          上傳
-        </Button>
+          <div className="mt-4">
+            <Button variant="primary" onClick={handleUpload} loading={loading}>
+              上傳
+            </Button>
+          </div>
+        </ModalSection>
 
         {filteredData.failure.length > 0 && (
-          <>
-            <h5 className="text-lg font-semibold mb-2">無法新增的Email</h5>
-            <div className="overflow-x-auto mb-3">
+          <ModalSection title="無法新增的Email">
+            <div className="overflow-x-auto">
               <table className="table table-zebra table-bordered w-full">
                 <thead>
                   <tr>
@@ -184,12 +182,11 @@ const UploadExcelModal = ({ show, handleClose }) => {
                 </tbody>
               </table>
             </div>
-          </>
+          </ModalSection>
         )}
 
         {emailData.length > 0 && (
-          <>
-            <h5 className="text-lg font-semibold mb-2">可新增的Email</h5>
+          <ModalSection title="可新增的Email">
             <div className="overflow-x-auto">
               <table className="table table-zebra table-bordered w-full">
                 <thead>
@@ -237,7 +234,7 @@ const UploadExcelModal = ({ show, handleClose }) => {
                 </button>
               ))}
             </div>
-          </>
+          </ModalSection>
         )}
       </AppModal>
     );

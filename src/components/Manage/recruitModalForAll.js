@@ -3,7 +3,7 @@ import { HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import AppModal from 'components/common/AppModal';
-import { Button, Field } from 'components/common/ui';
+import { Button, Field, ModalSection, ModalGrid } from 'components/common/ui';
 
 const RecruitFormModal = ({
   show,
@@ -203,7 +203,7 @@ const RecruitFormModal = ({
     switch(currentStep) {
       case 0: // 職缺基本資訊
         return (
-          <div className="step-form">
+          <ModalSection title={steps[0].title} icon={steps[0].icon}>
             <div className="alert alert-info mb-3">
               <HelpCircle size={20} />
               <span>{steps[0].description}</span>
@@ -232,7 +232,7 @@ const RecruitFormModal = ({
               error={validated && stepErrors.company_name ? (stepErrors.company_name || "請輸入公司名稱") : undefined}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <ModalGrid cols={2}>
               <Field
                 label="發布時間"
                 required
@@ -254,13 +254,13 @@ const RecruitFormModal = ({
                 error={validated && stepErrors.deadline ? (stepErrors.deadline || "請選擇截止日期") : undefined}
                 help="職缺停止顯示的日期"
               />
-            </div>
-          </div>
+            </ModalGrid>
+          </ModalSection>
         );
 
       case 1: // 聯絡資訊
         return (
-          <div className="step-form">
+          <ModalSection title={steps[1].title} icon={steps[1].icon}>
             <div className="alert alert-info mb-3">
               <HelpCircle size={20} />
               <span>{steps[1].description}</span>
@@ -325,29 +325,26 @@ const RecruitFormModal = ({
               placeholder="例如：02-12345678 或 0912-345-678"
               error={validated && stepErrors.contactPhone ? (stepErrors.contactPhone || "請輸入聯絡人電話") : undefined}
             />
-          </div>
+          </ModalSection>
         );
 
       case 2: // 職缺詳細說明
         return (
-          <div className="step-form">
+          <ModalSection title={steps[2].title} icon={steps[2].icon}>
             <div className="alert alert-info mb-3">
               <HelpCircle size={20} />
               <span>{steps[2].description}</span>
             </div>
 
-            <div className="card card-bordered bg-base-100 mb-3">
-              <div className="px-4 py-2 border-b border-base-300 font-semibold">填寫技巧</div>
-              <div className="card-body p-4">
-                <p>優秀的職缺說明應包含以下部分：</p>
-                <ul className="list-disc pl-5">
-                  <li>職責範圍：此職位的主要工作內容</li>
-                  <li>資格要求：應徵者需具備的技能與經驗</li>
-                  <li>工作福利：提供的薪資範圍、獎金制度或其他福利</li>
-                  <li>工作環境：工作地點、時間、遠端工作機會等</li>
-                </ul>
-              </div>
-            </div>
+            <ModalSection title="填寫技巧">
+              <p>優秀的職缺說明應包含以下部分：</p>
+              <ul className="list-disc pl-5">
+                <li>職責範圍：此職位的主要工作內容</li>
+                <li>資格要求：應徵者需具備的技能與經驗</li>
+                <li>工作福利：提供的薪資範圍、獎金制度或其他福利</li>
+                <li>工作環境：工作地點、時間、遠端工作機會等</li>
+              </ul>
+            </ModalSection>
 
             {/* 詳細資料說明：保留 ReactQuill 編輯器 */}
             <div className="form-control w-full mb-3">
@@ -373,29 +370,26 @@ const RecruitFormModal = ({
                 使用上方的編輯工具可以格式化文字，添加列表、標題等
               </span>
             </div>
-          </div>
+          </ModalSection>
         );
 
       case 3: // 上傳圖片
         return (
-          <div className="step-form">
+          <ModalSection title={steps[3].title} icon={steps[3].icon}>
             <div className="alert alert-info mb-3">
               <HelpCircle size={20} />
               <span>{steps[3].description}</span>
             </div>
 
-            <div className="card card-bordered bg-base-100 mb-3">
-              <div className="px-4 py-2 border-b border-base-300 font-semibold">圖片上傳指南</div>
-              <div className="card-body p-4">
-                <p>您可以上傳與職缺相關的圖片，例如：</p>
-                <ul className="list-disc pl-5">
-                  <li>公司環境照片</li>
-                  <li>團隊活動照片</li>
-                  <li>相關產品或服務照片</li>
-                </ul>
-                <p className="mb-0">建議上傳清晰、專業的圖片，尺寸不超過 2MB</p>
-              </div>
-            </div>
+            <ModalSection title="圖片上傳指南">
+              <p>您可以上傳與職缺相關的圖片，例如：</p>
+              <ul className="list-disc pl-5">
+                <li>公司環境照片</li>
+                <li>團隊活動照片</li>
+                <li>相關產品或服務照片</li>
+              </ul>
+              <p className="mb-0">建議上傳清晰、專業的圖片，尺寸不超過 2MB</p>
+            </ModalSection>
 
             <div className="form-control w-full mb-3">
               <label className="label pb-1">
@@ -429,7 +423,7 @@ const RecruitFormModal = ({
                 </div>
               </div>
             )}
-          </div>
+          </ModalSection>
         );
 
       default:
@@ -489,10 +483,6 @@ const RecruitFormModal = ({
       footer={footer}
     >
       <form id="recruit-form" noValidate onSubmit={handleFormSubmit}>
-        <h4 className="text-lg font-bold mb-3">
-          {steps[currentStep].icon} {steps[currentStep].title}
-        </h4>
-
         {renderStepContent()}
       </form>
     </AppModal>

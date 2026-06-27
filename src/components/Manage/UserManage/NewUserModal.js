@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { modes } from "react-transition-group/SwitchTransition";
 import { UserPlus } from "lucide-react";
 import AppModal from "components/common/AppModal";
-import { Button, Field, Spinner } from "components/common/ui";
+import { Button, Field, Spinner, ModalSection, ModalGrid } from "components/common/ui";
 
 function NewUserModal({
   showModal,
@@ -234,6 +234,22 @@ function NewUserModal({
     setLoading(false);
   };
 
+  const footer = loading ? null : (
+    <>
+      <Button variant="ghost" onClick={handleClose}>
+        取消
+      </Button>
+      <Button
+        variant="primary"
+        type="submit"
+        form={isComplex ? "newuser-complex-form" : "newuser-simple-form"}
+        disabled={loading}
+      >
+        {isComplex ? "保存" : "新增帳號"}
+      </Button>
+    </>
+  );
+
   return (
     <AppModal
       show={showModal}
@@ -242,6 +258,7 @@ function NewUserModal({
       variant="admin"
       title={userId ? "編輯帳號" : isComplex ? "新增複雜帳號" : "新增簡單帳號"}
       icon={<UserPlus size={18} />}
+      footer={footer}
     >
       {/* 輸入提示區域 */}
       {hint && (
@@ -253,257 +270,221 @@ function NewUserModal({
       {loading ? (
         <Spinner center />
       ) : isComplex ? (
-        <form onSubmit={handleComplexSubmit}>
-          <div className="join join-vertical w-full">
-            {/* 基本資訊 */}
-            <div className="collapse collapse-arrow join-item border border-base-300 bg-base-100">
-              <input type="radio" name="newuser-accordion" defaultChecked />
-              <div className="collapse-title font-medium">基本資訊</div>
-              <div className="collapse-content">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                  <Field
-                    label="姓名"
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onFocus={() => handleFocus("name")}
-                    onChange={handleChange}
-                    placeholder="輸入姓名"
-                    error={errors.name && errors.name[0]}
-                  />
-                  <Field
-                    as="select"
-                    label="性別"
-                    name="gender"
-                    onFocus={() => handleFocus("gender")}
-                    value={formData.gender}
-                    onChange={handleChange}
-                    error={errors.gender && errors.gender[0]}
-                  >
-                    <option value="">選擇性別</option>
-                    <option value="M">男性</option>
-                    <option value="F">女性</option>
-                    <option value="O">其他</option>
-                  </Field>
-                  <Field
-                    label="出生日期"
-                    type="date"
-                    name="birth_date"
-                    value={formData.birth_date}
-                    onFocus={() => handleFocus("birth_data")}
-                    onChange={handleChange}
-                    placeholder="選擇出生日期"
-                    error={errors.birth_date && errors.birth_date[0]}
-                  />
-                </div>
-              </div>
-            </div>
+        <form id="newuser-complex-form" onSubmit={handleComplexSubmit}>
+          <ModalSection title="基本資訊">
+            <ModalGrid cols={2}>
+              <Field
+                label="姓名"
+                type="text"
+                name="name"
+                value={formData.name}
+                onFocus={() => handleFocus("name")}
+                onChange={handleChange}
+                placeholder="輸入姓名"
+                error={errors.name && errors.name[0]}
+              />
+              <Field
+                as="select"
+                label="性別"
+                name="gender"
+                onFocus={() => handleFocus("gender")}
+                value={formData.gender}
+                onChange={handleChange}
+                error={errors.gender && errors.gender[0]}
+              >
+                <option value="">選擇性別</option>
+                <option value="M">男性</option>
+                <option value="F">女性</option>
+                <option value="O">其他</option>
+              </Field>
+              <Field
+                label="出生日期"
+                type="date"
+                name="birth_date"
+                value={formData.birth_date}
+                onFocus={() => handleFocus("birth_data")}
+                onChange={handleChange}
+                placeholder="選擇出生日期"
+                error={errors.birth_date && errors.birth_date[0]}
+              />
+            </ModalGrid>
+          </ModalSection>
 
-            {/* 聯絡資訊 */}
-            <div className="collapse collapse-arrow join-item border border-base-300 bg-base-100">
-              <input type="radio" name="newuser-accordion" />
-              <div className="collapse-title font-medium">聯絡資訊</div>
-              <div className="collapse-content">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                  <Field
-                    label="行動電話"
-                    type="text"
-                    name="mobile_phone"
-                    value={formData.mobile_phone}
-                    onChange={handleChange}
-                    onFocus={() => handleFocus("mobile_phone")}
-                    placeholder="輸入行動電話"
-                    error={errors.mobile_phone && errors.mobile_phone[0]}
-                  />
-                  <Field
-                    label="市內電話"
-                    type="text"
-                    name="home_phone"
-                    value={formData.home_phone}
-                    onFocus={() => handleFocus("home_phone")}
-                    onChange={handleChange}
-                    placeholder="輸入市內電話"
-                    error={errors.home_phone && errors.home_phone[0]}
-                  />
-                  <Field
-                    label="住址"
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    onFocus={() => handleFocus("address")}
-                    placeholder="輸入住址"
-                    error={errors.address && errors.address[0]}
-                  />
-                </div>
-              </div>
-            </div>
+          <ModalSection title="聯絡資訊">
+            <ModalGrid cols={2}>
+              <Field
+                label="行動電話"
+                type="text"
+                name="mobile_phone"
+                value={formData.mobile_phone}
+                onChange={handleChange}
+                onFocus={() => handleFocus("mobile_phone")}
+                placeholder="輸入行動電話"
+                error={errors.mobile_phone && errors.mobile_phone[0]}
+              />
+              <Field
+                label="市內電話"
+                type="text"
+                name="home_phone"
+                value={formData.home_phone}
+                onFocus={() => handleFocus("home_phone")}
+                onChange={handleChange}
+                placeholder="輸入市內電話"
+                error={errors.home_phone && errors.home_phone[0]}
+              />
+              <Field
+                label="住址"
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                onFocus={() => handleFocus("address")}
+                placeholder="輸入住址"
+                error={errors.address && errors.address[0]}
+              />
+            </ModalGrid>
+          </ModalSection>
 
-            {/* 學籍與職位 */}
-            <div className="collapse collapse-arrow join-item border border-base-300 bg-base-100">
-              <input type="radio" name="newuser-accordion" />
-              <div className="collapse-title font-medium">學籍與職位</div>
-              <div className="collapse-content">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                  <Field
-                    as="select"
-                    label="職位"
-                    name="position"
-                    value={
-                      positions.find(
-                        (pos) => pos.title === formData.position.title
-                      )?.id || ""
-                    }
-                    onChange={handleChange}
-                  >
-                    <option value="">選擇職位</option>
-                    {positions.map((position) => (
-                      <option key={position.id} value={position.id}>
-                        {position.title}
-                      </option>
-                    ))}
-                  </Field>
-                  <Field
-                    label="就學學校"
-                    type="text"
-                    name="school"
-                    value={formData.graduate.school}
-                    onChange={handleChange}
-                    onFocus={() => handleFocus("school")}
-                    placeholder="輸入就學學校"
-                    error={errors.graduate?.school && errors.graduate.school[0]}
-                  />
-                  <Field
-                    label="入學學年"
-                    type="text"
-                    name="grade"
-                    value={formData.graduate.grade}
-                    onFocus={() => handleFocus("grade")}
-                    onChange={handleChange}
-                    placeholder="輸入入學學年"
-                    error={errors.graduate?.year && errors.graduate.year[0]}
-                  />
-                  <Field
-                    label="學號"
-                    type="text"
-                    name="student_id"
-                    value={formData.graduate.student_id}
-                    onChange={handleChange}
-                    onFocus={() => handleFocus("student_id")}
-                    placeholder="輸入學號"
-                    error={errors.graduate?.student_id && errors.graduate.student_id[0]}
-                  />
-                </div>
-              </div>
-            </div>
+          <ModalSection title="學籍與職位">
+            <ModalGrid cols={2}>
+              <Field
+                as="select"
+                label="職位"
+                name="position"
+                value={
+                  positions.find(
+                    (pos) => pos.title === formData.position.title
+                  )?.id || ""
+                }
+                onChange={handleChange}
+              >
+                <option value="">選擇職位</option>
+                {positions.map((position) => (
+                  <option key={position.id} value={position.id}>
+                    {position.title}
+                  </option>
+                ))}
+              </Field>
+              <Field
+                label="就學學校"
+                type="text"
+                name="school"
+                value={formData.graduate.school}
+                onChange={handleChange}
+                onFocus={() => handleFocus("school")}
+                placeholder="輸入就學學校"
+                error={errors.graduate?.school && errors.graduate.school[0]}
+              />
+              <Field
+                label="入學學年"
+                type="text"
+                name="grade"
+                value={formData.graduate.grade}
+                onFocus={() => handleFocus("grade")}
+                onChange={handleChange}
+                placeholder="輸入入學學年"
+                error={errors.graduate?.year && errors.graduate.year[0]}
+              />
+              <Field
+                label="學號"
+                type="text"
+                name="student_id"
+                value={formData.graduate.student_id}
+                onChange={handleChange}
+                onFocus={() => handleFocus("student_id")}
+                placeholder="輸入學號"
+                error={errors.graduate?.student_id && errors.graduate.student_id[0]}
+              />
+            </ModalGrid>
+          </ModalSection>
 
-            {/* 其他資訊 */}
-            <div className="collapse collapse-arrow join-item border border-base-300 bg-base-100">
-              <input type="radio" name="newuser-accordion" />
-              <div className="collapse-title font-medium">其他資訊</div>
-              <div className="collapse-content">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                  <Field
-                    label="電子郵件"
-                    type="text"
-                    name="email"
-                    value={formData.private_input.email}
-                    onChange={handleChange}
-                    placeholder="輸入電子郵件"
-                    onFocus={() => handleFocus("email")}
-                    error={errors.private_input?.email && errors.private_input.email[0]}
-                  />
-                  {!userId && (
-                    <Field
-                      label="帳號密碼"
-                      type="text"
-                      name="password"
-                      value={formData.private_input.password}
-                      onChange={handleChange}
-                      placeholder="輸入帳號密碼"
-                      onFocus={() => handleFocus("password")}
-                    />
-                  )}
-                </div>
-                <div className="form-control mb-3">
-                  <label className="label cursor-pointer justify-start gap-3">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                      name="is_paid"
-                      checked={formData.is_paid}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          is_paid: e.target.checked,
-                        }))
-                      }
-                    />
-                    <span className="label-text">是否繳費</span>
-                  </label>
-                </div>
-                <div className="form-control mb-3">
-                  <label className="label cursor-pointer justify-start gap-3">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                      name="is_show"
-                      checked={formData.is_show}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          is_show: e.target.checked,
-                        }))
-                      }
-                    />
-                    <span className="label-text">是否展現於官網</span>
-                  </label>
-                </div>
-              </div>
+          <ModalSection title="其他資訊">
+            <ModalGrid cols={2}>
+              <Field
+                label="電子郵件"
+                type="text"
+                name="email"
+                value={formData.private_input.email}
+                onChange={handleChange}
+                placeholder="輸入電子郵件"
+                onFocus={() => handleFocus("email")}
+                error={errors.private_input?.email && errors.private_input.email[0]}
+              />
+              {!userId && (
+                <Field
+                  label="帳號密碼"
+                  type="text"
+                  name="password"
+                  value={formData.private_input.password}
+                  onChange={handleChange}
+                  placeholder="輸入帳號密碼"
+                  onFocus={() => handleFocus("password")}
+                />
+              )}
+            </ModalGrid>
+            <div className="form-control mb-3">
+              <label className="label cursor-pointer justify-start gap-3">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-primary"
+                  name="is_paid"
+                  checked={formData.is_paid}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_paid: e.target.checked,
+                    }))
+                  }
+                />
+                <span className="label-text">是否繳費</span>
+              </label>
             </div>
-          </div>
-
-          <div className="flex justify-end mt-3 gap-2">
-            <Button variant="ghost" onClick={handleClose}>
-              取消
-            </Button>
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? <Spinner size="sm" /> : "保存"}
-            </Button>
-          </div>
+            <div className="form-control mb-3">
+              <label className="label cursor-pointer justify-start gap-3">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-primary"
+                  name="is_show"
+                  checked={formData.is_show}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_show: e.target.checked,
+                    }))
+                  }
+                />
+                <span className="label-text">是否展現於官網</span>
+              </label>
+            </div>
+          </ModalSection>
         </form>
       ) : (
         // 簡單帳號表單
-        <form onSubmit={handleSimpleSubmit}>
-          <Field
-            label="電子郵件"
-            type="email"
-            value={simple_email}
-            onChange={(e) => setSimpleEmail(e.target.value)}
-            placeholder="輸入電子郵件"
-            onFocus={() => handleFocus("email")}
-          />
+        <form id="newuser-simple-form" onSubmit={handleSimpleSubmit}>
+          <ModalSection title="帳號資訊">
+            <Field
+              label="電子郵件"
+              type="email"
+              value={simple_email}
+              onChange={(e) => setSimpleEmail(e.target.value)}
+              placeholder="輸入電子郵件"
+              onFocus={() => handleFocus("email")}
+            />
 
-          <Field
-            as="select"
-            label="是否為管理員"
-            name="is_superuser"
-            value={simple_userType}
-            onChange={(e) => setUserType(e.target.value)}
-          >
-            <option value="N">否</option>
-            <option value="Y">是</option>
-          </Field>
-          <div className="alert alert-info py-2 my-2 text-sm">
-            ℹ️ 基於安全考量，系統不會以郵件寄送密碼。帳號建立後，請通知使用者至登入頁點選「忘記密碼」，輸入此 Email 取得驗證碼並設定自己的密碼。
-          </div>
-          <Button variant="primary" type="submit" disabled={loading}>
-            {loading ? <Spinner size="sm" /> : '新增帳號'}
-          </Button>
+            <Field
+              as="select"
+              label="是否為管理員"
+              name="is_superuser"
+              value={simple_userType}
+              onChange={(e) => setUserType(e.target.value)}
+            >
+              <option value="N">否</option>
+              <option value="Y">是</option>
+            </Field>
+            <div className="alert alert-info py-2 my-2 text-sm">
+              ℹ️ 基於安全考量，系統不會以郵件寄送密碼。帳號建立後，請通知使用者至登入頁點選「忘記密碼」，輸入此 Email 取得驗證碼並設定自己的密碼。
+            </div>
+          </ModalSection>
         </form>
       )}
     </AppModal>

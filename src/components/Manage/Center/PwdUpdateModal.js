@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lock } from 'lucide-react';
 import AppModal from 'components/common/AppModal';
-import { Button, Field } from 'components/common/ui';
+import { Button, Field, ModalSection } from 'components/common/ui';
 import Axios from 'common/Axios';
 import { toast } from 'react-toastify';
 
@@ -191,8 +191,7 @@ const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
     >
       {error && <div className="alert alert-error mb-4">{error}</div>}
 
-      <div className="mb-4">
-        <h6 className="mb-2 font-medium">密碼規則：</h6>
+      <ModalSection title="密碼規則" icon={<Lock size={16} />}>
         <ul className="password-rules space-y-1">
           <li className={validationErrors.uppercase ? "text-error" : "text-success"}>
             {validationErrors.uppercase ? "❌" : "✅"} 至少包含一個大寫英文字母
@@ -207,67 +206,69 @@ const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
             {validationErrors.length ? "❌" : "✅"} 長度至少 8 位
           </li>
         </ul>
-      </div>
+      </ModalSection>
 
-      <form>
-        <Field
-          as="input"
-          type="password"
-          label="舊密碼"
-          placeholder="請輸入目前使用的密碼"
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-          disabled={loading}
-        />
-
-        <div>
+      <ModalSection title="變更密碼">
+        <form>
           <Field
             as="input"
             type="password"
-            label="新密碼"
-            placeholder="輸入符合規則的新密碼"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            label="舊密碼"
+            placeholder="請輸入目前使用的密碼"
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
             disabled={loading}
-            className={newPassword && !isPasswordValid() ? 'input-error' : ''}
           />
-          {newPassword && (
-            <div className="mt-2 mb-4">
-              <div className="flex justify-between items-center mb-1">
-                <small>密碼強度：</small>
-                <small className={STRENGTH_TEXT_CLASS[strengthLevel.variant]}>
-                  {strengthLevel.text}
-                </small>
-              </div>
-              <progress
-                className={`progress ${STRENGTH_PROGRESS_CLASS[strengthLevel.variant]} password-strength-meter w-full`}
-                value={passwordStrength}
-                max="100"
-              />
-            </div>
-          )}
-        </div>
 
-        <Field
-          as="input"
-          type="password"
-          label="確認新密碼"
-          placeholder="再次輸入新密碼"
-          value={confirmNewPassword}
-          onChange={(e) => setConfirmNewPassword(e.target.value)}
-          disabled={loading}
-          error={
-            confirmNewPassword && confirmNewPassword !== newPassword
-              ? '確認密碼與新密碼不符'
-              : undefined
-          }
-          className={
-            confirmNewPassword && confirmNewPassword === newPassword
-              ? 'input-success'
-              : ''
-          }
-        />
-      </form>
+          <div>
+            <Field
+              as="input"
+              type="password"
+              label="新密碼"
+              placeholder="輸入符合規則的新密碼"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              disabled={loading}
+              className={newPassword && !isPasswordValid() ? 'input-error' : ''}
+            />
+            {newPassword && (
+              <div className="mt-2 mb-4">
+                <div className="flex justify-between items-center mb-1">
+                  <small>密碼強度：</small>
+                  <small className={STRENGTH_TEXT_CLASS[strengthLevel.variant]}>
+                    {strengthLevel.text}
+                  </small>
+                </div>
+                <progress
+                  className={`progress ${STRENGTH_PROGRESS_CLASS[strengthLevel.variant]} password-strength-meter w-full`}
+                  value={passwordStrength}
+                  max="100"
+                />
+              </div>
+            )}
+          </div>
+
+          <Field
+            as="input"
+            type="password"
+            label="確認新密碼"
+            placeholder="再次輸入新密碼"
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+            disabled={loading}
+            error={
+              confirmNewPassword && confirmNewPassword !== newPassword
+                ? '確認密碼與新密碼不符'
+                : undefined
+            }
+            className={
+              confirmNewPassword && confirmNewPassword === newPassword
+                ? 'input-success'
+                : ''
+            }
+          />
+        </form>
+      </ModalSection>
     </AppModal>
   );
 };

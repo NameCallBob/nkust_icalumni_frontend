@@ -3,7 +3,7 @@ import Axios from "common/Axios";
 import { toast } from "react-toastify";
 import { ImagePlus } from "lucide-react";
 import AppModal from "components/common/AppModal";
-import { Button, Field, Spinner } from "components/common/ui";
+import { Button, Field, Spinner, ModalSection } from "components/common/ui";
 
 const UploadImageModal = ({ show, onClose, onUploadSuccess , page_type }) => {
   const [base64Image, setBase64Image] = useState("");
@@ -73,26 +73,28 @@ const UploadImageModal = ({ show, onClose, onUploadSuccess , page_type }) => {
         </>
       }
     >
-      {/* 圖片類型 */}
-      <Field
-        as="select"
-        label="圖片類型"
-        value={imageType}
-        onChange={(e) => setImageType(e.target.value)}
-      >
-        <option value="large">大圖</option>
-        <option value="small">小圖</option>
-      </Field>
+      <ModalSection title="照片資訊" icon={<ImagePlus size={16} />}>
+        {/* 圖片類型 */}
+        <Field
+          as="select"
+          label="圖片類型"
+          value={imageType}
+          onChange={(e) => setImageType(e.target.value)}
+        >
+          <option value="large">大圖</option>
+          <option value="small">小圖</option>
+        </Field>
 
-      {/* 選擇圖片檔案 */}
-      <Field
-        as="input"
-        type="file"
-        label="選擇圖片檔案"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="file-input file-input-bordered"
-      />
+        {/* 選擇圖片檔案 */}
+        <Field
+          as="input"
+          type="file"
+          label="選擇圖片檔案"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="file-input file-input-bordered"
+        />
+      </ModalSection>
     </AppModal>
   );
 };

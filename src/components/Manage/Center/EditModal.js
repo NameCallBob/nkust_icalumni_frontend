@@ -3,7 +3,7 @@ import { UserCog, UserPlus } from 'lucide-react';
 import { BsArrowLeftCircleFill, BsInfoCircle, BsExclamationTriangle } from 'react-icons/bs';
 import { debounce } from 'lodash';
 import AppModal from 'components/common/AppModal';
-import { Button, Field, Spinner } from 'components/common/ui';
+import { Button, Field, Spinner, ModalSection, ModalGrid } from 'components/common/ui';
 
 const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, loading, setLoading }) => {
   const [activeStep, setActiveStep] = useState(1); // 分段表單步驟
@@ -669,9 +669,13 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
 
         {/* 表單欄位 */}
         <form>
+          <ModalSection
+            title={currentStep.title}
+            description={`步驟 ${activeStep}/${formSteps.length}`}
+          >
           {currentStep.title === '基本資料' && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+              <ModalGrid cols={2}>
                 {/* 姓名 */}
                 <div className="relative">
                   <Field
@@ -710,9 +714,9 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   </Field>
                   <RequiredFieldArrow fieldName="gender" />
                 </div>
-              </div>
+              </ModalGrid>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+              <ModalGrid cols={2}>
                 {/* 生日 */}
                 <div className="relative">
                   <Field
@@ -746,10 +750,10 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   />
                   <RequiredFieldArrow fieldName="mobile_phone" />
                 </div>
-              </div>
+              </ModalGrid>
 
               {/* 市內電話 */}
-              <div className="grid grid-cols-1">
+              <ModalGrid cols={1}>
                 <div className="relative">
                   <Field
                     label="市內電話（選填）"
@@ -765,7 +769,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   />
                   <RequiredFieldArrow fieldName="home_phone" />
                 </div>
-              </div>
+              </ModalGrid>
             </>
           )}
 
@@ -789,7 +793,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                 <RequiredFieldArrow fieldName="address" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+              <ModalGrid cols={2}>
                 {/* 入學學年 */}
                 <div className="relative">
                   <Field
@@ -821,7 +825,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   />
                   <RequiredFieldArrow fieldName="graduate.school" />
                 </div>
-              </div>
+              </ModalGrid>
 
               {/* 學號 */}
               <div className="relative">
@@ -929,6 +933,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               </div>
             </>
           )}
+          </ModalSection>
         </form>
       </div>
     );
@@ -991,16 +996,6 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
         <BsInfoCircle />
         <span>標記 <span className="text-error">*</span> 的欄位為必填項目</span>
       </div>
-
-      {/* 表單進度指示器 */}
-      {!loading && (
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <h5 className="text-lg font-semibold">{formSteps[activeStep - 1].title}</h5>
-            <small className="text-base-content/60">步驟 {activeStep}/{formSteps.length}</small>
-          </div>
-        </div>
-      )}
 
       {/* 表單欄位 */}
       {renderFormFields()}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { KeyRound } from 'lucide-react';
 import AppModal from 'components/common/AppModal';
-import { Button, Field } from 'components/common/ui';
+import { Button, Field, ModalSection, ModalGrid } from 'components/common/ui';
 
 function ChangePasswordModal({ showModal, handleClose, handleChangePassword }) {
   const [newPassword, setNewPassword] = useState('');
@@ -63,25 +63,29 @@ function ChangePasswordModal({ showModal, handleClose, handleChangePassword }) {
         <div className="alert alert-error mb-4">{errorMessage}</div>
       )}
       <form id="passwordUpdateForm" onSubmit={handleSubmit}>
-        <Field
-          as="input"
-          id="formNewPassword"
-          label="新密碼"
-          type="password"
-          placeholder="輸入新密碼"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
+        <ModalSection title="密碼設定" icon={<KeyRound size={18} />}>
+          <ModalGrid cols={1}>
+            <Field
+              as="input"
+              id="formNewPassword"
+              label="新密碼"
+              type="password"
+              placeholder="輸入新密碼"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
 
-        <Field
-          as="input"
-          id="formConfirmPassword"
-          label="重複新密碼"
-          type="password"
-          placeholder="再次輸入新密碼"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
+            <Field
+              as="input"
+              id="formConfirmPassword"
+              label="重複新密碼"
+              type="password"
+              placeholder="再次輸入新密碼"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </ModalGrid>
+        </ModalSection>
       </form>
     </AppModal>
   );

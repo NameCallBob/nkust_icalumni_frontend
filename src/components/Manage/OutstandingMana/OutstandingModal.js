@@ -1,7 +1,14 @@
 import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
 import AppModal from "components/common/AppModal";
-import { Button, Field, Spinner } from "components/common/ui";
+import {
+  Button,
+  Field,
+  Spinner,
+  ModalSection,
+  ModalGrid,
+  InfoItem,
+} from "components/common/ui";
 import {
   Award,
   X,
@@ -120,7 +127,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
       footer={footer}
     >
       {step === 1 && (
-        <>
+        <ModalSection title="搜尋系友" icon={<Search size={18} />}>
           <div className="relative mb-3">
             <Search
               size={16}
@@ -216,61 +223,67 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
               )}
             </>
           )}
-        </>
+        </ModalSection>
       )}
       {step === 2 && (
-        <div>
-          <Field
-            label="摘要"
-            required
-            type="text"
-            placeholder="輸入系友的簡要介紹"
-            value={alumniData.highlight}
-            onChange={(e) =>
-              setAlumniData({ ...alumniData, highlight: e.target.value })
-            }
-          />
-          <Field
-            as="textarea"
-            label="詳細成就"
-            rows={4}
-            placeholder="輸入系友的詳細成就（選填）"
-            value={alumniData.achievements}
-            onChange={(e) =>
-              setAlumniData({ ...alumniData, achievements: e.target.value })
-            }
-          />
-          <Field
-            label="顯示順序"
-            type="number"
-            min="0"
-            placeholder="輸入顯示順序（數字越小越前面）"
-            value={alumniData.sort_order}
-            onChange={(e) =>
-              setAlumniData({ ...alumniData, sort_order: parseInt(e.target.value) || 0 })
-            }
-            help="順序數字越小，在列表中顯示越前面"
-          />
-          <div className="form-control mb-4">
-            <label className="label cursor-pointer justify-start gap-3">
-              <input
-                type="checkbox"
-                className="toggle toggle-primary"
-                checked={alumniData.is_featured}
+        <>
+          <ModalSection title="傑出系友資料" icon={<Award size={18} />}>
+            <Field
+              label="摘要"
+              required
+              type="text"
+              placeholder="輸入系友的簡要介紹"
+              value={alumniData.highlight}
+              onChange={(e) =>
+                setAlumniData({ ...alumniData, highlight: e.target.value })
+              }
+            />
+            <Field
+              as="textarea"
+              label="詳細成就"
+              rows={4}
+              placeholder="輸入系友的詳細成就（選填）"
+              value={alumniData.achievements}
+              onChange={(e) =>
+                setAlumniData({ ...alumniData, achievements: e.target.value })
+              }
+            />
+            <ModalGrid cols={2}>
+              <Field
+                label="顯示順序"
+                type="number"
+                min="0"
+                placeholder="輸入顯示順序（數字越小越前面）"
+                value={alumniData.sort_order}
                 onChange={(e) =>
-                  setAlumniData({ ...alumniData, is_featured: e.target.checked })
+                  setAlumniData({ ...alumniData, sort_order: parseInt(e.target.value) || 0 })
                 }
+                help="順序數字越小，在列表中顯示越前面"
               />
-              <span className="label-text">展示於官網</span>
-            </label>
-          </div>
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                    checked={alumniData.is_featured}
+                    onChange={(e) =>
+                      setAlumniData({ ...alumniData, is_featured: e.target.checked })
+                    }
+                  />
+                  <span className="label-text">展示於官網</span>
+                </label>
+              </div>
+            </ModalGrid>
+          </ModalSection>
           {selectedMember && (
-            <div className="mt-3 p-3 bg-base-200 rounded-lg">
-              <strong>已選擇系友：</strong> {selectedMember.name} (
-              {selectedMember.email || "無"})
-            </div>
+            <ModalSection title="已選擇系友">
+              <InfoItem label="姓名">{selectedMember.name}</InfoItem>
+              <InfoItem label="電子郵件">
+                {selectedMember.email || "無"}
+              </InfoItem>
+            </ModalSection>
           )}
-        </div>
+        </>
       )}
     </AppModal>
   );
