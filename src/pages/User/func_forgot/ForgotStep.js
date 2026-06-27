@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ForgotPassword from 'pages/User/func_forgot/ForgotPassPage';
 import ResetPassword from 'pages/User/func_forgot/ResetPassPage';
 import Axios from 'common/Axios';
-import { CheckCircle, XCircle, Mail, Key } from 'lucide-react';
+import { CheckCircle, XCircle, Mail, Key, X, ShieldCheck } from 'lucide-react';
+import { Card } from 'components/common/ui';
 
 const ForgotPasswordFlow = () => {
   // 基本狀態管理
@@ -98,66 +99,89 @@ const ForgotPasswordFlow = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-4">
-      <div className="flex justify-center">
-        <div className="w-full md:w-10/12 lg:w-8/12 xl:w-7/12">
-          <div className="card card-bordered border-0 bg-base-100 shadow-sm">
-            {/* 卡片標題：步驟標題與進度條 */}
-            <div className="px-6 pt-4 pb-0">
-              <h4 className="text-center text-xl font-semibold mb-3 flex items-center justify-center text-primary">
-                {getStepIcon()} {getStepTitle()}
-              </h4>
-              <progress
-                className="progress progress-primary mb-4 w-full"
-                value={getProgressPercentage()}
-                max="100"
-                style={{ height: '8px' }}
-              ></progress>
+    <div className="min-h-[70vh] bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-12 sm:py-16">
+      <div className="mx-auto w-full max-w-2xl">
+        {/* 標題區 */}
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1e3a8a] text-white shadow-lg shadow-[#1e3a8a]/20">
+            <ShieldCheck size={26} strokeWidth={2} />
+          </div>
+          <h1 className="font-serif text-3xl font-bold tracking-tight text-[#0f172a] sm:text-4xl">
+            重設密碼
+          </h1>
+          <span className="mx-auto mt-3 block h-px w-16 bg-[#a0781c]" />
+          <p className="mt-4 text-sm text-slate-500">
+            智慧商務系系友會 · 帳號安全中心
+          </p>
+        </div>
+
+        <Card padding="lg" className="overflow-hidden">
+          {/* 步驟標頭 */}
+          <div className="mb-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="flex items-center gap-2 font-serif text-lg font-semibold text-[#1e3a8a] sm:text-xl">
+                {getStepIcon()}
+                {getStepTitle()}
+              </h2>
+              <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#1e3a8a]/5 px-3 py-1 text-xs font-medium text-[#1e3a8a]">
+                步驟 {step} / 2
+              </span>
             </div>
 
-            {/* 卡片內容 */}
-            <div className="card-body px-1 py-1">
-              {notification.show && (
-                <div
-                  className={`alert ${notification.variant === 'success' ? 'alert-success' : 'alert-error'} flex items-center`}
-                  role="alert"
-                >
-                  {notification.icon}
-                  <span className="flex-1">{notification.message}</span>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-xs btn-circle"
-                    onClick={clearNotification}
-                    aria-label="關閉"
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-
-              {step === 1 ? (
-                <ForgotPassword onNext={handleNext} isLoading={isLoading} />
-              ) : (
-                <ResetPassword
-                  email={email}
-                  onBack={handleBack}
-                  onResetSuccess={handleResetSuccess}
-                />
-              )}
-            </div>
-
-            {/* 卡片底部說明文字 */}
-            <div className="border-0 text-center pb-4 px-6">
-              <small className="text-base-content/60">
-                {step === 1 ?
-                  '輸入您的電子郵件後，我們將發送一封含有驗證碼的郵件給您' :
-                  '請檢查您的信箱並輸入收到的驗證碼，然後設定新密碼'
-                }
-              </small>
+            {/* 進度條 */}
+            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#1e3a8a] to-[#2b4fb8] transition-all duration-500 ease-out"
+                style={{ width: `${getProgressPercentage()}%` }}
+              />
             </div>
           </div>
 
-        </div>
+          {/* 提示訊息 */}
+          {notification.show && (
+            <div
+              className={`mb-6 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-sm ${
+                notification.variant === 'success'
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                  : 'border-red-200 bg-red-50 text-red-800'
+              }`}
+              role="alert"
+            >
+              <span className="mt-0.5 shrink-0">{notification.icon}</span>
+              <span className="flex-1 break-words leading-relaxed">{notification.message}</span>
+              <button
+                type="button"
+                className="shrink-0 rounded-lg p-1 text-current/70 transition hover:bg-black/5"
+                onClick={clearNotification}
+                aria-label="關閉"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+
+          {/* 步驟內容 */}
+          <div>
+            {step === 1 ? (
+              <ForgotPassword onNext={handleNext} isLoading={isLoading} />
+            ) : (
+              <ResetPassword
+                email={email}
+                onBack={handleBack}
+                onResetSuccess={handleResetSuccess}
+              />
+            )}
+          </div>
+
+          {/* 底部說明 */}
+          <div className="mt-6 border-t border-slate-100 pt-5 text-center">
+            <p className="text-xs leading-relaxed text-slate-500">
+              {step === 1
+                ? '輸入您的電子郵件後，我們將發送一封含有驗證碼的郵件給您'
+                : '請檢查您的信箱並輸入收到的驗證碼，然後設定新密碼'}
+            </p>
+          </div>
+        </Card>
       </div>
     </div>
   );

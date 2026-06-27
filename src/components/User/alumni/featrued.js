@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from 'components/common/ui';
 import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
@@ -32,55 +33,82 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
 
     return (
         <div>
-            <div className="grid grid-cols-12 gap-4 mb-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {currentAlumni.map((alumni) => (
-                    <div key={alumni.id} className="col-span-12 md:col-span-6 mb-4">
-                        <div
-                            className="card card-bordered card-side h-full shadow cursor-pointer flex-row"
-                            onClick={() => (window.location.href = `/alumni/${alumni.member}`)}
-                        >
-                            <img
-                                src={getImageSrc(alumni.photo, 'avatar')}
-                                alt={alumni.name}
-                                className="object-cover rounded-l-lg"
-                                style={{ width: '200px', height: '200px' }}
-                                onError={(e) => handleImageError(e, 'avatar')}
-                            />
-                            <div className="card-body">
-                                <h2 className="card-title">
-                                    {alumni.name}&nbsp;{alumni?.position?.title}
+                    <article
+                        key={alumni.id}
+                        onClick={() => (window.location.href = `/alumni/${alumni.member}`)}
+                        className="group relative flex flex-col sm:flex-row overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#1e3a8a]/30 hover:shadow-xl cursor-pointer"
+                    >
+                        {/* 左側金色裝飾線 */}
+                        <span className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#a0781c] to-[#1e3a8a] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                        {/* 人物照片 */}
+                        <div className="relative w-full sm:w-44 lg:w-48 shrink-0 overflow-hidden bg-slate-100">
+                            <div className="aspect-[4/3] sm:aspect-auto sm:h-full">
+                                <img
+                                    src={getImageSrc(alumni.photo, 'avatar')}
+                                    alt={alumni.name}
+                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    onError={(e) => handleImageError(e, 'avatar')}
+                                />
+                            </div>
+                            <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0f172a]/30 to-transparent" />
+                        </div>
+
+                        {/* 內容 */}
+                        <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+                            <div>
+                                <h2 className="font-serif text-xl font-bold text-[#0f172a] break-words">
+                                    {alumni.name}
+                                    {alumni?.position?.title && (
+                                        <span className="ml-2 align-middle text-sm font-medium text-[#a0781c]">
+                                            {alumni.position.title}
+                                        </span>
+                                    )}
                                 </h2>
                                 {/* 強調的成就 */}
-                                <p className="font-bold text-primary">
-                                    {alumni.achievements}
-                                </p>
-                                {/* 可滾動的亮點描述 */}
-                                <p
-                                    className="overflow-y-auto border border-base-300 rounded p-1.5 bg-base-200"
-                                    style={{ maxHeight: '80px' }}
-                                >
-                                    {alumni.highlight}
-                                </p>
+                                {alumni.achievements && (
+                                    <p className="mt-1.5 text-sm font-semibold text-[#1e3a8a] break-words">
+                                        {alumni.achievements}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* 可滾動的亮點描述 */}
+                            <p className="max-h-24 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/80 p-3 text-sm leading-relaxed text-slate-600 break-words">
+                                {alumni.highlight}
+                            </p>
+
+                            <div className="mt-auto flex items-center gap-1.5 pt-1 text-sm font-medium text-[#1e3a8a] opacity-70 transition-opacity group-hover:opacity-100">
+                                查看系友介紹
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                             </div>
                         </div>
-                    </div>
+                    </article>
                 ))}
             </div>
+
             {sortedAlumni.length > itemsPerPage && (
-                <div className="flex justify-between">
+                <div className="flex items-center justify-between gap-4">
                     <Button
-                        variant="primary"
+                        variant="outline"
                         onClick={handlePreviousPage}
                         disabled={currentPage === 1}
                     >
+                        <ChevronLeft className="h-4 w-4" />
                         上一頁
                     </Button>
+                    <span className="text-sm font-medium text-slate-500">
+                        第 {currentPage} / {Math.ceil(sortedAlumni.length / itemsPerPage)} 頁
+                    </span>
                     <Button
                         variant="primary"
                         onClick={handleNextPage}
                         disabled={currentPage === Math.ceil(sortedAlumni.length / itemsPerPage)}
                     >
                         下一頁
+                        <ChevronRight className="h-4 w-4" />
                     </Button>
                 </div>
             )}

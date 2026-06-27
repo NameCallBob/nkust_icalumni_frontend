@@ -10,6 +10,7 @@ import {
   BsExclamationCircle, BsBuilding, BsList, BsGrid
 } from "react-icons/bs";
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
+import { Badge, EmptyState, Button } from 'components/common/ui';
 
 const Search = () => {
   const location = useLocation();
@@ -150,36 +151,28 @@ const Search = () => {
   // 渲染視圖模式切換按鈕
   const renderViewToggle = () => {
     return (
-      <div className="flex gap-2">
+      <div className="flex items-center gap-1 rounded-xl border border-base-300 bg-base-100 p-1">
         <button
           type="button"
           onClick={() => setViewMode('grid')}
-          style={{
-            padding: '6px 12px',
-            border: '1px solid #e2e8f0',
-            borderRadius: '6px',
-            background: viewMode === 'grid' ? '#1e3a8a' : '#ffffff',
-            color: viewMode === 'grid' ? '#ffffff' : '#475569',
-            cursor: 'pointer',
-            fontSize: '0.8rem',
-            fontWeight: '500',
-          }}
+          aria-label="網格檢視"
+          className={`inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm transition ${
+            viewMode === 'grid'
+              ? 'bg-primary text-primary-content shadow-sm'
+              : 'text-base-content/50 hover:text-primary'
+          }`}
         >
           <BsGrid />
         </button>
         <button
           type="button"
           onClick={() => setViewMode('list')}
-          style={{
-            padding: '6px 12px',
-            border: '1px solid #e2e8f0',
-            borderRadius: '6px',
-            background: viewMode === 'list' ? '#1e3a8a' : '#ffffff',
-            color: viewMode === 'list' ? '#ffffff' : '#475569',
-            cursor: 'pointer',
-            fontSize: '0.8rem',
-            fontWeight: '500',
-          }}
+          aria-label="列表檢視"
+          className={`inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm transition ${
+            viewMode === 'list'
+              ? 'bg-primary text-primary-content shadow-sm'
+              : 'text-base-content/50 hover:text-primary'
+          }`}
         >
           <BsList />
         </button>
@@ -191,7 +184,7 @@ const Search = () => {
   const renderSearchResults = () => {
     if (loading) {
       return (
-        <div className="col-span-12 text-center py-12">
+        <div className="flex justify-center py-20">
           <LoadingSpinner />
         </div>
       );
@@ -200,205 +193,101 @@ const Search = () => {
     if (filteredResults.length === 0) {
       return (
         <div
-          className={`col-span-12 flex justify-center py-12 transition-opacity duration-300 ${showNoResults ? 'opacity-100' : 'opacity-0'}`}
+          className={`transition-opacity duration-300 ${showNoResults ? 'opacity-100' : 'opacity-0'}`}
         >
-            <div
-              className="text-center"
-              style={{
-                maxWidth: '500px',
-                padding: '40px 32px',
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-              }}
-            >
-              <BsExclamationCircle size={48} style={{ color: '#94a3b8', marginBottom: '16px' }} />
-              <h5 style={{ color: '#0f172a', fontWeight: '600', marginBottom: '8px' }}>找不到相關結果</h5>
-              <p style={{ color: '#475569', fontSize: '0.9rem', marginBottom: '20px' }}>
-                {searchTerm ? (
-                  <>
-                    沒有找到與 <strong>{searchTerm}</strong> 相關的內容，請換個關鍵詞搜尋!
-                  </>
-                ) : (
-                  "請嘗試輸入其他關鍵字或選擇不同行業分類。"
-                )}
-              </p>
-              <button
-                type="button"
-                onClick={() => handleTypeSearch(0)}
-                style={{
-                  padding: '8px 20px',
-                  border: '1px solid #1e3a8a',
-                  borderRadius: '6px',
-                  background: '#ffffff',
-                  color: '#1e3a8a',
-                  cursor: 'pointer',
-                  fontWeight: '500',
-                  fontSize: '0.875rem',
-                }}
-              >
-                查看所有公司
-              </button>
-            </div>
+          <div className="mx-auto max-w-xl rounded-2xl border border-base-300/70 bg-base-100 shadow-sm">
+            <EmptyState
+              icon={<BsExclamationCircle className="h-7 w-7" />}
+              title="找不到相關結果"
+              description={
+                searchTerm
+                  ? `沒有找到與「${searchTerm}」相關的內容，請換個關鍵詞搜尋！`
+                  : '請嘗試輸入其他關鍵字或選擇不同行業分類。'
+              }
+              action={
+                <Button variant="outline" onClick={() => handleTypeSearch(0)}>
+                  查看所有公司
+                </Button>
+              }
+            />
+          </div>
         </div>
       );
     }
 
     return (
       <>
-        <div className="col-span-12 mb-3">
-          <div className="flex justify-between items-center">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  padding: '3px 10px',
-                  background: '#eff6ff',
-                  color: '#1e3a8a',
-                  border: '1px solid #bfdbfe',
-                  borderRadius: '4px',
-                  fontSize: '0.8rem',
-                  fontWeight: '500',
-                }}
-              >
-                共 {filteredResults.length} 個結果
-              </span>
-              {selectedType !== null && selectedType !== 0 && (
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    padding: '3px 10px',
-                    background: '#1e3a8a',
-                    color: '#ffffff',
-                    borderRadius: '4px',
-                    fontSize: '0.8rem',
-                    fontWeight: '500',
-                  }}
-                >
-                  {categories.find(c => c.id === selectedType)?.title || ''}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <select
-                value={sortBy}
-                onChange={(e) => sortResults(e.target.value)}
-                style={{
-                  padding: '6px 12px',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '6px',
-                  background: '#ffffff',
-                  color: '#475569',
-                  fontSize: '0.8rem',
-                  cursor: 'pointer',
-                  outline: 'none',
-                }}
-              >
-                <option value="newest">最新</option>
-                <option value="oldest">最舊</option>
-                <option value="nameAsc">公司名稱 A-Z</option>
-                <option value="nameDesc">公司名稱 Z-A</option>
-              </select>
-              <div className="hidden md:block">
-                {renderViewToggle()}
-              </div>
+        {/* 結果工具列 */}
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="primary">共 {filteredResults.length} 個結果</Badge>
+            {selectedType !== null && selectedType !== 0 && (
+              <Badge variant="secondary" soft={false}>
+                {categories.find(c => c.id === selectedType)?.title || ''}
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <select
+              value={sortBy}
+              onChange={(e) => sortResults(e.target.value)}
+              className="select select-bordered select-sm rounded-xl bg-base-100 text-sm text-base-content/70 focus:border-primary"
+            >
+              <option value="newest">最新</option>
+              <option value="oldest">最舊</option>
+              <option value="nameAsc">公司名稱 A-Z</option>
+              <option value="nameDesc">公司名稱 Z-A</option>
+            </select>
+            <div className="hidden md:block">
+              {renderViewToggle()}
             </div>
           </div>
         </div>
 
         {viewMode === 'grid' ? (
           // 網格視圖
-          filteredResults.map((company, index) => (
-            <div className="col-span-12 sm:col-span-6 md:col-span-4 mb-4" key={index}>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredResults.map((company, index) => (
               <CompanyCard
+                key={index}
                 company={company}
                 onClick={() => handleCardClick(company)}
               />
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
           // 列表視圖
-          <div className="col-span-12">
+          <div className="flex flex-col gap-3">
             {filteredResults.map((company, index) => (
               <div
                 key={index}
                 onClick={() => handleCardClick(company)}
-                style={{
-                  display: 'flex',
-                  gap: '16px',
-                  marginBottom: '12px',
-                  padding: '16px',
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                  cursor: 'pointer',
-                  transition: 'box-shadow 0.2s, transform 0.2s',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
+                className="group flex cursor-pointer gap-4 rounded-2xl border border-base-300/70 bg-base-100 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg"
               >
-                <div style={{ flexShrink: 0, width: '100px' }}>
+                <div className="shrink-0">
                   <img
                     src={getImageSrc(company.photo, 'company')}
                     alt={company.name}
-                    style={{
-                      width: '100px',
-                      height: '72px',
-                      objectFit: 'cover',
-                      borderRadius: '6px',
-                      border: '1px solid #e2e8f0',
-                    }}
+                    className="h-[72px] w-[100px] rounded-xl border border-base-300/70 object-cover"
                     onError={(e) => handleImageError(e, 'company')}
                   />
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                    <h5 style={{ margin: 0, fontWeight: '600', color: '#0f172a', fontSize: '1rem' }}>
-                      <BsBuilding style={{ marginRight: '6px', color: '#1e3a8a' }} />
-                      {company.name}
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1.5 flex items-start justify-between gap-3">
+                    <h5 className="m-0 flex min-w-0 items-center gap-1.5 font-serif text-base font-bold text-base-content">
+                      <BsBuilding className="shrink-0 text-primary" />
+                      <span className="truncate group-hover:text-primary">{company.name}</span>
                     </h5>
                     {company.industry_title && (
-                      <span
-                        style={{
-                          flexShrink: 0,
-                          marginLeft: '12px',
-                          padding: '2px 8px',
-                          background: '#eff6ff',
-                          color: '#1e3a8a',
-                          border: '1px solid #bfdbfe',
-                          borderRadius: '4px',
-                          fontSize: '0.75rem',
-                          fontWeight: '500',
-                        }}
-                      >
+                      <Badge variant="primary" className="shrink-0">
                         {company.industry_title}
-                      </span>
+                      </Badge>
                     )}
                   </div>
-                  <p
-                    style={{
-                      margin: '0 0 6px',
-                      fontSize: '0.875rem',
-                      color: '#475569',
-                      overflow: 'hidden',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 1,
-                      WebkitBoxOrient: 'vertical',
-                    }}
-                  >
+                  <p className="mb-1.5 line-clamp-1 text-sm text-base-content/60">
                     {company.description || company.products || '暫無公司描述'}
                   </p>
-                  <div style={{ fontSize: '0.8rem', color: '#475569' }}>
+                  <div className="text-xs text-base-content/50">
                     系友：{company.member_name}
                     {company.position && ` | 職位：${company.position}`}
                   </div>
@@ -412,7 +301,7 @@ const Search = () => {
   };
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+    <div className="min-h-screen bg-base-200">
       <SEO
         main={false}
         title="公司 查詢"
@@ -421,93 +310,48 @@ const Search = () => {
       />
 
       {/* Page Header */}
-      <div
-        style={{
-          background: '#1e3a8a',
-          minHeight: '200px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '48px 24px',
-        }}
-      >
-        <h1 style={{ color: '#ffffff', fontWeight: '700', fontSize: '2rem', margin: 0, letterSpacing: '0.02em' }}>
-          系友企業
-        </h1>
-        <p style={{ color: 'rgba(255,255,255,0.7)', margin: '8px 0 0', fontSize: '1rem' }}>
-          探索系友企業，了解業界動態
-        </p>
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#0f172a] via-primary to-[#1e3a8a] px-6 py-16 sm:py-20">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-secondary/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
+        <div className="relative mx-auto flex max-w-6xl flex-col items-center text-center">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-secondary">
+            NKUST Alumni Enterprises
+          </p>
+          <h1 className="font-serif text-3xl font-bold tracking-wide text-white sm:text-4xl">
+            系友企業
+          </h1>
+          <div className="mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-secondary to-white/60" />
+          <p className="mt-5 max-w-xl text-base text-white/70">
+            探索系友企業，了解業界動態
+          </p>
+        </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '20px 0' }}>
-        <div className="container mx-auto px-4">
+      <div className="sticky top-0 z-20 border-b border-base-300/70 bg-base-100/95 py-5 shadow-sm backdrop-blur">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <form onSubmit={handleInputSearch}>
-            <div className="grid grid-cols-12 gap-2 items-center">
-              <div className="col-span-12 md:col-span-9">
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <BsSearch
-                    style={{
-                      position: 'absolute',
-                      left: '12px',
-                      color: '#94a3b8',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="輸入公司名稱、產品或關鍵字..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px 10px 36px',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
-                      color: '#0f172a',
-                      outline: 'none',
-                      background: '#ffffff',
-                    }}
-                    onFocus={e => { e.target.style.borderColor = '#2563eb'; }}
-                    onBlur={e => { e.target.style.borderColor = '#e2e8f0'; }}
-                  />
-                </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative flex-1">
+                <BsSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base-content/40" />
+                <input
+                  type="text"
+                  placeholder="輸入公司名稱、產品或關鍵字..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full rounded-xl border border-base-300 bg-base-100 py-2.5 pl-11 pr-4 text-sm text-base-content outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
               </div>
-              <div className="col-span-12 md:col-span-3">
-                <button
-                  type="submit"
-                  style={{
-                    width: '100%',
-                    padding: '10px 20px',
-                    background: '#2563eb',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: '600',
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                  }}
-                >
+              <div className="sm:w-40">
+                <Button type="submit" variant="primary" className="w-full rounded-xl">
+                  <BsSearch className="mr-1" />
                   搜尋
-                </button>
+                </Button>
               </div>
             </div>
 
             {/* Industry Filter Pills */}
-            <div
-              style={{
-                marginTop: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                overflowX: 'auto',
-                paddingBottom: '4px',
-                msOverflowStyle: 'none',
-                scrollbarWidth: 'none',
-              }}
-            >
+            <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {categories.map((category, index) => {
                 const isActive = category.id === selectedType || (category.id === 0 && selectedType === null);
                 return (
@@ -515,23 +359,15 @@ const Search = () => {
                     key={index}
                     type="button"
                     onClick={() => { setActiveCategory(index); handleTypeSearch(category.id); }}
-                    style={{
-                      flexShrink: 0,
-                      padding: '6px 14px',
-                      border: '1px solid ' + (isActive ? '#1e3a8a' : '#e2e8f0'),
-                      borderRadius: '20px',
-                      background: isActive ? '#1e3a8a' : '#f1f5f9',
-                      color: isActive ? '#ffffff' : '#475569',
-                      fontSize: '0.8rem',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'background 0.15s, color 0.15s',
-                    }}
+                    className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                      isActive
+                        ? 'border-primary bg-primary text-primary-content shadow-sm'
+                        : 'border-base-300 bg-base-200 text-base-content/60 hover:border-primary/40 hover:text-primary'
+                    }`}
                   >
                     {category.title}
                     {category.count && (
-                      <span style={{ marginLeft: '6px', opacity: 0.75 }}>({category.count})</span>
+                      <span className="ml-1.5 opacity-75">({category.count})</span>
                     )}
                   </button>
                 );
@@ -542,14 +378,8 @@ const Search = () => {
       </div>
 
       {/* Results Area */}
-      <div className="container mx-auto px-4" style={{ paddingTop: '32px', paddingBottom: '48px' }}>
-        <div className="grid grid-cols-12">
-          <div className="col-span-12">
-            <div className="grid grid-cols-12 gap-x-4">
-              {renderSearchResults()}
-            </div>
-          </div>
-        </div>
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
+        {renderSearchResults()}
       </div>
     </div>
   );

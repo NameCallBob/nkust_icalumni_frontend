@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Key, Eye, EyeOff, ShieldCheck, CheckCircle, ArrowLeftCircle, Info } from 'lucide-react';
-import { Button, Spinner } from 'components/common/ui';
+import { Button, Spinner, Card } from 'components/common/ui';
 import Axios from 'common/Axios';
 
 const ResetPassword = ({ email, onBack, onResetSuccess }) => {
@@ -190,192 +190,200 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
   const newPasswordInvalid = formTouched.newPassword && passwordStrength < 50 && newPassword !== '';
   const confirmPasswordInvalid = formTouched.confirmPassword && newPassword !== confirmPassword && confirmPassword !== '';
 
+  // 統一輸入框樣式（深藍聚焦、圓角、含左圖示留白）
+  const inputBase =
+    'w-full rounded-xl border bg-white pl-11 py-2.5 text-slate-900 placeholder:text-slate-400 ' +
+    'shadow-sm transition focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/25 disabled:bg-slate-50 disabled:text-slate-400';
+  const inputState = (invalid) =>
+    invalid
+      ? 'border-error focus:border-error focus:ring-error/20'
+      : 'border-slate-200 focus:border-[#1e3a8a]';
+
   return (
-      <div className="grid grid-cols-12">
-        <div className="col-span-12 md:col-span-10 lg:col-span-8 xl:col-span-7 md:col-start-2 lg:col-start-3 xl:col-start-4">
-          <div className="card card-bordered border-0 shadow-sm bg-base-100">
-            <div className="card-body p-4 md:p-5">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  {onBack && (
-                    <button
-                      type="button"
-                      className="btn btn-link no-underline p-0 mr-2"
-                      onClick={handleBack}
-                      disabled={isLoading}
-                    >
-                      <ArrowLeftCircle size={16} className="mr-1" /> 返回
-                    </button>
-                  )}
-                </div>
-                <h4 className="mb-0 text-center flex-grow text-xl font-semibold flex items-center justify-center">
-                  <ShieldCheck size={20} className="mr-2" /> 重設密碼
-                </h4>
-                <div style={{ width: '60px' }}></div> {/* 為了保持標題居中 */}
-              </div>
-
-              {email && (
-                <div className="alert alert-info mb-4">
-                  <small>為 <strong>{email}</strong> 重設密碼</small>
-                </div>
-              )}
-
-              {error && (
-                <div className="alert alert-error flex items-center">
-                  <Info size={18} className="mr-2" /> {error}
-                </div>
-              )}
-
-              {successMessage && (
-                <div className="alert alert-success flex items-center">
-                  <CheckCircle size={18} className="mr-2" /> {successMessage}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <div className="form-control w-full mb-3">
-                  <label className="label pb-1" htmlFor="formCode">
-                    <span className="label-text font-medium">驗證碼</span>
-                  </label>
-                  <div className="join w-full">
-                    <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">
-                      <Key size={18} />
-                    </span>
-                    <input
-                      id="formCode"
-                      type="text"
-                      placeholder="輸入6位數驗證碼"
-                      value={code}
-                      onChange={(e) => handleFieldChange('code', e.target.value)}
-                      onBlur={() => setFormTouched(prev => ({ ...prev, code: true }))}
-                      disabled={isLoading || !!successMessage}
-                      className={`join-item input input-bordered w-full ${codeInvalid ? 'input-error' : ''}`}
-                    />
-                  </div>
-                  {codeInvalid && (
-                    <span className="label-text-alt text-error mt-1">
-                      請輸入6位數驗證碼
-                    </span>
-                  )}
-                  <span className="label-text-alt text-base-content/60 mt-1">
-                    驗證碼已發送到您的電子郵件
-                  </span>
-                </div>
-
-                <div className="form-control w-full mb-3">
-                  <label className="label pb-1" htmlFor="formNewPassword">
-                    <span className="label-text font-medium">新密碼</span>
-                  </label>
-                  <div className="join w-full">
-                    <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">
-                      <Key size={18} />
-                    </span>
-                    <input
-                      id="formNewPassword"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="輸入新密碼"
-                      value={newPassword}
-                      onChange={(e) => handleFieldChange('newPassword', e.target.value)}
-                      onBlur={() => setFormTouched(prev => ({ ...prev, newPassword: true }))}
-                      disabled={isLoading || !!successMessage}
-                      className={`join-item input input-bordered w-full ${newPasswordInvalid ? 'input-error' : ''}`}
-                    />
-                    <button
-                      type="button"
-                      className="join-item btn btn-outline"
-                      onClick={togglePasswordVisibility}
-                      disabled={isLoading || !!successMessage}
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                  {newPasswordInvalid && (
-                    <span className="label-text-alt text-error mt-1">
-                      密碼需包含大寫字母、數字和特殊字符
-                    </span>
-                  )}
-
-                  {newPassword && (
-                    <div className="mt-2">
-                      <small className="flex justify-between">
-                        <span>密碼強度：</span>
-                        <span className={strengthTextClass[getStrengthColor()]}>{getStrengthText()}</span>
-                      </small>
-                      <progress
-                        className={`progress ${strengthBarClass[getStrengthColor()]} w-full mt-1`}
-                        value={passwordStrength}
-                        max="100"
-                        style={{ height: '5px' }}
-                      ></progress>
-                      <span className="label-text-alt text-base-content/60 mt-1 block">
-                        建議使用至少8個字符，包含大小寫字母、數字和符號
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="form-control w-full mb-4">
-                  <label className="label pb-1" htmlFor="formConfirmPassword">
-                    <span className="label-text font-medium">確認新密碼</span>
-                  </label>
-                  <div className="join w-full">
-                    <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">
-                      <Key size={18} />
-                    </span>
-                    <input
-                      id="formConfirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="再次輸入新密碼"
-                      value={confirmPassword}
-                      onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
-                      onBlur={() => setFormTouched(prev => ({ ...prev, confirmPassword: true }))}
-                      disabled={isLoading || !!successMessage}
-                      className={`join-item input input-bordered w-full ${confirmPasswordInvalid ? 'input-error' : ''}`}
-                    />
-                    <button
-                      type="button"
-                      className="join-item btn btn-outline"
-                      onClick={toggleConfirmPasswordVisibility}
-                      disabled={isLoading || !!successMessage}
-                    >
-                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                  {confirmPasswordInvalid && (
-                    <span className="label-text-alt text-error mt-1">
-                      與新密碼不一致
-                    </span>
-                  )}
-                </div>
-
-                <div className="grid gap-2">
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={isLoading || !code || !newPassword || !confirmPassword || !!successMessage}
-                    className="py-2"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Spinner size="sm" />
-                        <span className="ml-2">處理中...</span>
-                      </>
-                    ) : (
-                      '確認重設密碼'
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </div>
+    <div className="mx-auto w-full max-w-xl">
+      <Card padding="none" className="overflow-hidden">
+        {/* 深藍 header 區，金線點綴 */}
+        <div className="relative bg-[#0f172a] px-6 py-7 sm:px-8">
+          <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-[#a0781c] to-transparent" />
+          <div className="flex items-center justify-between gap-3">
+            {onBack ? (
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={isLoading}
+                className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-medium text-slate-300 transition hover:text-white disabled:opacity-50"
+              >
+                <ArrowLeftCircle size={18} /> 返回
+              </button>
+            ) : (
+              <span className="w-14" />
+            )}
+            <span className="w-14" />
           </div>
-
-          <div className="text-center mt-3">
-            <small className="text-base-content/60">
-              沒有收到驗證碼？ <a href="#resend" className="no-underline link link-primary">重新發送</a>
-            </small>
+          <div className="mt-3 text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1e3a8a] text-white ring-4 ring-white/5">
+              <ShieldCheck size={24} />
+            </div>
+            <h2 className="font-serif text-2xl font-semibold tracking-tight text-white">重設密碼</h2>
+            {email && (
+              <p className="mt-1.5 text-sm text-slate-400">
+                為 <span className="font-medium text-[#d6b25e]">{email}</span> 設定新密碼
+              </p>
+            )}
           </div>
         </div>
-      </div>
+
+        {/* 表單主體 */}
+        <div className="px-6 py-7 sm:px-8">
+          {error && (
+            <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+              <Info size={18} className="mt-0.5 shrink-0" />
+              <span className="break-words">{error}</span>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+              <CheckCircle size={18} className="mt-0.5 shrink-0" />
+              <span className="break-words">{successMessage}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* 驗證碼 */}
+            <div>
+              <label htmlFor="formCode" className="mb-1.5 block text-sm font-medium text-slate-700">
+                驗證碼
+              </label>
+              <div className="relative">
+                <Key size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  id="formCode"
+                  type="text"
+                  placeholder="輸入6位數驗證碼"
+                  value={code}
+                  onChange={(e) => handleFieldChange('code', e.target.value)}
+                  onBlur={() => setFormTouched(prev => ({ ...prev, code: true }))}
+                  disabled={isLoading || !!successMessage}
+                  className={`${inputBase} pr-4 tracking-[0.3em] ${inputState(codeInvalid)}`}
+                />
+              </div>
+              {codeInvalid ? (
+                <p className="mt-1.5 text-xs text-error">請輸入6位數驗證碼</p>
+              ) : (
+                <p className="mt-1.5 text-xs text-slate-400">驗證碼已發送到您的電子郵件</p>
+              )}
+            </div>
+
+            {/* 新密碼 */}
+            <div>
+              <label htmlFor="formNewPassword" className="mb-1.5 block text-sm font-medium text-slate-700">
+                新密碼
+              </label>
+              <div className="relative">
+                <Key size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  id="formNewPassword"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="輸入新密碼"
+                  value={newPassword}
+                  onChange={(e) => handleFieldChange('newPassword', e.target.value)}
+                  onBlur={() => setFormTouched(prev => ({ ...prev, newPassword: true }))}
+                  disabled={isLoading || !!successMessage}
+                  className={`${inputBase} pr-12 ${inputState(newPasswordInvalid)}`}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  disabled={isLoading || !!successMessage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-[#1e3a8a] disabled:opacity-50"
+                  aria-label={showPassword ? '隱藏密碼' : '顯示密碼'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {newPasswordInvalid && (
+                <p className="mt-1.5 text-xs text-error">密碼需包含大寫字母、數字和特殊字符</p>
+              )}
+
+              {newPassword && (
+                <div className="mt-2.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-500">密碼強度</span>
+                    <span className={`font-semibold ${strengthTextClass[getStrengthColor()]}`}>
+                      {getStrengthText()}
+                    </span>
+                  </div>
+                  <progress
+                    className={`progress ${strengthBarClass[getStrengthColor()]} mt-1.5 h-1.5 w-full`}
+                    value={passwordStrength}
+                    max="100"
+                  />
+                  <p className="mt-1.5 text-xs text-slate-400">
+                    建議使用至少8個字符，包含大小寫字母、數字和符號
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* 確認新密碼 */}
+            <div>
+              <label htmlFor="formConfirmPassword" className="mb-1.5 block text-sm font-medium text-slate-700">
+                確認新密碼
+              </label>
+              <div className="relative">
+                <Key size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  id="formConfirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="再次輸入新密碼"
+                  value={confirmPassword}
+                  onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
+                  onBlur={() => setFormTouched(prev => ({ ...prev, confirmPassword: true }))}
+                  disabled={isLoading || !!successMessage}
+                  className={`${inputBase} pr-12 ${inputState(confirmPasswordInvalid)}`}
+                />
+                <button
+                  type="button"
+                  onClick={toggleConfirmPasswordVisibility}
+                  disabled={isLoading || !!successMessage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-[#1e3a8a] disabled:opacity-50"
+                  aria-label={showConfirmPassword ? '隱藏密碼' : '顯示密碼'}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {confirmPasswordInvalid && (
+                <p className="mt-1.5 text-xs text-error">與新密碼不一致</p>
+              )}
+            </div>
+
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={isLoading || !code || !newPassword || !confirmPassword || !!successMessage}
+              className="w-full"
+            >
+              {isLoading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="ml-2">處理中...</span>
+                </>
+              ) : (
+                '確認重設密碼'
+              )}
+            </Button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-slate-500">
+            沒有收到驗證碼？{' '}
+            <a href="#resend" className="font-medium text-[#1e3a8a] underline-offset-2 hover:underline">
+              重新發送
+            </a>
+          </p>
+        </div>
+      </Card>
+    </div>
   );
 };
 

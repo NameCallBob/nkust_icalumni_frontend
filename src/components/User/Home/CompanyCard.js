@@ -1,173 +1,69 @@
 import React, { useState } from "react";
 import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
+import { Button, Badge } from '../../common/ui';
+import { GraduationCap, ArrowRight } from 'lucide-react';
 
 const CompanyCard = ({ company }) => {
     // 使用狀態追蹤卡片是否被懸停
     const [isHovered, setIsHovered] = useState(false);
 
-    // 基本卡片樣式
-    const cardStyle = {
-        width: "250px",
-        height: "350px",
-        borderRadius: "12px",
-        overflow: "hidden",
-        transition: "all 0.3s ease-in-out",
-        transform: isHovered ? "translateY(-10px)" : "translateY(0)",
-        boxShadow: isHovered
-            ? "0 12px 20px rgba(0, 0, 0, 0.15)"
-            : "0 4px 8px rgba(0, 0, 0, 0.1)",
-        cursor: "pointer",
-        position: "relative",
-    };
-
-    // 圖片樣式
-    const imageStyle = {
-        objectFit: "cover",
-        height: "150px",
-        width: "100%",
-        transition: "transform 0.5s ease",
-        transform: isHovered ? "scale(1.05)" : "scale(1)",
-    };
-
-    // 卡片內容樣式
-    const cardBodyStyle = {
-        padding: "1.25rem",
-        display: "flex",
-        flexDirection: "column",
-        height: "200px", // 固定高度以確保一致性
-    };
-
-    // 標題樣式
-    const titleStyle = {
-        fontSize: "1.2rem",
-        fontWeight: "600",
-        marginBottom: "0.3rem",
-        transition: "color 0.3s ease",
-        color: isHovered ? "#0056b3" : "#212529",
-    };
-
-    // 描述文字樣式
-    const descriptionStyle = {
-        fontSize: "0.9rem",
-        color: "#6c757d",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        display: "-webkit-box",
-        WebkitLineClamp: "3",
-        WebkitBoxOrient: "vertical",
-        marginBottom: "0.5rem",
-    };
-
-    // 產品文字樣式
-    const productStyle = {
-        fontSize: "0.85rem",
-        color: "#495057",
-        marginBottom: "0.5rem",
-    };
-
-    // 按鈕容器樣式
-    const buttonContainerStyle = {
-        marginTop: "auto",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-    };
-
-    // 按鈕樣式
-    const buttonStyle = {
-        background: isHovered ? "#0056b3" : "#0275d8",
-        borderColor: isHovered ? "#004494" : "#0275d8",
-        color: "#fff",
-        transition: "all 0.3s ease",
-        boxShadow: isHovered ? "0 4px 8px rgba(2, 117, 216, 0.3)" : "none",
-        padding: "0.375rem 0.75rem",
-        fontSize: "0.9rem",
-        borderRadius: "0.375rem",
-        borderWidth: "1px",
-        borderStyle: "solid",
-    };
-
-    // 校友標籤樣式
-    const badgeStyle = {
-        position: "absolute",
-        top: "10px",
-        right: "10px",
-        background: "rgba(255, 255, 255, 0.9)",
-        color: "#0056b3",
-        padding: "0.3rem 0.6rem",
-        borderRadius: "20px",
-        fontSize: "0.75rem",
-        fontWeight: "600",
-        zIndex: "1",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        transition: "all 0.3s ease",
-        transform: isHovered ? "scale(1.05)" : "scale(1)",
-    };
-
-    // 分類標籤樣式（依懸停切換配色）
-    const categoryBadgeStyle = {
-        background: isHovered ? "#0dcaf0" : "#f8f9fa",
-        color: isHovered ? "#fff" : "#212529",
-        padding: "0.3rem 0.6rem",
-        borderRadius: "0.375rem",
-        fontSize: "0.75rem",
-        fontWeight: "600",
-        transition: "all 0.3s ease",
-    };
-
     return (
         <div
-            className="company-card"
-            style={cardStyle}
+            className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-slate-900/10 hover:border-slate-200"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             aria-label={`${company.name}公司卡片`}
         >
             {/* 校友標籤 */}
             {company.alumni && (
-                <div style={badgeStyle}>
-                    <i className="fa fa-user-graduate mr-1"></i> {company.alumni}
+                <div className="absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-[#1e3a8a] shadow-sm ring-1 ring-black/5 backdrop-blur transition-transform duration-300 group-hover:scale-105">
+                    <GraduationCap className="h-3.5 w-3.5 text-[#a0781c]" />
+                    <span className="max-w-[120px] truncate">{company.alumni}</span>
                 </div>
             )}
 
             {/* 公司圖片 */}
-            <div style={{ overflow: "hidden" }}>
+            <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
                 <img
                     src={getImageSrc(company.imageUrl, 'company')}
-                    style={imageStyle}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     alt={`${company.name}公司圖片`}
                     onError={(e) => handleImageError(e, 'company')}
                 />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-900/15 to-transparent" />
             </div>
 
-            <div style={cardBodyStyle}>
+            <div className="flex flex-1 flex-col p-5">
                 {/* 公司名稱 */}
-                <h5 style={titleStyle}>
+                <h5 className="font-serif text-lg font-semibold leading-snug text-[#0f172a] transition-colors duration-300 group-hover:text-[#1e3a8a] line-clamp-1">
                     {company.name}
                 </h5>
 
                 {/* 公司描述 */}
-                <p style={descriptionStyle}>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500 line-clamp-3">
                     {company.description}
                 </p>
 
                 {/* 產品信息 */}
-                <p style={productStyle}>
-                    <span style={{ fontWeight: "500" }}>產品製作:</span> {company.product}
+                <p className="mt-3 text-sm text-slate-600 line-clamp-1">
+                    <span className="font-medium text-[#0f172a]">產品製作：</span>
+                    {company.product}
                 </p>
 
                 {/* 按鈕區域 */}
-                <div style={buttonContainerStyle}>
-                    <span style={categoryBadgeStyle}>
+                <div className="mt-auto flex items-center justify-between gap-3 pt-4">
+                    <Badge variant="primary">
                         {company.category || "企業"}
-                    </span>
-                    <button
-                        type="button"
-                        style={buttonStyle}
+                    </Badge>
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        className="gap-1 rounded-lg"
                         aria-label={`瞭解更多關於${company.name}的信息`}
                     >
-                        瞭解更多 {isHovered && <i className="fas fa-arrow-right ml-1"></i>}
-                    </button>
+                        瞭解更多
+                        <ArrowRight className={`h-4 w-4 transition-transform duration-300 ${isHovered ? 'translate-x-0.5' : ''}`} />
+                    </Button>
                 </div>
             </div>
         </div>

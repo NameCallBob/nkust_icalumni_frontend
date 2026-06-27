@@ -1,6 +1,6 @@
 import React from 'react';
-import { FileText, Users, Building, UserPlus, MessageCircle } from 'lucide-react';
-import './AboutSection.css';
+import { FileText, Users, UserPlus, MessageCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Section, Card } from 'components/common/ui';
 
 /**
  * 系友會介紹卡片式布局組件
@@ -56,85 +56,98 @@ function AboutSection() {
     ];
 
     return (
-        <section id="about" className="about-section py-5">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-12 text-center mb-5">
-                    <div className="col-span-12">
-                        <div className="section-header">
-                            <h2 className="section-title">關於系友會</h2>
-                            <p className="section-subtitle">
-                                深入了解智慧商務系系友會，探索我們的理念與服務
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-12 gap-4">
-                    {aboutCards.map((card, index) => {
+        <div id="about" className="bg-base-200/40">
+            <Section
+                eyebrow="About Us"
+                title="關於系友會"
+                subtitle="深入了解智慧商務系系友會，探索我們的理念與服務"
+                center
+                width="wide"
+            >
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {aboutCards.map((card) => {
                         const IconComponent = card.icon;
                         return (
-                            <div className="col-span-12 md:col-span-6 lg:col-span-4" key={card.id}>
-                                <div
-                                    className="card card-bordered about-card h-full"
-                                    style={{ '--card-gradient': card.gradient }}
-                                >
-                                    <div className="card-header-custom">
-                                        <div className="card-icon">
-                                            <IconComponent size={32} />
-                                        </div>
-                                        <h4 className="card-title">{card.title}</h4>
-                                    </div>
-
-                                    <div className="card-body flex flex-col">
-                                        <p className="card-description">{card.description}</p>
-
-                                        <ul className="card-features">
-                                            {card.details.map((detail, idx) => (
-                                                <li key={idx}>{detail}</li>
-                                            ))}
-                                        </ul>
-
-                                        <div className="mt-auto">
-                                            <a
-                                                href={card.link}
-                                                className="btn card-btn w-full"
-                                            >
-                                                了解更多
-                                            </a>
-                                        </div>
+                            <Card
+                                key={card.id}
+                                hover
+                                padding="none"
+                                className="group flex flex-col overflow-hidden"
+                            >
+                                {/* 深藍卡頭 */}
+                                <div className="relative bg-gradient-to-br from-[#0f172a] to-[#1e3a8a] px-6 pt-7 pb-6">
+                                    <div className="absolute right-5 top-5 h-16 w-16 rounded-full bg-white/5 blur-xl" />
+                                    <div className="flex items-center gap-4">
+                                        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-secondary ring-1 ring-white/15 transition-transform duration-300 group-hover:scale-105">
+                                            <IconComponent size={28} />
+                                        </span>
+                                        <h3 className="font-serif text-xl font-bold text-white">
+                                            {card.title}
+                                        </h3>
                                     </div>
                                 </div>
-                            </div>
+
+                                {/* 內容 */}
+                                <div className="flex flex-1 flex-col p-6">
+                                    <p className="text-sm leading-relaxed text-base-content/70 break-words">
+                                        {card.description}
+                                    </p>
+
+                                    <ul className="mt-5 grid grid-cols-2 gap-x-3 gap-y-2.5">
+                                        {card.details.map((detail, idx) => (
+                                            <li
+                                                key={idx}
+                                                className="flex items-center gap-1.5 text-sm text-base-content/80"
+                                            >
+                                                <CheckCircle2
+                                                    size={16}
+                                                    className="shrink-0 text-secondary"
+                                                />
+                                                <span className="truncate">{detail}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <div className="mt-auto pt-6">
+                                        <a
+                                            href={card.link}
+                                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-content"
+                                        >
+                                            了解更多
+                                            <ArrowRight
+                                                size={16}
+                                                className="transition-transform group-hover:translate-x-0.5"
+                                            />
+                                        </a>
+                                    </div>
+                                </div>
+                            </Card>
                         );
                     })}
                 </div>
 
                 {/* 快速聯絡區域 */}
-                <div className="grid grid-cols-12 mt-5">
-                    <div className="col-span-12">
-                        <div className="quick-contact-section">
-                            <div className="grid grid-cols-12 items-center">
-                                <div className="col-span-12 md:col-span-8">
-                                    <h4 className="mb-2">有任何問題嗎？</h4>
-                                    <p className="mb-0 text-base-content/60">
-                                        歡迎隨時聯絡我們，系友會團隊將竭誠為您服務
-                                    </p>
-                                </div>
-                                <div className="col-span-12 md:col-span-4 text-center md:text-right mt-3 md:mt-0">
-                                    <a
-                                        href="/IC/contactUs"
-                                        className="btn btn-primary btn-lg contact-btn"
-                                    >
-                                        <MessageCircle size={20} className="mr-2" />
-                                        立即聯絡
-                                    </a>
-                                </div>
-                            </div>
+                <div className="mt-10 overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#1e3a8a] shadow-lg">
+                    <div className="flex flex-col items-center gap-6 px-6 py-8 sm:px-10 md:flex-row md:justify-between">
+                        <div className="text-center md:text-left">
+                            <h4 className="font-serif text-2xl font-bold text-white">
+                                有任何問題嗎？
+                            </h4>
+                            <p className="mt-2 text-sm text-white/70">
+                                歡迎隨時聯絡我們，系友會團隊將竭誠為您服務
+                            </p>
                         </div>
+                        <a
+                            href="/IC/contactUs"
+                            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-secondary px-7 py-3 text-base font-semibold text-secondary-content shadow-md transition-transform hover:scale-105"
+                        >
+                            <MessageCircle size={20} />
+                            立即聯絡
+                        </a>
                     </div>
                 </div>
-            </div>
-        </section>
+            </Section>
+        </div>
     );
 }
 

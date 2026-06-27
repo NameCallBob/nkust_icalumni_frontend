@@ -10,6 +10,7 @@ import Axios from 'common/Axios';
 import AppModal from 'components/common/AppModal';
 import LoadingSpinner from 'components/LoadingSpinner';
 import SEO from 'SEO';
+import { Section, Card, EmptyState } from 'components/common/ui';
 
 /**
  * 圖片輪播元件 - 提供圖片展示與放大功能
@@ -54,27 +55,31 @@ const ImageSlider = ({ images, title }) => {
   return (
     <>
       {/* 只有當有標題且有圖片時才顯示標題 */}
-      {title && <h4 className="mt-4 mb-3 text-lg font-semibold">{title}</h4>}
+      {title && (
+        <div className="mt-10 mb-4 flex items-center gap-3">
+          <span className="h-6 w-1.5 rounded-full bg-gradient-to-b from-secondary to-primary" />
+          <h4 className="font-serif text-xl sm:text-2xl font-bold text-primary">{title}</h4>
+        </div>
+      )}
 
       {/* 改進的輪播效果 */}
-      <div className="image-slider-container">
+      <Card padding="none" className="overflow-hidden">
         <Swiper
           modules={[Navigation, Pagination]}
           navigation={images.length > 1}
           pagination={images.length > 1 ? { clickable: true } : false}
-          className="image-slider rounded shadow-sm"
+          className="image-slider"
         >
           {images.map((image, index) => (
             <SwiperSlide key={index}>
-              <div className="image-container">
+              <div className="group relative bg-slate-50">
                 <img
-                  className="block w-full"
+                  className="block w-full transition-transform duration-300 group-hover:scale-[1.01]"
                   src={image}
                   alt={`圖片-${index + 1}`}
                   style={{
-                    height: '400px',
+                    height: '420px',
                     objectFit: 'contain',
-                    backgroundColor: '#f8f9fa',
                     cursor: 'zoom-in',
                   }}
                   onClick={() => handleImageClick(image, index)}
@@ -88,12 +93,12 @@ const ImageSlider = ({ images, title }) => {
             </SwiperSlide>
           ))}
         </Swiper>
-        {images.length > 1 && (
-          <p className="text-base-content/60 text-center mt-2">
-            <small>點擊圖片可放大查看 ({currentIndex + 1}/{images.length})</small>
-          </p>
-        )}
-      </div>
+      </Card>
+      {images.length > 1 && (
+        <p className="mt-3 text-center text-sm text-base-content/50">
+          點擊圖片可放大查看 ({currentIndex + 1}/{images.length})
+        </p>
+      )}
 
       {/* 改進的放大模式 */}
       <AppModal
@@ -198,22 +203,26 @@ const EventDetail = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 mt-5 text-center">
-        <div className="alert alert-error">{error}</div>
+      <div className="min-h-[60vh] bg-base-200">
+        <Section width="narrow">
+          <EmptyState title="載入失敗" description={error} />
+        </Section>
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="container mx-auto px-4 mt-5 text-center">
-        <div className="alert alert-warning">找不到活動資訊</div>
+      <div className="min-h-[60vh] bg-base-200">
+        <Section width="narrow">
+          <EmptyState title="找不到活動資訊" description="此活動可能已下架或網址有誤。" />
+        </Section>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 my-4 pb-5">
+    <div className="bg-base-200">
       <SEO
         main={false}
         title={event.title}
@@ -221,31 +230,48 @@ const EventDetail = () => {
         keywords={["智慧商務", "系友詳細", "會員資訊"]}
       />
 
-      {/* 活動標題區塊 */}
-      <div>
-        <h1 className="mb-3 font-bold text-3xl">{event.title}</h1>
-        <hr className="my-4" />
-      </div>
+      {/* 頂部深藍標題橫幅 */}
+      <header className="bg-gradient-to-br from-[#0f172a] via-primary to-[#0f172a] text-white">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 py-14 sm:py-20">
+          <p className="mb-3 text-xs font-semibold tracking-[0.2em] text-secondary uppercase">
+            系友會活動
+          </p>
+          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight break-words">
+            {event.title}
+          </h1>
+          <div className="mt-5 h-1 w-20 rounded-full bg-gradient-to-r from-secondary to-white/40" />
+        </div>
+      </header>
 
-      {/* 活動內容區塊 */}
-      <div>
-        <div
-          dangerouslySetInnerHTML={{ __html: event.content }}
-          className="event-content my-4"
-        ></div>
-      </div>
+      {/* 主內容區 */}
+      <Section width="narrow" className="pt-8 sm:pt-12">
+        {/* 活動內容區塊 */}
+        <Card padding="lg">
+          <div
+            dangerouslySetInnerHTML={{ __html: event.content }}
+            className="max-w-none break-words leading-relaxed text-base-content/80
+              [&_h1]:font-serif [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-primary [&_h1]:mt-6 [&_h1]:mb-3
+              [&_h2]:font-serif [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-primary [&_h2]:mt-6 [&_h2]:mb-3
+              [&_h3]:font-serif [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-primary [&_h3]:mt-5 [&_h3]:mb-2
+              [&_p]:my-3 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2
+              [&_img]:rounded-xl [&_img]:my-4 [&_img]:mx-auto [&_img]:max-w-full
+              [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_li]:my-1
+              [&_blockquote]:border-l-4 [&_blockquote]:border-secondary [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-base-content/60"
+          ></div>
+        </Card>
 
-      {/* 大圖展示區塊 - 只有存在大圖時才渲染 */}
-      <ImageSlider
-        images={largeImages}
-        title={largeImages.length > 0 ? "大圖展示" : null}
-      />
+        {/* 大圖展示區塊 - 只有存在大圖時才渲染 */}
+        <ImageSlider
+          images={largeImages}
+          title={largeImages.length > 0 ? "大圖展示" : null}
+        />
 
-      {/* 活動圖片展示區塊 - 只有存在小圖時才渲染 */}
-      <ImageSlider
-        images={smallImages}
-        title={smallImages.length > 0 ? "活動圖片展示" : null}
-      />
+        {/* 活動圖片展示區塊 - 只有存在小圖時才渲染 */}
+        <ImageSlider
+          images={smallImages}
+          title={smallImages.length > 0 ? "活動圖片展示" : null}
+        />
+      </Section>
     </div>
   );
 };

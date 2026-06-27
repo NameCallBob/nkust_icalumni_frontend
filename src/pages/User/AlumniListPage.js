@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faSearch, faFilter, faGraduationCap,
-    faBriefcase, faExclamationTriangle, faTrophy, faChevronRight
-} from '@fortawesome/free-solid-svg-icons';
+    Search, SlidersHorizontal, GraduationCap, Briefcase,
+    AlertTriangle, Trophy, ChevronRight, ChevronLeft,
+    ChevronsLeft, ChevronsRight, Info, Building2, RotateCcw
+} from 'lucide-react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import styles from 'css/AlumniListPage.module.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 import FeaturedAlumni from 'components/User/alumni/FeaturedAlumni';
-import { Button, Spinner } from 'components/common/ui';
+import { Button, Spinner, Card, Badge, EmptyState } from 'components/common/ui';
 import SEO from 'SEO';
 import { debounce } from 'lodash';
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
@@ -294,119 +293,129 @@ const AlumniListPage = () => {
     }, []);
 
     return (
-        <div className="px-0" style={{ background: '#f8fafc', minHeight: '100vh' }}>
-            <div className="container mx-auto px-0 md:px-3">
+        <div className="min-h-screen bg-base-200/40">
             <SEO
                 main={false}
                 title="系友列表 | 智慧商務系友會"
                 description="瀏覽智慧商務系友會成員名單，發現更多聯繫機會與合作夥伴。"
                 keywords={["智慧商務", "系友列表", "成員", "校友"]}
             />
-            </div>
 
-            {/* Page Header - Navy section */}
+            {/* Page Header - Navy hero */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4 }}
+                className="relative overflow-hidden bg-gradient-to-br from-[#1e3a8a] via-[#162e6e] to-[#0f172a]"
             >
-                <div style={{
-                    background: '#1e3a8a',
-                    padding: '3.5rem 2rem 3rem',
-                    textAlign: 'center',
-                    marginBottom: '0'
-                }}>
-                    <h1 style={{ fontWeight: '700', fontSize: '2.4rem', color: '#ffffff', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>系友名錄</h1>
-                    <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.05rem', marginBottom: '0', maxWidth: '520px', margin: '0 auto' }}>探索並連結我們出色的校友網絡</p>
-                    <div style={{ height: '3px', width: '60px', background: '#a0781c', margin: '1.25rem auto 0', borderRadius: '2px' }}></div>
+                <div className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_top_right,white,transparent_55%)]" />
+                <div className="relative mx-auto max-w-6xl px-6 py-16 sm:py-20 text-center">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
+                        Alumni Directory
+                    </p>
+                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+                        系友名錄
+                    </h1>
+                    <p className="mx-auto mt-4 max-w-xl text-sm sm:text-base text-white/70">
+                        探索並連結我們出色的校友網絡
+                    </p>
+                    <div className="mx-auto mt-6 h-1 w-16 rounded-full bg-gradient-to-r from-secondary to-primary" />
                 </div>
             </motion.div>
 
-            <div className="container mx-auto px-4 py-4 md:py-5">
+            <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12 space-y-8">
 
-            {/* 傑出校友區塊 */}
-            {featuredSchool && featuredSchool.length > 0 && (
+                {/* 傑出校友區塊 */}
+                {featuredSchool && featuredSchool.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#162e6e] p-6 sm:p-9 shadow-md"
+                    >
+                        <div className="mb-7 flex items-center gap-3">
+                            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/15 text-secondary">
+                                <Trophy className="h-6 w-6" />
+                            </span>
+                            <div>
+                                <h2 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight">傑出校友</h2>
+                                <div className="mt-1 h-0.5 w-10 rounded-full bg-secondary/70" />
+                            </div>
+                        </div>
+                        <FeaturedAlumni featuredAlumni={featuredSchool} />
+                    </motion.div>
+                )}
+
+                {/* 傑出系友區塊 */}
+                {featured && featured.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        className="rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#162e6e] p-6 sm:p-9 shadow-md"
+                    >
+                        <div className="mb-7 flex items-center gap-3">
+                            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/15 text-secondary">
+                                <Trophy className="h-6 w-6" />
+                            </span>
+                            <div>
+                                <h2 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight">傑出系友</h2>
+                                <div className="mt-1 h-0.5 w-10 rounded-full bg-secondary/70" />
+                            </div>
+                        </div>
+                        <FeaturedAlumni featuredAlumni={featured} />
+                    </motion.div>
+                )}
+
+                {/* 搜尋與篩選區塊 */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    style={{ background: '#0f172a', borderRadius: '8px', padding: '2.5rem 2rem', marginBottom: '1.5rem' }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
                 >
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem' }}>
-                        <FontAwesomeIcon icon={faTrophy} className="mr-3" style={{ color: '#a0781c', fontSize: '1.5rem' }} />
-                        <h2 style={{ color: '#ffffff', fontWeight: '700', margin: '0', fontSize: '1.5rem', letterSpacing: '-0.3px' }}>傑出校友</h2>
-                    </div>
-                    <FeaturedAlumni featuredAlumni={featuredSchool} />
-                </motion.div>
-            )}
-
-            {/* 傑出系友區塊 */}
-            {featured && featured.length > 0 && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                    style={{ background: '#0f172a', borderRadius: '8px', padding: '2.5rem 2rem', marginBottom: '1.5rem' }}
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem' }}>
-                        <FontAwesomeIcon icon={faTrophy} className="mr-3" style={{ color: '#a0781c', fontSize: '1.5rem' }} />
-                        <h2 style={{ color: '#ffffff', fontWeight: '700', margin: '0', fontSize: '1.5rem', letterSpacing: '-0.3px' }}>傑出系友</h2>
-                    </div>
-                    <FeaturedAlumni featuredAlumni={featured} />
-                </motion.div>
-            )}
-
-
-
-            {/* 搜尋與篩選區塊 */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className={`${styles.filterSearchSection} mb-5`}
-            >
-                <div className={styles.filterCard}>
-                    <div className={styles.filterCardBody}>
-                        <div className={styles.filterHeader}>
-                            <div className={styles.filterHeaderLeft}>
-                                <FontAwesomeIcon icon={faFilter} className={styles.filterIcon} />
-                                <h3 className={styles.filterTitle}>尋找系友</h3>
+                    <Card padding="lg">
+                        <div className="mb-5 flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2.5">
+                                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                    <SlidersHorizontal className="h-5 w-5" />
+                                </span>
+                                <h3 className="font-serif text-lg sm:text-xl font-bold text-base-content">尋找系友</h3>
                             </div>
                             <button
                                 type="button"
-                                className={styles.helpButton}
+                                className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-primary transition hover:bg-primary/10"
                                 onClick={toggleFilterInfo}
                             >
-                                <small>篩選說明</small>
+                                <Info className="h-4 w-4" />
+                                篩選說明
                             </button>
                         </div>
 
                         {showFilterInfo && (
-                            <div className={`alert ${styles.infoAlert} mb-3`} role="alert">
-                                <small>
-                                    您可以透過「級別」查看不同屆別的系友，或透過「職位」篩選特定職務的系友。
-                                    也可以直接在搜尋框中輸入關鍵字，查找特定系友、公司或專長。
-                                </small>
+                            <div className="mb-5 rounded-xl border border-info/20 bg-info/5 px-4 py-3 text-sm leading-relaxed text-base-content/70" role="alert">
+                                您可以透過「級別」查看不同屆別的系友，或透過「職位」篩選特定職務的系友。
+                                也可以直接在搜尋框中輸入關鍵字，查找特定系友、公司或專長。
                             </div>
                         )}
 
                         {/* 搜尋框 */}
-                        <form className={`${styles.searchForm} mb-4`} onKeyDown={handleEnterPress}>
-                            <div className={styles.searchInputWrapper}>
+                        <form className="mb-6" onKeyDown={handleEnterPress}>
+                            <div className="relative">
+                                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-base-content/40" />
                                 <input
                                     type="text"
                                     placeholder="搜尋系友、公司、專長、產品..."
                                     value={searchQuery}
                                     onChange={handleSearchChange}
-                                    className={styles.searchInput}
+                                    className="h-12 w-full rounded-xl border border-base-300 bg-base-100 pl-12 pr-24 text-base-content outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                                 />
-                                <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
                                 {isSearching && searchQuery && (
                                     <button
                                         type="button"
-                                        className={styles.searchReset}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 rounded-lg bg-base-200 px-3 py-1.5 text-sm font-medium text-base-content/70 transition hover:bg-base-300"
                                         onClick={resetSearch}
                                     >
+                                        <RotateCcw className="h-3.5 w-3.5" />
                                         重置
                                     </button>
                                 )}
@@ -414,144 +423,132 @@ const AlumniListPage = () => {
                         </form>
 
                         {/* 父級 Tabs */}
-                        <div
-                            className={`${styles.parentTabs} tabs tabs-bordered mb-3`}
-                            role="tablist"
-                        >
+                        <div className="mb-5 inline-flex rounded-xl bg-base-200 p-1" role="tablist">
                             <button
                                 type="button"
                                 role="tab"
-                                className={`tab ${parentKey === '級別' ? 'tab-active' : ''}`}
+                                className={`inline-flex items-center gap-2 rounded-lg px-4 sm:px-5 py-2 text-sm font-semibold transition ${parentKey === '級別' ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/60 hover:text-base-content'}`}
                                 onClick={() => handleParentKeyChange('級別')}
                             >
-                                <FontAwesomeIcon icon={faGraduationCap} className="mr-2" />
+                                <GraduationCap className="h-4 w-4" />
                                 級別
                             </button>
                             <button
                                 type="button"
                                 role="tab"
-                                className={`tab ${parentKey === '職位' ? 'tab-active' : ''}`}
+                                className={`inline-flex items-center gap-2 rounded-lg px-4 sm:px-5 py-2 text-sm font-semibold transition ${parentKey === '職位' ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/60 hover:text-base-content'}`}
                                 onClick={() => handleParentKeyChange('職位')}
                             >
-                                <FontAwesomeIcon icon={faBriefcase} className="mr-2" />
+                                <Briefcase className="h-4 w-4" />
                                 職位
                             </button>
                         </div>
 
                         {/* 子級 Tabs */}
                         {loading && !alumniList.length ? (
-                            <div className="flex justify-center my-4">
-                                <div className={styles.loadingSpinner}></div>
+                            <div className="flex justify-center py-4">
+                                <Spinner size="md" />
                             </div>
                         ) : error ? (
-                            <div className={`alert ${styles.errorAlert} mb-3`} role="alert">
-                                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
+                            <div className="flex items-center gap-2 rounded-xl border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert">
+                                <AlertTriangle className="h-4 w-4 shrink-0" />
                                 {error}
                             </div>
                         ) : (
-                            <div className={styles.childTabsContainer}>
-                                <div
-                                    className={`${styles.childTabs} tabs tabs-bordered`}
-                                    role="tablist"
-                                >
-                                    {childOptions.map((option) => (
-                                        <button
-                                            type="button"
-                                            role="tab"
-                                            key={option.value}
-                                            className={`tab ${childKey === option.value ? 'tab-active' : ''}`}
-                                            onClick={() => handleChildKeyChange(option.value)}
-                                        >
-                                            {option.label}
-                                        </button>
-                                    ))}
-                                </div>
+                            <div className="flex flex-wrap gap-2" role="tablist">
+                                {childOptions.map((option) => (
+                                    <button
+                                        type="button"
+                                        role="tab"
+                                        key={option.value}
+                                        className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${childKey === option.value ? 'border-primary bg-primary text-primary-content shadow-sm' : 'border-base-300 bg-base-100 text-base-content/70 hover:border-primary/40 hover:text-primary'}`}
+                                        onClick={() => handleChildKeyChange(option.value)}
+                                    >
+                                        {option.label}
+                                    </button>
+                                ))}
                             </div>
                         )}
-                    </div>
-                </div>
-            </motion.div>
+                    </Card>
+                </motion.div>
 
-            {/* 系友列表區塊 */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="alumni-grid-section"
-            >
-                {isSearching && (
-                    <div className="search-status mb-3">
-                        <span className="badge badge-primary p-2">
-                            搜尋: "{searchQuery}" {alumniList.length > 0 ? `(${alumniList.length} 位系友)` : ''}
-                        </span>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={resetSearch}
-                            className="ml-2"
-                        >
-                            清除搜尋
-                        </Button>
-                    </div>
-                )}
-
-                {loading && alumniList.length > 0 ? (
-                    <div className={styles.loadingOverlay}>
-                        <Spinner size="lg" />
-                        <p className={`${styles.loadingText} mt-2`}>載入系友資料中...</p>
-                    </div>
-                ) : error ? (
-                    <div className={`alert ${styles.errorAlert} mb-3`} role="alert">
-                        <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
-                        {error}
-                    </div>
-                ) : emptyResult ? (
-                    <div className={`alert ${styles.warningAlert} text-center py-5`} role="alert">
-                        <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" size="lg" />
-                        <h4 className="mt-3">沒有找到符合條件的系友</h4>
-                        <p className="mb-0">請嘗試其他搜尋條件或篩選方式</p>
-                        {isSearching && (
-                            <button
-                                type="button"
-                                className={`${styles.resetButton} mt-3`}
+                {/* 系友列表區塊 */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                    className="alumni-grid-section"
+                >
+                    {isSearching && (
+                        <div className="mb-5 flex flex-wrap items-center gap-3">
+                            <Badge variant="primary" className="text-sm">
+                                搜尋：「{searchQuery}」{alumniList.length > 0 ? ` · ${alumniList.length} 位系友` : ''}
+                            </Badge>
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={resetSearch}
                             >
-                                查看所有系友
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <>
-                        <div className={styles.alumniGrid}>
-                            {alumniList.map((alumni) => (
-                                <motion.div
-                                    key={alumni.id}
-                                    whileHover={{
-                                        y: -3,
-                                        transition: { duration: 0.2 }
-                                    }}
-                                >
-                                    <div
-                                        className={`${styles.alumniCard} h-full`}
-                                        onClick={() => window.location.href = `/alumni/${alumni.id}`}
+                                清除搜尋
+                            </Button>
+                        </div>
+                    )}
+
+                    {loading && alumniList.length > 0 ? (
+                        <Card padding="lg">
+                            <Spinner size="lg" center label="載入系友資料中..." />
+                        </Card>
+                    ) : error ? (
+                        <div className="flex items-center gap-2 rounded-xl border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert">
+                            <AlertTriangle className="h-4 w-4 shrink-0" />
+                            {error}
+                        </div>
+                    ) : emptyResult ? (
+                        <Card padding="lg">
+                            <EmptyState
+                                icon={<AlertTriangle className="h-8 w-8" />}
+                                title="沒有找到符合條件的系友"
+                                description="請嘗試其他搜尋條件或篩選方式"
+                                action={isSearching ? (
+                                    <Button variant="primary" onClick={resetSearch}>
+                                        查看所有系友
+                                    </Button>
+                                ) : null}
+                            />
+                        </Card>
+                    ) : (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                {alumniList.map((alumni) => (
+                                    <motion.div
+                                        key={alumni.id}
+                                        whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                                        className="h-full"
                                     >
-                                        <div className="flex h-full">
-                                            <div className="w-1/3">
-                                                <div className={styles.imageWrapper}>
-                                                    <div className={styles.imageOverlay}></div>
-                                                    <img
-                                                        src={getImageSrc(alumni.photo ? process.env.REACT_APP_BASE_URL + alumni.photo : null, 'avatar')}
-                                                        alt={alumni.name}
-                                                        className={styles.cardImage}
-                                                        style={{ backgroundColor: '#f8fafc' }}
-                                                        onError={(e) => handleImageError(e, 'avatar')}
-                                                    />
+                                        <Card
+                                            hover
+                                            padding="none"
+                                            className="group h-full cursor-pointer overflow-hidden"
+                                            onClick={() => window.location.href = `/alumni/${alumni.id}`}
+                                        >
+                                            <div className="flex h-full">
+                                                <div className="relative w-2/5 shrink-0 overflow-hidden bg-base-200">
+                                                    <div className="aspect-[3/4] h-full w-full">
+                                                        <img
+                                                            src={getImageSrc(alumni.photo ? process.env.REACT_APP_BASE_URL + alumni.photo : null, 'avatar')}
+                                                            alt={alumni.name}
+                                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                            style={{ backgroundColor: '#f8fafc' }}
+                                                            onError={(e) => handleImageError(e, 'avatar')}
+                                                        />
+                                                    </div>
+                                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0f172a]/25 to-transparent" />
                                                 </div>
-                                            </div>
-                                            <div className="w-2/3">
-                                                <div className={`${styles.cardBody} flex flex-col h-full`}>
-                                                    <div className={`${styles.cardTitle} mb-1`}>{alumni.name || '未提供姓名'}</div>
-                                                    <div className={`${styles.positionText} mb-1`}>
+                                                <div className="flex w-3/5 flex-col p-4 sm:p-5">
+                                                    <h3 className="font-serif text-base sm:text-lg font-bold text-base-content truncate">
+                                                        {alumni.name || '未提供姓名'}
+                                                    </h3>
+                                                    <p className="mt-1 text-sm text-primary font-medium line-clamp-2">
                                                         {(() => {
                                                             if (!alumni.position) {
                                                                 return '職位未提供';
@@ -564,107 +561,110 @@ const AlumniListPage = () => {
                                                             }
                                                             return '職位未提供';
                                                         })()}
+                                                    </p>
+                                                    <div className="mt-2">
+                                                        <Badge variant="secondary">
+                                                            {alumni.graduate && alumni.graduate.grade ? `${alumni.graduate.grade}級` : '級別未提供'}
+                                                        </Badge>
                                                     </div>
-                                                    <span className={styles.gradeText}>
-                                                        {alumni.graduate && alumni.graduate.grade ? `${alumni.graduate.grade}級` : '級別未提供'}
-                                                    </span>
                                                     {alumni.company && (
-                                                        <div className={`${styles.companyTag} mb-0`}>
-                                                            {alumni.company}
+                                                        <div className="mt-2 flex items-center gap-1.5 text-xs text-base-content/60">
+                                                            <Building2 className="h-3.5 w-3.5 shrink-0" />
+                                                            <span className="truncate">{alumni.company}</span>
                                                         </div>
                                                     )}
-                                                    <div className={`${styles.viewProfile} mt-auto w-full`}>
-                                                        查看介紹 <FontAwesomeIcon icon={faChevronRight} size="xs" />
+                                                    <div className="mt-auto pt-3 flex items-center gap-1 text-sm font-semibold text-primary transition group-hover:gap-2">
+                                                        查看介紹
+                                                        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-
-                        {/* 分頁按鈕 */}
-                        {totalPages > 1 && (
-                            <div className={`${styles.pagination} join flex justify-center mt-5`}>
-                                <button
-                                    type="button"
-                                    className="join-item btn"
-                                    onClick={() => handlePageChange(1)}
-                                    disabled={currentPage === 1}
-                                    aria-label="第一頁"
-                                >
-                                    «
-                                </button>
-                                <button
-                                    type="button"
-                                    className="join-item btn"
-                                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                    disabled={currentPage === 1}
-                                    aria-label="上一頁"
-                                >
-                                    ‹
-                                </button>
-
-                                {[...Array(totalPages)].map((_, index) => {
-                                    const pageNumber = index + 1;
-                                    // 只顯示當前頁附近的頁碼
-                                    if (
-                                        pageNumber === 1 ||
-                                        pageNumber === totalPages ||
-                                        (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-                                    ) {
-                                        return (
-                                            <button
-                                                type="button"
-                                                key={pageNumber}
-                                                className={`join-item btn ${pageNumber === currentPage ? 'btn-active btn-primary' : ''}`}
-                                                onClick={() => handlePageChange(pageNumber)}
-                                            >
-                                                {pageNumber}
-                                            </button>
-                                        );
-                                    } else if (
-                                        (pageNumber === currentPage - 2 && currentPage > 3) ||
-                                        (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
-                                    ) {
-                                        return (
-                                            <button
-                                                type="button"
-                                                key={`ellipsis-${pageNumber}`}
-                                                className="join-item btn btn-disabled"
-                                                disabled
-                                            >
-                                                …
-                                            </button>
-                                        );
-                                    }
-                                    return null;
-                                })}
-
-                                <button
-                                    type="button"
-                                    className="join-item btn"
-                                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                    disabled={currentPage === totalPages}
-                                    aria-label="下一頁"
-                                >
-                                    ›
-                                </button>
-                                <button
-                                    type="button"
-                                    className="join-item btn"
-                                    onClick={() => handlePageChange(totalPages)}
-                                    disabled={currentPage === totalPages}
-                                    aria-label="最後一頁"
-                                >
-                                    »
-                                </button>
+                                        </Card>
+                                    </motion.div>
+                                ))}
                             </div>
-                        )}
-                    </>
-                )}
-            </motion.div>
+
+                            {/* 分頁按鈕 */}
+                            {totalPages > 1 && (
+                                <div className="join mt-10 flex justify-center">
+                                    <button
+                                        type="button"
+                                        className="join-item btn btn-sm sm:btn-md"
+                                        onClick={() => handlePageChange(1)}
+                                        disabled={currentPage === 1}
+                                        aria-label="第一頁"
+                                    >
+                                        <ChevronsLeft className="h-4 w-4" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="join-item btn btn-sm sm:btn-md"
+                                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                        disabled={currentPage === 1}
+                                        aria-label="上一頁"
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                    </button>
+
+                                    {[...Array(totalPages)].map((_, index) => {
+                                        const pageNumber = index + 1;
+                                        // 只顯示當前頁附近的頁碼
+                                        if (
+                                            pageNumber === 1 ||
+                                            pageNumber === totalPages ||
+                                            (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                                        ) {
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    key={pageNumber}
+                                                    className={`join-item btn btn-sm sm:btn-md ${pageNumber === currentPage ? 'btn-active btn-primary' : ''}`}
+                                                    onClick={() => handlePageChange(pageNumber)}
+                                                >
+                                                    {pageNumber}
+                                                </button>
+                                            );
+                                        } else if (
+                                            (pageNumber === currentPage - 2 && currentPage > 3) ||
+                                            (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
+                                        ) {
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    key={`ellipsis-${pageNumber}`}
+                                                    className="join-item btn btn-sm sm:btn-md btn-disabled"
+                                                    disabled
+                                                >
+                                                    …
+                                                </button>
+                                            );
+                                        }
+                                        return null;
+                                    })}
+
+                                    <button
+                                        type="button"
+                                        className="join-item btn btn-sm sm:btn-md"
+                                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                                        disabled={currentPage === totalPages}
+                                        aria-label="下一頁"
+                                    >
+                                        <ChevronRight className="h-4 w-4" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="join-item btn btn-sm sm:btn-md"
+                                        onClick={() => handlePageChange(totalPages)}
+                                        disabled={currentPage === totalPages}
+                                        aria-label="最後一頁"
+                                    >
+                                        <ChevronsRight className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </motion.div>
 
             </div>
         </div>

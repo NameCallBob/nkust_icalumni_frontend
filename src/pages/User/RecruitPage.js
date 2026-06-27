@@ -5,7 +5,6 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import AppModal from 'components/common/AppModal';
-import 'css/recruit.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 // 預防 XSS 攻擊
@@ -13,6 +12,8 @@ import DOMPurify from 'dompurify';
 import SEO from 'SEO';
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
 import { BsCalendar, BsCalendarX, BsBuilding, BsEnvelope, BsTelephone, BsPerson } from 'react-icons/bs';
+import { Card, Button, Badge, EmptyState } from 'components/common/ui';
+import { Briefcase, Table2, LayoutGrid, ArrowRight, AlertTriangle } from 'lucide-react';
 
 function RecruitPage() {
   const [show, setShow] = useState(false);
@@ -145,18 +146,18 @@ function RecruitPage() {
     }
 
     return (
-      <div className="flex justify-center mt-4">
-        <div className="join">{items}</div>
+      <div className="flex justify-center mt-8">
+        <div className="join shadow-sm">{items}</div>
       </div>
     );
   };
 
   // 表格視圖
   const renderTableView = () => (
-    <div className="overflow-x-auto">
-      <table className="table job-table">
-        <thead className="table-header-corporate">
-          <tr>
+    <div className="overflow-x-auto rounded-2xl border border-base-300/70 bg-base-100 shadow-sm">
+      <table className="table">
+        <thead>
+          <tr className="bg-base-200/60 text-base-content/60 text-xs uppercase tracking-wider">
             <th className="hidden md:table-cell">編號</th>
             <th>職位</th>
             <th>公司</th>
@@ -169,24 +170,32 @@ function RecruitPage() {
             <tr
               key={job.id}
               onClick={() => handleShow(job)}
-              className="job-row"
-              style={{ cursor: 'pointer' }}
+              className="hover cursor-pointer transition-colors"
             >
-              <td className="hidden md:table-cell">{(currentPage - 1) * jobsPerPage + index + 1}</td>
+              <td className="hidden md:table-cell text-base-content/50">{(currentPage - 1) * jobsPerPage + index + 1}</td>
               <td>
-                {job.title}
+                <span className="font-semibold text-base-content">{job.title}</span>
                 {isDeadlineSoon(job.deadline) && (
-                  <span className="deadline-soon-badge ml-2">即將截止</span>
+                  <Badge variant="warning" className="ml-2 align-middle">即將截止</Badge>
                 )}
               </td>
-              <td style={{ color: '#2563eb' }}>{job.company_name}</td>
-              <td className="hidden md:table-cell" style={{ color: '#475569', fontSize: '0.875rem' }}>
-                <BsCalendar style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-                {job.release_date}
+              <td>
+                <span className="inline-flex items-center gap-1.5 font-medium text-primary">
+                  <BsBuilding className="shrink-0" />
+                  {job.company_name}
+                </span>
               </td>
-              <td style={{ color: '#475569', fontSize: '0.875rem' }}>
-                <BsCalendarX style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-                {job.deadline}
+              <td className="hidden md:table-cell text-sm text-base-content/60">
+                <span className="inline-flex items-center gap-1.5">
+                  <BsCalendar className="shrink-0" />
+                  {job.release_date}
+                </span>
+              </td>
+              <td className="text-sm text-base-content/60">
+                <span className="inline-flex items-center gap-1.5">
+                  <BsCalendarX className="shrink-0" />
+                  {job.deadline}
+                </span>
               </td>
             </tr>
           ))}
@@ -197,82 +206,53 @@ function RecruitPage() {
 
   // 卡片視圖（適合行動裝置）
   const renderCardView = () => (
-    <div className="grid grid-cols-12 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {jobs.map((job, index) => (
-        <div key={job.id} className="col-span-12 md:col-span-6 lg:col-span-4">
-          <div
-            className="job-card"
-            onClick={() => handleShow(job)}
-            style={{ cursor: 'pointer', height: '100%' }}
-          >
-            <div style={{ padding: '20px', flex: 1 }}>
-              <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
-                <h5
-                  style={{
-                    margin: 0,
-                    fontSize: '1.1rem',
-                    fontWeight: '600',
-                    color: '#0f172a',
-                    lineHeight: '1.4',
-                  }}
-                >
-                  {job.title}
-                </h5>
-                {isDeadlineSoon(job.deadline) && (
-                  <span className="deadline-soon-badge" style={{ flexShrink: 0 }}>即將截止</span>
-                )}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  marginBottom: '12px',
-                  color: '#2563eb',
-                  fontSize: '0.9rem',
-                  fontWeight: '500',
-                }}
-              >
-                <BsBuilding />
-                {job.company_name}
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#475569' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <BsCalendar />
-                  發布: {job.release_date}
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <BsCalendarX />
-                  截止: {job.deadline}
-                </span>
-              </div>
+        <Card
+          key={job.id}
+          hover
+          padding="none"
+          onClick={() => handleShow(job)}
+          className="group flex h-full cursor-pointer flex-col overflow-hidden"
+        >
+          <div className="flex-1 p-5 sm:p-6">
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <h3 className="font-serif text-lg font-bold leading-snug text-base-content break-words">
+                {job.title}
+              </h3>
+              {isDeadlineSoon(job.deadline) && (
+                <Badge variant="warning" className="shrink-0">即將截止</Badge>
+              )}
             </div>
-            <div
-              style={{
-                borderTop: '1px solid #e2e8f0',
-                padding: '12px 20px',
-                background: '#f8fafc',
-                textAlign: 'center',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#2563eb',
-                  fontWeight: '500',
-                }}
-              >
-                查看詳情 →
+
+            <div className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+              <BsBuilding className="shrink-0" />
+              <span className="break-words">{job.company_name}</span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-base-content/60">
+              <span className="inline-flex items-center gap-1.5">
+                <BsCalendar className="shrink-0" />
+                發布: {job.release_date}
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <BsCalendarX className="shrink-0" />
+                截止: {job.deadline}
               </span>
             </div>
           </div>
-        </div>
+
+          <div className="flex items-center justify-center gap-1.5 border-t border-base-200 bg-base-200/40 px-5 py-3 text-sm font-semibold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-content">
+            查看詳情
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </div>
+        </Card>
       ))}
     </div>
   );
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
+    <div className="min-h-screen bg-base-200/40">
       <SEO
         main={false}
         title="招募查詢"
@@ -281,68 +261,60 @@ function RecruitPage() {
       />
 
       {/* Page Header */}
-      <div
-        style={{
-          background: '#1e3a8a',
-          minHeight: '200px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '48px 24px',
-        }}
-      >
-        <h1
+      <header className="relative overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#0f172a]">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.07]"
           style={{
-            color: '#ffffff',
-            fontWeight: '700',
-            fontSize: '2rem',
-            margin: 0,
-            letterSpacing: '0.02em',
+            backgroundImage:
+              'radial-gradient(circle at 20% 30%, #fff 1px, transparent 1px), radial-gradient(circle at 70% 60%, #fff 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
           }}
-        >
-          系友企業職缺
-        </h1>
-        <p style={{ color: 'rgba(255,255,255,0.7)', margin: '8px 0 0', fontSize: '1rem' }}>
-          探索系友企業徵才機會，共創職涯未來
-        </p>
-      </div>
+        />
+        <div className="relative mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-20">
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
+            <Briefcase className="h-4 w-4" />
+            Careers
+          </span>
+          <h1 className="font-serif text-3xl font-bold tracking-wide text-white sm:text-4xl">
+            系友企業職缺
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-sm text-white/70 sm:text-base">
+            探索系友企業徵才機會，共創職涯未來
+          </p>
+          <div className="mx-auto mt-6 h-1 w-20 rounded-full bg-gradient-to-r from-secondary to-primary" />
+        </div>
+      </header>
 
-      <div className="container mx-auto px-4 recruit-page" style={{ paddingTop: '32px', paddingBottom: '48px' }}>
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         {/* View Toggle */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="inline-flex" role="group" aria-label="切換視圖">
+        <div className="mb-6 flex items-center justify-end">
+          <div
+            className="inline-flex rounded-xl border border-base-300/70 bg-base-100 p-1 shadow-sm"
+            role="group"
+            aria-label="切換視圖"
+          >
             <button
               type="button"
               onClick={() => setViewMode('table')}
-              className="hidden md:inline-block"
-              style={{
-                padding: '8px 16px',
-                border: '1px solid #e2e8f0',
-                borderRadius: '6px 0 0 6px',
-                background: viewMode === 'table' ? '#1e3a8a' : '#ffffff',
-                color: viewMode === 'table' ? '#ffffff' : '#475569',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-              }}
+              className={`hidden items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-colors md:inline-flex ${
+                viewMode === 'table'
+                  ? 'bg-primary text-primary-content shadow-sm'
+                  : 'text-base-content/60 hover:text-base-content'
+              }`}
             >
+              <Table2 className="h-4 w-4" />
               表格視圖
             </button>
             <button
               type="button"
               onClick={() => setViewMode('card')}
-              style={{
-                padding: '8px 16px',
-                border: '1px solid #e2e8f0',
-                borderRadius: viewMode === 'table' ? '0 6px 6px 0' : '6px',
-                background: viewMode === 'card' ? '#1e3a8a' : '#ffffff',
-                color: viewMode === 'card' ? '#ffffff' : '#475569',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-              }}
+              className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                viewMode === 'card'
+                  ? 'bg-primary text-primary-content shadow-sm'
+                  : 'text-base-content/60 hover:text-base-content'
+              }`}
             >
+              <LayoutGrid className="h-4 w-4" />
               {window.innerWidth >= 768 ? '卡片視圖' : '視圖'}
             </button>
           </div>
@@ -350,42 +322,32 @@ function RecruitPage() {
 
         {/* 載入中狀態 */}
         {loading && (
-          <div className="text-center my-5">
+          <div className="my-16 text-center">
             <LoadingSpinner />
-            <p className="mt-2" style={{ color: '#475569' }}>載入徵才資訊中...</p>
+            <p className="mt-3 text-sm text-base-content/60">載入徵才資訊中...</p>
           </div>
         )}
 
         {/* 錯誤訊息 */}
         {error && !loading && (
           <div
-            style={{
-              padding: '16px',
-              background: '#fef2f2',
-              border: '1px solid #fecaca',
-              borderRadius: '8px',
-              color: '#dc2626',
-              textAlign: 'center',
-            }}
+            className="flex items-center justify-center gap-2 rounded-2xl border border-error/30 bg-error/5 px-4 py-4 text-center font-medium text-error"
             role="alert"
           >
+            <AlertTriangle className="h-5 w-5 shrink-0" />
             {error}
           </div>
         )}
 
         {/* 無職位訊息 */}
         {!loading && !error && jobs.length === 0 && (
-          <div
-            className="no-job text-center py-5 my-4"
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-            }}
-          >
-            <h2 style={{ color: '#94a3b8', fontWeight: '600' }}>暫無招募</h2>
-            <p style={{ color: '#475569' }}>目前沒有可用的招募資訊，請稍後再來查看。</p>
-          </div>
+          <Card padding="none" className="overflow-hidden">
+            <EmptyState
+              icon={<Briefcase className="h-8 w-8" />}
+              title="暫無招募"
+              description="目前沒有可用的招募資訊，請稍後再來查看。"
+            />
+          </Card>
         )}
 
         {/* 職位列表 - 根據視圖模式顯示 */}
@@ -408,144 +370,85 @@ function RecruitPage() {
               {!detailLoading && selectedJob.contact && selectedJob.contact.email && (
                 <a
                   href={`mailto:${selectedJob.contact.email}?subject=應徵${selectedJob.title}職位`}
-                  style={{
-                    padding: '8px 20px',
-                    background: '#2563eb',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontWeight: '600',
-                    fontSize: '0.9rem',
-                    textDecoration: 'none',
-                    display: 'inline-block',
-                  }}
+                  className="btn btn-primary btn-sm"
                 >
                   立即應徵
                 </a>
               )}
-              <button
-                type="button"
-                onClick={handleClose}
-                style={{
-                  padding: '8px 20px',
-                  background: '#ffffff',
-                  color: '#475569',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '6px',
-                  fontWeight: '500',
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                }}
-              >
+              <Button variant="outline" size="sm" onClick={handleClose}>
                 關閉
-              </button>
+              </Button>
             </>
           }
         >
           {detailLoading ? (
-            <div className="text-center py-5">
+            <div className="py-12 text-center">
               <LoadingSpinner />
-              <p className="mt-2" style={{ color: '#475569' }}>載入職位資訊中...</p>
+              <p className="mt-3 text-sm text-base-content/60">載入職位資訊中...</p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-12 gap-4 mb-4">
-                <div className="col-span-12 md:col-span-6">
-                  <div
-                    style={{
-                      padding: '16px',
-                      background: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      marginBottom: '16px',
-                      minHeight: '180px',
-                    }}
-                  >
-                    <h5
-                      style={{
-                        color: '#1e3a8a',
-                        fontWeight: '600',
-                        paddingBottom: '10px',
-                        borderBottom: '1px solid #e2e8f0',
-                        marginBottom: '12px',
-                      }}
-                    >
-                      基本資訊
-                    </h5>
-                    <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#0f172a' }}>
-                      <strong>公司名稱：</strong>
-                      <span style={{ color: '#2563eb' }}>{selectedJob.company_name}</span>
-                    </p>
-                    <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#0f172a' }}>
-                      <BsCalendar style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
-                      <strong>發布時間：</strong> {selectedJob.release_date}
-                    </p>
-                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#0f172a' }}>
-                      <BsCalendarX style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
-                      <strong>截止時間：</strong> {selectedJob.deadline}
-                    </p>
-                  </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* 基本資訊 */}
+                <div className="rounded-2xl border border-base-300/70 bg-base-200/40 p-5">
+                  <h3 className="mb-3 border-b border-base-300/70 pb-2.5 font-serif text-base font-bold text-primary">
+                    基本資訊
+                  </h3>
+                  <p className="mb-2 text-sm text-base-content">
+                    <strong className="font-semibold">公司名稱：</strong>
+                    <span className="text-primary">{selectedJob.company_name}</span>
+                  </p>
+                  <p className="mb-2 inline-flex items-start gap-2 text-sm text-base-content">
+                    <BsCalendar className="mt-0.5 shrink-0 text-base-content/50" />
+                    <span><strong className="font-semibold">發布時間：</strong> {selectedJob.release_date}</span>
+                  </p>
+                  <p className="inline-flex items-start gap-2 text-sm text-base-content">
+                    <BsCalendarX className="mt-0.5 shrink-0 text-base-content/50" />
+                    <span><strong className="font-semibold">截止時間：</strong> {selectedJob.deadline}</span>
+                  </p>
                 </div>
-                <div className="col-span-12 md:col-span-6">
-                  <div
-                    style={{
-                      padding: '16px',
-                      background: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      minHeight: '180px',
-                    }}
-                  >
-                    <h5
-                      style={{
-                        color: '#1e3a8a',
-                        fontWeight: '600',
-                        paddingBottom: '10px',
-                        borderBottom: '1px solid #e2e8f0',
-                        marginBottom: '12px',
-                      }}
-                    >
-                      聯絡方式
-                    </h5>
-                    <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#0f172a' }}>
-                      <BsPerson style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
-                      <strong>聯絡人：</strong>
+
+                {/* 聯絡方式 */}
+                <div className="rounded-2xl border border-base-300/70 bg-base-200/40 p-5">
+                  <h3 className="mb-3 border-b border-base-300/70 pb-2.5 font-serif text-base font-bold text-primary">
+                    聯絡方式
+                  </h3>
+                  <p className="mb-2 inline-flex items-start gap-2 text-sm text-base-content">
+                    <BsPerson className="mt-0.5 shrink-0 text-base-content/50" />
+                    <span>
+                      <strong className="font-semibold">聯絡人：</strong>
                       {selectedJob.contact && selectedJob.contact.name
                         ? selectedJob.contact.name
                         : '未提供'}
-                    </p>
-                    <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#0f172a' }}>
-                      <BsEnvelope style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
-                      <strong>Email：</strong>
+                    </span>
+                  </p>
+                  <p className="mb-2 inline-flex items-start gap-2 text-sm text-base-content break-all">
+                    <BsEnvelope className="mt-0.5 shrink-0 text-base-content/50" />
+                    <span>
+                      <strong className="font-semibold">Email：</strong>
                       {selectedJob.contact && selectedJob.contact.email
-                        ? <a href={`mailto:${selectedJob.contact.email}`} style={{ color: '#2563eb' }}>{selectedJob.contact.email}</a>
+                        ? <a href={`mailto:${selectedJob.contact.email}`} className="text-primary hover:underline">{selectedJob.contact.email}</a>
                         : '未提供'}
-                    </p>
-                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#0f172a' }}>
-                      <BsTelephone style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
-                      <strong>電話：</strong>
+                    </span>
+                  </p>
+                  <p className="inline-flex items-start gap-2 text-sm text-base-content">
+                    <BsTelephone className="mt-0.5 shrink-0 text-base-content/50" />
+                    <span>
+                      <strong className="font-semibold">電話：</strong>
                       {selectedJob.contact && selectedJob.contact.phone
                         ? selectedJob.contact.phone
                         : '未提供'}
-                    </p>
-                  </div>
+                    </span>
+                  </p>
                 </div>
               </div>
 
-              <div className="job-description mt-4">
-                <h5
-                  style={{
-                    color: '#1e3a8a',
-                    fontWeight: '600',
-                    paddingBottom: '10px',
-                    borderBottom: '1px solid #e2e8f0',
-                    marginBottom: '16px',
-                  }}
-                >
+              <div className="mt-6">
+                <h3 className="mb-4 border-b border-base-300/70 pb-2.5 font-serif text-base font-bold text-primary">
                   職位詳細資訊
-                </h5>
+                </h3>
                 <div
-                  className="job-content"
+                  className="prose prose-sm max-w-none text-base-content/80 break-words"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(selectedJob.intro),
                   }}
@@ -554,32 +457,23 @@ function RecruitPage() {
 
               {/* 照片幻燈片展示 */}
               {selectedJob.images && selectedJob.images.length > 0 && (
-                <div className="photos-section mt-4">
-                  <h5
-                    style={{
-                      color: '#1e3a8a',
-                      fontWeight: '600',
-                      paddingBottom: '10px',
-                      borderBottom: '1px solid #e2e8f0',
-                      marginBottom: '16px',
-                    }}
-                  >
+                <div className="mt-6">
+                  <h3 className="mb-4 border-b border-base-300/70 pb-2.5 font-serif text-base font-bold text-primary">
                     公司環境照片
-                  </h5>
+                  </h3>
                   <Swiper
-                    className="job-carousel"
+                    className="overflow-hidden rounded-2xl"
                     modules={[SwiperPagination, Navigation]}
                     pagination={selectedJob.images.length > 1 ? { clickable: true } : false}
                     navigation={selectedJob.images.length > 1}
                   >
                     {selectedJob.images.map((image, index) => (
                       <SwiperSlide key={index}>
-                        <div className="carousel-img-container">
+                        <div className="aspect-video w-full overflow-hidden bg-base-200">
                           <img
-                            className="block w-full rounded"
+                            className="h-full w-full object-cover"
                             src={getImageSrc(process.env.REACT_APP_BASE_URL + image.image, 'company')}
                             alt={`${selectedJob.company_name} 環境照片 ${index + 1}`}
-                            style={{ backgroundColor: '#f8fafc' }}
                             onError={(e) => handleImageError(e, 'company')}
                           />
                         </div>

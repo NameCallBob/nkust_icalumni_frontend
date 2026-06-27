@@ -1,9 +1,9 @@
 import React, { useState , useEffect} from 'react';
 import TabsComponent from 'components/User/Home/CompanyTabs';
 import CompanyListWithPagination from 'components/User/Home/CompanyList';
-import "css/user/homepage/CompanySearch.css"
+import { Section, Spinner } from 'components/common/ui';
+
 import Axios from 'common/Axios';
-import LoadingSpinner from 'components/LoadingSpinner';
 
 const CompanyTabsSearch = () => {
 
@@ -44,20 +44,37 @@ const CompanyTabsSearch = () => {
     },[selectedCategory])
 
     if (loading){
-      return <LoadingSpinner></LoadingSpinner>
+      return (
+        <Section width="wide">
+          <Spinner center label="載入系友企業資料中…" />
+        </Section>
+      );
     }
 
     return (
-      <div className="container mx-auto px-4">
-        <TabsComponent
-          categories={categories}
-          onCategorySelect={setSelectedCategory}
-          activeCategory={selectedCategory} // 傳遞目前選中的類別
-        />
-        <CompanyListWithPagination
-          companies={companies || []}
-        />
-      </div>
+      <Section
+        eyebrow="Alumni Enterprises"
+        title="系友企業探索"
+        subtitle="依產業別瀏覽智慧商務系系友所經營與服務的企業，建立彼此交流與合作的橋樑。"
+        center
+        width="wide"
+      >
+        <div className="space-y-8">
+          {/* 產業別分頁切換 */}
+          <div className="rounded-2xl bg-base-100 ring-1 ring-base-200 shadow-sm p-2 sm:p-3">
+            <TabsComponent
+              categories={categories}
+              onCategorySelect={setSelectedCategory}
+              activeCategory={selectedCategory} // 傳遞目前選中的類別
+            />
+          </div>
+
+          {/* 企業列表 */}
+          <CompanyListWithPagination
+            companies={companies || []}
+          />
+        </div>
+      </Section>
     );
   };
 

@@ -1,70 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { useNavigate } from 'react-router-dom';
+import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, GraduationCap, User, Package } from 'lucide-react';
 import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
+import { Badge, EmptyState } from '../../common/ui';
 
 // 公司卡片子組件
-const CompanyCard = ({ 
-  company, 
-  onCardClick,
-  cardStyle,
-  cardHoverStyle,
-  imageContainerStyle,
-  imageStyle,
-  imageHoverStyle,
-  cardContentStyle,
-  companyNameStyle,
-  infoItemStyle,
-  infoLabelStyle,
-  infoValueStyle,
-  productTagStyle
-}) => {
-  // 將 hover 狀態移到子組件中
-  const [isHovered, setIsHovered] = useState(false);
-  
+const CompanyCard = ({ company, onCardClick }) => {
   return (
-    <div 
-      style={{
-        ...cardStyle,
-        ...(isHovered ? cardHoverStyle : {})
-      }} 
+    <div
       onClick={() => onCardClick(company.member)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"
     >
-      <div style={imageContainerStyle}>
+      {/* 圖片區 */}
+      <div className="relative h-52 w-full overflow-hidden bg-slate-100">
         <img
           src={getImageSrc(company.photo, 'company')}
           alt={company.name}
-          style={{
-            ...imageStyle,
-            ...(isHovered ? imageHoverStyle : {})
-          }}
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           onError={(e) => handleImageError(e, 'company')}
         />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0f172a]/30 via-transparent to-transparent" />
       </div>
-      <div style={cardContentStyle}>
+
+      {/* 內容區 */}
+      <div className="flex flex-grow flex-col justify-between p-5">
         <div>
-          <h3 style={companyNameStyle}>{company.name}</h3>
-          <div style={infoItemStyle}>
-            <span style={infoLabelStyle}>系級：</span>
-            <span style={infoValueStyle}>{company.graduate_grade}</span>
-          </div>
-          <div style={infoItemStyle}>
-            <span style={infoLabelStyle}>系友：</span>
-            <span style={infoValueStyle}>{company.member_name}</span>
+          <h3 className="mb-3 text-center font-serif text-lg font-bold text-[#0f172a] line-clamp-2">
+            {company.name}
+          </h3>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <GraduationCap className="h-4 w-4 shrink-0 text-[#a0781c]" />
+              <span className="shrink-0 font-medium text-slate-500">系級</span>
+              <span className="truncate text-slate-700">{company.graduate_grade}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <User className="h-4 w-4 shrink-0 text-[#a0781c]" />
+              <span className="shrink-0 font-medium text-slate-500">系友</span>
+              <span className="truncate text-slate-700">{company.member_name}</span>
+            </div>
           </div>
         </div>
-        <div style={{ marginTop: '1rem' }}>
-          <div style={{ ...infoItemStyle, alignItems: 'flex-start' }}>
-            <span style={infoLabelStyle}>產品：</span>
-            <div style={infoValueStyle}>
-              {company.products.split(',').map((product, idx) => (
-                <span key={idx} style={productTagStyle}>
-                  {product.trim()}
-                </span>
-              ))}
-            </div>
+
+        {/* 產品標籤 */}
+        <div className="mt-4 border-t border-slate-100 pt-3">
+          <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+            <Package className="h-3.5 w-3.5 text-[#a0781c]" />
+            <span>主要產品</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {company.products.split(',').map((product, idx) => (
+              <Badge key={idx} variant="primary">
+                {product.trim()}
+              </Badge>
+            ))}
           </div>
         </div>
       </div>
@@ -76,7 +66,7 @@ const CompanyListWithPagination = ({ companies }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  
+
   // 處理視窗大小變化
   useEffect(() => {
     const handleResize = () => {
@@ -85,123 +75,97 @@ const CompanyListWithPagination = ({ companies }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     // 滾動到頁面頂部以提升用戶體驗
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  
-  // 定義分頁樣式
-  const paginationStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    marginTop: '2rem',
-    marginBottom: '2rem',
-  };
-  
-  const paginationItemStyle = {
-    margin: '0 0.25rem',
-    borderRadius: '50%',
-    width: '40px',
-    height: '40px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'all 0.3s ease',
-    border: 'none',
-    background: '#f8f9fa',
-    color: '#495057',
-  };
-  
-  const paginationActiveStyle = {
-    ...paginationItemStyle,
-    background: '#1e3a8a',
-    color: 'white',
-    boxShadow: '0 2px 8px rgba(30, 58, 138, 0.25)',
-  };
-  
-  const paginationControlStyle = {
-    ...paginationItemStyle,
-    width: 'auto',
-    padding: '0 10px',
-    borderRadius: '20px',
-  };
 
   const renderPagination = (totalPages) => {
-    const pageItems = [];
     let startPage = Math.max(1, currentPage - 1);
     let endPage = Math.min(totalPages, currentPage + 1);
-    
+
+    const numBtnBase =
+      'inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all duration-200';
+    const numBtn = `${numBtnBase} bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-[#1e3a8a]`;
+    const numBtnActive = `${numBtnBase} bg-[#1e3a8a] text-white shadow-md shadow-blue-900/25`;
+    const ctrlBtn =
+      'inline-flex h-10 items-center justify-center gap-1 rounded-full px-3 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-blue-50 hover:text-[#1e3a8a] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-600';
+
     return (
-      <div style={paginationStyle}>
-        <button 
-          onClick={() => handlePageChange(1)} 
-          style={paginationControlStyle}
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-1.5">
+        <button
+          onClick={() => handlePageChange(1)}
+          className={ctrlBtn}
           disabled={currentPage === 1}
         >
-          首頁
+          <ChevronsLeft className="h-4 w-4" />
+          <span className="hidden sm:inline">首頁</span>
         </button>
-        <button 
-          onClick={() => handlePageChange(Math.max(1, currentPage - 1))} 
-          style={paginationControlStyle}
+        <button
+          onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+          className={ctrlBtn}
           disabled={currentPage === 1}
         >
-          上一頁
+          <ChevronLeft className="h-4 w-4" />
+          <span className="hidden sm:inline">上一頁</span>
         </button>
-        
+
         {startPage > 1 && (
           <>
-            <button 
-              onClick={() => handlePageChange(1)} 
-              style={currentPage === 1 ? paginationActiveStyle : paginationItemStyle}
+            <button
+              onClick={() => handlePageChange(1)}
+              className={currentPage === 1 ? numBtnActive : numBtn}
             >
               1
             </button>
-            {startPage > 2 && <span style={{ margin: '0 0.5rem' }}>...</span>}
+            {startPage > 2 && <span className="px-1 text-slate-400">…</span>}
           </>
         )}
-        
-        {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(page => (
-          <button 
-            key={page} 
-            onClick={() => handlePageChange(page)} 
-            style={currentPage === page ? paginationActiveStyle : paginationItemStyle}
+
+        {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
+          <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={currentPage === page ? numBtnActive : numBtn}
           >
             {page}
           </button>
         ))}
-        
+
         {endPage < totalPages && (
           <>
-            {endPage < totalPages - 1 && <span style={{ margin: '0 0.5rem' }}>...</span>}
-            <button 
-              onClick={() => handlePageChange(totalPages)} 
-              style={currentPage === totalPages ? paginationActiveStyle : paginationItemStyle}
+            {endPage < totalPages - 1 && <span className="px-1 text-slate-400">…</span>}
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              className={currentPage === totalPages ? numBtnActive : numBtn}
             >
               {totalPages}
             </button>
           </>
         )}
-        
-        <button 
-          onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))} 
-          style={paginationControlStyle}
+
+        <button
+          onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+          className={ctrlBtn}
           disabled={currentPage === totalPages}
         >
-          下一頁
+          <span className="hidden sm:inline">下一頁</span>
+          <ChevronRight className="h-4 w-4" />
         </button>
-        <button 
-          onClick={() => handlePageChange(totalPages)} 
-          style={paginationControlStyle}
+        <button
+          onClick={() => handlePageChange(totalPages)}
+          className={ctrlBtn}
           disabled={currentPage === totalPages}
         >
-          末頁
+          <span className="hidden sm:inline">末頁</span>
+          <ChevronsRight className="h-4 w-4" />
         </button>
       </div>
     );
   };
-  
+
   // 設定每頁顯示數量
   const ITEMS_PER_PAGE_DESKTOP = 8;
   const ITEMS_PER_PAGE_MOBILE = 1;
@@ -212,147 +176,26 @@ const CompanyListWithPagination = ({ companies }) => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  
+
   const handleItemClick = (id) => {
     navigate(`/alumni/${id}`);
   };
-  
-  // 卡片容器的樣式
-  const cardContainerStyle = {
-    padding: '1.5rem',
-    marginBottom: '2rem',
-  };
-  
-  // 卡片的主樣式
-  const cardStyle = {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.06)',
-    transition: 'all 0.25s ease',
-    cursor: 'pointer',
-    background: 'white',
-    border: '1px solid #e2e8f0',
-  };
 
-  // 卡片 hover 效果
-  const cardHoverStyle = {
-    transform: 'translateY(-3px)',
-    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-    borderColor: '#bfdbfe',
-  };
-  
-  // 圖片容器樣式
-  const imageContainerStyle = {
-    position: 'relative',
-    overflow: 'hidden',
-    height: '220px',
-  };
-  
-  // 圖片樣式
-  const imageStyle = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    transition: 'transform 0.5s ease',
-  };
-  
-  // 圖片 hover 效果
-  const imageHoverStyle = {
-    transform: 'scale(1.05)',
-  };
-  
-  // 卡片內容樣式
-  const cardContentStyle = {
-    padding: '1.5rem',
-    flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  };
-  
-  // 公司名稱樣式
-  const companyNameStyle = {
-    fontSize: '1.3rem',
-    fontWeight: '600',
-    marginBottom: '1rem',
-    color: '#333',
-    textAlign: 'center',
-  };
-  
-  // 資訊項目樣式
-  const infoItemStyle = {
-    display: 'flex',
-    marginBottom: '0.5rem',
-    fontSize: '0.95rem',
-    color: '#666',
-  };
-  
-  // 資訊標籤樣式
-  const infoLabelStyle = {
-    fontWeight: '600',
-    minWidth: '4rem',
-    color: '#555',
-  };
-  
-  // 資訊值樣式
-  const infoValueStyle = {
-    flexGrow: 1,
-  };
-  
-  // 產品標籤樣式
-  const productTagStyle = {
-    display: 'inline-block',
-    background: '#eff6ff',
-    padding: '0.2rem 0.6rem',
-    borderRadius: '4px',
-    fontSize: '0.75rem',
-    margin: '0.2rem',
-    color: '#1e3a8a',
-    border: '1px solid #bfdbfe',
-  };
-  
   return (
-    <div className="w-full" style={{ padding: '0 2rem' }}>
+    <div className="w-full">
       {totalItems === 0 ? (
-        <div
-          className="alert alert-warning justify-center text-center"
-          style={{
-            marginTop: '2rem',
-            borderRadius: '8px',
-            padding: '1rem 1.5rem',
-            fontSize: '1rem',
-          }}
-        >
-          沒有找到此類別的公司資料。
-        </div>
+        <EmptyState
+          title="沒有找到此類別的公司資料。"
+          description="請嘗試切換其他類別，或稍後再回來查看。"
+        />
       ) : (
         <>
-          <div className="flex flex-wrap" style={{ marginTop: '2rem' }}>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <TransitionGroup component={null}>
               {currentCompanies.map((company, index) => (
                 <CSSTransition key={index} timeout={500} classNames="fade">
-                  <div
-                    className={`w-full ${isMobile ? 'md:w-full' : 'md:w-1/2'} lg:w-1/4`}
-                    style={cardContainerStyle}
-                  >
-                    <CompanyCard
-                      company={company}
-                      onCardClick={handleItemClick}
-                      cardStyle={cardStyle}
-                      cardHoverStyle={cardHoverStyle}
-                      imageContainerStyle={imageContainerStyle}
-                      imageStyle={imageStyle}
-                      imageHoverStyle={imageHoverStyle}
-                      cardContentStyle={cardContentStyle}
-                      companyNameStyle={companyNameStyle}
-                      infoItemStyle={infoItemStyle}
-                      infoLabelStyle={infoLabelStyle}
-                      infoValueStyle={infoValueStyle}
-                      productTagStyle={productTagStyle}
-                    />
+                  <div className="h-full">
+                    <CompanyCard company={company} onCardClick={handleItemClick} />
                   </div>
                 </CSSTransition>
               ))}
@@ -363,7 +206,7 @@ const CompanyListWithPagination = ({ companies }) => {
           {totalPages > 1 && renderPagination(totalPages)}
         </>
       )}
-      
+
       {/* 添加淡入淡出動畫的 CSS */}
       <style jsx="true">{`
         .fade-enter {

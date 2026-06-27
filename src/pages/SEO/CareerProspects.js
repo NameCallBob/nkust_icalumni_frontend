@@ -19,6 +19,7 @@ import {
   BsPersonPlus
 } from 'react-icons/bs';
 import { Network } from 'lucide-react';
+import { Section, Card, Badge } from 'components/common/ui';
 
 const CareerProspects = () => {
   return (
@@ -69,681 +70,338 @@ const CareerProspects = () => {
         <link rel="canonical" href="https://nkusticalumni.org/career-prospects" />
       </Helmet>
 
-      <div className="w-full px-4">
+      <div className="w-full bg-base-200/40">
         {/* Hero Section */}
-        <section className="hero-section relative text-white py-5" style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          minHeight: '70vh'
-        }}>
-          <div className="container mx-auto px-4">
-            <div className="flex flex-wrap items-center h-full -mx-2">
-              <div className="w-full lg:w-2/3 px-2">
-                <h1 className="text-5xl font-bold mb-4">
-                  智慧商務系就業前景
-                  <br />
-                  <span className="text-warning">開啟無限職涯可能</span>
-                </h1>
-                <p className="text-lg mb-4 opacity-90">
-                  智慧商務系培育的專業人才在數位經濟時代備受市場青睞。
-                  優異的就業率、競爭力十足的薪資水準，以及豐富的職涯發展機會，
-                  讓智商系畢業生在各行各業都能發光發熱。
-                </p>
-                <div className="flex flex-wrap -m-2 mb-4">
-                  <div className="w-full md:w-1/3 p-2">
-                    <div className="bg-warning rounded-lg p-3 text-base-content text-center">
-                      <h3 className="mb-1">98%</h3>
-                      <small className="text-sm font-bold">智慧商務系就業率</small>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/3 p-2">
-                    <div className="bg-base-200 rounded-lg p-3 text-base-content text-center">
-                      <h3 className="mb-1">45K+</h3>
-                      <small className="text-sm font-bold">平均起薪</small>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/3 p-2">
-                    <div className="bg-success rounded-lg p-3 text-white text-center">
-                      <h3 className="mb-1">25%</h3>
-                      <small className="text-sm font-bold">創業比例</small>
-                    </div>
-                  </div>
+        <section className="relative overflow-hidden text-white">
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1e3a8a 100%)' }}
+          />
+          {/* 裝飾光暈 */}
+          <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-secondary/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-primary/30 blur-3xl" />
+
+          <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24">
+            <div className="max-w-3xl">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
+                Career Prospects
+              </p>
+              <h1 className="font-serif text-3xl sm:text-5xl font-bold leading-tight">
+                智慧商務系就業前景
+                <br />
+                <span className="text-secondary">開啟無限職涯可能</span>
+              </h1>
+              <p className="mt-6 text-base sm:text-lg leading-relaxed text-white/80">
+                智慧商務系培育的專業人才在數位經濟時代備受市場青睞。
+                優異的就業率、競爭力十足的薪資水準，以及豐富的職涯發展機會，
+                讓智商系畢業生在各行各業都能發光發熱。
+              </p>
+
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="rounded-2xl border border-white/15 bg-white/10 p-5 text-center backdrop-blur-sm">
+                  <div className="font-serif text-3xl font-bold text-secondary">98%</div>
+                  <div className="mt-1 text-sm font-medium text-white/80">智慧商務系就業率</div>
                 </div>
-                <div className="flex gap-3">
-                  <Link to="/recruit" className="btn btn-warning btn-lg px-4">
-                    <BsBriefcase className="mr-2" />
-                    查看職缺
-                  </Link>
-                  <Link to="/IC/joinUs" className="btn btn-outline border-white text-white btn-lg px-4">
-                    <BsPeople className="mr-2" />
-                    加入系友會
-                  </Link>
+                <div className="rounded-2xl border border-white/15 bg-white/10 p-5 text-center backdrop-blur-sm">
+                  <div className="font-serif text-3xl font-bold text-secondary">45K+</div>
+                  <div className="mt-1 text-sm font-medium text-white/80">平均起薪</div>
                 </div>
+                <div className="rounded-2xl border border-white/15 bg-white/10 p-5 text-center backdrop-blur-sm">
+                  <div className="font-serif text-3xl font-bold text-secondary">25%</div>
+                  <div className="mt-1 text-sm font-medium text-white/80">創業比例</div>
+                </div>
+              </div>
+
+              <div className="mt-10 flex flex-col sm:flex-row gap-3">
+                <Link
+                  to="/recruit"
+                  className="btn btn-lg gap-2 border-none bg-secondary text-white hover:brightness-110"
+                >
+                  <BsBriefcase />
+                  查看職缺
+                </Link>
+                <Link
+                  to="/IC/joinUs"
+                  className="btn btn-lg gap-2 border-white/40 bg-transparent text-white hover:bg-white/10"
+                >
+                  <BsPeople />
+                  加入系友會
+                </Link>
               </div>
             </div>
           </div>
         </section>
 
         {/* 就業統計 Section */}
-        <section className="py-5">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-5">
-              <h2 className="text-4xl font-bold mb-3">智慧商務系就業成果</h2>
-              <p className="text-lg text-base-content/60">
-                數據說話：智商系畢業生的優異就業表現
-              </p>
-            </div>
-
-            <div className="flex flex-wrap -m-2 mb-5">
-              <div className="w-full md:w-1/2 lg:w-1/4 p-2">
-                <div className="card border-0 shadow-sm text-center h-full">
-                  <div className="card-body p-4">
-                    <div className="bg-primary rounded-full mx-auto mb-3" style={{width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                      <h3 className="text-white mb-0">98%</h3>
-                    </div>
-                    <h5 className="mb-2">整體就業率</h5>
-                    <p className="text-base-content/60 text-sm">
-                      智慧商務系畢業生六個月內成功就業比例
-                    </p>
-                  </div>
+        <Section
+          title="智慧商務系就業成果"
+          subtitle="數據說話：智商系畢業生的優異就業表現"
+          center
+          width="wide"
+          className="bg-base-100"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+            {[
+              { value: '98%', label: '整體就業率', desc: '智慧商務系畢業生六個月內成功就業比例', accent: 'primary' },
+              { value: '45K', label: '平均起薪', desc: '智慧商務系新鮮人平均月薪（台幣）', accent: 'success' },
+              { value: '85%', label: '專業對口率', desc: '智商系畢業生從事相關專業工作比例', accent: 'warning' },
+              { value: '60K', label: '三年後薪資', desc: '智慧商務系畢業生三年後平均月薪', accent: 'info' },
+            ].map((s) => (
+              <Card key={s.label} hover padding="lg" className="text-center">
+                <div
+                  className={[
+                    'mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full font-serif text-xl font-bold text-white',
+                    s.accent === 'primary' ? 'bg-primary' : '',
+                    s.accent === 'success' ? 'bg-success' : '',
+                    s.accent === 'warning' ? 'bg-warning' : '',
+                    s.accent === 'info' ? 'bg-info' : '',
+                  ].join(' ')}
+                >
+                  {s.value}
                 </div>
-              </div>
-
-              <div className="w-full md:w-1/2 lg:w-1/4 p-2">
-                <div className="card border-0 shadow-sm text-center h-full">
-                  <div className="card-body p-4">
-                    <div className="bg-success rounded-full mx-auto mb-3" style={{width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                      <h3 className="text-white mb-0">45K</h3>
-                    </div>
-                    <h5 className="mb-2">平均起薪</h5>
-                    <p className="text-base-content/60 text-sm">
-                      智慧商務系新鮮人平均月薪（台幣）
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full md:w-1/2 lg:w-1/4 p-2">
-                <div className="card border-0 shadow-sm text-center h-full">
-                  <div className="card-body p-4">
-                    <div className="bg-warning rounded-full mx-auto mb-3" style={{width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                      <h3 className="text-white mb-0">85%</h3>
-                    </div>
-                    <h5 className="mb-2">專業對口率</h5>
-                    <p className="text-base-content/60 text-sm">
-                      智商系畢業生從事相關專業工作比例
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full md:w-1/2 lg:w-1/4 p-2">
-                <div className="card border-0 shadow-sm text-center h-full">
-                  <div className="card-body p-4">
-                    <div className="bg-info rounded-full mx-auto mb-3" style={{width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                      <h3 className="text-white mb-0">60K</h3>
-                    </div>
-                    <h5 className="mb-2">三年後薪資</h5>
-                    <p className="text-base-content/60 text-sm">
-                      智慧商務系畢業生三年後平均月薪
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap -m-2">
-              <div className="w-full lg:w-1/2 p-2">
-                <div className="card border-0 shadow">
-                  <div className="bg-primary text-white px-4 py-3">
-                    <h4 className="mb-0">薪資成長趨勢</h4>
-                  </div>
-                  <div className="card-body">
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span>新鮮人（0-1年）</span>
-                        <span className="font-bold">35-50K</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-primary h-full" style={{width: '60%'}}></div>
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span>資深專員（2-3年）</span>
-                        <span className="font-bold">45-70K</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-success h-full" style={{width: '75%'}}></div>
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span>主管職（5年以上）</span>
-                        <span className="font-bold">70-120K</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-warning h-full" style={{width: '90%'}}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span>高階主管/創業</span>
-                        <span className="font-bold">100K+</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-error h-full" style={{width: '100%'}}></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full lg:w-1/2 p-2">
-                <div className="card border-0 shadow">
-                  <div className="bg-success text-white px-4 py-3">
-                    <h4 className="mb-0">行業分布比例</h4>
-                  </div>
-                  <div className="card-body">
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span>科技業</span>
-                        <span className="font-bold">35%</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-primary h-full" style={{width: '35%'}}></div>
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span>電商零售業</span>
-                        <span className="font-bold">25%</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-success h-full" style={{width: '25%'}}></div>
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span>金融服務業</span>
-                        <span className="font-bold">15%</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-warning h-full" style={{width: '15%'}}></div>
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span>創業</span>
-                        <span className="font-bold">15%</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-info h-full" style={{width: '15%'}}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span>其他行業</span>
-                        <span className="font-bold">10%</span>
-                      </div>
-                      <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
-                        <div className="bg-secondary h-full" style={{width: '10%'}}></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                <h5 className="mb-2 font-semibold text-base-content">{s.label}</h5>
+                <p className="text-sm text-base-content/60">{s.desc}</p>
+              </Card>
+            ))}
           </div>
-        </section>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card padding="none" className="overflow-hidden">
+              <div className="bg-primary px-6 py-4">
+                <h4 className="font-serif text-lg font-semibold text-white">薪資成長趨勢</h4>
+              </div>
+              <div className="p-6 space-y-5">
+                {[
+                  { label: '新鮮人（0-1年）', value: '35-50K', width: '60%', color: 'bg-primary' },
+                  { label: '資深專員（2-3年）', value: '45-70K', width: '75%', color: 'bg-success' },
+                  { label: '主管職（5年以上）', value: '70-120K', width: '90%', color: 'bg-warning' },
+                  { label: '高階主管/創業', value: '100K+', width: '100%', color: 'bg-error' },
+                ].map((row) => (
+                  <div key={row.label}>
+                    <div className="mb-2 flex items-center justify-between text-sm">
+                      <span className="text-base-content/80">{row.label}</span>
+                      <span className="font-bold text-base-content">{row.value}</span>
+                    </div>
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-base-300">
+                      <div className={`h-full rounded-full ${row.color}`} style={{ width: row.width }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card padding="none" className="overflow-hidden">
+              <div className="bg-success px-6 py-4">
+                <h4 className="font-serif text-lg font-semibold text-white">行業分布比例</h4>
+              </div>
+              <div className="p-6 space-y-5">
+                {[
+                  { label: '科技業', value: '35%', width: '35%', color: 'bg-primary' },
+                  { label: '電商零售業', value: '25%', width: '25%', color: 'bg-success' },
+                  { label: '金融服務業', value: '15%', width: '15%', color: 'bg-warning' },
+                  { label: '創業', value: '15%', width: '15%', color: 'bg-info' },
+                  { label: '其他行業', value: '10%', width: '10%', color: 'bg-secondary' },
+                ].map((row) => (
+                  <div key={row.label}>
+                    <div className="mb-2 flex items-center justify-between text-sm">
+                      <span className="text-base-content/80">{row.label}</span>
+                      <span className="font-bold text-base-content">{row.value}</span>
+                    </div>
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-base-300">
+                      <div className={`h-full rounded-full ${row.color}`} style={{ width: row.width }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </Section>
 
         {/* 熱門職業 Section */}
-        <section className="py-5 bg-base-200">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-5">
-              <h2 className="text-4xl font-bold mb-3">智慧商務系熱門職業</h2>
-              <p className="text-lg text-base-content/60">
-                智商系畢業生的多元職涯選擇
-              </p>
-            </div>
-
-            <div className="flex flex-wrap -m-2">
-              <div className="w-full md:w-1/2 lg:w-1/3 p-2">
-                <div className="card border-0 shadow-sm h-full">
-                  <div className="card-body p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="bg-primary rounded-lg mr-3 p-2">
-                        <BsCart className="text-white text-xl" />
-                      </div>
-                      <div>
-                        <h5 className="mb-0">電商經理</h5>
-                        <small className="text-base-content/60">平均薪資：50-80K</small>
-                      </div>
+        <Section
+          title="智慧商務系熱門職業"
+          subtitle="智商系畢業生的多元職涯選擇"
+          center
+          width="wide"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { icon: BsCart, color: 'bg-primary', text: 'text-primary', name: '電商經理', salary: '平均薪資：50-80K', desc: '負責電商平台營運、商品管理、銷售策略規劃等工作。智慧商務系學生在此領域具有強大競爭優勢。', skills: ['電商營運', '數據分析', '專案管理'], fit: 90, bar: 'bg-primary' },
+              { icon: BsMegaphone, color: 'bg-success', text: 'text-success', name: '數位行銷專員', salary: '平均薪資：40-65K', desc: '執行數位行銷策略、管理社群媒體、分析行銷成效。智慧商務系課程完美對應此職位需求。', skills: ['SEO/SEM', '社群經營', '內容行銷'], fit: 95, bar: 'bg-success' },
+              { icon: BsGraphUp, color: 'bg-warning', text: 'text-warning', name: '商業分析師', salary: '平均薪資：55-85K', desc: '運用數據分析技術協助企業決策，發掘商業機會。智慧商務系的數據分析訓練在此展現價值。', skills: ['數據分析', '統計分析', '商業洞察'], fit: 85, bar: 'bg-warning' },
+              { icon: BsKanban, color: 'bg-info', text: 'text-info', name: '產品經理', salary: '平均薪資：60-100K', desc: '負責產品策略規劃、市場分析、跨部門協作。智慧商務系培養的綜合能力在此發揮關鍵作用。', skills: ['產品策略', '市場分析', '專案管理'], fit: 80, bar: 'bg-info' },
+              { icon: BsLightbulb, color: 'bg-error', text: 'text-error', name: '創業家', salary: '收入：依事業規模', desc: '創立自己的事業，在電商、科技服務等領域發揮所長。智慧商務系提供完整的創業知識與技能。', skills: ['商業企劃', '領導管理', '市場開發'], fit: 75, bar: 'bg-error' },
+              { icon: BsPersonGear, color: 'bg-secondary', text: 'text-secondary', name: '管理顧問', salary: '平均薪資：65-120K', desc: '協助企業解決經營問題、數位轉型諮詢。智慧商務系的理論基礎與實務經驗兼備優勢明顯。', skills: ['策略分析', '流程改善', '簡報溝通'], fit: 70, bar: 'bg-secondary' },
+            ].map((job) => {
+              const Icon = job.icon;
+              return (
+                <Card key={job.name} hover padding="lg" className="flex h-full flex-col">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${job.color}`}>
+                      <Icon className="text-xl text-white" />
                     </div>
-                    <p className="text-base-content/60 mb-3">
-                      負責電商平台營運、商品管理、銷售策略規劃等工作。
-                      智慧商務系學生在此領域具有強大競爭優勢。
-                    </p>
-                    <div className="mb-3">
-                      <h6 className="text-primary mb-2">核心技能需求：</h6>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="badge bg-base-200 text-base-content">電商營運</span>
-                        <span className="badge bg-base-200 text-base-content">數據分析</span>
-                        <span className="badge bg-base-200 text-base-content">專案管理</span>
-                      </div>
+                    <div className="min-w-0">
+                      <h5 className="font-semibold text-base-content">{job.name}</h5>
+                      <small className="text-base-content/60">{job.salary}</small>
                     </div>
-                    <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden mb-2">
-                      <div className="bg-primary h-full" style={{width: '90%'}}></div>
-                    </div>
-                    <small className="text-base-content/60">智商系適配度：90%</small>
                   </div>
-                </div>
-              </div>
-
-              <div className="w-full md:w-1/2 lg:w-1/3 p-2">
-                <div className="card border-0 shadow-sm h-full">
-                  <div className="card-body p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="bg-success rounded-lg mr-3 p-2">
-                        <BsMegaphone className="text-white text-xl" />
-                      </div>
-                      <div>
-                        <h5 className="mb-0">數位行銷專員</h5>
-                        <small className="text-base-content/60">平均薪資：40-65K</small>
-                      </div>
+                  <p className="mb-4 text-sm leading-relaxed text-base-content/70">{job.desc}</p>
+                  <div className="mb-4">
+                    <h6 className={`mb-2 text-sm font-semibold ${job.text}`}>核心技能需求：</h6>
+                    <div className="flex flex-wrap gap-1.5">
+                      {job.skills.map((sk) => (
+                        <Badge key={sk} variant="neutral">{sk}</Badge>
+                      ))}
                     </div>
-                    <p className="text-base-content/60 mb-3">
-                      執行數位行銷策略、管理社群媒體、分析行銷成效。
-                      智慧商務系課程完美對應此職位需求。
-                    </p>
-                    <div className="mb-3">
-                      <h6 className="text-success mb-2">核心技能需求：</h6>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="badge bg-base-200 text-base-content">SEO/SEM</span>
-                        <span className="badge bg-base-200 text-base-content">社群經營</span>
-                        <span className="badge bg-base-200 text-base-content">內容行銷</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden mb-2">
-                      <div className="bg-success h-full" style={{width: '95%'}}></div>
-                    </div>
-                    <small className="text-base-content/60">智商系適配度：95%</small>
                   </div>
-                </div>
-              </div>
-
-              <div className="w-full md:w-1/2 lg:w-1/3 p-2">
-                <div className="card border-0 shadow-sm h-full">
-                  <div className="card-body p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="bg-warning rounded-lg mr-3 p-2">
-                        <BsGraphUp className="text-white text-xl" />
-                      </div>
-                      <div>
-                        <h5 className="mb-0">商業分析師</h5>
-                        <small className="text-base-content/60">平均薪資：55-85K</small>
-                      </div>
+                  <div className="mt-auto">
+                    <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-base-300">
+                      <div className={`h-full rounded-full ${job.bar}`} style={{ width: `${job.fit}%` }} />
                     </div>
-                    <p className="text-base-content/60 mb-3">
-                      運用數據分析技術協助企業決策，發掘商業機會。
-                      智慧商務系的數據分析訓練在此展現價值。
-                    </p>
-                    <div className="mb-3">
-                      <h6 className="text-warning mb-2">核心技能需求：</h6>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="badge bg-base-200 text-base-content">數據分析</span>
-                        <span className="badge bg-base-200 text-base-content">統計分析</span>
-                        <span className="badge bg-base-200 text-base-content">商業洞察</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden mb-2">
-                      <div className="bg-warning h-full" style={{width: '85%'}}></div>
-                    </div>
-                    <small className="text-base-content/60">智商系適配度：85%</small>
+                    <small className="text-base-content/60">智商系適配度：{job.fit}%</small>
                   </div>
-                </div>
-              </div>
-
-              <div className="w-full md:w-1/2 lg:w-1/3 p-2">
-                <div className="card border-0 shadow-sm h-full">
-                  <div className="card-body p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="bg-info rounded-lg mr-3 p-2">
-                        <BsKanban className="text-white text-xl" />
-                      </div>
-                      <div>
-                        <h5 className="mb-0">產品經理</h5>
-                        <small className="text-base-content/60">平均薪資：60-100K</small>
-                      </div>
-                    </div>
-                    <p className="text-base-content/60 mb-3">
-                      負責產品策略規劃、市場分析、跨部門協作。
-                      智慧商務系培養的綜合能力在此發揮關鍵作用。
-                    </p>
-                    <div className="mb-3">
-                      <h6 className="text-info mb-2">核心技能需求：</h6>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="badge bg-base-200 text-base-content">產品策略</span>
-                        <span className="badge bg-base-200 text-base-content">市場分析</span>
-                        <span className="badge bg-base-200 text-base-content">專案管理</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden mb-2">
-                      <div className="bg-info h-full" style={{width: '80%'}}></div>
-                    </div>
-                    <small className="text-base-content/60">智商系適配度：80%</small>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full md:w-1/2 lg:w-1/3 p-2">
-                <div className="card border-0 shadow-sm h-full">
-                  <div className="card-body p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="bg-error rounded-lg mr-3 p-2">
-                        <BsLightbulb className="text-white text-xl" />
-                      </div>
-                      <div>
-                        <h5 className="mb-0">創業家</h5>
-                        <small className="text-base-content/60">收入：依事業規模</small>
-                      </div>
-                    </div>
-                    <p className="text-base-content/60 mb-3">
-                      創立自己的事業，在電商、科技服務等領域發揮所長。
-                      智慧商務系提供完整的創業知識與技能。
-                    </p>
-                    <div className="mb-3">
-                      <h6 className="text-error mb-2">核心技能需求：</h6>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="badge bg-base-200 text-base-content">商業企劃</span>
-                        <span className="badge bg-base-200 text-base-content">領導管理</span>
-                        <span className="badge bg-base-200 text-base-content">市場開發</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden mb-2">
-                      <div className="bg-error h-full" style={{width: '75%'}}></div>
-                    </div>
-                    <small className="text-base-content/60">智商系適配度：75%</small>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full md:w-1/2 lg:w-1/3 p-2">
-                <div className="card border-0 shadow-sm h-full">
-                  <div className="card-body p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="bg-secondary rounded-lg mr-3 p-2">
-                        <BsPersonGear className="text-white text-xl" />
-                      </div>
-                      <div>
-                        <h5 className="mb-0">管理顧問</h5>
-                        <small className="text-base-content/60">平均薪資：65-120K</small>
-                      </div>
-                    </div>
-                    <p className="text-base-content/60 mb-3">
-                      協助企業解決經營問題、數位轉型諮詢。
-                      智慧商務系的理論基礎與實務經驗兼備優勢明顯。
-                    </p>
-                    <div className="mb-3">
-                      <h6 className="text-secondary mb-2">核心技能需求：</h6>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="badge bg-base-200 text-base-content">策略分析</span>
-                        <span className="badge bg-base-200 text-base-content">流程改善</span>
-                        <span className="badge bg-base-200 text-base-content">簡報溝通</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden mb-2">
-                      <div className="bg-secondary h-full" style={{width: '70%'}}></div>
-                    </div>
-                    <small className="text-base-content/60">智商系適配度：70%</small>
-                  </div>
-                </div>
-              </div>
-            </div>
+                </Card>
+              );
+            })}
           </div>
-        </section>
+        </Section>
 
         {/* 職涯發展路徑 Section */}
-        <section className="py-5">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-5">
-              <h2 className="text-4xl font-bold mb-3">智慧商務系職涯發展路徑</h2>
-              <p className="text-lg text-base-content/60">
-                從新鮮人到企業領導者的完整發展藍圖
-              </p>
-            </div>
-
-            <div className="flex flex-wrap -m-2">
-              <div className="w-full lg:w-1/2 p-2">
-                <div className="card border-0 shadow-lg">
-                  <div className="bg-primary text-white px-4 py-3">
-                    <h4 className="mb-0">技術專業路線</h4>
-                  </div>
-                  <div className="card-body p-4">
-                    <div className="timeline">
-                      <div className="flex mb-4">
-                        <div className="bg-primary rounded-full mr-3 shrink-0" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <span className="text-white font-bold">1</span>
+        <Section
+          title="智慧商務系職涯發展路徑"
+          subtitle="從新鮮人到企業領導者的完整發展藍圖"
+          center
+          width="wide"
+          className="bg-base-100"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {[
+              {
+                header: '技術專業路線',
+                headerBg: 'bg-primary',
+                steps: [
+                  { n: 1, dot: 'bg-primary', text: 'text-primary', title: '專員/助理（0-2年）', body: '電商專員、數位行銷助理、數據分析專員', salary: '35-50K' },
+                  { n: 2, dot: 'bg-success', text: 'text-success', title: '資深專員（3-5年）', body: '資深電商經理、數位行銷專家、商業分析師', salary: '50-80K' },
+                  { n: 3, dot: 'bg-warning', text: 'text-warning', title: '技術專家（5年以上）', body: '首席分析師、技術總監、產品架構師', salary: '80-150K' },
+                ],
+              },
+              {
+                header: '管理領導路線',
+                headerBg: 'bg-success',
+                steps: [
+                  { n: 1, dot: 'bg-primary', text: 'text-primary', title: '基層主管（3-5年）', body: '小組長、專案經理、部門副理', salary: '55-75K' },
+                  { n: 2, dot: 'bg-success', text: 'text-success', title: '中階主管（5-8年）', body: '部門經理、營運總監、產品總監', salary: '80-120K' },
+                  { n: 3, dot: 'bg-warning', text: 'text-warning', title: '高階主管（8年以上）', body: 'VP、CTO、CEO、創業家', salary: '120K+' },
+                ],
+              },
+            ].map((path) => (
+              <Card key={path.header} padding="none" className="overflow-hidden">
+                <div className={`${path.headerBg} px-6 py-4`}>
+                  <h4 className="font-serif text-lg font-semibold text-white">{path.header}</h4>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-6">
+                    {path.steps.map((step) => (
+                      <div key={step.n} className="flex gap-4">
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${step.dot}`}>
+                          <span className="font-bold text-white">{step.n}</span>
                         </div>
                         <div>
-                          <h5 className="text-primary">專員/助理（0-2年）</h5>
-                          <p className="text-base-content/60 mb-0">
-                            電商專員、數位行銷助理、數據分析專員
+                          <h5 className={`font-semibold ${step.text}`}>{step.title}</h5>
+                          <p className="mt-1 text-sm text-base-content/70">
+                            {step.body}
                             <br />
-                            <strong>薪資範圍：</strong>35-50K
+                            <strong>薪資範圍：</strong>{step.salary}
                           </p>
                         </div>
                       </div>
-                      <div className="flex mb-4">
-                        <div className="bg-success rounded-full mr-3 shrink-0" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <span className="text-white font-bold">2</span>
-                        </div>
-                        <div>
-                          <h5 className="text-success">資深專員（3-5年）</h5>
-                          <p className="text-base-content/60 mb-0">
-                            資深電商經理、數位行銷專家、商業分析師
-                            <br />
-                            <strong>薪資範圍：</strong>50-80K
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex">
-                        <div className="bg-warning rounded-full mr-3 shrink-0" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <span className="text-white font-bold">3</span>
-                        </div>
-                        <div>
-                          <h5 className="text-warning">技術專家（5年以上）</h5>
-                          <p className="text-base-content/60 mb-0">
-                            首席分析師、技術總監、產品架構師
-                            <br />
-                            <strong>薪資範圍：</strong>80-150K
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-
-              <div className="w-full lg:w-1/2 p-2">
-                <div className="card border-0 shadow-lg">
-                  <div className="bg-success text-white px-4 py-3">
-                    <h4 className="mb-0">管理領導路線</h4>
-                  </div>
-                  <div className="card-body p-4">
-                    <div className="timeline">
-                      <div className="flex mb-4">
-                        <div className="bg-primary rounded-full mr-3 shrink-0" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <span className="text-white font-bold">1</span>
-                        </div>
-                        <div>
-                          <h5 className="text-primary">基層主管（3-5年）</h5>
-                          <p className="text-base-content/60 mb-0">
-                            小組長、專案經理、部門副理
-                            <br />
-                            <strong>薪資範圍：</strong>55-75K
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex mb-4">
-                        <div className="bg-success rounded-full mr-3 shrink-0" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <span className="text-white font-bold">2</span>
-                        </div>
-                        <div>
-                          <h5 className="text-success">中階主管（5-8年）</h5>
-                          <p className="text-base-content/60 mb-0">
-                            部門經理、營運總監、產品總監
-                            <br />
-                            <strong>薪資範圍：</strong>80-120K
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex">
-                        <div className="bg-warning rounded-full mr-3 shrink-0" style={{width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                          <span className="text-white font-bold">3</span>
-                        </div>
-                        <div>
-                          <h5 className="text-warning">高階主管（8年以上）</h5>
-                          <p className="text-base-content/60 mb-0">
-                            VP、CTO、CEO、創業家
-                            <br />
-                            <strong>薪資範圍：</strong>120K+
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </Card>
+            ))}
           </div>
-        </section>
+        </Section>
 
         {/* 系友成功案例 Section */}
-        <section className="py-5 bg-base-200">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-5">
-              <h2 className="text-4xl font-bold mb-3">智慧商務系友成功故事</h2>
-              <p className="text-lg text-base-content/60">
-                真實案例分享，證明智商系教育的成功
-              </p>
-            </div>
-
-            <div className="flex flex-wrap -m-2">
-              <div className="w-full lg:w-1/3 p-2">
-                <div className="card border-0 shadow">
-                  <div className="card-body p-4 text-center">
-                    <div className="bg-primary rounded-full mx-auto mb-3" style={{width: '80px', height: '80px'}}></div>
-                    <h5>陳○○ 學長</h5>
-                    <p className="text-base-content/60 mb-3">智慧商務系第三屆畢業生</p>
-                    <h6 className="text-primary mb-2">電商平台創業家</h6>
-                    <p className="text-base-content/60 text-sm mb-3">
-                      畢業三年後創立電商平台，年營收突破億元。
-                      智慧商務系的扎實訓練讓我在創業路上更有信心。
-                    </p>
-                    <div className="bg-base-200 rounded-lg p-2">
-                      <small><strong>現職：</strong>某電商平台執行長</small>
-                    </div>
-                  </div>
+        <Section
+          title="智慧商務系友成功故事"
+          subtitle="真實案例分享，證明智商系教育的成功"
+          center
+          width="wide"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {[
+              { ring: 'bg-primary', text: 'text-primary', name: '陳○○ 學長', cls: '智慧商務系第三屆畢業生', role: '電商平台創業家', story: '畢業三年後創立電商平台，年營收突破億元。智慧商務系的扎實訓練讓我在創業路上更有信心。', now: '某電商平台執行長' },
+              { ring: 'bg-success', text: 'text-success', name: '林○○ 學姊', cls: '智慧商務系第五屆畢業生', role: '科技業產品總監', story: '從數位行銷專員做起，五年內晉升為產品總監。智商系的課程讓我具備全方位的商業思維。', now: '知名科技公司產品總監' },
+              { ring: 'bg-warning', text: 'text-warning', name: '王○○ 學長', cls: '智慧商務系第二屆畢業生', role: '數據分析專家', story: '現為某金融集團首席數據科學家，年薪超過200萬。智慧商務系的數據分析課程奠定了基礎。', now: '金融集團首席數據科學家' },
+            ].map((p) => (
+              <Card key={p.name} hover padding="lg" className="text-center">
+                <div className={`mx-auto mb-4 h-20 w-20 rounded-full ${p.ring}`} />
+                <h5 className="font-semibold text-base-content">{p.name}</h5>
+                <p className="mb-3 text-sm text-base-content/60">{p.cls}</p>
+                <h6 className={`mb-2 font-semibold ${p.text}`}>{p.role}</h6>
+                <p className="mb-4 text-sm leading-relaxed text-base-content/70">{p.story}</p>
+                <div className="rounded-xl bg-base-200 p-3">
+                  <small className="text-base-content/80"><strong>現職：</strong>{p.now}</small>
                 </div>
-              </div>
-
-              <div className="w-full lg:w-1/3 p-2">
-                <div className="card border-0 shadow">
-                  <div className="card-body p-4 text-center">
-                    <div className="bg-success rounded-full mx-auto mb-3" style={{width: '80px', height: '80px'}}></div>
-                    <h5>林○○ 學姊</h5>
-                    <p className="text-base-content/60 mb-3">智慧商務系第五屆畢業生</p>
-                    <h6 className="text-success mb-2">科技業產品總監</h6>
-                    <p className="text-base-content/60 text-sm mb-3">
-                      從數位行銷專員做起，五年內晉升為產品總監。
-                      智商系的課程讓我具備全方位的商業思維。
-                    </p>
-                    <div className="bg-base-200 rounded-lg p-2">
-                      <small><strong>現職：</strong>知名科技公司產品總監</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full lg:w-1/3 p-2">
-                <div className="card border-0 shadow">
-                  <div className="card-body p-4 text-center">
-                    <div className="bg-warning rounded-full mx-auto mb-3" style={{width: '80px', height: '80px'}}></div>
-                    <h5>王○○ 學長</h5>
-                    <p className="text-base-content/60 mb-3">智慧商務系第二屆畢業生</p>
-                    <h6 className="text-warning mb-2">數據分析專家</h6>
-                    <p className="text-base-content/60 text-sm mb-3">
-                      現為某金融集團首席數據科學家，
-                      年薪超過200萬。智慧商務系的數據分析課程奠定了基礎。
-                    </p>
-                    <div className="bg-base-200 rounded-lg p-2">
-                      <small><strong>現職：</strong>金融集團首席數據科學家</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </Card>
+            ))}
           </div>
-        </section>
+        </Section>
 
         {/* 就業資源與支援 Section */}
-        <section className="py-5 bg-primary text-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-5">
-              <h2 className="text-4xl font-bold mb-3">智慧商務系就業支援</h2>
-              <p className="text-lg opacity-90">
+        <section className="relative overflow-hidden text-white">
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)' }}
+          />
+          <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-14 sm:py-20">
+            <div className="mb-12 text-center">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold">智慧商務系就業支援</h2>
+              <div className="mx-auto mt-3 h-1 w-16 rounded-full bg-secondary" />
+              <p className="mx-auto mt-4 max-w-2xl text-white/80">
                 完整的職涯發展資源，助力學生成功就業
               </p>
             </div>
 
-            <div className="flex flex-wrap -m-2">
-              <div className="w-full md:w-1/2 lg:w-1/4 p-2">
-                <div className="text-center">
-                  <BsPeopleFill className="text-4xl text-warning mb-3 mx-auto" />
-                  <h5>就業輔導</h5>
-                  <p className="opacity-75">
-                    專業職涯諮詢師提供一對一就業指導
-                  </p>
-                </div>
-              </div>
-              <div className="w-full md:w-1/2 lg:w-1/4 p-2">
-                <div className="text-center">
-                  <BsBriefcaseFill className="text-4xl text-warning mb-3 mx-auto" />
-                  <h5>企業實習</h5>
-                  <p className="opacity-75">
-                    與150+企業合作提供實習機會
-                  </p>
-                </div>
-              </div>
-              <div className="w-full md:w-1/2 lg:w-1/4 p-2">
-                <div className="text-center">
-                  <BsCalendarEventFill className="text-4xl text-warning mb-3 mx-auto" />
-                  <h5>就業博覽會</h5>
-                  <p className="opacity-75">
-                    定期舉辦企業徵才說明會
-                  </p>
-                </div>
-              </div>
-              <div className="w-full md:w-1/2 lg:w-1/4 p-2">
-                <div className="text-center">
-                  <Network className="text-warning mb-3 mx-auto" size={40} />
-                  <h5>系友網絡</h5>
-                  <p className="opacity-75">
-                    強大的系友人脈提供職涯發展機會
-                  </p>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { Icon: BsPeopleFill, title: '就業輔導', desc: '專業職涯諮詢師提供一對一就業指導' },
+                { Icon: BsBriefcaseFill, title: '企業實習', desc: '與150+企業合作提供實習機會' },
+                { Icon: BsCalendarEventFill, title: '就業博覽會', desc: '定期舉辦企業徵才說明會' },
+              ].map((item) => {
+                const Icon = item.Icon;
+                return (
+                  <div key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm">
+                    <Icon className="mx-auto mb-3 text-4xl text-secondary" />
+                    <h5 className="font-semibold">{item.title}</h5>
+                    <p className="mt-1 text-sm text-white/70">{item.desc}</p>
+                  </div>
+                );
+              })}
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm">
+                <Network className="mx-auto mb-3 text-secondary" size={40} />
+                <h5 className="font-semibold">系友網絡</h5>
+                <p className="mt-1 text-sm text-white/70">強大的系友人脈提供職涯發展機會</p>
               </div>
             </div>
 
-            <div className="text-center mt-5">
-              <h3 className="mb-4">立即開啟您的智慧商務職涯</h3>
-              <div className="flex justify-center gap-3">
-                <Link to="/recruit" className="btn btn-warning btn-lg px-4">
-                  <BsSearch className="mr-2" />
+            <div className="mt-14 text-center">
+              <h3 className="mb-6 font-serif text-xl sm:text-2xl font-bold">立即開啟您的智慧商務職涯</h3>
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
+                <Link
+                  to="/recruit"
+                  className="btn btn-lg gap-2 border-none bg-secondary text-white hover:brightness-110"
+                >
+                  <BsSearch />
                   瀏覽職缺
                 </Link>
-                <Link to="/IC/joinUs" className="btn btn-outline border-white text-white btn-lg px-4">
-                  <BsPeople className="mr-2" />
+                <Link
+                  to="/IC/joinUs"
+                  className="btn btn-lg gap-2 border-white/40 bg-transparent text-white hover:bg-white/10"
+                >
+                  <BsPeople />
                   加入系友會
                 </Link>
               </div>
@@ -752,46 +410,38 @@ const CareerProspects = () => {
         </section>
 
         {/* Call to Action Section */}
-        <section className="py-5 bg-base-200">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-4xl font-bold mb-4">準備開始您的智慧商務職涯嗎？</h2>
-            <p className="text-lg mb-5">
+        <Section width="default" center className="bg-base-100">
+          <div className="text-center">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-base-content">
+              準備開始您的智慧商務職涯嗎？
+            </h2>
+            <p className="mx-auto mt-4 mb-10 max-w-2xl text-base-content/60">
               了解更多就業資訊，或聯繫我們獲得職涯諮詢
             </p>
-            <div className="flex flex-wrap -m-2 justify-center">
-              <div className="w-full md:w-1/3 lg:w-1/6 p-2">
-                <Link to="/recruit" className="btn btn-primary btn-lg w-full">
-                  <BsBriefcase className="mr-2" />
-                  查看職缺
-                </Link>
-              </div>
-              <div className="w-full md:w-1/3 lg:w-1/6 p-2">
-                <Link to="/IC/contactUs" className="btn btn-success btn-lg w-full">
-                  <BsTelephone className="mr-2" />
-                  職涯諮詢
-                </Link>
-              </div>
-              <div className="w-full md:w-1/3 lg:w-1/6 p-2">
-                <Link to="/alumnilist" className="btn btn-warning btn-lg w-full">
-                  <BsPeople className="mr-2" />
-                  系友網絡
-                </Link>
-              </div>
-              <div className="w-full md:w-1/3 lg:w-1/6 p-2">
-                <Link to="/IC/intro" className="btn btn-info btn-lg w-full">
-                  <BsInfoCircle className="mr-2" />
-                  系所介紹
-                </Link>
-              </div>
-              <div className="w-full md:w-1/3 lg:w-1/6 p-2">
-                <Link to="/IC/joinUs" className="btn btn-outline btn-primary btn-lg w-full">
-                  <BsPersonPlus className="mr-2" />
-                  加入我們
-                </Link>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <Link to="/recruit" className="btn btn-primary btn-lg w-full gap-2">
+                <BsBriefcase />
+                查看職缺
+              </Link>
+              <Link to="/IC/contactUs" className="btn btn-success btn-lg w-full gap-2">
+                <BsTelephone />
+                職涯諮詢
+              </Link>
+              <Link to="/alumnilist" className="btn btn-lg w-full gap-2 border-none bg-secondary text-white hover:brightness-110">
+                <BsPeople />
+                系友網絡
+              </Link>
+              <Link to="/IC/intro" className="btn btn-info btn-lg w-full gap-2">
+                <BsInfoCircle />
+                系所介紹
+              </Link>
+              <Link to="/IC/joinUs" className="btn btn-outline btn-primary btn-lg w-full gap-2">
+                <BsPersonPlus />
+                加入我們
+              </Link>
             </div>
           </div>
-        </section>
+        </Section>
       </div>
     </>
   );

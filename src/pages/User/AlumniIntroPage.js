@@ -18,8 +18,8 @@ import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
 
 import { RowsPhotoAlbum as PhotoAlbum } from 'react-photo-album';
-import "css/user/alumni/ProfilePage.css";
-import styles from "css/user/alumni/ProfilePage.module.css";
+import { Building2, Images } from 'lucide-react';
+import { Card, EmptyState, Spinner } from 'components/common/ui';
 import Axios from 'common/Axios';
 import { useParams } from 'react-router-dom';
 import SEO from 'SEO';
@@ -125,20 +125,29 @@ const ProfilePage = () => {
     }
   };
 
+  // 區塊標題（深藍 + 金線）
+  const SectionHeading = ({ children }) => (
+    <div className="mb-6">
+      <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0f172a]">{children}</h3>
+      <div className="mt-2 h-1 w-14 rounded-full bg-gradient-to-r from-[#a0781c] to-[#1e3a8a]" />
+    </div>
+  );
+
   if (notfound) {
     return (
-      <div className={`${styles.notFoundContainer} container mx-auto px-4 py-5 text-center`}>
+      <div className="min-h-[60vh] bg-base-200/40 px-4 py-16 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
+          className="mx-auto w-full max-w-xl rounded-2xl border border-base-300/70 bg-base-100 p-8 sm:p-12 text-center shadow-sm"
         >
           <img
             src={notfoundpic}
             alt="資料未開放"
-            className="max-w-full h-auto"
+            className="mx-auto max-w-xs w-full h-auto"
           />
-          <h3 className="mt-4">此系友資料目前暫不開放</h3>
+          <h3 className="mt-6 font-serif text-2xl font-bold text-[#0f172a]">此系友資料目前暫不開放</h3>
         </motion.div>
       </div>
     );
@@ -146,15 +155,15 @@ const ProfilePage = () => {
 
   if (isLoading) {
     return (
-      <div className={`${styles.loadingContainer} container mx-auto px-4 py-5 text-center`}>
-        <div className={styles.loadingSpinner}></div>
-        <p className={`${styles.loadingText} mt-3`}>正在載入系友資料，請稍候...</p>
+      <div className="min-h-[60vh] bg-base-200/40 px-4 py-20 flex items-center justify-center">
+        <Spinner size="lg" center label="正在載入系友資料，請稍候..." />
       </div>
     );
   }
 
   return (
-    <div className="profile-page-container container mx-auto px-4 py-5 my-5">
+    <div className="bg-base-200/40 min-h-screen">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14">
       {profileData && (
         <SEO
           main={false}
@@ -180,113 +189,106 @@ const ProfilePage = () => {
         <>
           {/* 頂部資訊卡片 - 個人資料與簡介 */}
           <motion.div
-            className="profile-hero mb-5"
+            className="mb-8"
             initial="hidden"
             animate="visible"
             variants={fadeInVariants}
           >
-            <div className="card bg-base-100 shadow-lg border-0 overflow-hidden">
-              <div className="card-body p-0">
-                <div className="grid grid-cols-12">
-                  {/* Navy header column with circular avatar */}
-                  <div className="col-span-12 lg:col-span-4" style={{ background: '#1e3a8a', minHeight: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 2rem' }}>
-                    <div style={{ textAlign: 'center' }}>
+            <Card padding="none" className="overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-12">
+                {/* 深藍品牌面板 + 圓形大頭照 */}
+                <div className="lg:col-span-4 bg-gradient-to-br from-[#1e3a8a] to-[#0f172a] flex items-center justify-center px-6 py-10">
+                  <div className="text-center">
+                    <div className="mx-auto h-44 w-44 sm:h-52 sm:w-52 rounded-full overflow-hidden ring-4 ring-white/90 shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
                       <img
                         src={profileData.photo ? process.env.REACT_APP_BASE_URL + profileData.photo : 'https://via.placeholder.com/300x300/e9ecef/495057?text=No+Photo'}
-                        className="rounded-full"
+                        className="h-full w-full object-cover"
                         alt={profileData.name || '系友'}
-                        style={{
-                          width: '200px',
-                          height: '200px',
-                          objectFit: 'cover',
-                          border: '4px solid rgba(255,255,255,0.9)',
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.25)'
-                        }}
                         onError={(e) => {
                           e.target.src = 'https://via.placeholder.com/300x300/e9ecef/495057?text=No+Photo';
                         }}
                       />
-                      {/* Name & position below avatar on mobile / overlapping for md+ */}
-                      <div className="lg:hidden mt-3">
-                        <h1 style={{ color: '#ffffff', fontWeight: '700', fontSize: '1.5rem', marginBottom: '0.375rem' }}>{profileData.name || '姓名未提供'}</h1>
+                    </div>
+                    {/* 手機版：姓名/職稱/學歷顯示於頭像下 */}
+                    <div className="lg:hidden mt-5">
+                      <h1 className="font-serif text-2xl font-bold text-white">{profileData.name || '姓名未提供'}</h1>
+                      {profileData.position && profileData.position.title && (
+                        <p className="mt-1 text-white/80 text-sm">{profileData.position.title}</p>
+                      )}
+                      {profileData.graduate && (
+                        <span className="mt-3 inline-block rounded-full bg-white/15 px-3 py-1 text-xs text-white">
+                          {profileData.graduate.school || '學校未知'} · {profileData.graduate.grade || '年級未知'} 級
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 資訊面板 */}
+                <div className="lg:col-span-8 p-6 sm:p-8">
+                  <div className="flex justify-between items-start flex-wrap gap-3">
+                    {/* 桌機版：姓名/標籤 */}
+                    <div className="hidden lg:block">
+                      <h1 className="font-serif text-3xl font-bold text-[#0f172a] tracking-tight">{profileData.name || '姓名未提供'}</h1>
+                      <div className="mt-3 flex flex-wrap gap-2">
                         {profileData.position && profileData.position.title && (
-                          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.95rem', marginBottom: '0.5rem', fontWeight: '400' }}>{profileData.position.title}</p>
+                          <span className="inline-flex items-center rounded-lg bg-[#1e3a8a] px-3 py-1.5 text-sm font-semibold text-white">
+                            {profileData.position.title}
+                          </span>
                         )}
                         {profileData.graduate && (
-                          <span style={{ background: 'rgba(255,255,255,0.18)', color: '#ffffff', fontSize: '0.8rem', padding: '0.25rem 0.75rem', borderRadius: '4px', display: 'inline-block' }}>
+                          <span className="inline-flex items-center rounded-lg border border-[#bfdbfe] bg-[#eff6ff] px-3 py-1.5 text-sm font-semibold text-[#1e3a8a]">
                             {profileData.graduate.school || '學校未知'} · {profileData.graduate.grade || '年級未知'} 級
                           </span>
                         )}
                       </div>
                     </div>
-                  </div>
-                  <div className="col-span-12 lg:col-span-8">
-                    <div className="profile-info p-4">
-                      <div className="profile-header mb-3">
-                        <div className="flex justify-between items-start flex-wrap">
-                          <div className="mb-2 hidden lg:block">
-                            <h1 className="profile-name font-bold mb-2" style={{ fontSize: '2rem', color: '#0f172a', letterSpacing: '-0.5px' }}>{profileData.name || '姓名未提供'}</h1>
-                            <div className="profile-badges flex flex-wrap gap-2">
-                              {profileData.position && profileData.position.title && (
-                                <span style={{ background: '#1e3a8a', color: '#ffffff', padding: '0.45rem 1rem', borderRadius: '4px', fontSize: '0.875rem', fontWeight: '600' }}>{profileData.position.title}</span>
-                              )}
-                              {profileData.graduate && (
-                                <span style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe', padding: '0.45rem 1rem', borderRadius: '4px', fontSize: '0.875rem', fontWeight: '600' }}>
-                                  {profileData.graduate.school || '學校未知'} · {profileData.graduate.grade || '年級未知'} 級
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          {/* 分享下拉選單（DaisyUI dropdown 取代 react-bootstrap DropdownButton） */}
-                          <div className="dropdown dropdown-end share-dropdown">
-                            <label tabIndex={0} className="btn btn-sm btn-outline btn-primary gap-1">
-                              <FaShareAlt /> 分享
-                            </label>
-                            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box shadow-lg z-10 w-44 p-2 mt-1">
-                              <li>
-                                <button type="button" onClick={() => handleShare('facebook')}>
-                                  <FaFacebookF className="mr-2" /> Facebook
-                                </button>
-                              </li>
-                              <li>
-                                <button type="button" onClick={() => handleShare('line')}>
-                                  <FaLine className="mr-2" /> LINE
-                                </button>
-                              </li>
-                              <li>
-                                <button type="button" onClick={() => handleShare('twitter')}>
-                                  <FaTwitter className="mr-2" /> Twitter
-                                </button>
-                              </li>
-                              <div className="divider my-1"></div>
-                              <li
-                                className={`tooltip tooltip-left ${showCopyTooltip ? 'tooltip-open' : ''}`}
-                                data-tip="已複製！"
-                              >
-                                <button type="button" onClick={() => handleShare('copy')}>
-                                  <FaLink className="mr-2" /> 複製連結
-                                </button>
-                              </li>
-                            </ul>
-                          </div>
+
+                    {/* 分享下拉選單（DaisyUI dropdown 取代 react-bootstrap DropdownButton） */}
+                    <div className="dropdown dropdown-end ml-auto">
+                      <label tabIndex={0} className="btn btn-sm btn-outline btn-primary gap-1.5 rounded-lg">
+                        <FaShareAlt /> 分享
+                      </label>
+                      <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-xl shadow-xl border border-base-300/70 z-10 w-48 p-2 mt-2">
+                        <li>
+                          <button type="button" onClick={() => handleShare('facebook')}>
+                            <FaFacebookF className="mr-2" /> Facebook
+                          </button>
+                        </li>
+                        <li>
+                          <button type="button" onClick={() => handleShare('line')}>
+                            <FaLine className="mr-2" /> LINE
+                          </button>
+                        </li>
+                        <li>
+                          <button type="button" onClick={() => handleShare('twitter')}>
+                            <FaTwitter className="mr-2" /> Twitter
+                          </button>
+                        </li>
+                        <div className="divider my-1"></div>
+                        <li
+                          className={`tooltip tooltip-left ${showCopyTooltip ? 'tooltip-open' : ''}`}
+                          data-tip="已複製！"
+                        >
+                          <button type="button" onClick={() => handleShare('copy')}>
+                            <FaLink className="mr-2" /> 複製連結
+                          </button>
+                        </li>
+                      </ul>
                     </div>
                   </div>
 
-                      <hr className="my-4" />
+                  <hr className="my-6 border-base-300/70" />
 
-                      <div className="grid grid-cols-12">
-                        <div className="col-span-12">
-                          <h3 className="section-title text-xl font-semibold mb-3">個人簡介</h3>
-                          {profileData.intro ? (
-                            <p className="profile-intro text-base-content/60 leading-loose">{profileData.intro}</p>
-                          ) : (
-                            <div className="rounded-lg border border-base-300 bg-base-200 p-4" role="alert">
-                              <h6 className="font-semibold mb-1">尚未提供個人簡介</h6>
-                              <p className="mb-0 text-sm text-base-content/60">系友可在個人設定中完善個人資料，讓更多人了解您的專業與特長</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                  <SectionHeading>個人簡介</SectionHeading>
+                  {profileData.intro ? (
+                    <p className="text-[#475569] leading-loose break-words whitespace-pre-line">{profileData.intro}</p>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-base-300 bg-base-200/60 p-5">
+                      <h6 className="font-semibold text-[#475569] mb-1">尚未提供個人簡介</h6>
+                      <p className="mb-0 text-sm text-base-content/60">系友可在個人設定中完善個人資料，讓更多人了解您的專業與特長</p>
+                    </div>
+                  )}
 
                   {/* <div className="social-links mt-3">
                     {profileData.social_links && profileData.social_links.linkedin && (
@@ -305,12 +307,9 @@ const ProfilePage = () => {
                       </a>
                     )}
                   </div> */}
-
-                    </div>
-                  </div>
                 </div>
               </div>
-            </div>
+            </Card>
           </motion.div>
 
           {/* 主要內容區 - 使用標籤頁切換不同內容 */}
@@ -318,162 +317,150 @@ const ProfilePage = () => {
             initial="hidden"
             animate="visible"
             variants={fadeInVariants}
-            className="main-content mb-5"
+            className="mb-8"
           >
-            <div className="card bg-base-100" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}>
-              <div className="card-body">
+            <Card padding="md">
                 {/* 標籤頁導覽（DaisyUI/Tailwind 取代 react-bootstrap Tabs pills） */}
-                <div role="tablist" className="grid grid-cols-2 gap-3 mb-6">
+                <div role="tablist" className="grid grid-cols-2 gap-3 mb-8">
                   <button
                     type="button"
                     role="tab"
                     onClick={() => setActiveTab('gallery')}
-                    className={`py-3 rounded-md font-semibold text-[0.95rem] border transition-all duration-200 ${
+                    className={`flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-[0.95rem] border transition-all duration-200 ${
                       activeTab === 'gallery'
-                        ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
+                        ? 'bg-[#1e3a8a] text-white border-[#1e3a8a] shadow-sm'
                         : 'bg-[#f8fafc] text-[#475569] border-[#e2e8f0] hover:bg-[#eff6ff] hover:text-[#1e3a8a] hover:border-[#bfdbfe]'
                     }`}
                   >
-                    照片集錦
+                    <Images className="h-4 w-4" /> 照片集錦
                   </button>
                   <button
                     type="button"
                     role="tab"
                     onClick={() => setActiveTab('company')}
-                    className={`py-3 rounded-md font-semibold text-[0.95rem] border transition-all duration-200 ${
+                    className={`flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-[0.95rem] border transition-all duration-200 ${
                       activeTab === 'company'
-                        ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]'
+                        ? 'bg-[#1e3a8a] text-white border-[#1e3a8a] shadow-sm'
                         : 'bg-[#f8fafc] text-[#475569] border-[#e2e8f0] hover:bg-[#eff6ff] hover:text-[#1e3a8a] hover:border-[#bfdbfe]'
                     }`}
                   >
-                    公司資訊
+                    <Building2 className="h-4 w-4" /> 公司資訊
                   </button>
                 </div>
 
                 {/* 照片集錦標籤頁 */}
                 {activeTab === 'gallery' && (
-                  <div className="py-4">
-                    <h3 className="section-title text-xl font-semibold mb-4">系友照片集錦</h3>
+                  <div className="py-2">
+                    <SectionHeading>系友照片集錦</SectionHeading>
                 {personalPhotos.length > 0 ? (
-                  <div className="photo-album-container">
-                    <div className="grid grid-cols-12 gap-4 photo-grid">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                       {personalPhotos.map((photo, index) => (
-                        <div className="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 photo-col mb-4" key={photo.key}>
                           <motion.div
-                            whileHover={{ scale: 1.03, boxShadow: "0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)" }}
-                            transition={{ duration: 0.3 }}
-                            className="photo-card"
+                            key={photo.key}
+                            whileHover={{ y: -4 }}
+                            transition={{ duration: 0.25 }}
+                            className="group cursor-pointer overflow-hidden rounded-xl border border-base-300/70 bg-base-100 shadow-sm hover:shadow-lg transition-shadow"
                             onClick={() => handleOpenLightbox('personal', index)}
                           >
-                            <div className="photo-img-container">
+                            <div className="relative aspect-[4/3] overflow-hidden bg-base-200">
                               <img
                                 src={photo.src}
                                 alt={photo.title || '系友照片'}
-                                className="photo-img"
+                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                               />
                             </div>
                             {photo.title && (
-                              <div className="photo-caption">
-                                <h5>{photo.title}</h5>
-                                {photo.description && <p>{photo.description}</p>}
+                              <div className="border-t border-base-200 p-4">
+                                <h5 className="font-semibold text-[#0f172a] truncate">{photo.title}</h5>
+                                {photo.description && <p className="mt-1 text-sm text-base-content/60 line-clamp-2">{photo.description}</p>}
                               </div>
                             )}
                           </motion.div>
-                        </div>
                       ))}
-                    </div>
                   </div>
                   ) : (
-                    <div className="alert alert-info flex-col text-center py-12" role="alert">
-                      <div className="mb-3" style={{ fontSize: '48px' }}>📷</div>
-                      <h5 className="font-semibold">目前沒有個人照片</h5>
-                      <p className="mb-0">系友尚未上傳照片集錦，您可以稍後再回來查看</p>
-                    </div>
+                    <EmptyState
+                      icon={<Images className="h-8 w-8" />}
+                      title="目前沒有個人照片"
+                      description="系友尚未上傳照片集錦，您可以稍後再回來查看"
+                    />
                   )}
                   </div>
                 )}
                 {/* 公司資訊標籤頁 */}
                 {activeTab === 'company' && (
-                  <div className="py-4">
+                  <div className="py-2">
                 {profileData.company ? (
                   <>
-                      <div className="grid grid-cols-12 gap-4 company-header mb-4">
-                        <div className="col-span-12 md:col-span-4 mb-4">
-                          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
-                            <img
-                              src={profileData.company.photo ? `${process.env.REACT_APP_BASE_URL}${profileData.company.photo}` : 'https://via.placeholder.com/400x300/e9ecef/495057?text=No+Company+Photo'}
-                              className="company-image shadow rounded w-full max-w-full h-auto"
-                              alt={profileData.company.name || '公司'}
-                              onError={(e) => {
-                                e.target.src = 'https://via.placeholder.com/400x300/e9ecef/495057?text=No+Company+Photo';
-                              }}
-                            />
-                          </motion.div>
-                        </div>
-                        <div className="col-span-12 md:col-span-8">
-                          <h2 className="company-title text-2xl font-semibold mb-3">{profileData.company.name || '公司名稱未提供'}</h2>
-                          <p className="company-description text-base-content/60 leading-loose">
-                            {profileData.company.description || '尚未提供公司描述'}
-                          </p>
+                      <div className="rounded-2xl border border-base-300/70 bg-base-100 p-5 sm:p-6 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                          <div className="md:col-span-4">
+                            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }} className="overflow-hidden rounded-xl border border-base-300/70 shadow-sm">
+                              <img
+                                src={profileData.company.photo ? `${process.env.REACT_APP_BASE_URL}${profileData.company.photo}` : 'https://via.placeholder.com/400x300/e9ecef/495057?text=No+Company+Photo'}
+                                className="w-full h-48 md:h-56 object-cover"
+                                alt={profileData.company.name || '公司'}
+                                onError={(e) => {
+                                  e.target.src = 'https://via.placeholder.com/400x300/e9ecef/495057?text=No+Company+Photo';
+                                }}
+                              />
+                            </motion.div>
+                          </div>
+                          <div className="md:col-span-8">
+                            <h2 className="font-serif text-2xl font-bold text-[#0f172a] mb-3">{profileData.company.name || '公司名稱未提供'}</h2>
+                            <p className="text-[#475569] leading-relaxed break-words whitespace-pre-line">
+                              {profileData.company.description || '尚未提供公司描述'}
+                            </p>
 
-                          <div className="company-contact-info mt-4">
-                            <div className="grid grid-cols-12 gap-4">
-                              <div className="col-span-12 md:col-span-6 mb-3">
-                                <div className="flex items-center">
-                                  <FaMapMarkerAlt className="text-primary mr-2" />
-                                  <span className="text-base-content/60">{profileData.company.address || "未提供地址"}</span>
+                            <div className="mt-5 rounded-xl border border-base-300/70 bg-base-200/50 p-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+                                <div className="flex items-start gap-2.5">
+                                  <FaMapMarkerAlt className="text-[#1e3a8a] mt-0.5 flex-shrink-0" />
+                                  <span className="text-[#475569] break-words">{profileData.company.address || "未提供地址"}</span>
                                 </div>
-                              </div>
-                              <div className="col-span-12 md:col-span-6 mb-3">
-                                <div className="flex items-center">
-                                  <FaPhoneAlt className="text-primary mr-2" />
-                                  <span className="text-base-content/60">{profileData.company.phone_number || "未提供聯絡電話"}</span>
+                                <div className="flex items-start gap-2.5">
+                                  <FaPhoneAlt className="text-[#1e3a8a] mt-0.5 flex-shrink-0" />
+                                  <span className="text-[#475569] break-words">{profileData.company.phone_number || "未提供聯絡電話"}</span>
                                 </div>
-                              </div>
-                              <div className="col-span-12 md:col-span-6 mb-3">
-                                <div className="flex items-center">
-                                  <FaEnvelope className="text-primary mr-2" />
-                                  <span className="text-base-content/60">{profileData.company.email || "未提供電子郵件"}</span>
+                                <div className="flex items-start gap-2.5">
+                                  <FaEnvelope className="text-[#1e3a8a] mt-0.5 flex-shrink-0" />
+                                  <span className="text-[#475569] break-words">{profileData.company.email || "未提供電子郵件"}</span>
                                 </div>
-                              </div>
-                              <div className="col-span-12 md:col-span-6 mb-3">
-                                <div className="flex items-center">
-                                  <FaGlobe className="text-primary mr-2" />
+                                <div className="flex items-start gap-2.5">
+                                  <FaGlobe className="text-[#1e3a8a] mt-0.5 flex-shrink-0" />
                                   {profileData.company.website ? (
-                                    <a href={profileData.company.website} target="_blank" rel="noopener noreferrer" className="no-underline">
+                                    <a href={profileData.company.website} target="_blank" rel="noopener noreferrer" className="text-[#1e3a8a] font-medium hover:underline break-all">
                                       {profileData.company.website}
                                     </a>
                                   ) : (
-                                    <span className="text-base-content/60">未提供網站</span>
+                                    <span className="text-[#475569]">未提供網站</span>
                                   )}
                                 </div>
                               </div>
                             </div>
                           </div>
+                        </div>
                       </div>
-                    </div>
 
-                      <div className="mb-5">
-                        <div>
-                          <div className="product-info-card" style={{ border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
-                            <h5 style={{ background: '#1e3a8a', color: '#ffffff', fontWeight: '700', border: 'none', padding: '0.875rem 1.5rem', fontSize: '1rem', margin: 0 }}>
-                              我們的產品
-                            </h5>
-                            <div className="p-4">
-                              <div className="font-semibold text-base mb-2">
-                                {profileData.company.products || "尚未提供產品資訊"}
-                              </div>
-                              <p className="text-base-content/60">
-                                {profileData.company.product_description || "尚未提供產品描述"}
-                              </p>
+                      <div className="mb-8">
+                        <div className="overflow-hidden rounded-xl border border-base-300/70">
+                          <h5 className="bg-[#1e3a8a] text-white font-bold m-0 px-6 py-3.5 text-base">
+                            我們的產品
+                          </h5>
+                          <div className="p-5">
+                            <div className="font-semibold text-base text-[#0f172a] mb-2">
+                              {profileData.company.products || "尚未提供產品資訊"}
                             </div>
+                            <p className="text-[#475569] leading-relaxed break-words whitespace-pre-line mb-0">
+                              {profileData.company.product_description || "尚未提供產品描述"}
+                            </p>
                           </div>
                         </div>
                       </div>
 
-                      <h3 className="section-title text-xl font-semibold mb-4">商品展示</h3>
+                      <SectionHeading>商品展示</SectionHeading>
                     {companyPhotos.length > 0 ? (
-                      <div className="product-slider-container mb-5">
+                      <div className="mb-8 pb-10">
                         <SwiperReact
                           modules={[Navigation, Pagination, Zoom, EffectFade]}
                           slidesPerView={1}
@@ -496,23 +483,21 @@ const ProfilePage = () => {
                           {companyPhotos.map((photo, index) => (
                             <SwiperSlide key={photo.key}>
                               <motion.div
-                                whileHover={{ scale: 1.05 }}
+                                whileHover={{ y: -4 }}
                                 transition={{ duration: 0.3 }}
-                                className="product-slide"
+                                className="group cursor-pointer overflow-hidden rounded-xl border border-base-300/70 bg-base-100 shadow-sm hover:shadow-lg transition-shadow"
                                 onClick={() => handleOpenLightbox('company', index)}
                               >
-                                <div className="card product-card">
-                                  <div className="product-img-container">
-                                    <img
-                                      src={photo.src}
-                                      alt={photo.title}
-                                      className="product-img"
-                                    />
-                                  </div>
-                                  <div className="card-body">
-                                    <h5 className="card-title">{photo.title}</h5>
-                                    {photo.description && <p>{photo.description}</p>}
-                                  </div>
+                                <div className="relative h-48 overflow-hidden bg-base-200">
+                                  <img
+                                    src={photo.src}
+                                    alt={photo.title}
+                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                  />
+                                </div>
+                                <div className="p-4">
+                                  <h5 className="font-semibold text-[#0f172a] truncate">{photo.title}</h5>
+                                  {photo.description && <p className="mt-1 text-sm text-base-content/60 line-clamp-2">{photo.description}</p>}
                                 </div>
                               </motion.div>
                             </SwiperSlide>
@@ -520,45 +505,42 @@ const ProfilePage = () => {
                         </SwiperReact>
                       </div>
                       ) : (
-                        <div className="rounded-lg border border-base-300 bg-base-200 p-4" role="alert">
-                          <h5 className="font-semibold mb-1">尚未提供公司更多照片</h5>
-                          <p className="mb-0">系友可以在設定頁面添加公司產品相關資訊</p>
+                        <div className="rounded-xl border border-dashed border-base-300 bg-base-200/60 p-5 mb-8">
+                          <h5 className="font-semibold text-[#475569] mb-1">尚未提供公司更多照片</h5>
+                          <p className="mb-0 text-sm text-base-content/60">系友可以在設定頁面添加公司產品相關資訊</p>
                         </div>
-
                   )}
 
                       <ProductDisplay memberId={id} className="mt-5" />
 
-                      <h3 className="section-title text-xl font-semibold mt-5 mb-4">我們的位置</h3>
-                      <div className="card map-card shadow-sm border-0 overflow-hidden">
-                        <div className="card-body p-0">
-                          <div className="company-map">
+                      <div className="mt-10">
+                        <SectionHeading>我們的位置</SectionHeading>
+                        <div className="overflow-hidden rounded-xl border border-base-300/70 shadow-sm">
                           <iframe
                             title="Company Location"
                             src={`https://maps.google.com/maps?q=${encodeURIComponent(
                               profileData.company.address || "未知地址"
                             )}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                              width="100%"
-                              height="400"
-                              style={{ border: 0, borderRadius: '0.375rem' }}
-                              allowFullScreen=""
-                              loading="lazy"
-                            ></iframe>
+                            width="100%"
+                            height="400"
+                            style={{ border: 0 }}
+                            allowFullScreen=""
+                            loading="lazy"
+                            className="block w-full"
+                          ></iframe>
                         </div>
                       </div>
-                    </div>
                   </>
                   ) : (
-                    <div className="alert alert-info flex-col text-center py-12" role="alert">
-                      <div className="mb-3" style={{ fontSize: '48px' }}>🏢</div>
-                      <h4 className="font-semibold">系友尚未添加公司資訊</h4>
-                      <p className="mb-0">此系友目前未提供任何公司相關資訊</p>
-                    </div>
+                    <EmptyState
+                      icon={<Building2 className="h-8 w-8" />}
+                      title="系友尚未添加公司資訊"
+                      description="此系友目前未提供任何公司相關資訊"
+                    />
                   )}
                   </div>
                 )}
-              </div>
-            </div>
+            </Card>
           </motion.div>
 
           {/* 照片燈箱 */}
@@ -580,9 +562,9 @@ const ProfilePage = () => {
                     alt={props.slide.title || ''}
                   />
                   {(props.slide.title || props.slide.description) && (
-                    <div className="lightbox-caption">
-                      {props.slide.title && <h4>{props.slide.title}</h4>}
-                      {props.slide.description && <p>{props.slide.description}</p>}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-6 pb-4 pt-8 text-center text-white">
+                      {props.slide.title && <h4 className="text-lg font-semibold">{props.slide.title}</h4>}
+                      {props.slide.description && <p className="mt-1 text-sm opacity-90">{props.slide.description}</p>}
                     </div>
                   )}
                 </div>
@@ -592,6 +574,7 @@ const ProfilePage = () => {
         </>
         );
       })()}
+      </div>
     </div>
   );
 };

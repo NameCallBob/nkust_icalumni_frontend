@@ -8,6 +8,7 @@ import CategoryDropdown from "components/User/Home/dropdown";
 import SearchBar from "components/User/Home/SearchBar";
 import CompanyTabsSearch from "components/User/Home/CompanySearch";
 import TechBackground from "components/TechBackground";
+import { Section } from "components/common/ui";
 import SEO from "SEO";
 
 function Home() {
@@ -56,46 +57,76 @@ function Home() {
           ]
         }}
         />
-        <div className="container mx-auto px-4 my-3">
+        <div className="min-h-screen bg-base-200/40">
 
-            <div className="grid grid-cols-12 gap-4 my-2 items-center">
-                <div className="col-span-12 md:col-span-3 my-1">
-                    {/* 產業別 */}
-                    <CategoryDropdown></CategoryDropdown>
+            {/* 搜尋區：深藍漸層形象帶 */}
+            <section className="relative overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#0f172a]">
+                <div className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:22px_22px]" />
+                <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14">
+                    <div className="text-center mb-8">
+                        <p className="mb-3 text-xs font-semibold tracking-[0.25em] text-secondary uppercase">
+                            NKUST · Intelligent Commerce Alumni
+                        </p>
+                        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
+                            智慧商務系系友會
+                        </h1>
+                        <p className="mt-4 text-sm sm:text-base text-white/70 max-w-2xl mx-auto break-words">
+                            連結系友、媒合商機，探索系友企業與精選產品。
+                        </p>
+                    </div>
+
+                    {/* 產業別 + 搜尋列 */}
+                    <div className="mx-auto max-w-4xl rounded-2xl bg-white/95 backdrop-blur p-3 sm:p-4 shadow-2xl ring-1 ring-white/20">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                            <div className="md:col-span-4">
+                                {/* 產業別 */}
+                                <CategoryDropdown></CategoryDropdown>
+                            </div>
+                            <div className="md:col-span-8">
+                                <SearchBar></SearchBar>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="col-span-12 md:col-span-9">
-                    <SearchBar></SearchBar>
-                </div>
-            </div>
-            <div>
+            </section>
+
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+
                 {/* 照片輪播 */}
-                <Slide></Slide>
-            </div>
-            <div>
-                {/* 最新消息 */}
-                <News></News>
-            </div>
-            <div className="mb-4">
-                {/* 公司介紹 */}
-                <div className="flex justify-between items-center mb-3">
-                    <h3 style={{ color: '#1e3a8a', fontWeight: '700', borderLeft: '4px solid #1e3a8a', paddingLeft: '0.75rem', margin: 0 }}>系友企業</h3>
+                <div className="mt-8 sm:mt-10">
+                    <div className="overflow-hidden rounded-2xl shadow-lg ring-1 ring-base-300/60">
+                        <Slide></Slide>
+                    </div>
                 </div>
-                <Company></Company>
-            </div>
-            <h3 style={{ color: '#1e3a8a', fontWeight: '700', borderLeft: '4px solid #1e3a8a', paddingLeft: '0.75rem', marginBottom: '1rem' }}>公司類別</h3>
-            <div>
-                <CompanyTabsSearch></CompanyTabsSearch>
-            </div>
-            {/* 簡單自動輪播 */}
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
-                <div className="w-full md:w-1/2 mb-3 md:mb-0">
-                    <SimpleAutoCarousel title={"最新上架"}></SimpleAutoCarousel>
-                </div>
-                <div className="w-full md:w-1/2">
-                    <SimpleAutoCarousel title={"最多點閱"}></SimpleAutoCarousel>
-                </div>
-            </div>
 
+                {/* 最新消息（標題由 News 元件自帶） */}
+                <div className="mt-12 sm:mt-16">
+                    <News></News>
+                </div>
+
+                {/* 系友企業 */}
+                <Section title="系友企業" eyebrow="Featured Companies" width="full" className="!px-0">
+                    <Company></Company>
+                </Section>
+
+                {/* 公司類別 */}
+                <Section title="公司類別" eyebrow="Categories" width="full" className="!px-0 !pt-0">
+                    <CompanyTabsSearch></CompanyTabsSearch>
+                </Section>
+
+                {/* 精選產品輪播（標題由 SimpleAutoCarousel 自帶） */}
+                <div className="pb-16 pt-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="rounded-2xl bg-base-100 p-4 sm:p-5 shadow-sm ring-1 ring-base-300/60">
+                            <SimpleAutoCarousel title={"最新上架"}></SimpleAutoCarousel>
+                        </div>
+                        <div className="rounded-2xl bg-base-100 p-4 sm:p-5 shadow-sm ring-1 ring-base-300/60">
+                            <SimpleAutoCarousel title={"最多點閱"}></SimpleAutoCarousel>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
         </>
     )
