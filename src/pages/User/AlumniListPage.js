@@ -1,8 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Container, Row, Col, Card, Tabs, Tab, Form,
-    Button, Pagination, Alert, Badge, Spinner
-} from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -15,6 +11,7 @@ import styles from 'css/AlumniListPage.module.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 import FeaturedAlumni from 'components/User/alumni/FeaturedAlumni';
+import { Button, Spinner } from 'components/common/ui';
 import SEO from 'SEO';
 import { debounce } from 'lodash';
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
@@ -297,15 +294,15 @@ const AlumniListPage = () => {
     }, []);
 
     return (
-        <Container fluid className="px-0" style={{ background: '#f8fafc', minHeight: '100vh' }}>
-            <Container className="px-0 px-md-3">
+        <div className="px-0" style={{ background: '#f8fafc', minHeight: '100vh' }}>
+            <div className="container mx-auto px-0 md:px-3">
             <SEO
                 main={false}
                 title="系友列表 | 智慧商務系友會"
                 description="瀏覽智慧商務系友會成員名單，發現更多聯繫機會與合作夥伴。"
                 keywords={["智慧商務", "系友列表", "成員", "校友"]}
             />
-            </Container>
+            </div>
 
             {/* Page Header - Navy section */}
             <motion.div
@@ -325,7 +322,7 @@ const AlumniListPage = () => {
                 </div>
             </motion.div>
 
-            <Container className="py-4 py-md-5">
+            <div className="container mx-auto px-4 py-4 md:py-5">
 
             {/* 傑出校友區塊 */}
             {featuredSchool && featuredSchool.length > 0 && (
@@ -336,7 +333,7 @@ const AlumniListPage = () => {
                     style={{ background: '#0f172a', borderRadius: '8px', padding: '2.5rem 2rem', marginBottom: '1.5rem' }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem' }}>
-                        <FontAwesomeIcon icon={faTrophy} className="me-3" style={{ color: '#a0781c', fontSize: '1.5rem' }} />
+                        <FontAwesomeIcon icon={faTrophy} className="mr-3" style={{ color: '#a0781c', fontSize: '1.5rem' }} />
                         <h2 style={{ color: '#ffffff', fontWeight: '700', margin: '0', fontSize: '1.5rem', letterSpacing: '-0.3px' }}>傑出校友</h2>
                     </div>
                     <FeaturedAlumni featuredAlumni={featuredSchool} />
@@ -352,7 +349,7 @@ const AlumniListPage = () => {
                     style={{ background: '#0f172a', borderRadius: '8px', padding: '2.5rem 2rem', marginBottom: '1.5rem' }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem' }}>
-                        <FontAwesomeIcon icon={faTrophy} className="me-3" style={{ color: '#a0781c', fontSize: '1.5rem' }} />
+                        <FontAwesomeIcon icon={faTrophy} className="mr-3" style={{ color: '#a0781c', fontSize: '1.5rem' }} />
                         <h2 style={{ color: '#ffffff', fontWeight: '700', margin: '0', fontSize: '1.5rem', letterSpacing: '-0.3px' }}>傑出系友</h2>
                     </div>
                     <FeaturedAlumni featuredAlumni={featured} />
@@ -368,35 +365,35 @@ const AlumniListPage = () => {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className={`${styles.filterSearchSection} mb-5`}
             >
-                <Card className={styles.filterCard}>
-                    <Card.Body className={styles.filterCardBody}>
+                <div className={styles.filterCard}>
+                    <div className={styles.filterCardBody}>
                         <div className={styles.filterHeader}>
                             <div className={styles.filterHeaderLeft}>
                                 <FontAwesomeIcon icon={faFilter} className={styles.filterIcon} />
                                 <h3 className={styles.filterTitle}>尋找系友</h3>
                             </div>
-                            <Button
-                                variant="link"
+                            <button
+                                type="button"
                                 className={styles.helpButton}
                                 onClick={toggleFilterInfo}
                             >
                                 <small>篩選說明</small>
-                            </Button>
+                            </button>
                         </div>
 
                         {showFilterInfo && (
-                            <Alert className={`${styles.infoAlert} mb-3`}>
+                            <div className={`alert ${styles.infoAlert} mb-3`} role="alert">
                                 <small>
                                     您可以透過「級別」查看不同屆別的系友，或透過「職位」篩選特定職務的系友。
                                     也可以直接在搜尋框中輸入關鍵字，查找特定系友、公司或專長。
                                 </small>
-                            </Alert>
+                            </div>
                         )}
 
                         {/* 搜尋框 */}
-                        <Form className={`${styles.searchForm} mb-4`} onKeyDown={handleEnterPress}>
+                        <form className={`${styles.searchForm} mb-4`} onKeyDown={handleEnterPress}>
                             <div className={styles.searchInputWrapper}>
-                                <Form.Control
+                                <input
                                     type="text"
                                     placeholder="搜尋系友、公司、專長、產品..."
                                     value={searchQuery}
@@ -405,74 +402,74 @@ const AlumniListPage = () => {
                                 />
                                 <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
                                 {isSearching && searchQuery && (
-                                    <Button
-                                        variant="link"
+                                    <button
+                                        type="button"
                                         className={styles.searchReset}
                                         onClick={resetSearch}
                                     >
                                         重置
-                                    </Button>
+                                    </button>
                                 )}
                             </div>
-                        </Form>
+                        </form>
 
                         {/* 父級 Tabs */}
-                        <Tabs
-                            id="parent-tabs"
-                            activeKey={parentKey}
-                            onSelect={(key) => handleParentKeyChange(key)}
-                            className={`${styles.parentTabs} mb-3`}
+                        <div
+                            className={`${styles.parentTabs} tabs tabs-bordered mb-3`}
+                            role="tablist"
                         >
-                            <Tab
-                                eventKey="級別"
-                                title={
-                                    <span>
-                                        <FontAwesomeIcon icon={faGraduationCap} className="me-2" />
-                                        級別
-                                    </span>
-                                }
-                            />
-                            <Tab
-                                eventKey="職位"
-                                title={
-                                    <span>
-                                        <FontAwesomeIcon icon={faBriefcase} className="me-2" />
-                                        職位
-                                    </span>
-                                }
-                            />
-                        </Tabs>
+                            <button
+                                type="button"
+                                role="tab"
+                                className={`tab ${parentKey === '級別' ? 'tab-active' : ''}`}
+                                onClick={() => handleParentKeyChange('級別')}
+                            >
+                                <FontAwesomeIcon icon={faGraduationCap} className="mr-2" />
+                                級別
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                className={`tab ${parentKey === '職位' ? 'tab-active' : ''}`}
+                                onClick={() => handleParentKeyChange('職位')}
+                            >
+                                <FontAwesomeIcon icon={faBriefcase} className="mr-2" />
+                                職位
+                            </button>
+                        </div>
 
                         {/* 子級 Tabs */}
                         {loading && !alumniList.length ? (
-                            <div className="d-flex justify-content-center my-4">
+                            <div className="flex justify-center my-4">
                                 <div className={styles.loadingSpinner}></div>
                             </div>
                         ) : error ? (
-                            <Alert className={`${styles.errorAlert} mb-3`}>
-                                <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+                            <div className={`alert ${styles.errorAlert} mb-3`} role="alert">
+                                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
                                 {error}
-                            </Alert>
+                            </div>
                         ) : (
                             <div className={styles.childTabsContainer}>
-                                <Tabs
-                                    id="child-tabs"
-                                    activeKey={childKey}
-                                    onSelect={(key) => handleChildKeyChange(key)}
-                                    className={styles.childTabs}
+                                <div
+                                    className={`${styles.childTabs} tabs tabs-bordered`}
+                                    role="tablist"
                                 >
                                     {childOptions.map((option) => (
-                                        <Tab
-                                            eventKey={option.value}
-                                            title={option.label}
+                                        <button
+                                            type="button"
+                                            role="tab"
                                             key={option.value}
-                                        />
+                                            className={`tab ${childKey === option.value ? 'tab-active' : ''}`}
+                                            onClick={() => handleChildKeyChange(option.value)}
+                                        >
+                                            {option.label}
+                                        </button>
                                     ))}
-                                </Tabs>
+                                </div>
                             </div>
                         )}
-                    </Card.Body>
-                </Card>
+                    </div>
+                </div>
             </motion.div>
 
             {/* 系友列表區塊 */}
@@ -484,14 +481,14 @@ const AlumniListPage = () => {
             >
                 {isSearching && (
                     <div className="search-status mb-3">
-                        <Badge bg="primary" className="p-2">
+                        <span className="badge badge-primary p-2">
                             搜尋: "{searchQuery}" {alumniList.length > 0 ? `(${alumniList.length} 位系友)` : ''}
-                        </Badge>
+                        </span>
                         <Button
-                            variant="outline-secondary"
+                            variant="outline"
                             size="sm"
                             onClick={resetSearch}
-                            className="ms-2"
+                            className="ml-2"
                         >
                             清除搜尋
                         </Button>
@@ -500,28 +497,29 @@ const AlumniListPage = () => {
 
                 {loading && alumniList.length > 0 ? (
                     <div className={styles.loadingOverlay}>
-                        <Spinner animation="border" className={styles.loadingSpinner} />
+                        <Spinner size="lg" />
                         <p className={`${styles.loadingText} mt-2`}>載入系友資料中...</p>
                     </div>
                 ) : error ? (
-                    <Alert className={`${styles.errorAlert} mb-3`}>
-                        <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+                    <div className={`alert ${styles.errorAlert} mb-3`} role="alert">
+                        <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
                         {error}
-                    </Alert>
+                    </div>
                 ) : emptyResult ? (
-                    <Alert className={`${styles.warningAlert} text-center py-5`}>
-                        <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" size="lg" />
+                    <div className={`alert ${styles.warningAlert} text-center py-5`} role="alert">
+                        <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" size="lg" />
                         <h4 className="mt-3">沒有找到符合條件的系友</h4>
                         <p className="mb-0">請嘗試其他搜尋條件或篩選方式</p>
                         {isSearching && (
-                            <Button
+                            <button
+                                type="button"
                                 className={`${styles.resetButton} mt-3`}
                                 onClick={resetSearch}
                             >
                                 查看所有系友
-                            </Button>
+                            </button>
                         )}
-                    </Alert>
+                    </div>
                 ) : (
                     <>
                         <div className={styles.alumniGrid}>
@@ -533,15 +531,15 @@ const AlumniListPage = () => {
                                         transition: { duration: 0.2 }
                                     }}
                                 >
-                                    <Card
-                                        className={`${styles.alumniCard} h-100`}
+                                    <div
+                                        className={`${styles.alumniCard} h-full`}
                                         onClick={() => window.location.href = `/alumni/${alumni.id}`}
                                     >
-                                        <div className="row g-0 h-100">
-                                            <div className="col-4">
+                                        <div className="flex h-full">
+                                            <div className="w-1/3">
                                                 <div className={styles.imageWrapper}>
                                                     <div className={styles.imageOverlay}></div>
-                                                    <Card.Img
+                                                    <img
                                                         src={getImageSrc(alumni.photo ? process.env.REACT_APP_BASE_URL + alumni.photo : null, 'avatar')}
                                                         alt={alumni.name}
                                                         className={styles.cardImage}
@@ -550,10 +548,10 @@ const AlumniListPage = () => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="col-8">
-                                                <Card.Body className={`${styles.cardBody} d-flex flex-column h-100`}>
-                                                    <Card.Title className={`${styles.cardTitle} mb-1`}>{alumni.name || '未提供姓名'}</Card.Title>
-                                                    <Card.Text className={`${styles.positionText} mb-1`}>
+                                            <div className="w-2/3">
+                                                <div className={`${styles.cardBody} flex flex-col h-full`}>
+                                                    <div className={`${styles.cardTitle} mb-1`}>{alumni.name || '未提供姓名'}</div>
+                                                    <div className={`${styles.positionText} mb-1`}>
                                                         {(() => {
                                                             if (!alumni.position) {
                                                                 return '職位未提供';
@@ -566,31 +564,47 @@ const AlumniListPage = () => {
                                                             }
                                                             return '職位未提供';
                                                         })()}
-                                                    </Card.Text>
+                                                    </div>
                                                     <span className={styles.gradeText}>
                                                         {alumni.graduate && alumni.graduate.grade ? `${alumni.graduate.grade}級` : '級別未提供'}
                                                     </span>
                                                     {alumni.company && (
-                                                        <Card.Text className={`${styles.companyTag} mb-0`}>
+                                                        <div className={`${styles.companyTag} mb-0`}>
                                                             {alumni.company}
-                                                        </Card.Text>
+                                                        </div>
                                                     )}
-                                                    <div className={`${styles.viewProfile} mt-auto w-100`}>
+                                                    <div className={`${styles.viewProfile} mt-auto w-full`}>
                                                         查看介紹 <FontAwesomeIcon icon={faChevronRight} size="xs" />
                                                     </div>
-                                                </Card.Body>
+                                                </div>
                                             </div>
                                         </div>
-                                    </Card>
+                                    </div>
                                 </motion.div>
                             ))}
                         </div>
 
                         {/* 分頁按鈕 */}
                         {totalPages > 1 && (
-                            <Pagination className={`${styles.pagination} justify-content-center mt-5`}>
-                                <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-                                <Pagination.Prev onClick={() => handlePageChange(Math.max(1, currentPage - 1))} disabled={currentPage === 1} />
+                            <div className={`${styles.pagination} join flex justify-center mt-5`}>
+                                <button
+                                    type="button"
+                                    className="join-item btn"
+                                    onClick={() => handlePageChange(1)}
+                                    disabled={currentPage === 1}
+                                    aria-label="第一頁"
+                                >
+                                    «
+                                </button>
+                                <button
+                                    type="button"
+                                    className="join-item btn"
+                                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                    disabled={currentPage === 1}
+                                    aria-label="上一頁"
+                                >
+                                    ‹
+                                </button>
 
                                 {[...Array(totalPages)].map((_, index) => {
                                     const pageNumber = index + 1;
@@ -601,33 +615,59 @@ const AlumniListPage = () => {
                                         (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
                                     ) {
                                         return (
-                                            <Pagination.Item
+                                            <button
+                                                type="button"
                                                 key={pageNumber}
-                                                active={pageNumber === currentPage}
+                                                className={`join-item btn ${pageNumber === currentPage ? 'btn-active btn-primary' : ''}`}
                                                 onClick={() => handlePageChange(pageNumber)}
                                             >
                                                 {pageNumber}
-                                            </Pagination.Item>
+                                            </button>
                                         );
                                     } else if (
                                         (pageNumber === currentPage - 2 && currentPage > 3) ||
                                         (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
                                     ) {
-                                        return <Pagination.Ellipsis key={`ellipsis-${pageNumber}`} />;
+                                        return (
+                                            <button
+                                                type="button"
+                                                key={`ellipsis-${pageNumber}`}
+                                                className="join-item btn btn-disabled"
+                                                disabled
+                                            >
+                                                …
+                                            </button>
+                                        );
                                     }
                                     return null;
                                 })}
 
-                                <Pagination.Next onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} />
-                                <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
-                            </Pagination>
+                                <button
+                                    type="button"
+                                    className="join-item btn"
+                                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                                    disabled={currentPage === totalPages}
+                                    aria-label="下一頁"
+                                >
+                                    ›
+                                </button>
+                                <button
+                                    type="button"
+                                    className="join-item btn"
+                                    onClick={() => handlePageChange(totalPages)}
+                                    disabled={currentPage === totalPages}
+                                    aria-label="最後一頁"
+                                >
+                                    »
+                                </button>
+                            </div>
                         )}
                     </>
                 )}
             </motion.div>
 
-            </Container>
-        </Container>
+            </div>
+        </div>
     );
 };
 

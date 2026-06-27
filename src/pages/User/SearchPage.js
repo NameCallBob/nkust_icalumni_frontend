@@ -2,10 +2,6 @@
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Nav, Card, Container, Row, Col, Form, Button,
-  InputGroup, Dropdown, Badge, Fade, Spinner
-} from 'react-bootstrap';
 import CompanyCard from 'components/User/search/Companycard';
 import LoadingSpinner from 'components/LoadingSpinner';
 import SEO from 'SEO';
@@ -154,7 +150,7 @@ const Search = () => {
   // 渲染視圖模式切換按鈕
   const renderViewToggle = () => {
     return (
-      <div className="d-flex gap-2">
+      <div className="flex gap-2">
         <button
           type="button"
           onClick={() => setViewMode('grid')}
@@ -195,16 +191,17 @@ const Search = () => {
   const renderSearchResults = () => {
     if (loading) {
       return (
-        <Col xs={12} className="text-center py-5">
+        <div className="col-span-12 text-center py-12">
           <LoadingSpinner />
-        </Col>
+        </div>
       );
     }
 
     if (filteredResults.length === 0) {
       return (
-        <Fade in={showNoResults}>
-          <Col xs={12} className="d-flex justify-content-center py-5">
+        <div
+          className={`col-span-12 flex justify-center py-12 transition-opacity duration-300 ${showNoResults ? 'opacity-100' : 'opacity-0'}`}
+        >
             <div
               className="text-center"
               style={{
@@ -244,15 +241,14 @@ const Search = () => {
                 查看所有公司
               </button>
             </div>
-          </Col>
-        </Fade>
+        </div>
       );
     }
 
     return (
       <>
-        <Col xs={12} className="mb-3">
-          <div className="d-flex justify-content-between align-items-center">
+        <div className="col-span-12 mb-3">
+          <div className="flex justify-between items-center">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span
                 style={{
@@ -286,7 +282,7 @@ const Search = () => {
                 </span>
               )}
             </div>
-            <div className="d-flex align-items-center gap-3">
+            <div className="flex items-center gap-3">
               <select
                 value={sortBy}
                 onChange={(e) => sortResults(e.target.value)}
@@ -306,26 +302,26 @@ const Search = () => {
                 <option value="nameAsc">公司名稱 A-Z</option>
                 <option value="nameDesc">公司名稱 Z-A</option>
               </select>
-              <div className="d-none d-md-block">
+              <div className="hidden md:block">
                 {renderViewToggle()}
               </div>
             </div>
           </div>
-        </Col>
+        </div>
 
         {viewMode === 'grid' ? (
           // 網格視圖
           filteredResults.map((company, index) => (
-            <Col xs={12} sm={6} md={4} lg={4} key={index} className="mb-4">
+            <div className="col-span-12 sm:col-span-6 md:col-span-4 mb-4" key={index}>
               <CompanyCard
                 company={company}
                 onClick={() => handleCardClick(company)}
               />
-            </Col>
+            </div>
           ))
         ) : (
           // 列表視圖
-          <Col xs={12}>
+          <div className="col-span-12">
             {filteredResults.map((company, index) => (
               <div
                 key={index}
@@ -409,7 +405,7 @@ const Search = () => {
                 </div>
               </div>
             ))}
-          </Col>
+          </div>
         )}
       </>
     );
@@ -446,10 +442,10 @@ const Search = () => {
 
       {/* Search & Filter Bar */}
       <div style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '20px 0' }}>
-        <Container>
-          <Form onSubmit={handleInputSearch}>
-            <Row className="g-2 align-items-center">
-              <Col xs={12} md={9}>
+        <div className="container mx-auto px-4">
+          <form onSubmit={handleInputSearch}>
+            <div className="grid grid-cols-12 gap-2 items-center">
+              <div className="col-span-12 md:col-span-9">
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <BsSearch
                     style={{
@@ -478,8 +474,8 @@ const Search = () => {
                     onBlur={e => { e.target.style.borderColor = '#e2e8f0'; }}
                   />
                 </div>
-              </Col>
-              <Col xs={12} md={3}>
+              </div>
+              <div className="col-span-12 md:col-span-3">
                 <button
                   type="submit"
                   style={{
@@ -496,8 +492,8 @@ const Search = () => {
                 >
                   搜尋
                 </button>
-              </Col>
-            </Row>
+              </div>
+            </div>
 
             {/* Industry Filter Pills */}
             <div
@@ -541,20 +537,20 @@ const Search = () => {
                 );
               })}
             </div>
-          </Form>
-        </Container>
+          </form>
+        </div>
       </div>
 
       {/* Results Area */}
-      <Container style={{ paddingTop: '32px', paddingBottom: '48px' }}>
-        <Row>
-          <Col xs={12}>
-            <Row>
+      <div className="container mx-auto px-4" style={{ paddingTop: '32px', paddingBottom: '48px' }}>
+        <div className="grid grid-cols-12">
+          <div className="col-span-12">
+            <div className="grid grid-cols-12 gap-x-4">
               {renderSearchResults()}
-            </Row>
-          </Col>
-        </Row>
-      </Container>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

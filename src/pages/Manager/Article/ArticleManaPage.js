@@ -1,18 +1,6 @@
 import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Table,
-  Form,
-  Pagination,
-  Spinner,
-  InputGroup,
-  Badge,
-  Dropdown,
-} from "react-bootstrap";
+import { Button, Spinner } from "components/common/ui";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { toast } from "react-toastify";
@@ -86,180 +74,200 @@ const ArticleEditor = () => {
   const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
 
   return (
-    <Container fluid className="admin-container py-4">
-      <Row className="mb-4 align-items-center">
-        <Col>
-          <h2 className="fw-bold">文章管理-管理已發布與未發布的文章</h2>
-        </Col>
-        <Col className="text-end">
+    <div className="admin-container container mx-auto px-4 py-4 max-w-full">
+      <div className="flex flex-wrap items-center mb-4 gap-3">
+        <div className="flex-1">
+          <h2 className="font-bold text-2xl text-base-content">文章管理-管理已發布與未發布的文章</h2>
+        </div>
+        <div className="text-right">
           <Button
             variant="primary"
             onClick={() => navigate("/alumni/manage/article/new/")}
-            className="rounded-pill px-4"
+            className="rounded-full px-4"
             style={rwd.getButtonStyle()}
           >
-            <i className="bi bi-plus-lg me-2"></i>新增文章
+            <i className="bi bi-plus-lg mr-2"></i>新增文章
           </Button>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       {/* 搜尋與篩選區域 */}
-      <Row className="mb-4 p-4 bg-light rounded shadow-sm">
-        <Col md={4} className="mb-3 mb-md-0">
-          <InputGroup>
-            <InputGroup.Text>
+      <div className="grid grid-cols-12 gap-4 mb-4 p-4 bg-base-200 rounded-lg shadow-sm">
+        <div className="col-span-12 md:col-span-4">
+          <div className="join w-full">
+            <span className="join-item flex items-center px-3 bg-base-100 border border-base-300">
               <i className="bi bi-search"></i>
-            </InputGroup.Text>
-            <Form.Control
+            </span>
+            <input
               type="text"
+              className="join-item input input-bordered w-full"
               placeholder="搜尋文章標題..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </InputGroup>
-        </Col>
-        <Col md={2}>
-          <Form.Select
+          </div>
+        </div>
+        <div className="col-span-12 md:col-span-2">
+          <select
+            className="select select-bordered w-full"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
             <option value="">所有狀態</option>
             <option value="true">已發布</option>
             <option value="false">未發布</option>
-          </Form.Select>
-        </Col>
-        <Col md={2}>
-          <Form.Control
+          </select>
+        </div>
+        <div className="col-span-12 md:col-span-2">
+          <input
             type="date"
+            className="input input-bordered w-full"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             placeholder="開始日期"
           />
-        </Col>
-        <Col md={2}>
-          <Form.Control
+        </div>
+        <div className="col-span-12 md:col-span-2">
+          <input
             type="date"
+            className="input input-bordered w-full"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             placeholder="結束日期"
           />
-        </Col>
-        <Col md={2}>
-          <Form.Select
+        </div>
+        <div className="col-span-12 md:col-span-2">
+          <select
+            className="select select-bordered w-full"
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
           >
             <option value="publish_at">發布時間</option>
             <option value="view_count">觀看數</option>
-          </Form.Select>
-        </Col>
-      </Row>
+          </select>
+        </div>
+      </div>
 
       {/* 文章表格 */}
       {loading ? (
         <div className="text-center my-5">
-          <Spinner animation="border" variant="primary" />
-          <p className="text-muted mt-2">載入中...</p>
+          <Spinner center label="載入中..." />
         </div>
       ) : (
         <>
           <div style={rwd.getContainerStyle()}>
-            <Table hover responsive className="shadow-sm" style={rwd.getTableStyle()}>
-              <thead className="bg-light">
-                <tr>
-                  <th>標題</th>
-                  <th>發布日期</th>
-                  <th>結束日期</th>
-                  <th>狀態</th>
-                  <th className="text-center">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentArticles.map((article) => (
-                  <tr key={article.id}>
-                    <td>{article.title}</td>
-                    <td>{moment(article.publish_at).format("YYYY-MM-DD HH:mm")}</td>
-                    <td>{moment(article.expire_at).format("YYYY-MM-DD HH:mm")}</td>
-                    <td>
-                      <Badge bg={article.active ? "success" : "secondary"}>
-                        {article.active ? "已發布" : "未發布"}
-                      </Badge>
-                    </td>
-                    <td className="text-center">
-                      {rwd.isMobile ? (
-                        <Dropdown>
-                          <Dropdown.Toggle
-                            variant="outline-secondary"
-                            size="sm"
-                            style={rwd.getButtonStyle()}
-                          >
-                            <i className="bi bi-three-dots"></i>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => handleEdit(article)}>
-                              <i className="bi bi-pencil me-2"></i>編輯
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                              className="text-danger"
-                              onClick={() => handleDelete(article.id)}
-                            >
-                              <i className="bi bi-trash me-2"></i>刪除
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      ) : (
-                        <>
-                          <Button
-                            variant="outline-primary"
-                            size="sm"
-                            className="me-2"
-                            onClick={() => handleEdit(article)}
-                            style={rwd.getButtonStyle()}
-                          >
-                            <i className="bi bi-pencil"></i>
-                          </Button>
-                          <Button
-                            variant="outline-danger"
-                            size="sm"
-                            onClick={() => handleDelete(article.id)}
-                            style={rwd.getButtonStyle()}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </Button>
-                        </>
-                      )}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="table table-zebra shadow-sm" style={rwd.getTableStyle()}>
+                <thead className="bg-base-200">
+                  <tr>
+                    <th>標題</th>
+                    <th>發布日期</th>
+                    <th>結束日期</th>
+                    <th>狀態</th>
+                    <th className="text-center">操作</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {currentArticles.map((article) => (
+                    <tr key={article.id}>
+                      <td>{article.title}</td>
+                      <td>{moment(article.publish_at).format("YYYY-MM-DD HH:mm")}</td>
+                      <td>{moment(article.expire_at).format("YYYY-MM-DD HH:mm")}</td>
+                      <td>
+                        <span className={`badge ${article.active ? "badge-success" : "badge-ghost"}`}>
+                          {article.active ? "已發布" : "未發布"}
+                        </span>
+                      </td>
+                      <td className="text-center">
+                        {rwd.isMobile ? (
+                          <div className="dropdown dropdown-end">
+                            <label
+                              tabIndex={0}
+                              className="btn btn-outline btn-sm"
+                              style={rwd.getButtonStyle()}
+                            >
+                              <i className="bi bi-three-dots"></i>
+                            </label>
+                            <ul
+                              tabIndex={0}
+                              className="dropdown-content menu z-[1] bg-base-100 rounded-box shadow w-32 p-2"
+                            >
+                              <li>
+                                <a onClick={() => handleEdit(article)}>
+                                  <i className="bi bi-pencil mr-2"></i>編輯
+                                </a>
+                              </li>
+                              <li>
+                                <a
+                                  className="text-error"
+                                  onClick={() => handleDelete(article.id)}
+                                >
+                                  <i className="bi bi-trash mr-2"></i>刪除
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
+                        ) : (
+                          <>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mr-2"
+                              onClick={() => handleEdit(article)}
+                              style={rwd.getButtonStyle()}
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="btn-error"
+                              onClick={() => handleDelete(article.id)}
+                              style={rwd.getButtonStyle()}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </Button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* 分頁 */}
           {totalPages > 1 && (
-            <Pagination className="justify-content-center mt-4">
-              <Pagination.Prev
+            <div className="join flex justify-center mt-4">
+              <button
+                className="join-item btn"
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-              />
+              >
+                «
+              </button>
               {[...Array(totalPages)].map((_, index) => (
-                <Pagination.Item
+                <button
                   key={index + 1}
-                  active={index + 1 === currentPage}
+                  className={`join-item btn ${index + 1 === currentPage ? "btn-active btn-primary" : ""}`}
                   onClick={() => setCurrentPage(index + 1)}
                 >
                   {index + 1}
-                </Pagination.Item>
+                </button>
               ))}
-              <Pagination.Next
+              <button
+                className="join-item btn"
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-              />
-            </Pagination>
+              >
+                »
+              </button>
+            </div>
           )}
         </>
       )}
-    </Container>
+    </div>
   );
 };
 
