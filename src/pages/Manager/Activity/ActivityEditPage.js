@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactQuill from 'react-quill'; // 安裝 react-quill
 import 'react-quill/dist/quill.snow.css';
-import { Button, Field } from 'components/common/ui';
-import useRWD from 'hooks/useRWD';
+import { CalendarClock, ArrowLeft, Save, Send } from 'lucide-react';
+import { Button, Field, PageHeader, Card, Toolbar } from 'components/common/ui';
 
 const ActivityEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const rwd = useRWD();
 
   const [title, setTitle] = useState('');
   const [type, setType] = useState('');
@@ -50,100 +49,88 @@ const ActivityEdit = () => {
   };
 
   return (
-    <div style={rwd.getContainerStyle()}>
-      <h2
-        className="text-2xl font-bold text-base-content"
-        style={{ marginBottom: rwd.isMobile ? '20px' : '30px' }}
-      >
-        編輯活動
-      </h2>
-      <form
-        className="flex flex-col"
-        style={{
-          padding: rwd.isMobile ? '15px' : '0',
-          gap: rwd.isMobile ? '15px' : '20px',
-        }}
-      >
-        {/* 活動標題 */}
-        <Field
-          as="input"
-          type="text"
-          label="活動標題"
-          placeholder="輸入標題"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
+      <PageHeader
+        title="編輯活動"
+        subtitle="填寫活動資訊與內容，可先保存草稿或直接送出。"
+        icon={<CalendarClock className="h-5 w-5" />}
+        actions={
+          <Button variant="outline" onClick={handleBack}>
+            <ArrowLeft className="h-4 w-4" />
+            回上一頁
+          </Button>
+        }
+      />
 
-        {/* 活動類型 */}
-        <Field
-          as="input"
-          type="text"
-          label="活動類型"
-          placeholder="輸入類型"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-        />
+      <form className="flex flex-col gap-6">
+        <Card padding="lg">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
+            {/* 活動標題 */}
+            <div className="md:col-span-2">
+              <Field
+                as="input"
+                type="text"
+                label="活動標題"
+                placeholder="輸入標題"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
 
-        {/* 活動時間 */}
-        <Field
-          as="input"
-          type="date"
-          label="活動時間"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
+            {/* 活動類型 */}
+            <Field
+              as="input"
+              type="text"
+              label="活動類型"
+              placeholder="輸入類型"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            />
+
+            {/* 活動時間 */}
+            <Field
+              as="input"
+              type="date"
+              label="活動時間"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+        </Card>
 
         {/* 活動內容 */}
-        <div className="form-control w-full mb-4">
-          <label className="label pb-1">
-            <span className="label-text font-medium text-base-content">活動內容</span>
+        <Card padding="lg">
+          <label className="mb-2 block text-sm font-medium text-base-content">
+            活動內容
           </label>
-          <div
-            style={{
-              minHeight: rwd.isMobile ? '200px' : '300px',
-            }}
-          >
+          <div className="quill-admin">
             <ReactQuill
               value={content}
               onChange={setContent}
-              style={{
-                height: rwd.isMobile ? '150px' : '250px',
-              }}
+              className="bg-base-100 rounded-lg"
+              style={{ minHeight: '220px' }}
             />
           </div>
-        </div>
+        </Card>
 
-        <div
-          className="flex"
-          style={{
-            flexDirection: rwd.isMobile ? 'column' : 'row',
-            gap: rwd.isMobile ? '10px' : '15px',
-            marginTop: rwd.isMobile ? '20px' : '30px',
-            justifyContent: rwd.isMobile ? 'center' : 'flex-start',
-          }}
-        >
-          <Button
-            variant="secondary"
-            onClick={handleSaveDraft}
-            className={rwd.isMobile ? 'w-full' : ''}
-          >
-            保存草稿
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            className={rwd.isMobile ? 'w-full' : ''}
-          >
-            送出
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            className={rwd.isMobile ? 'w-full' : ''}
-          >
-            回上一頁
-          </Button>
-        </div>
+        <Toolbar
+          className="mb-0"
+          right={
+            <>
+              <Button variant="ghost" onClick={handleBack}>
+                取消
+              </Button>
+              <Button variant="secondary" onClick={handleSaveDraft}>
+                <Save className="h-4 w-4" />
+                保存草稿
+              </Button>
+              <Button variant="primary" onClick={handleSubmit}>
+                <Send className="h-4 w-4" />
+                送出
+              </Button>
+            </>
+          }
+        />
       </form>
     </div>
   );

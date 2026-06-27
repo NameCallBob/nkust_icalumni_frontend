@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import {
   PlusCircle, Search, Info, Calendar, CheckCircle,
-  XCircle, AlertTriangle, FileText, Edit, Trash2, Eye
+  AlertTriangle, Edit, Trash2, Briefcase
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Axios from 'common/Axios';
-import LoadingSpinner from 'components/LoadingSpinner';
 import RecruitFormModal from 'components/Manage/recruitModal'; // 引入剛才優化的表單元件
 import AppModal from 'components/common/AppModal';
-import { Button } from 'components/common/ui';
-import useRWD from 'hooks/useRWD';
+import {
+  Button, Card, PageHeader, Toolbar, DataTable, Badge, EmptyState, Field,
+} from 'components/common/ui';
 
 function RecruitManaPage() {
-  const rwd = useRWD();
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -410,13 +409,6 @@ function RecruitManaPage() {
     }
   };
 
-  // 狀態 variant 對應 DaisyUI badge 樣式（純樣式對照，不影響邏輯）
-  const statusBadgeClass = (variant) => {
-    if (variant === 'info') return 'badge-info';
-    if (variant === 'success') return 'badge-success';
-    return 'badge-ghost';
-  };
-
   // 分頁邏輯
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
@@ -471,174 +463,178 @@ function RecruitManaPage() {
     return new Date(dateString).toLocaleDateString('zh-TW', options);
   };
 
+  // 表格欄位定義（純展示，資料來源仍為既有 state）
+  const columns = [
+    {
+      key: 'id',
+      header: 'ID',
+      hideOnMobile: true,
+      className: 'w-16 text-base-content/50',
+      render: (job) => `#${job.id}`,
+    },
+    {
+      key: 'title',
+      header: '職位名稱',
+      render: (job) => (
+        <span className="font-semibold text-base-content">{job.title}</span>
+      ),
+    },
+    {
+      key: 'company_name',
+      header: '公司',
+      render: (job) => job.company_name || '個人公司',
+    },
+    {
+      key: 'release_date',
+      header: '發布日期',
+      render: (job) => (
+        <span className="inline-flex items-center gap-1.5 text-base-content/80">
+          <Calendar size={14} className="text-base-content/40" />
+          {formatDate(job.release_date)}
+        </span>
+      ),
+    },
+    {
+      key: 'deadline',
+      header: '截止日期',
+      render: (job) => (
+        <span className="inline-flex items-center gap-1.5 text-base-content/80">
+          <Calendar size={14} className="text-base-content/40" />
+          {formatDate(job.deadline)}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: '狀態',
+      render: (job) => {
+        const jobStatus = getJobStatus(job);
+        return <Badge variant={jobStatus.variant}>{jobStatus.text}</Badge>;
+      },
+    },
+    {
+      key: 'actions',
+      header: '操作',
+      className: 'text-right',
+      render: (job) => (
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleEditJob(job.id)}
+            title="編輯"
+          >
+            <Edit size={15} className="mr-1" />
+            編輯
+          </Button>
+          <Button
+            variant="error"
+            size="sm"
+            onClick={() => confirmDeleteJob(job.id)}
+            title="刪除"
+          >
+            <Trash2 size={15} className="mr-1" />
+            刪除
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} />
 
-      {/* 頁面標題和說明 */}
-      <div className="mb-4">
-        <div>
-          <h1 className="mb-2 text-2xl font-bold">徵才管理</h1>
-          <p className="text-base-content/60">
-            在此管理您的所有職缺，新增、編輯或刪除招聘資訊。
-            <Button
-              variant="ghost"
-              size="sm"
-              className="btn-link p-0 ml-2 align-baseline"
-              onClick={() => setShowHelpModal(true)}
-            >
-              <Info size={18} />
-              <span className="ml-1">使用幫助</span>
+      {/* 頁面標題 */}
+      <PageHeader
+        title="徵才管理"
+        subtitle="在此管理您的所有職缺，新增、編輯或刪除招聘資訊。"
+        icon={<Briefcase size={22} />}
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setShowHelpModal(true)}>
+              <Info size={18} className="mr-1" />
+              使用幫助
             </Button>
-          </p>
-        </div>
-      </div>
+            <Button variant="primary" onClick={handleShowAddModal}>
+              <PlusCircle size={18} className="mr-1" />
+              新增職位
+            </Button>
+          </>
+        }
+      />
 
-      {/* 功能區塊 */}
-      <div className="mb-4">
-        <div className="w-full lg:w-3/4">
-          <div className="card card-bordered bg-base-100 shadow-sm mb-3 mb-md-0">
-            <div className="card-body">
-              <div className={`flex ${rwd.isMobile ? 'flex-col' : 'justify-between'} items-center`}>
-                <div className={rwd.isMobile ? 'text-center mb-3' : ''}>
-                  <h5 className="mb-0 font-semibold">職缺總覽</h5>
-                  <small className="text-base-content/60">總共 {jobs.length} 個職缺</small>
-                </div>
-                <Button
-                  variant="success"
-                  className="flex items-center"
-                  onClick={handleShowAddModal}
-                  style={rwd.getButtonStyle()}
-                >
-                  <PlusCircle size={18} className="mr-1" />
-                  新增職位
-                </Button>
-              </div>
+      {/* 搜尋 / 篩選列 */}
+      <Toolbar
+        left={
+          <>
+            <div className="relative w-full sm:w-72">
+              <Search
+                size={16}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40"
+              />
+              <Field
+                className="pl-9 mb-0"
+                placeholder="搜尋職位名稱或公司"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-          </div>
-        </div>
-      </div>
+            <Field
+              as="select"
+              className="mb-0 w-full sm:w-44"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">全部狀態</option>
+              <option value="active">招募中</option>
+              <option value="upcoming">即將發布</option>
+              <option value="expired">已截止</option>
+            </Field>
+          </>
+        }
+        right={
+          <span className="text-sm text-base-content/60">
+            共 <span className="font-semibold text-base-content">{filteredJobs.length}</span> 個職缺
+          </span>
+        }
+      />
 
-      {/* 其餘部分保持不變 */}
       {/* 職位列表 */}
-      <div className="card card-bordered bg-base-100 shadow-sm">
-        <div className="card-body">
-          {loading && jobs.length === 0 ? (
-            <div className="text-center py-5">
-              <LoadingSpinner />
-              <p className="mt-3">載入職位資料中...</p>
-            </div>
-          ) : filteredJobs.length === 0 ? (
-            <div className="text-center py-5">
-              <AlertTriangle size={48} className="text-base-content/60 mb-3 mx-auto" />
-              <h5 className="font-semibold">找不到符合的職缺</h5>
-              <p className="text-base-content/60">
-                {jobs.length === 0
+      <Card padding="none">
+        <DataTable
+          columns={columns}
+          data={currentJobs}
+          rowKey={(job) => job.id}
+          loading={loading && jobs.length === 0}
+          empty={
+            <EmptyState
+              icon={<AlertTriangle className="h-8 w-8" />}
+              title="找不到符合的職缺"
+              description={
+                jobs.length === 0
                   ? '您尚未新增任何職缺，點擊「新增職位」開始建立'
-                  : '嘗試調整搜尋條件或篩選選項'}
-              </p>
-              {jobs.length === 0 && (
-                <Button
-                  variant="primary"
-                  onClick={handleShowAddModal}
-                  className="mt-2"
-                  style={rwd.getButtonStyle()}
-                >
-                  <PlusCircle size={18} className="mr-1" />
-                  新增您的第一個職缺
-                </Button>
-              )}
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="table table-zebra mb-0 w-full" style={rwd.getTableStyle()}>
-                  <thead>
-                    <tr>
-                      {!rwd.isMobile && <th style={{ width: '5%' }}>ID</th>}
-                      <th style={{ width: rwd.isMobile ? '40%' : '25%' }}>職位名稱</th>
-                      {!rwd.isMobile && <th style={{ width: '20%' }}>公司</th>}
-                      {!rwd.isMobile && <th style={{ width: '15%' }}>發布日期</th>}
-                      {!rwd.isMobile && <th style={{ width: '15%' }}>截止日期</th>}
-                      <th style={{ width: rwd.isMobile ? '30%' : '10%' }}>狀態</th>
-                      <th style={{ width: rwd.isMobile ? '30%' : '10%' }}>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentJobs.map((job) => {
-                      const jobStatus = getJobStatus(job);
+                  : '嘗試調整搜尋條件或篩選選項'
+              }
+              action={
+                jobs.length === 0 ? (
+                  <Button variant="primary" onClick={handleShowAddModal}>
+                    <PlusCircle size={18} className="mr-1" />
+                    新增您的第一個職缺
+                  </Button>
+                ) : null
+              }
+            />
+          }
+        />
 
-                      return (
-                        <tr key={job.id} className="hover">
-                          {!rwd.isMobile && <td>{job.id}</td>}
-                          <td className="font-bold">
-                            {job.title}
-                            {rwd.isMobile && (
-                              <div className="text-sm text-base-content/60 mt-1">
-                                <div>{job.company_name || '個人公司'}</div>
-                                <div>{formatDate(job.release_date)} - {formatDate(job.deadline)}</div>
-                              </div>
-                            )}
-                          </td>
-                          {!rwd.isMobile && <td>{job.company_name || '個人公司'}</td>}
-                          {!rwd.isMobile && (
-                            <td>
-                              <div className="flex items-center">
-                                <Calendar size={14} className="mr-1 text-base-content/60" />
-                                {formatDate(job.release_date)}
-                              </div>
-                            </td>
-                          )}
-                          {!rwd.isMobile && (
-                            <td>
-                              <div className="flex items-center">
-                                <Calendar size={14} className="mr-1 text-base-content/60" />
-                                {formatDate(job.deadline)}
-                              </div>
-                            </td>
-                          )}
-                          <td>
-                            <span className={`badge ${statusBadgeClass(jobStatus.variant)}`}>
-                              {jobStatus.text}
-                            </span>
-                          </td>
-                          <td>
-                            <div className={`flex ${rwd.isMobile ? 'flex-col' : ''}`}>
-                              <button
-                                type="button"
-                                className={`btn btn-sm btn-outline btn-primary ${rwd.isMobile ? 'mb-1 w-full' : 'mr-1'}`}
-                                onClick={() => handleEditJob(job.id)}
-                                title="編輯"
-                                style={rwd.getButtonStyle()}
-                              >
-                                <Edit size={16} />
-                                {rwd.isMobile && ' 編輯'}
-                              </button>
-                              <button
-                                type="button"
-                                className={`btn btn-sm btn-outline btn-error ${rwd.isMobile ? 'w-full' : ''}`}
-                                onClick={() => confirmDeleteJob(job.id)}
-                                title="刪除"
-                                style={rwd.getButtonStyle()}
-                              >
-                                <Trash2 size={16} />
-                                {rwd.isMobile && ' 刪除'}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* 分頁 */}
-              {totalPages > 1 && renderPagination()}
-            </>
-          )}
-        </div>
-      </div>
+        {/* 分頁 */}
+        {filteredJobs.length > 0 && totalPages > 1 && (
+          <div className="border-t border-base-300/70 px-4 py-3">
+            {renderPagination()}
+          </div>
+        )}
+      </Card>
 
       {/* 新增職位模態框 */}
       <RecruitFormModal
@@ -686,7 +682,6 @@ function RecruitManaPage() {
             <Button
               variant="secondary"
               onClick={() => setShowDeleteModal(false)}
-              style={rwd.getButtonStyle()}
             >
               取消
             </Button>
@@ -694,7 +689,6 @@ function RecruitManaPage() {
               variant="error"
               onClick={handleDeleteJob}
               disabled={loading}
-              style={rwd.getButtonStyle()}
             >
               {loading ? (
                 <>
@@ -726,7 +720,6 @@ function RecruitManaPage() {
           <Button
             variant="primary"
             onClick={handleCloseHelpModal}
-            style={rwd.getButtonStyle()}
           >
             我了解了
           </Button>

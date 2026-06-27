@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "components/common/ui";
+import { Button, PageHeader, Card } from "components/common/ui";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CompanyInfo from "components/Manage/Company/Info";
@@ -8,7 +8,19 @@ import ProductInfo from "components/Manage/Company/Product";
 import IndustryDropdown from "components/Manage/Company/IndustryDropdown";
 import Axios from "common/Axios";
 import useRWD from 'hooks/useRWD';
-import "css/manage/company.css";
+import {
+  Building2,
+  Info,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Save,
+  Layers,
+  Package,
+  Phone,
+  HelpCircle,
+  CheckCircle2,
+} from "lucide-react";
 
 const CompanyForm = () => {
   // 響應式設計 hook
@@ -212,240 +224,290 @@ const CompanyForm = () => {
     }
   };
 
-  // 分頁標籤定義（取代 react-bootstrap Tabs/Tab）
+  // 分頁標籤定義（presentation 重建；完成條件與原邏輯一致）
   const tabItems = [
     {
       key: "companyInfo",
-      title: (
-        <span style={{ fontSize: rwd.isMobile ? "14px" : "16px", padding: "8px 0" }}>
-          1. 公司資訊 {formProgress > 0 && <span className="badge badge-success badge-sm ml-1">已開始填寫</span>}
-        </span>
-      ),
+      num: 1,
+      label: "公司資訊",
+      icon: <Building2 size={18} />,
+      done: formProgress > 0,
+      doneLabel: "已開始填寫",
     },
     {
       key: "industry",
-      title: (
-        <span style={{ fontSize: rwd.isMobile ? "14px" : "16px", padding: "8px 0" }}>
-          2. 產業分類 {company.industry && <span className="badge badge-success badge-sm ml-1">已填寫</span>}
-        </span>
-      ),
+      num: 2,
+      label: "產業分類",
+      icon: <Layers size={18} />,
+      done: !!company.industry,
+      doneLabel: "已填寫",
     },
     {
       key: "productInfo",
-      title: (
-        <span style={{ fontSize: rwd.isMobile ? "14px" : "16px", padding: "8px 0" }}>
-          3. 產品資訊 {(company.products || company.product_description) && <span className="badge badge-success badge-sm ml-1">已填寫</span>}
-        </span>
-      ),
+      num: 3,
+      label: "產品資訊",
+      icon: <Package size={18} />,
+      done: !!(company.products || company.product_description),
+      doneLabel: "已填寫",
     },
     {
       key: "contactInfo",
-      title: (
-        <span style={{ fontSize: rwd.isMobile ? "14px" : "16px", padding: "8px 0" }}>
-          4. 聯絡資訊 {(company.website || company.email || company.phone_number) && <span className="badge badge-success badge-sm ml-1">已填寫</span>}
-        </span>
-      ),
+      num: 4,
+      label: "聯絡資訊",
+      icon: <Phone size={18} />,
+      done: !!(company.website || company.email || company.phone_number),
+      doneLabel: "已填寫",
     },
   ];
 
-  return (
-    <div style={rwd.getContainerStyle()}>
-    <div className="container mx-auto px-4 py-4" style={{ maxWidth: "980px", ...rwd.getContainerStyle() }}>
-      <div className="card card-bordered bg-base-100 shadow mb-4">
-        <div className="card-body">
-          <h1 className="text-center mb-2" style={{
-            fontSize: rwd.isMobile ? "22px" : "28px",
-            fontWeight: "bold",
-            color: "#0056b3"
-          }}>
-            公司資料維護
-          </h1>
+  const progressTone =
+    formProgress > 70 ? "progress-success" : formProgress > 30 ? "progress-info" : "progress-warning";
 
-          {showTips && (
-            <div className="alert alert-info flex-col items-start mb-3" role="alert">
-              <div className="flex justify-between items-start w-full">
+  return (
+    <div className="min-h-screen bg-base-200/40" style={rwd.getContainerStyle()}>
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-8">
+        <PageHeader
+          title="公司資料維護"
+          subtitle="完善公司資料，提升曝光度與專業形象。所有欄位皆為選填，可隨時儲存。"
+          icon={<Building2 size={22} />}
+          actions={
+            <Button variant="outline" size="sm" onClick={() => setShowTips(!showTips)}>
+              <Info size={16} className="mr-1" />
+              {showTips ? "隱藏說明" : "顯示說明"}
+            </Button>
+          }
+        />
+
+        {/* 填寫說明 */}
+        {showTips && (
+          <Card padding="md" className="mb-5 border-primary/20 bg-primary/5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2 text-primary">
+                <Info size={18} />
                 <h4 className="font-bold">填寫說明</h4>
-                {/* 關閉說明 */}
-                <button type="button" className="btn btn-ghost btn-xs" aria-label="關閉" onClick={() => setShowTips(false)}>✕</button>
               </div>
-              <div className="text-left">
-                <p>歡迎使用公司資料維護功能。請依照下面的分類填寫您的公司資料，所有欄位均為<b>選填</b>，您可隨時儲存並稍後繼續完善。</p>
-                <p>完整的公司資料有助於提高您的曝光度和專業形象。</p>
-                <hr className="my-2 border-base-content/20" />
-                <p className="mb-0">
-                  <b>小提示：</b> 可以點擊上方的分頁標籤或使用下方的「上一步」、「下一步」按鈕來切換不同區塊。
-                </p>
+              <button
+                type="button"
+                className="rounded-lg p-1 text-base-content/50 transition hover:bg-base-200 hover:text-base-content"
+                aria-label="關閉"
+                onClick={() => setShowTips(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-base-content/70">
+              <p>
+                歡迎使用公司資料維護功能。請依照下面的分類填寫您的公司資料，所有欄位均為
+                <b className="text-base-content">選填</b>，您可隨時儲存並稍後繼續完善。
+              </p>
+              <p>完整的公司資料有助於提高您的曝光度和專業形象。</p>
+              <div className="rounded-lg bg-base-100/60 px-3 py-2 text-base-content/80">
+                <b>小提示：</b> 可以點擊上方的分頁標籤或使用下方的「上一步」、「下一步」按鈕來切換不同區塊。
               </div>
             </div>
+          </Card>
+        )}
+
+        {/* 資料完整度 */}
+        <Card padding="md" className="mb-5">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-semibold text-base-content">資料完整度</span>
+            <span className="text-sm font-bold text-primary">{formProgress}%</span>
+          </div>
+          <progress
+            className={`progress w-full ${progressTone}`}
+            value={formProgress}
+            max="100"
+            style={{ height: "10px", borderRadius: "5px" }}
+          />
+        </Card>
+
+        <form onSubmit={handleSubmit}>
+          {/* 分頁標籤列 */}
+          <div role="tablist" className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {tabItems.map((tab) => {
+              const active = activeKey === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setActiveKey(tab.key)}
+                  className={[
+                    "flex items-center gap-2 rounded-xl border px-3 py-2.5 text-left transition",
+                    active
+                      ? "border-primary bg-primary text-primary-content shadow-sm"
+                      : "border-base-300 bg-base-100 text-base-content/70 hover:border-primary/40 hover:bg-primary/5",
+                  ].join(" ")}
+                >
+                  <span
+                    className={[
+                      "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold",
+                      active ? "bg-primary-content/20 text-primary-content" : "bg-base-200 text-base-content/60",
+                    ].join(" ")}
+                  >
+                    {tab.num}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-1.5 text-sm font-semibold">
+                      {tab.icon}
+                      <span className="truncate">{tab.label}</span>
+                    </span>
+                    {tab.done && (
+                      <span
+                        className={[
+                          "mt-0.5 inline-flex items-center gap-1 text-[11px]",
+                          active ? "text-primary-content/80" : "text-success",
+                        ].join(" ")}
+                      >
+                        <CheckCircle2 size={12} />
+                        {tab.doneLabel}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 1. 公司資訊 */}
+          {activeKey === "companyInfo" && (
+            <Card padding="none" className="overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-base-300 bg-base-200/60 px-5 py-4">
+                <Building2 size={20} className="text-primary" />
+                <h3 className="text-lg font-bold text-base-content">基本公司資訊</h3>
+              </div>
+              <div className="p-5 sm:p-6">
+                <div className="mb-4 rounded-lg bg-base-200/60 px-4 py-3 text-sm text-base-content/70">
+                  這裡填寫公司的基本資料，讓客戶能夠了解您的公司。所有欄位均為
+                  <b className="text-base-content">選填</b>，您可填寫對您最重要的資訊。
+                </div>
+                <CompanyInfo
+                  company={company}
+                  handleInputChange={handleInputChange}
+                />
+              </div>
+            </Card>
           )}
 
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <span><b>資料完整度：</b> {formProgress}%</span>
-              <Button variant="ghost" size="sm" onClick={() => setShowTips(!showTips)}>
-                {showTips ? "隱藏說明" : "顯示說明"}
-              </Button>
-            </div>
-            <progress
-              className={`progress w-full ${formProgress > 70 ? "progress-success" : formProgress > 30 ? "progress-info" : "progress-warning"}`}
-              value={formProgress}
-              max="100"
-              style={{ height: "10px", borderRadius: "5px" }}
-            />
+          {/* 2. 產業分類 */}
+          {activeKey === "industry" && (
+            <Card padding="none" className="overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-base-300 bg-base-200/60 px-5 py-4">
+                <Layers size={20} className="text-primary" />
+                <h3 className="text-lg font-bold text-base-content">選擇產業分類</h3>
+              </div>
+              <div className="p-5 sm:p-6">
+                <div className="mb-4 rounded-lg bg-base-200/60 px-4 py-3 text-sm text-base-content/70">
+                  選擇最符合您公司的產業類型，這將有助於潛在客戶找到您。
+                </div>
+                <IndustryDropdown
+                  industries={industries}
+                  company={company}
+                  handleInputChange={handleInputChange}
+                />
+              </div>
+            </Card>
+          )}
+
+          {/* 3. 產品資訊 */}
+          {activeKey === "productInfo" && (
+            <Card padding="none" className="overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-base-300 bg-base-200/60 px-5 py-4">
+                <Package size={20} className="text-primary" />
+                <h3 className="text-lg font-bold text-base-content">產品或服務資訊</h3>
+              </div>
+              <div className="p-5 sm:p-6">
+                <div className="mb-4 rounded-lg bg-base-200/60 px-4 py-3 text-sm text-base-content/70">
+                  簡單描述您提供的主要產品或服務，讓客戶了解您的業務範圍。
+                </div>
+                <ProductInfo
+                  company={company}
+                  handleInputChange={handleInputChange}
+                />
+              </div>
+            </Card>
+          )}
+
+          {/* 4. 聯絡資訊 */}
+          {activeKey === "contactInfo" && (
+            <Card padding="none" className="overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-base-300 bg-base-200/60 px-5 py-4">
+                <Phone size={20} className="text-primary" />
+                <h3 className="text-lg font-bold text-base-content">聯絡方式與照片</h3>
+              </div>
+              <div className="p-5 sm:p-6">
+                <div className="mb-4 rounded-lg bg-base-200/60 px-4 py-3 text-sm text-base-content/70">
+                  填寫聯絡資訊，以便客戶能夠與您聯繫。您也可以上傳公司照片，增加專業形象。
+                </div>
+                <ContactInfo
+                  company={company}
+                  handleInputChange={handleInputChange}
+                  handleFileChange={handleFileChange}
+                />
+              </div>
+            </Card>
+          )}
+
+          {/* 導航與儲存 */}
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Button
+              variant="outline"
+              onClick={() => navigateTabs('prev')}
+              disabled={activeKey === "companyInfo"}
+              size={rwd.isMobile ? "md" : "lg"}
+              className="w-full sm:w-auto"
+            >
+              <ChevronLeft size={18} className="mr-1" />
+              上一步
+            </Button>
+
+            <Button
+              variant="success"
+              type="submit"
+              size={rwd.isMobile ? "md" : "lg"}
+              className="w-full font-bold sm:w-auto"
+            >
+              <Save size={18} className="mr-1" />
+              {isEditMode ? "儲存變更" : "儲存資料"}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => navigateTabs('next')}
+              disabled={activeKey === "contactInfo"}
+              size={rwd.isMobile ? "md" : "lg"}
+              className="w-full sm:w-auto"
+            >
+              下一步
+              <ChevronRight size={18} className="ml-1" />
+            </Button>
           </div>
+        </form>
 
-          <form onSubmit={handleSubmit}>
-            {/* 分頁標籤列（DaisyUI tabs，取代 react-bootstrap Tabs） */}
-            <div role="tablist" className="tabs tabs-bordered mb-4 flex-wrap">
-              {tabItems.map((tab) => (
-                <a
-                  key={tab.key}
-                  role="tab"
-                  className={`tab ${activeKey === tab.key ? "tab-active" : ""}`}
-                  onClick={() => setActiveKey(tab.key)}
-                >
-                  {tab.title}
-                </a>
-              ))}
+        {/* 常見問題 */}
+        <Card padding="md" className="mt-6">
+          <div className="mb-4 flex items-center gap-2">
+            <HelpCircle size={20} className="text-primary" />
+            <h4 className="text-base font-bold text-base-content">常見問題</h4>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-xl bg-base-200/50 p-4">
+              <p className="mb-1 font-semibold text-base-content">問：我需要填寫所有欄位嗎？</p>
+              <p className="text-sm text-base-content/70">
+                答：不需要，所有欄位都是選填的，您可以只填寫對您重要的資訊。
+              </p>
             </div>
-
-            {/* 1. 公司資訊 */}
-            {activeKey === "companyInfo" && (
-              <div className="card card-bordered border-0 shadow-sm bg-base-100">
-                <div className="bg-base-200 px-4 py-3 rounded-t-lg">
-                  <h3 style={{ fontSize: "20px", margin: "0" }}>基本公司資訊</h3>
-                </div>
-                <div className="card-body">
-                  <div className="alert bg-base-200 text-base-content mb-3">
-                    這裡填寫公司的基本資料，讓客戶能夠了解您的公司。所有欄位均為<b>選填</b>，您可填寫對您最重要的資訊。
-                  </div>
-                  <CompanyInfo
-                    company={company}
-                    handleInputChange={handleInputChange}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* 2. 產業分類 */}
-            {activeKey === "industry" && (
-              <div className="card card-bordered border-0 shadow-sm bg-base-100">
-                <div className="bg-base-200 px-4 py-3 rounded-t-lg">
-                  <h3 style={{ fontSize: "20px", margin: "0" }}>選擇產業分類</h3>
-                </div>
-                <div className="card-body">
-                  <div className="alert bg-base-200 text-base-content mb-3">
-                    選擇最符合您公司的產業類型，這將有助於潛在客戶找到您。
-                  </div>
-                  <IndustryDropdown
-                    industries={industries}
-                    company={company}
-                    handleInputChange={handleInputChange}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* 3. 產品資訊 */}
-            {activeKey === "productInfo" && (
-              <div className="card card-bordered border-0 shadow-sm bg-base-100">
-                <div className="bg-base-200 px-4 py-3 rounded-t-lg">
-                  <h3 style={{ fontSize: "20px", margin: "0" }}>產品或服務資訊</h3>
-                </div>
-                <div className="card-body">
-                  <div className="alert bg-base-200 text-base-content mb-3">
-                    簡單描述您提供的主要產品或服務，讓客戶了解您的業務範圍。
-                  </div>
-                  <ProductInfo
-                    company={company}
-                    handleInputChange={handleInputChange}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* 4. 聯絡資訊 */}
-            {activeKey === "contactInfo" && (
-              <div className="card card-bordered border-0 shadow-sm bg-base-100">
-                <div className="bg-base-200 px-4 py-3 rounded-t-lg">
-                  <h3 style={{ fontSize: "20px", margin: "0" }}>聯絡方式與照片</h3>
-                </div>
-                <div className="card-body">
-                  <div className="alert bg-base-200 text-base-content mb-3">
-                    填寫聯絡資訊，以便客戶能夠與您聯繫。您也可以上傳公司照片，增加專業形象。
-                  </div>
-                  <ContactInfo
-                    company={company}
-                    handleInputChange={handleInputChange}
-                    handleFileChange={handleFileChange}
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className={rwd.isMobile ? "flex flex-col gap-3 mt-4" : "flex justify-between mt-4"}>
-              <Button
-                variant="outline"
-                onClick={() => navigateTabs('prev')}
-                disabled={activeKey === "companyInfo"}
-                size={rwd.isMobile ? "md" : "lg"}
-                style={{
-                  padding: rwd.isMobile ? "10px 15px" : "12px 20px",
-                  fontSize: rwd.isMobile ? "14px" : "16px",
-                  width: rwd.isMobile ? "100%" : "auto"
-                }}
-              >
-                ← 上一步
-              </Button>
-
-              <Button
-                variant="success"
-                type="submit"
-                size={rwd.isMobile ? "md" : "lg"}
-                style={{
-                  padding: rwd.isMobile ? "10px 20px" : "12px 30px",
-                  fontSize: rwd.isMobile ? "14px" : "16px",
-                  fontWeight: "bold",
-                  width: rwd.isMobile ? "100%" : "auto"
-                }}
-              >
-                {isEditMode ? "儲存變更" : "儲存資料"}
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => navigateTabs('next')}
-                disabled={activeKey === "contactInfo"}
-                size={rwd.isMobile ? "md" : "lg"}
-                style={{
-                  padding: rwd.isMobile ? "10px 15px" : "12px 20px",
-                  fontSize: rwd.isMobile ? "14px" : "16px",
-                  width: rwd.isMobile ? "100%" : "auto"
-                }}
-              >
-                下一步 →
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div className="card card-bordered bg-base-100 mt-3 shadow-sm">
-        <div className="card-body">
-          <h4>常見問題</h4>
-          <div className="grid grid-cols-12 gap-4">
-            <div className={`col-span-12 ${rwd.isMobile ? "mb-3" : "md:col-span-6"}`}>
-              <p><b>問：我需要填寫所有欄位嗎？</b></p>
-              <p>答：不需要，所有欄位都是選填的，您可以只填寫對您重要的資訊。</p>
-            </div>
-            <div className={`col-span-12 ${rwd.isMobile ? "" : "md:col-span-6"}`}>
-              <p><b>問：我可以稍後再回來完善資料嗎？</b></p>
-              <p>答：可以，您隨時可以回來修改或完善資料。</p>
+            <div className="rounded-xl bg-base-200/50 p-4">
+              <p className="mb-1 font-semibold text-base-content">問：我可以稍後再回來完善資料嗎？</p>
+              <p className="text-sm text-base-content/70">
+                答：可以，您隨時可以回來修改或完善資料。
+              </p>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
-    </div>
     </div>
   );
 };

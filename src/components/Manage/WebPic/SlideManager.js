@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AppModal from "components/common/AppModal";
-import { Button, Field, Spinner } from "components/common/ui";
+import { Button, Field, PageHeader, Toolbar, DataTable, Card, Badge, EmptyState } from "components/common/ui";
 import Axios from "common/Axios";
 import { toast } from "react-toastify";
 import { FaImage, FaEdit, FaTrash, FaToggleOn, FaToggleOff, FaInfoCircle, FaPlus, FaQuestionCircle, FaEye } from "react-icons/fa";
@@ -161,166 +161,180 @@ const SlideManager = () => {
     setPreviewImage(slide);
   };
 
+  const columns = [
+    {
+      key: "index",
+      header: "#",
+      className: "w-12 text-base-content/50",
+      hideOnMobile: true,
+      render: (slide, index) => index + 1,
+    },
+    {
+      key: "image",
+      header: "縮圖",
+      render: (slide) => (
+        <div className="h-14 w-24 overflow-hidden rounded-lg border border-base-300/70 bg-base-200">
+          <img
+            src={process.env.REACT_APP_BASE_URL + slide.image}
+            alt={slide.title}
+            className="h-full w-full cursor-pointer object-cover transition-transform hover:scale-105"
+            onClick={() => showImagePreview(slide)}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "title",
+      header: "標題",
+      render: (slide) => <span className="font-medium text-base-content">{slide.title}</span>,
+    },
+    {
+      key: "description",
+      header: "描述",
+      hideOnMobile: true,
+      render: (slide) => (
+        <div className="max-w-xs truncate text-sm text-base-content/70">
+          {slide.description || <span className="text-base-content/40">(無描述)</span>}
+        </div>
+      ),
+    },
+    {
+      key: "link_url",
+      header: "跳轉連結",
+      hideOnMobile: true,
+      render: (slide) =>
+        slide.link_url ? (
+          <a
+            href={slide.link_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link link-primary text-sm no-underline"
+          >
+            {slide.link_url.length > 30 ? `${slide.link_url.substring(0, 30)}...` : slide.link_url}
+          </a>
+        ) : (
+          <span className="text-base-content/40">(無連結)</span>
+        ),
+    },
+    {
+      key: "active",
+      header: "狀態",
+      render: (slide) => (
+        <Badge variant={slide.active ? "success" : "error"}>
+          {slide.active ? "使用中" : "已停用"}
+        </Badge>
+      ),
+    },
+    {
+      key: "actions",
+      header: "操作",
+      className: "text-right",
+      render: (slide) => (
+        <div className="flex flex-wrap justify-end gap-1.5">
+          <div className="tooltip tooltip-top" data-tip="查看圖片">
+            <Button variant="ghost" size="sm" className="text-info" onClick={() => showImagePreview(slide)}>
+              <FaEye />
+            </Button>
+          </div>
+          <div className="tooltip tooltip-top" data-tip="編輯圖片資訊">
+            <Button variant="ghost" size="sm" className="text-primary" onClick={() => handleShowModal(slide)}>
+              <FaEdit />
+            </Button>
+          </div>
+          <div className="tooltip tooltip-top" data-tip={slide.active ? "停用此圖片" : "啟用此圖片"}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={slide.active ? "text-warning" : "text-success"}
+              onClick={() => toggleActive(slide.id, slide.active)}
+            >
+              {slide.active ? <FaToggleOff /> : <FaToggleOn />}
+            </Button>
+          </div>
+          <div className="tooltip tooltip-top" data-tip="刪除此圖片">
+            <Button variant="ghost" size="sm" className="text-error" onClick={() => confirmDelete(slide)}>
+              <FaTrash />
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="container mx-auto px-4 py-4">
-      <h1 className="text-center text-2xl font-bold mb-4">網站輪播圖片管理</h1>
+    <div className="mx-auto max-w-7xl px-4 py-6">
+      <PageHeader
+        title="網站輪播圖片管理"
+        subtitle="管理網站首頁輪播區塊顯示的圖片、連結與啟用狀態"
+        icon={<FaImage className="h-5 w-5" />}
+        actions={
+          <Button variant="primary" onClick={() => handleShowModal()}>
+            <FaPlus className="mr-2" /> 新增輪播圖片
+          </Button>
+        }
+      />
 
       {showHelp && (
-        <div className="alert alert-info flex-col items-start">
-          <div className="flex w-full justify-between items-start">
-            <h2 className="font-bold flex items-center"><FaInfoCircle className="mr-2" />使用說明</h2>
-            <button type="button" className="btn btn-ghost btn-xs" onClick={() => setShowHelp(false)} aria-label="關閉">✕</button>
+        <Card padding="md" className="mb-5 border-info/30 bg-info/5">
+          <div className="flex items-start justify-between gap-3">
+            <h2 className="flex items-center gap-2 font-semibold text-base-content">
+              <FaInfoCircle className="text-info" /> 使用說明
+            </h2>
+            <button
+              type="button"
+              className="btn btn-ghost btn-xs"
+              onClick={() => setShowHelp(false)}
+              aria-label="關閉"
+            >
+              ✕
+            </button>
           </div>
-          <div>
-            <p>這裡可以管理網站首頁的輪播圖片。您可以：</p>
-            <ul className="list-disc pl-5">
-              <li>點擊「新增輪播圖片」按鈕來上傳新的圖片</li>
-              <li>點擊「查看」按鈕預覽已上傳的圖片</li>
-              <li>點擊「編輯」按鈕修改現有圖片的資訊</li>
-              <li>點擊「啟用/停用」按鈕控制圖片是否顯示在網站上</li>
-              <li>點擊「刪除」按鈕移除不需要的圖片</li>
-            </ul>
-          </div>
-        </div>
+          <p className="mt-2 text-sm text-base-content/70">這裡可以管理網站首頁的輪播圖片。您可以：</p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm text-base-content/70">
+            <li>點擊「新增輪播圖片」按鈕來上傳新的圖片</li>
+            <li>點擊「查看」按鈕預覽已上傳的圖片</li>
+            <li>點擊「編輯」按鈕修改現有圖片的資訊</li>
+            <li>點擊「啟用/停用」按鈕控制圖片是否顯示在網站上</li>
+            <li>點擊「刪除」按鈕移除不需要的圖片</li>
+          </ul>
+        </Card>
       )}
 
-      <div className="flex justify-between items-center my-4">
-        <Button
-          variant="success"
-          onClick={() => handleShowModal()}
-          className="flex items-center"
-        >
-          <FaPlus className="mr-2" /> 新增輪播圖片
-        </Button>
-
-        <div className="tooltip tooltip-left" data-tip="顯示使用說明">
-          <button
-            type="button"
-            className="btn btn-outline btn-info btn-circle"
-            onClick={() => setShowHelp(true)}
-          >
-            <FaQuestionCircle />
-          </button>
-        </div>
-      </div>
-
-      {loading && !showModal && !showDeleteConfirm ? (
-        <div className="text-center py-12">
-          <Spinner size="lg" />
-          <p className="mt-3">資料載入中，請稍候...</p>
-        </div>
-      ) : slides.length === 0 ? (
-        <div className="alert alert-warning">
-          <div className="text-center py-12 w-full">
-            <FaImage size={48} className="mb-3 text-base-content/60 mx-auto" />
-            <h4 className="text-lg font-semibold">目前沒有輪播圖片</h4>
-            <p>點擊「新增輪播圖片」按鈕來上傳您的第一張輪播圖片。</p>
+      <Toolbar
+        left={
+          <p className="text-sm text-base-content/60">
+            共 <span className="font-semibold text-base-content">{slides.length}</span> 張輪播圖片
+          </p>
+        }
+        right={
+          <div className="tooltip tooltip-left" data-tip="顯示使用說明">
+            <Button variant="outline" size="sm" onClick={() => setShowHelp(true)}>
+              <FaQuestionCircle className="mr-1.5" /> 使用說明
+            </Button>
           </div>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="table table-zebra">
-            <thead>
-              <tr>
-                <th style={{ width: '5%' }}>#</th>
-                <th style={{ width: '12%' }}>縮圖</th>
-                <th style={{ width: '18%' }}>標題</th>
-                <th style={{ width: '20%' }}>描述</th>
-                <th style={{ width: '15%' }}>跳轉連結</th>
-                <th style={{ width: '10%' }}>狀態</th>
-                <th style={{ width: '20%' }}>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {slides.map((slide, index) => (
-                <tr key={slide.id} className="hover">
-                  <td>{index + 1}</td>
-                  <td>
-                    <div className="thumbnail-container" style={{ width: '100px', height: '60px', overflow: 'hidden' }}>
-                      <img
-                        src={process.env.REACT_APP_BASE_URL + slide.image}
-                        alt={slide.title}
-                        className="rounded"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
-                        onClick={() => showImagePreview(slide)}
-                      />
-                    </div>
-                  </td>
-                  <td>{slide.title}</td>
-                  <td>
-                    <div style={{ maxHeight: '60px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {slide.description || <span className="text-base-content/60">(無描述)</span>}
-                    </div>
-                  </td>
-                  <td>
-                    {slide.link_url ? (
-                      <a
-                        href={slide.link_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="no-underline link link-primary"
-                        style={{ fontSize: '0.9em' }}
-                      >
-                        {slide.link_url.length > 30 ? `${slide.link_url.substring(0, 30)}...` : slide.link_url}
-                      </a>
-                    ) : (
-                      <span className="text-base-content/60">(無連結)</span>
-                    )}
-                  </td>
-                  <td>
-                    <span className={`badge ${slide.active ? "badge-success" : "badge-error"}`}>
-                      {slide.active ? "使用中" : "已停用"}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="flex gap-1">
-                      <div className="tooltip tooltip-top" data-tip="查看圖片">
-                        <button
-                          type="button"
-                          className="btn btn-info btn-sm"
-                          onClick={() => showImagePreview(slide)}
-                        >
-                          <FaEye />
-                        </button>
-                      </div>
+        }
+      />
 
-                      <div className="tooltip tooltip-top" data-tip="編輯圖片資訊">
-                        <button
-                          type="button"
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleShowModal(slide)}
-                        >
-                          <FaEdit />
-                        </button>
-                      </div>
-
-                      <div className="tooltip tooltip-top" data-tip={slide.active ? "停用此圖片" : "啟用此圖片"}>
-                        <button
-                          type="button"
-                          className={`btn btn-sm ${slide.active ? "btn-warning" : "btn-success"}`}
-                          onClick={() => toggleActive(slide.id, slide.active)}
-                        >
-                          {slide.active ? <FaToggleOff /> : <FaToggleOn />}
-                        </button>
-                      </div>
-
-                      <div className="tooltip tooltip-top" data-tip="刪除此圖片">
-                        <button
-                          type="button"
-                          className="btn btn-error btn-sm"
-                          onClick={() => confirmDelete(slide)}
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={slides}
+        rowKey={(slide) => slide.id}
+        loading={loading && !showModal && !showDeleteConfirm}
+        empty={
+          <Card padding="none">
+            <EmptyState
+              icon={<FaImage className="h-8 w-8" />}
+              title="目前沒有輪播圖片"
+              description="點擊「新增輪播圖片」按鈕來上傳您的第一張輪播圖片。"
+              action={
+                <Button variant="primary" onClick={() => handleShowModal()}>
+                  <FaPlus className="mr-2" /> 新增輪播圖片
+                </Button>
+              }
+            />
+          </Card>
+        }
+      />
 
       {/* 新增/編輯圖片的表單 */}
       <AppModal

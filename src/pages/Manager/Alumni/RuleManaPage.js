@@ -2,7 +2,7 @@ import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
 import useRWD from 'hooks/useRWD';
 import AppModal from "components/common/AppModal";
-import { Button, Spinner } from "components/common/ui";
+import { Button, Spinner, PageHeader, Toolbar, DataTable, Card } from "components/common/ui";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {
@@ -14,6 +14,7 @@ import {
   BsXLg,
   BsCheck2,
 } from "react-icons/bs";
+import { ScrollText } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -167,109 +168,123 @@ const RuleManaPage = () => {
   const currentRules = rules.slice(indexOfFirstRule, indexOfLastRule);
   const totalPages = Math.ceil(rules.length / rulesPerPage);
 
-  return (
-    <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
-      <div className="flex items-center mb-4">
-        <div className="flex-1">
-          <h1 className="font-bold" style={{ fontSize: rwd.getFontSize('title') }}>章程管理-管理章程資料與相關 PDF 文件</h1>
-          <p className="text-base-content/60"></p>
+  const columns = [
+    {
+      key: "id",
+      header: "流水號",
+      className: "w-28",
+      render: (rule) => (
+        <span className="font-mono text-sm font-semibold text-base-content/80">
+          #{rule.id}
+        </span>
+      ),
+    },
+    {
+      key: "updated_at",
+      header: "更新日期",
+      render: (rule) => (
+        <span className="text-sm text-base-content/80">
+          {new Date(rule.updated_at).toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      key: "actions",
+      header: "操作",
+      className: "text-right",
+      render: (rule) => (
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleView(rule)}
+            style={rwd.getButtonStyle()}
+          >
+            <BsEye /> 查看
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleShow(rule)}
+            style={rwd.getButtonStyle()}
+          >
+            <BsPencil /> 編輯
+          </Button>
+          <Button
+            variant="error"
+            size="sm"
+            className="btn-outline"
+            onClick={() => handleDelete(rule.id)}
+            style={rwd.getButtonStyle()}
+          >
+            <BsTrash /> 刪除
+          </Button>
         </div>
-        <div className="text-right">
+      ),
+    },
+  ];
+
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 py-6" style={rwd.getContainerStyle()}>
+      <PageHeader
+        title="章程管理"
+        subtitle="管理章程資料與相關 PDF 文件"
+        icon={<ScrollText size={22} />}
+      />
+
+      <Toolbar
+        right={
           <Button
             variant="primary"
             onClick={() => handleShow()}
-            className="rounded-full px-4"
             style={rwd.getButtonStyle()}
           >
             <BsPlusLg className="mr-2" /> 新增章程
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      {loading ? (
-        <div className="text-center my-12">
-          <Spinner center label="載入中..." />
-        </div>
-      ) : (
-        <>
-          <div className="overflow-x-auto">
-            <table className="table shadow-sm">
-              <thead className="bg-base-200">
-                <tr>
-                  <th>流水號</th>
-                  <th>更新日期</th>
-                  <th className="text-center">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentRules.map((rule) => (
-                  <tr key={rule.id} className="hover">
-                    <td>{rule.id}</td>
-                    <td>{new Date(rule.updated_at).toLocaleString()}</td>
-                    <td className="text-center">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mr-2"
-                        onClick={() => handleView(rule)}
-                        style={rwd.getButtonStyle()}
-                      >
-                        <BsEye /> 查看
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mr-2"
-                        onClick={() => handleShow(rule)}
-                        style={rwd.getButtonStyle()}
-                      >
-                        <BsPencil /> 編輯
-                      </Button>
-                      <Button
-                        variant="error"
-                        size="sm"
-                        className="btn-outline"
-                        onClick={() => handleDelete(rule.id)}
-                        style={rwd.getButtonStyle()}
-                      >
-                        <BsTrash /> 刪除
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="join flex justify-center mt-4">
-              <button
-                className="join-item btn"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                «
-              </button>
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index + 1}
-                  className={`join-item btn ${index + 1 === currentPage ? "btn-active btn-primary" : ""}`}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-              <button
-                className="join-item btn"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                »
-              </button>
+      <Card padding="md">
+        <DataTable
+          columns={columns}
+          data={currentRules}
+          rowKey={(rule) => rule.id}
+          loading={loading}
+          empty={
+            <div className="py-12 text-center text-base-content/50">
+              尚無章程資料
             </div>
-          )}
-        </>
-      )}
+          }
+        />
+
+        {!loading && totalPages > 1 && (
+          <div className="join flex justify-center mt-6">
+            <button
+              className="join-item btn"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              «
+            </button>
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index + 1}
+                className={`join-item btn ${index + 1 === currentPage ? "btn-active btn-primary" : ""}`}
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              className="join-item btn"
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              »
+            </button>
+          </div>
+        )}
+      </Card>
 
       <AppModal
         show={showModal}

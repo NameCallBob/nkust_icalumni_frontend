@@ -1,33 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import {
-  PlusCircle, Search, Info, Calendar, CheckCircle,
-  XCircle, AlertTriangle, FileText, Edit, Trash2, Eye,
-  Filter, User, Building, RefreshCw
+  PlusCircle, Search, Calendar, AlertTriangle,
+  FileText, Edit, Trash2, Eye, User, Building, RefreshCw,
+  ArrowUp, ArrowDown, ListChecks,
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Axios from 'common/Axios';
-import LoadingSpinner from 'components/LoadingSpinner';
 import RecruitFormModal from 'components/Manage/recruitModalForAll';
-import useRWD from 'hooks/useRWD';
 import AppModal from 'components/common/AppModal';
-import { Button, Field } from 'components/common/ui';
+import {
+  Button, Field, PageHeader, Toolbar, Card, DataTable,
+  StatCard, Badge, EmptyState,
+} from 'components/common/ui';
 
-// Bootstrap badge variant -> DaisyUI badge class 對照
-const badgeClass = (variant) => {
+// getJobStatus 的 variant -> Badge variant 對照
+const statusBadgeVariant = (variant) => {
   const map = {
-    info: 'badge-info',
-    secondary: 'badge-ghost',
-    success: 'badge-success',
-    warning: 'badge-warning',
-    danger: 'badge-error',
-    primary: 'badge-primary',
+    info: 'info',
+    secondary: 'neutral',
+    success: 'success',
+    warning: 'warning',
+    danger: 'error',
+    primary: 'primary',
   };
-  return map[variant] || 'badge-ghost';
+  return map[variant] || 'neutral';
 };
 
 function AllRecruitManaPage() {
-  const rwd = useRWD();
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -475,7 +475,7 @@ function AllRecruitManaPage() {
     }
 
     return (
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-6">
         <div className="join">
           <button
             type="button"
@@ -531,11 +531,21 @@ function AllRecruitManaPage() {
     }
   };
 
-  // 渲染排序箭頭
-  const renderSortArrow = (field) => {
-    if (sortField !== field) return null;
-    return sortDirection === 'asc' ? '↑' : '↓';
-  };
+  // 可排序的表頭
+  const SortHeader = ({ field, children }) => (
+    <button
+      type="button"
+      className="inline-flex items-center gap-1 font-semibold hover:text-primary transition-colors"
+      onClick={() => handleSort(field)}
+    >
+      {children}
+      {sortField === field && (
+        sortDirection === 'asc'
+          ? <ArrowUp size={13} className="text-primary" />
+          : <ArrowDown size={13} className="text-primary" />
+      )}
+    </button>
+  );
 
   // 處理新增職位
   const handleAddJob = () => {
@@ -582,304 +592,190 @@ function AllRecruitManaPage() {
       });
   };
 
-  // 渲染卡片式佈局（移動設備）
-  const renderMobileCard = (job) => {
-    const jobStatus = getJobStatus(job);
-
-    return (
-      <div key={job.id} className="card card-bordered bg-base-100 shadow-sm mb-3">
-        <div className="card-body">
-          <div className="flex justify-between items-start mb-2">
-            <h6 className="font-bold mb-1">{job.title}</h6>
-            <span className={`badge badge-lg ${badgeClass(jobStatus.variant)}`}>
-              {jobStatus.text}
-            </span>
-          </div>
-
-          <p className="text-base-content/60 mb-1 flex items-center">
-            <Building size={14} className="mr-1" />
-            {job._company_name || '個人公司'}
-          </p>
-
-          <p className="text-base-content/60 mb-1 flex items-center">
-            <User size={14} className="mr-1" />
-            {job.user_name || '未知用戶'}
-          </p>
-
-          <div className="grid grid-cols-2 gap-2 text-sm text-base-content/60 mb-3">
-            <div className="flex items-center">
-              <Calendar size={12} className="mr-1" />
-              發布: {formatDate(job.release_date)}
-            </div>
-            <div className="flex items-center">
-              <Calendar size={12} className="mr-1" />
-              截止: {formatDate(job.deadline)}
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleViewJob(job.id)}
-              className="flex-1"
-            >
-              <Eye size={16} className="mr-1" />
-              查看
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleEditJob(job.id)}
-              className="flex-1"
-            >
-              <Edit size={16} className="mr-1" />
-              編輯
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => confirmDeleteJob(job.id)}
-              className="flex-1 btn-error"
-            >
-              <Trash2 size={16} className="mr-1" />
-              下架
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+  // 狀態徽章
+  const StatusBadge = ({ job }) => {
+    const s = getJobStatus(job);
+    return <Badge variant={statusBadgeVariant(s.variant)}>{s.text}</Badge>;
   };
 
+  // 操作按鈕組
+  const RowActions = ({ job }) => (
+    <div className="flex gap-1.5">
+      <Button variant="ghost" size="sm" onClick={() => handleViewJob(job.id)} title="查看詳情" className="px-2">
+        <Eye size={16} />
+      </Button>
+      <Button variant="ghost" size="sm" onClick={() => handleEditJob(job.id)} title="編輯" className="px-2">
+        <Edit size={16} />
+      </Button>
+      <Button variant="ghost" size="sm" onClick={() => confirmDeleteJob(job.id)} title="下架" className="px-2 text-error">
+        <Trash2 size={16} />
+      </Button>
+    </div>
+  );
+
+  // DataTable 欄位定義
+  const columns = [
+    {
+      key: 'id',
+      header: <SortHeader field="id">ID</SortHeader>,
+      render: (job) => <span className="text-base-content/60">{job.id}</span>,
+    },
+    {
+      key: 'title',
+      header: <SortHeader field="title">職位名稱</SortHeader>,
+      render: (job) => (
+        <span className="font-semibold text-base-content line-clamp-2 max-w-[220px]">{job.title}</span>
+      ),
+    },
+    {
+      key: 'company',
+      header: <SortHeader field="company_name">公司</SortHeader>,
+      render: (job) => (
+        <span className="inline-flex items-center gap-1 text-base-content/80">
+          <Building size={14} className="text-base-content/40 shrink-0" />
+          <span className="truncate max-w-[150px]">{job._company_name || '個人公司'}</span>
+        </span>
+      ),
+    },
+    {
+      key: 'user',
+      header: <SortHeader field="user_name">發布者</SortHeader>,
+      render: (job) => (
+        <span className="inline-flex items-center gap-1 text-base-content/80">
+          <User size={14} className="text-base-content/40 shrink-0" />
+          <span className="truncate max-w-[120px]">{job.user_name || '未知用戶'}</span>
+        </span>
+      ),
+    },
+    {
+      key: 'release_date',
+      header: <SortHeader field="release_date">發布日期</SortHeader>,
+      render: (job) => (
+        <span className="inline-flex items-center gap-1 whitespace-nowrap text-base-content/70">
+          <Calendar size={14} className="text-base-content/40" />
+          {formatDate(job.release_date)}
+        </span>
+      ),
+    },
+    {
+      key: 'deadline',
+      header: <SortHeader field="deadline">截止日期</SortHeader>,
+      render: (job) => (
+        <span className="inline-flex items-center gap-1 whitespace-nowrap text-base-content/70">
+          <Calendar size={14} className="text-base-content/40" />
+          {formatDate(job.deadline)}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: '狀態',
+      render: (job) => <StatusBadge job={job} />,
+    },
+    {
+      key: 'actions',
+      header: '操作',
+      render: (job) => <RowActions job={job} />,
+    },
+  ];
+
   return (
-    <div className="admin-container w-full py-4 px-4" style={rwd.getContainerStyle()}>
+    <div className="w-full px-4 sm:px-6 py-6 max-w-7xl mx-auto">
       <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} />
 
-      {/* 頁面標題和說明 */}
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold mb-2">招募職位管理</h1>
-        <p className="text-base-content/60">
-          在此管理所有用戶發布的職缺，包括查看、編輯和下架操作。
-        </p>
+      {/* 頁首 */}
+      <PageHeader
+        title="招募職位管理"
+        subtitle="在此管理所有用戶發布的職缺，包括查看、編輯和下架操作。"
+        icon={<FileText size={22} />}
+        actions={
+          <>
+            <Button variant="outline" onClick={() => loadJobs()}>
+              <RefreshCw size={16} className="mr-1.5" />
+              刷新數據
+            </Button>
+            <Button variant="primary" onClick={handleAddJob}>
+              <PlusCircle size={16} className="mr-1.5" />
+              新增職缺
+            </Button>
+          </>
+        }
+      />
+
+      {/* 統計卡 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <StatCard label="職缺總數" value={jobs.length} icon={<ListChecks size={22} />} accent="primary" />
+        <StatCard label="符合篩選顯示" value={filteredJobs.length} icon={<Search size={22} />} accent="secondary" />
       </div>
 
-      {/* 功能區塊 */}
-      <div className="grid grid-cols-12 gap-4 mb-4">
-        <div className="col-span-12 lg:col-span-8">
-          <div className="card card-bordered bg-base-100 shadow-sm h-full">
-            <div className="card-body">
-              <div className="flex flex-col md:flex-row justify-between md:items-center mb-3">
-                <div className="mb-3 md:mb-0">
-                  <h5 className="text-lg font-semibold mb-0">職缺總覽</h5>
-                  <small className="text-base-content/60">總共 {jobs.length} 個職缺，目前顯示 {filteredJobs.length} 個</small>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="primary"
-                    className="flex items-center"
-                    onClick={handleAddJob}
-                  >
-                    <PlusCircle size={16} className="mr-1" />
-                    新增職缺
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex items-center"
-                    onClick={() => loadJobs()}
-                  >
-                    <RefreshCw size={16} className="mr-1" />
-                    刷新數據
-                  </Button>
-                </div>
-              </div>
-
-              <div className="relative mb-3">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/60">
-                  <Search size={16} />
-                </span>
-                <input
-                  className="input input-bordered w-full pl-10"
-                  placeholder="搜尋職位名稱、公司名稱或發布者..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+      {/* 搜尋 / 篩選列 */}
+      <Toolbar
+        left={
+          <>
+            <div className="relative w-full sm:w-72">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40 pointer-events-none">
+                <Search size={16} />
+              </span>
+              <input
+                className="input input-bordered w-full pl-10"
+                placeholder="搜尋職位名稱、公司名稱或發布者..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-          </div>
-        </div>
 
-        <div className="col-span-12 lg:col-span-4">
-          <div className="card card-bordered bg-base-100 shadow-sm h-full">
-            <div className="card-body">
-              <h5 className="text-lg font-semibold mb-3">篩選條件</h5>
-
-              <Field
-                as="select"
-                label={
-                  <span className="flex items-center">
-                    <User size={16} className="mr-1" />
-                    發布者
-                  </span>
-                }
-                value={userFilter}
-                onChange={(e) => setUserFilter(e.target.value.trim())}
-              >
-                <option value="">所有發布者</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                ))}
-              </Field>
-
-              <div className="flex flex-col">
-                <Button
-                  variant="outline"
-                  className="btn-neutral"
-                  onClick={() => {
-                    setUserFilter('');
-                    setSearchTerm('');
-                  }}
-                >
-                  重置篩選
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            <select
+              className="select select-bordered w-full sm:w-52"
+              value={userFilter}
+              onChange={(e) => setUserFilter(e.target.value.trim())}
+            >
+              <option value="">所有發布者</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </>
+        }
+        right={
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setUserFilter('');
+              setSearchTerm('');
+            }}
+          >
+            重置篩選
+          </Button>
+        }
+      />
 
       {/* 職位列表 */}
-      <div className="card card-bordered bg-base-100 shadow-sm mb-4">
-        <div className="card-body">
-          {loading && jobs.length === 0 ? (
-            <div className="text-center py-5">
-              <LoadingSpinner />
-              <p className="mt-3">載入職位資料中...</p>
-            </div>
-          ) : filteredJobs.length === 0 ? (
-            <div className="text-center py-5">
-              <AlertTriangle size={48} className="text-base-content/60 mb-3 mx-auto" />
-              <h5 className="text-lg font-semibold">找不到符合的職缺</h5>
-              <p className="text-base-content/60">
-                {jobs.length === 0
-                  ? '目前尚未有任何職缺資料'
-                  : '嘗試調整搜尋條件或篩選選項'}
-              </p>
-            </div>
-          ) : (
-            <>
-              {rwd.isMobile ? (
-                // 移動設備卡片佈局
-                <div className="mobile-card-container">
-                  {currentJobs.map((job) => renderMobileCard(job))}
-                </div>
-              ) : (
-                // 桌面設備表格佈局
-                <div className="overflow-x-auto">
-                  <table className="table align-middle mb-0" style={rwd.getTableStyle()}>
-                  <thead>
-                    <tr>
-                      <th className="whitespace-nowrap cursor-pointer" onClick={() => handleSort('id')}>
-                        ID {renderSortArrow('id')}
-                      </th>
-                      <th className="whitespace-nowrap cursor-pointer" onClick={() => handleSort('title')}>
-                        職位名稱 {renderSortArrow('title')}
-                      </th>
-                      <th className="whitespace-nowrap cursor-pointer" onClick={() => handleSort('company_name')}>
-                        公司 {renderSortArrow('company_name')}
-                      </th>
-                      <th className="whitespace-nowrap cursor-pointer" onClick={() => handleSort('user_name')}>
-                        發布者 {renderSortArrow('user_name')}
-                      </th>
-                      <th className="whitespace-nowrap cursor-pointer" onClick={() => handleSort('release_date')}>
-                        發布日期 {renderSortArrow('release_date')}
-                      </th>
-                      <th className="whitespace-nowrap cursor-pointer" onClick={() => handleSort('deadline')}>
-                        截止日期 {renderSortArrow('deadline')}
-                      </th>
-                      <th className="whitespace-nowrap">狀態</th>
-                      <th className="whitespace-nowrap">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentJobs.map((job) => {
-                      const jobStatus = getJobStatus(job);
+      <Card padding="none" className="overflow-hidden">
+        <div className="p-4 sm:p-5">
+          <DataTable
+            columns={columns}
+            data={currentJobs}
+            rowKey={(job) => job.id}
+            loading={loading && jobs.length === 0}
+            empty={
+              <EmptyState
+                icon={<AlertTriangle className="h-8 w-8" />}
+                title="找不到符合的職缺"
+                description={
+                  jobs.length === 0
+                    ? '目前尚未有任何職缺資料'
+                    : '嘗試調整搜尋條件或篩選選項'
+                }
+              />
+            }
+          />
 
-                      return (
-                        <tr key={job.id}>
-                          <td>{job.id}</td>
-                          <td>
-                            <div className="font-bold truncate" style={{ maxWidth: '200px' }}>
-                              {job.title}
-                            </div>
-                          </td>
-                          <td className="truncate" style={{ maxWidth: '150px' }}>
-                            {job._company_name || '個人公司'}
-                          </td>
-                          <td className="truncate" style={{ maxWidth: '120px' }}>
-                            {job.user_name || '未知用戶'}
-                          </td>
-                          <td className="whitespace-nowrap">
-                            <div className="flex items-center">
-                              <Calendar size={14} className="mr-1 text-base-content/60" />
-                              {formatDate(job.release_date)}
-                            </div>
-                          </td>
-                          <td className="whitespace-nowrap">
-                            <div className="flex items-center">
-                              <Calendar size={14} className="mr-1 text-base-content/60" />
-                              {formatDate(job.deadline)}
-                            </div>
-                          </td>
-                          <td>
-                            <span className={`badge badge-lg ${badgeClass(jobStatus.variant)}`}>
-                              {jobStatus.text}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="flex gap-1">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleViewJob(job.id)}
-                                title="查看詳情"
-                              >
-                                <Eye size={16} />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEditJob(job.id)}
-                                title="編輯"
-                              >
-                                <Edit size={16} />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="btn-error"
-                                onClick={() => confirmDeleteJob(job.id)}
-                                title="下架"
-                              >
-                                <Trash2 size={16} />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* 分頁 */}
-              {renderPagination()}
-            </>
-          )}
+          {/* 分頁 */}
+          {renderPagination()}
         </div>
-      </div>
+      </Card>
 
       {/* 新增職位模態框 */}
       <RecruitFormModal
@@ -947,10 +843,12 @@ function AllRecruitManaPage() {
         {viewingJob && (
           <div>
             <div className="mb-4">
-              <h3 className="text-xl font-bold">{viewingJob.title}</h3>
+              <h3 className="text-xl font-bold text-base-content">{viewingJob.title}</h3>
               <div className="flex flex-wrap gap-2 mb-3 mt-2">
-                <span className="badge badge-ghost">{viewingJob.company_name || '個人公司'}</span>
-                <span className={`badge ${badgeClass(getJobStatus(viewingJob).variant)}`}>{getJobStatus(viewingJob).text}</span>
+                <Badge variant="neutral">{viewingJob.company_name || '個人公司'}</Badge>
+                <Badge variant={statusBadgeVariant(getJobStatus(viewingJob).variant)}>
+                  {getJobStatus(viewingJob).text}
+                </Badge>
               </div>
               <p className="text-base-content/60 mb-1">
                 <strong>發布者:</strong> {viewingJob.user_name || '未知用戶'}
@@ -983,7 +881,7 @@ function AllRecruitManaPage() {
             <div className="mb-4">
               <h5 className="text-lg font-semibold mb-2">職缺說明</h5>
               <div
-                className="border border-base-300 p-3 rounded"
+                className="border border-base-300 p-3 rounded-xl"
                 dangerouslySetInnerHTML={{ __html: viewingJob.intro }}
               />
             </div>
@@ -999,7 +897,7 @@ function AllRecruitManaPage() {
                         key={index}
                         src={typeof img === 'string' ? img : (img.image ? process.env.REACT_APP_BASE_URL + img.image : img)}
                         alt={`職缺圖片 ${index + 1}`}
-                        className="rounded border border-base-300 bg-base-100 p-1"
+                        className="rounded-xl border border-base-300 bg-base-100 p-1"
                         style={{ width: '120px', height: '120px', objectFit: 'cover' }}
                       />
                     ))}

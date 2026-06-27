@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AppModal from "components/common/AppModal";
-import { Button, Field, Spinner } from "components/common/ui";
+import { Button, Field, Spinner, PageHeader, Card, Badge } from "components/common/ui";
 import Axios from "common/Axios";
 import ReactQuill from "react-quill";
 import { useParams, useNavigate } from "react-router-dom";
@@ -8,9 +8,8 @@ import { toast, ToastContainer } from "react-toastify";
 import useRWD from 'hooks/useRWD';
 import "react-quill/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.css";
-import { BsArrowLeft, BsSave, BsUpload, BsTrash } from "react-icons/bs";
+import { FileText, ArrowLeft, Save, Upload, Trash2, Image as ImageIcon } from "lucide-react";
 import LoadingSpinner from "components/LoadingSpinner";
-import "css/manage/article/form.css"; // 自訂樣式文件
 
 const ArticleForm = () => {
   const { id } = useParams();
@@ -159,41 +158,51 @@ const ArticleForm = () => {
     }
   };
 
-  return (
-    <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
-      {/* 頁首：標題與操作按鈕 */}
-      <div className="flex flex-wrap items-center mb-4">
-        <div className="flex-1">
-          <h2 className="font-bold text-2xl">{id ? "編輯文章" : "新增文章"}</h2>
-          <p className="text-base-content/60">填寫文章資訊並保存</p>
-        </div>
-        <div className={rwd.isMobile ? "text-left mt-2 w-full" : "text-right"}>
-          <Button
-            variant="secondary"
-            onClick={() => navigate("/alumni/manage/article/")}
-            className={`btn-outline ${rwd.isMobile ? "mb-2 w-full" : "mr-2"}`}
-            style={rwd.getButtonStyle()}
-          >
-            <BsArrowLeft className="inline-block" /> 返回
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSave}
-            disabled={loading || !title || !content}
-            className={rwd.isMobile ? "w-full" : ""}
-            style={rwd.getButtonStyle()}
-          >
-            {loading ? <Spinner size="sm" /> : <BsSave className="inline-block" />} 保存
-          </Button>
-        </div>
-      </div>
+  const totalImages = imageFiles.length + newImages.length;
 
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <form className="bg-base-200 rounded-lg shadow-sm" style={{ padding: rwd.isMobile ? '1rem' : '2rem' }}>
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-12">
+  return (
+    <div className="min-h-screen bg-base-200/40">
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
+        <PageHeader
+          title={id ? "編輯文章" : "新增文章"}
+          subtitle="填寫文章資訊並保存"
+          icon={<FileText size={20} />}
+          actions={
+            <>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/alumni/manage/article/")}
+              >
+                <ArrowLeft size={16} className="mr-1.5" /> 返回
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSave}
+                disabled={loading || !title || !content}
+              >
+                {loading ? (
+                  <Spinner size="sm" />
+                ) : (
+                  <Save size={16} className="mr-1.5" />
+                )}
+                保存
+              </Button>
+            </>
+          }
+        />
+
+        {loading ? (
+          <Card padding="lg">
+            <LoadingSpinner />
+          </Card>
+        ) : (
+          <form className="space-y-6">
+            {/* 基本資訊 */}
+            <Card padding="lg">
+              <h3 className="mb-5 font-serif text-base font-bold text-base-content">
+                基本資訊
+              </h3>
+
               <Field
                 label="標題"
                 required
@@ -202,60 +211,51 @@ const ArticleForm = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="輸入文章標題"
               />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-12 gap-4">
-            <div className={rwd.isMobile ? "col-span-12" : "col-span-12 md:col-span-4"}>
-              {/* 是否公開 切換開關 */}
-              <div className="form-control w-full mb-4">
-                <label className="label pb-1">
-                  <span className="label-text font-medium text-base-content">是否公開</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="toggle toggle-primary"
-                    checked={active}
-                    onChange={(e) => setActive(e.target.checked)}
-                  />
-                  <span className="label-text">{active ? "公開" : "不公開"}</span>
-                </label>
+              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                {/* 是否公開 切換開關 */}
+                <div className="form-control w-full">
+                  <label className="label pb-1">
+                    <span className="label-text font-medium text-base-content">是否公開</span>
+                  </label>
+                  <label className="flex h-12 items-center gap-3 rounded-xl border border-base-300/70 bg-base-100 px-4 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-primary"
+                      checked={active}
+                      onChange={(e) => setActive(e.target.checked)}
+                    />
+                    <span className="label-text">{active ? "公開" : "不公開"}</span>
+                  </label>
+                </div>
+                <Field
+                  label="發布時間"
+                  type="datetime-local"
+                  value={publishAt}
+                  onChange={(e) => setPublishAt(e.target.value)}
+                />
+                <Field
+                  label="截止時間"
+                  type="datetime-local"
+                  value={expireAt}
+                  onChange={(e) => setExpireAt(e.target.value)}
+                />
               </div>
-            </div>
-            <div className={rwd.isMobile ? "col-span-12" : "col-span-12 md:col-span-4"}>
-              <Field
-                label="發布時間"
-                type="datetime-local"
-                value={publishAt}
-                onChange={(e) => setPublishAt(e.target.value)}
-              />
-            </div>
-            <div className={rwd.isMobile ? "col-span-12" : "col-span-12 md:col-span-4"}>
-              <Field
-                label="截止時間"
-                type="datetime-local"
-                value={expireAt}
-                onChange={(e) => setExpireAt(e.target.value)}
-              />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-12">
-              <Field
-                label="文章連結（選填）"
-                type="url"
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-                placeholder="輸入外部連結（如有）"
-              />
-            </div>
-          </div>
+              <div className="mt-4">
+                <Field
+                  label="文章連結（選填）"
+                  type="url"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  placeholder="輸入外部連結（如有）"
+                />
+              </div>
+            </Card>
 
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-12">
-              <div className="form-control w-full mb-4">
+            {/* 內容 */}
+            <Card padding="lg">
+              <div className="form-control w-full">
                 <label className="label pb-1">
                   <span className="label-text font-medium text-base-content">
                     內容 <span className="text-error">*</span>
@@ -266,6 +266,7 @@ const ArticleForm = () => {
                   onChange={setContent}
                   theme="snow"
                   placeholder="輸入文章內容..."
+                  className="rounded-xl bg-base-100"
                   style={{
                     height: rwd.isMobile ? '200px' : '300px',
                     marginBottom: rwd.isMobile ? '50px' : '30px'
@@ -287,108 +288,129 @@ const ArticleForm = () => {
                   }}
                 />
               </div>
-            </div>
-          </div>
+            </Card>
 
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-12">
-              <div className="form-control w-full mb-4">
-                <label className="label pb-1">
-                  <span className="label-text font-medium text-base-content">圖片管理</span>
-                </label>
+            {/* 圖片管理 */}
+            <Card padding="lg">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="font-serif text-base font-bold text-base-content">圖片管理</h3>
+                  <p className="mt-1 text-sm text-base-content/60">
+                    已加入 {totalImages} 張圖片
+                  </p>
+                </div>
                 <Button
                   variant="outline"
                   onClick={() => setShowImageModal(true)}
-                  className={rwd.isMobile ? "mb-3 w-full" : "mb-3"}
-                  style={rwd.getButtonStyle()}
+                  className={rwd.isMobile ? "w-full" : ""}
                 >
-                  <BsUpload className="inline-block" /> 上傳圖片
+                  <Upload size={16} className="mr-1.5" /> 上傳圖片
                 </Button>
-                <div className="image-preview-container" style={{
-                  display: 'grid',
-                  gridTemplateColumns: rwd.isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(150px, 1fr))',
-                  gap: '1rem'
-                }}>
+              </div>
+
+              {totalImages === 0 ? (
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-base-300 bg-base-200/40 py-10 text-base-content/50">
+                  <ImageIcon size={32} className="mb-2" />
+                  <span className="text-sm">尚未加入任何圖片</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                   {imageFiles.map((image, index) => (
-                    <div key={index} className="image-preview">
-                      <img src={image.url} alt={`original-${index}`} />
-                      <span className="badge badge-info mt-1">
-                        {image.pic_type === "small" ? "小圖" : "大圖"}
-                      </span>
+                    <div
+                      key={index}
+                      className="group relative overflow-hidden rounded-xl border border-base-300/70 bg-base-100"
+                    >
+                      <img
+                        src={image.url}
+                        alt={`original-${index}`}
+                        className="aspect-square w-full object-cover"
+                      />
+                      <div className="absolute left-2 top-2">
+                        <Badge variant="info" soft={false}>
+                          {image.pic_type === "small" ? "小圖" : "大圖"}
+                        </Badge>
+                      </div>
                       <Button
                         variant="error"
                         size="sm"
-                        className="btn-outline"
+                        className="absolute right-2 top-2 px-2"
                         onClick={() => handleRemoveImage(index, true)}
-                        style={rwd.getButtonStyle()}
                       >
-                        <BsTrash />
+                        <Trash2 size={14} />
                       </Button>
                     </div>
                   ))}
                   {newImages.map((image, index) => (
-                    <div key={index} className="image-preview">
-                      <img src={image.url} alt={`new-${index}`} />
-                      <span className="badge badge-info mt-1">
-                        {image.pic_type === "small" ? "小圖" : "大圖"}
-                      </span>
+                    <div
+                      key={index}
+                      className="group relative overflow-hidden rounded-xl border border-primary/40 bg-base-100"
+                    >
+                      <img
+                        src={image.url}
+                        alt={`new-${index}`}
+                        className="aspect-square w-full object-cover"
+                      />
+                      <div className="absolute left-2 top-2 flex gap-1">
+                        <Badge variant="info" soft={false}>
+                          {image.pic_type === "small" ? "小圖" : "大圖"}
+                        </Badge>
+                        <Badge variant="primary" soft={false}>新增</Badge>
+                      </div>
                       <Button
                         variant="error"
                         size="sm"
-                        className="btn-outline"
+                        className="absolute right-2 top-2 px-2"
                         onClick={() => handleRemoveImage(index, false)}
-                        style={rwd.getButtonStyle()}
                       >
-                        <BsTrash />
+                        <Trash2 size={14} />
                       </Button>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-          </div>
-        </form>
-      )}
+              )}
+            </Card>
+          </form>
+        )}
 
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
-      <AppModal
-        show={showImageModal}
-        onHide={() => setShowImageModal(false)}
-        title="上傳圖片"
-        size="sm"
-        footer={
-          <Button
-            variant="secondary"
-            onClick={() => setShowImageModal(false)}
-            style={rwd.getButtonStyle()}
-          >
-            關閉
-          </Button>
-        }
-      >
-        <Field
-          as="select"
-          label="圖片大小"
-          value={imageSize}
-          onChange={(e) => setImageSize(e.target.value)}
+        <AppModal
+          show={showImageModal}
+          onHide={() => setShowImageModal(false)}
+          title="上傳圖片"
+          size="sm"
+          footer={
+            <Button
+              variant="secondary"
+              onClick={() => setShowImageModal(false)}
+            >
+              關閉
+            </Button>
+          }
         >
-          <option value="small">小圖</option>
-          <option value="large">大圖</option>
-        </Field>
-        <div className="form-control w-full mb-4">
-          <label className="label pb-1">
-            <span className="label-text font-medium text-base-content">選擇圖片</span>
-          </label>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            className="file-input file-input-bordered w-full"
-            onChange={handleImageUpload}
-          />
-        </div>
-      </AppModal>
+          <Field
+            as="select"
+            label="圖片大小"
+            value={imageSize}
+            onChange={(e) => setImageSize(e.target.value)}
+          >
+            <option value="small">小圖</option>
+            <option value="large">大圖</option>
+          </Field>
+          <div className="form-control w-full mb-4">
+            <label className="label pb-1">
+              <span className="label-text font-medium text-base-content">選擇圖片</span>
+            </label>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              className="file-input file-input-bordered w-full"
+              onChange={handleImageUpload}
+            />
+          </div>
+        </AppModal>
+      </div>
     </div>
   );
 };

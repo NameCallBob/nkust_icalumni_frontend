@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Spinner } from 'components/common/ui';
+import { Spinner, PageHeader, Card } from 'components/common/ui';
 import IndustryCRUD from 'components/Manage/Other/IndustryMana';
 import AlumniPositionCRUD from 'components/Manage/Other/PositionMana';
-import 'css/manage/othermanage.css';
-import { Link } from 'react-router-dom';
+import { Settings, Factory, UserCog } from 'lucide-react';
 import useRWD from 'hooks/useRWD';
 
 const OtherManage = () => {
@@ -34,69 +33,71 @@ const OtherManage = () => {
     const tabs = [
       {
         key: 'industry',
-        icon: 'fas fa-industry',
+        icon: <Factory size={18} />,
         label: rwd.isMobile ? '產業別' : '公司產業別管理',
         content: <IndustryCRUD />,
       },
       {
         key: 'position',
-        icon: 'fas fa-user-tag',
+        icon: <UserCog size={18} />,
         label: rwd.isMobile ? '職稱' : '系友會職稱管理',
         content: <AlumniPositionCRUD />,
       },
     ];
 
     return (
-      <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
-        <div className="card card-bordered border-0 shadow-sm mb-4 bg-base-100">
-          {/* 標題列：深藍漸層 */}
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+        <PageHeader
+          title="系統設定管理"
+          subtitle="管理公司產業別與系友會職稱等基礎設定項目"
+          icon={<Settings size={22} />}
+        />
+
+        <Card padding="none">
+          {/* 分頁標籤：深藍底線高亮 */}
           <div
-            className="flex items-center rounded-t-2xl px-4 py-3 text-white"
-            style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #3a75c4 100%)', ...rwd.getButtonStyle() }}
+            role="tablist"
+            className="flex border-b border-base-200"
           >
-            <i className="fas fa-cogs mr-2 fa-lg"></i>
-            <h3 className="mb-0 text-xl font-semibold">系統設定管理</h3>
-          </div>
-          <div className="card-body">
-            {/* 分頁標籤 */}
-            <div
-              role="tablist"
-              className="tabs tabs-bordered nav-tabs-custom mb-4 grid grid-cols-2"
-              style={rwd.getTableStyle()}
-            >
-              {tabs.map((tab) => (
+            {tabs.map((tab) => {
+              const isActive = activeKey === tab.key;
+              return (
                 <button
                   key={tab.key}
                   role="tab"
                   type="button"
+                  aria-selected={isActive}
                   onClick={() => handleTabChange(tab.key)}
-                  className={`tab h-auto ${activeKey === tab.key ? 'tab-active text-primary font-semibold' : ''}`}
+                  className={`relative flex flex-1 items-center justify-center gap-2 px-4 py-4 text-sm font-medium transition-colors sm:flex-none sm:px-6 ${
+                    isActive
+                      ? 'text-primary'
+                      : 'text-base-content/55 hover:text-base-content hover:bg-base-200/40'
+                  }`}
                 >
-                  <div className={rwd.isMobile ? 'flex items-center py-1' : 'flex items-center py-2'}>
-                    <i className={`${tab.icon} mr-2`}></i>
-                    <span>{tab.label}</span>
-                  </div>
+                  <span className={isActive ? 'text-primary' : 'text-base-content/40'}>
+                    {tab.icon}
+                  </span>
+                  <span>{tab.label}</span>
+                  {isActive && (
+                    <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-primary sm:inset-x-4" />
+                  )}
                 </button>
-              ))}
-            </div>
-
-            {/* 分頁內容 */}
-            <div className="tab-content-wrapper">
-              {loading ? (
-                <div className="text-center py-12">
-                  <Spinner size="lg" />
-                  <p className="mt-2">載入中...</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-12">
-                    {tabs.find((tab) => tab.key === activeKey)?.content}
-                  </div>
-                </div>
-              )}
-            </div>
+              );
+            })}
           </div>
-        </div>
+
+          {/* 分頁內容 */}
+          <div className="p-4 sm:p-6">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-16 text-base-content/60">
+                <Spinner size="lg" />
+                <p className="mt-3 text-sm">載入中...</p>
+              </div>
+            ) : (
+              tabs.find((tab) => tab.key === activeKey)?.content
+            )}
+          </div>
+        </Card>
       </div>
     );
 };

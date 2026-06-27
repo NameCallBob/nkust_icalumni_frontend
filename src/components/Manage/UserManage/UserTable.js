@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { FaEdit, FaTrash, FaKey, FaToggleOn, FaToggleOff, FaMoneyBillWave } from 'react-icons/fa';
+import {
+  Pencil,
+  Trash2,
+  KeyRound,
+  Power,
+  PowerOff,
+  Banknote,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  Users,
+} from 'lucide-react';
 import AppModal from 'components/common/AppModal';
-import { Button } from 'components/common/ui';
+import { Button, Toolbar, DataTable, Badge, EmptyState } from 'components/common/ui';
 
 function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, handleToggleActive, handleDelete, handlePassword }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,112 +45,154 @@ function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, ha
     }
   };
 
-  return (
-    <div className="w-full px-0">
-      <div className="flex justify-between items-center mb-3">
-        {/* 每頁顯示筆數下拉選單 */}
-        <div className="dropdown">
-          <label tabIndex={0} className="btn btn-secondary btn-sm">
-            每頁顯示 {itemsPerPage} 筆
-          </label>
-          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box z-10 w-32">
-            <li><button type="button" onClick={() => handleItemsPerPageChange('5')}>5</button></li>
-            <li><button type="button" onClick={() => handleItemsPerPageChange('10')}>10</button></li>
-            <li><button type="button" onClick={() => handleItemsPerPageChange('20')}>20</button></li>
-          </ul>
+  const columns = [
+    {
+      key: 'grade',
+      header: '級別',
+      render: (user) => (
+        <span className="font-medium text-base-content/80">{user.graduate?.grade || '—'}</span>
+      ),
+    },
+    {
+      key: 'position',
+      header: '職位',
+      render: (user) => user.position?.title || '—',
+    },
+    {
+      key: 'name',
+      header: '姓名',
+      render: (user) => <span className="font-semibold text-base-content">{user.name}</span>,
+    },
+    {
+      key: 'email',
+      header: 'Email',
+      render: (user) => <span className="text-base-content/70 break-all">{user.email}</span>,
+    },
+    {
+      key: 'status',
+      header: '狀態',
+      render: (user) => (
+        <div className="flex flex-wrap gap-1.5">
+          <Badge variant={user.isActive ? 'success' : 'neutral'}>
+            {user.isActive ? '已啟用' : '已停用'}
+          </Badge>
+          <Badge variant={user.is_paid ? 'primary' : 'warning'}>
+            {user.is_paid ? '已付款' : '未付款'}
+          </Badge>
         </div>
-      </div>
+      ),
+    },
+    {
+      key: 'actions',
+      header: '功能權限',
+      className: 'text-right',
+      render: (user) => (
+        <div className="flex flex-wrap gap-1.5 md:justify-end">
+          <Button
+            size="sm"
+            variant="outline"
+            className="btn-square"
+            onClick={() => handleEdit(user.id)}
+            title="編輯使用者資訊"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant={user.is_paid ? 'secondary' : 'success'}
+            className="btn-square"
+            onClick={() => handlePaymentStatus(user.id, user.is_paid)}
+            title={user.is_paid ? '標記為未付款' : '標記為已付款'}
+          >
+            <Banknote className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant={user.isActive ? 'secondary' : 'success'}
+            className="btn-square"
+            onClick={() => handleToggleActive(user.id, user.isActive)}
+            title={user.isActive ? '停用使用者' : '啟用使用者'}
+          >
+            {user.isActive ? <PowerOff className="h-4 w-4" /> : <Power className="h-4 w-4" />}
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="btn-square"
+            onClick={() => handlePassword(user.id)}
+            title="重設密碼"
+          >
+            <KeyRound className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant="error"
+            className="btn-square"
+            onClick={() => confirmDelete(user)}
+            title="刪除使用者"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
-      {users.length === 0 ? (
-        <div className="alert alert-warning">目前無資料</div>
-      ) : (
-        <div className="table-container">
-          <div className="overflow-x-auto">
-            <table className="table align-middle">
-              <thead>
-                <tr>
-                  <th>級別</th>
-                  <th>職位</th>
-                  <th>姓名</th>
-                  <th>Email</th>
-                  <th>功能權限</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentUsers.map((user) => (
-                  <tr key={user.id} className="hover">
-                    <td>{user.graduate?.grade}</td>
-                    <td>{user.position?.title}</td>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>
-                      <div className="flex flex-wrap gap-1">
-                        <button
-                          type="button"
-                          className="btn btn-info btn-sm"
-                          onClick={() => handleEdit(user.id)}
-                          title="編輯使用者資訊"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn btn-sm ${user.is_paid ? 'btn-warning' : 'btn-success'}`}
-                          onClick={() => handlePaymentStatus(user.id, user.is_paid)}
-                          title={user.is_paid ? '標記為未付款' : '標記為已付款'}
-                        >
-                          <FaMoneyBillWave />
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn btn-sm ${user.isActive ? 'btn-error' : 'btn-success'}`}
-                          onClick={() => handleToggleActive(user.id, user.isActive)}
-                          title={user.isActive ? '停用使用者' : '啟用使用者'}
-                        >
-                          {user.isActive ? <FaToggleOff /> : <FaToggleOn />}
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-warning btn-sm"
-                          onClick={() => handlePassword(user.id)}
-                          title="重設密碼"
-                        >
-                          <FaKey />
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-error btn-sm"
-                          onClick={() => confirmDelete(user)}
-                          title="刪除使用者"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+  return (
+    <div className="w-full">
+      <Toolbar
+        left={
+          <span className="text-sm text-base-content/60">
+            共 <span className="font-semibold text-base-content">{users.length}</span> 位使用者
+          </span>
+        }
+        right={
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-outline btn-primary btn-sm gap-1 normal-case">
+              每頁顯示 {itemsPerPage} 筆
+              <ChevronDown className="h-4 w-4" />
+            </label>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box z-10 w-32 border border-base-300/70"
+            >
+              <li><button type="button" onClick={() => handleItemsPerPageChange('5')}>5 筆</button></li>
+              <li><button type="button" onClick={() => handleItemsPerPageChange('10')}>10 筆</button></li>
+              <li><button type="button" onClick={() => handleItemsPerPageChange('20')}>20 筆</button></li>
+            </ul>
           </div>
-        </div>
-      )}
+        }
+      />
+
+      <DataTable
+        columns={columns}
+        data={currentUsers}
+        rowKey={(user) => user.id}
+        empty={
+          <EmptyState
+            icon={<Users className="h-8 w-8" />}
+            title="目前無資料"
+            description="尚未有任何使用者資料。"
+          />
+        }
+      />
 
       {totalPages > 1 && (
-        <div className="flex justify-center mt-3">
-          <div className="join">
+        <div className="flex justify-center mt-6">
+          <div className="join shadow-sm">
             <button
               type="button"
-              className="join-item btn"
+              className="join-item btn btn-sm"
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
-              «
+              <ChevronLeft className="h-4 w-4" />
             </button>
             {[...Array(totalPages)].map((_, index) => (
               <button
                 type="button"
                 key={index + 1}
-                className={`join-item btn ${index + 1 === currentPage ? 'btn-active' : ''}`}
+                className={`join-item btn btn-sm ${index + 1 === currentPage ? 'btn-primary' : ''}`}
                 onClick={() => handlePageChange(index + 1)}
               >
                 {index + 1}
@@ -147,11 +200,11 @@ function UserTable({ users, handleShowModal, handleEdit, handlePaymentStatus, ha
             ))}
             <button
               type="button"
-              className="join-item btn"
+              className="join-item btn btn-sm"
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
             >
-              »
+              <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>

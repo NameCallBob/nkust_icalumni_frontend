@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { FaPlus, FaEdit, FaTrash, FaTags, FaInfoCircle } from 'react-icons/fa';
+import { Tags, Plus, Pencil, Trash2, Info, Check, X } from 'lucide-react';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import AppModal from 'components/common/AppModal';
-import { Button } from 'components/common/ui';
+import { Button, DataTable, EmptyState, Badge } from 'components/common/ui';
 
 const CategoryManagement = ({ categories, fetchCategories, saveCategory, updateCategory, deleteCategory, show, onClose }) => {
     const [newCategory, setNewCategory] = useState('');
@@ -73,6 +73,69 @@ const CategoryManagement = ({ categories, fetchCategories, saveCategory, updateC
         }
     };
 
+    const columns = [
+        {
+            key: 'name',
+            header: '分類名稱',
+            render: (category) =>
+                editingCategory === category.id ? (
+                    <input
+                        className="w-full rounded-lg border border-[#1e3a8a]/30 bg-white px-3 py-2 text-sm text-[#0f172a] outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/20"
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') saveEditedCategory();
+                            if (e.key === 'Escape') cancelEditing();
+                        }}
+                        autoFocus
+                    />
+                ) : (
+                    <span className="font-medium text-[#0f172a]">{category.name}</span>
+                ),
+        },
+        {
+            key: 'actions',
+            header: '操作',
+            className: 'text-right whitespace-nowrap',
+            render: (category) =>
+                editingCategory === category.id ? (
+                    <div className="flex items-center justify-end gap-2">
+                        <Button variant="primary" size="sm" onClick={saveEditedCategory}>
+                            <Check size={16} className="mr-1" /> 保存
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={cancelEditing}>
+                            <X size={16} className="mr-1" /> 取消
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-end gap-2">
+                        <Tippy content="編輯此分類">
+                            <span>
+                                <Button variant="outline" size="sm" onClick={() => startEditing(category)}>
+                                    <Pencil size={16} className="mr-1" /> 編輯
+                                </Button>
+                            </span>
+                        </Tippy>
+                        <Tippy content="刪除此分類">
+                            <span>
+                                <Button
+                                    variant="error"
+                                    size="sm"
+                                    onClick={() => {
+                                        if (window.confirm(`確定要刪除分類「${category.name}」嗎？此操作不可恢復！`)) {
+                                            handleDeleteCategory(category.id, category.name);
+                                        }
+                                    }}
+                                >
+                                    <Trash2 size={16} className="mr-1" /> 刪除
+                                </Button>
+                            </span>
+                        </Tippy>
+                    </div>
+                ),
+        },
+    ];
+
     return (
         <AppModal
             show={show}
@@ -80,7 +143,7 @@ const CategoryManagement = ({ categories, fetchCategories, saveCategory, updateC
             size="lg"
             variant="admin"
             title="分類管理"
-            icon={<FaTags />}
+            icon={<Tags />}
             closeOnBackdrop={false}
             footer={(
                 <Button variant="primary" onClick={onClose}>
@@ -88,114 +151,63 @@ const CategoryManagement = ({ categories, fetchCategories, saveCategory, updateC
                 </Button>
             )}
         >
-            <div className="mb-4">
-                <div className="alert alert-info">
-                    <FaInfoCircle className="mr-2" />
-                    <div>
-                        <strong>分類管理說明：</strong>
-                        <p className="mb-0 mt-1">
-                            產品分類可以幫助您更好地組織和管理產品。您可以在此頁面新增、編輯或刪除分類。
-                            請注意，刪除已有產品關聯的分類可能會影響產品顯示。
-                        </p>
-                    </div>
+            {/* 說明區塊 */}
+            <div className="mb-6 flex gap-3 rounded-xl border border-[#1e3a8a]/15 bg-[#1e3a8a]/5 p-4">
+                <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1e3a8a] text-white">
+                    <Info size={18} />
+                </span>
+                <div className="text-sm leading-relaxed text-[#0f172a]/80">
+                    <strong className="text-[#0f172a]">分類管理說明：</strong>
+                    <p className="mt-1 mb-0">
+                        產品分類可以幫助您更好地組織和管理產品。您可以在此頁面新增、編輯或刪除分類。
+                        請注意，刪除已有產品關聯的分類可能會影響產品顯示。
+                    </p>
                 </div>
             </div>
 
-            <form className="mb-4">
-                <div className="form-control mb-4">
-                    <label className="label pb-1">
-                        <span className="label-text font-bold">新增分類</span>
-                    </label>
-                    <div className="join shadow-sm w-full">
-                        <input
-                            className="input input-bordered join-item flex-1"
-                            placeholder="輸入新分類名稱..."
-                            value={newCategory}
-                            onChange={(e) => setNewCategory(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                        />
-                        <Tippy content="新增產品分類">
-                            <button type="button" className="btn btn-success join-item" onClick={handleAddCategory}>
-                                <FaPlus className="mr-1" /> 新增
-                            </button>
-                        </Tippy>
-                    </div>
-                    <span className="label-text-alt text-base-content/60 mt-1">
-                        分類名稱應簡短明確，例如「電子產品」、「家居用品」等。
-                    </span>
+            {/* 新增分類 */}
+            <div className="mb-6">
+                <label className="mb-1.5 block text-sm font-semibold text-[#0f172a]">新增分類</label>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                    <input
+                        className="flex-1 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-[#0f172a] outline-none transition focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/20"
+                        placeholder="輸入新分類名稱..."
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                    />
+                    <Tippy content="新增產品分類">
+                        <span>
+                            <Button variant="primary" onClick={handleAddCategory} className="w-full sm:w-auto">
+                                <Plus size={16} className="mr-1" /> 新增
+                            </Button>
+                        </span>
+                    </Tippy>
                 </div>
+                <p className="mt-1.5 text-xs text-[#0f172a]/50">
+                    分類名稱應簡短明確，例如「電子產品」、「家居用品」等。
+                </p>
+            </div>
 
-                <h5 className="text-lg font-semibold mb-3 mt-4 border-b border-base-300 pb-2 flex items-center">
-                    <FaTags className="mr-2" />
-                    已建立分類
-                    <span className="badge badge-primary ml-2">{categories.length}</span>
-                </h5>
+            {/* 已建立分類 */}
+            <div className="mb-2 flex items-center gap-2 border-b border-slate-200 pb-2">
+                <Tags size={18} className="text-[#1e3a8a]" />
+                <h5 className="text-base font-semibold text-[#0f172a]">已建立分類</h5>
+                <Badge variant="primary">{categories.length}</Badge>
+            </div>
 
-                {categories.length === 0 ? (
-                    <div className="text-center py-4 text-base-content/60">
-                        <FaInfoCircle size={30} className="mb-2 mx-auto" />
-                        <p>尚未建立任何分類，請使用上方表單新增。</p>
-                    </div>
-                ) : (
-                    <ul className="menu bg-base-100 rounded-box shadow-sm w-full p-0 [&>li]:border-b [&>li]:border-base-200 last:[&>li]:border-b-0">
-                        {categories.map((category) => (
-                            <li
-                                key={category.id}
-                                className="flex flex-row justify-between items-center px-4 py-2"
-                            >
-                                {editingCategory === category.id ? (
-                                    <div className="join w-full">
-                                        <input
-                                            className="input input-bordered join-item flex-1"
-                                            value={editedName}
-                                            onChange={(e) => setEditedName(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') saveEditedCategory();
-                                                if (e.key === 'Escape') cancelEditing();
-                                            }}
-                                            autoFocus
-                                        />
-                                        <button type="button" className="btn btn-success join-item" onClick={saveEditedCategory}>
-                                            保存
-                                        </button>
-                                        <button type="button" className="btn btn-secondary join-item" onClick={cancelEditing}>
-                                            取消
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <span className="font-medium">{category.name}</span>
-                                        <div className="flex items-center">
-                                            <Tippy content="編輯此分類">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-outline btn-primary btn-sm mr-2"
-                                                    onClick={() => startEditing(category)}
-                                                >
-                                                    <FaEdit /> 編輯
-                                                </button>
-                                            </Tippy>
-                                            <Tippy content="刪除此分類">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-outline btn-error btn-sm"
-                                                    onClick={() => {
-                                                        if (window.confirm(`確定要刪除分類「${category.name}」嗎？此操作不可恢復！`)) {
-                                                            handleDeleteCategory(category.id, category.name);
-                                                        }
-                                                    }}
-                                                >
-                                                    <FaTrash /> 刪除
-                                                </button>
-                                            </Tippy>
-                                        </div>
-                                    </>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
+            <DataTable
+                columns={columns}
+                data={categories}
+                rowKey={(category) => category.id}
+                empty={(
+                    <EmptyState
+                        icon={<Tags className="h-8 w-8" />}
+                        title="尚未建立任何分類"
+                        description="請使用上方表單新增您的第一個產品分類。"
+                    />
                 )}
-            </form>
+            />
         </AppModal>
     );
 };

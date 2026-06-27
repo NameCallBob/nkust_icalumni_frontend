@@ -3,7 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppModal from 'components/common/AppModal';
-import { Button, Field, Spinner } from 'components/common/ui';
+import { Button, Field, PageHeader, Toolbar, DataTable, Badge, EmptyState } from 'components/common/ui';
+import {
+  UserCog,
+  Plus,
+  Search,
+  X,
+  Pencil,
+  Trash2,
+  ArrowUpDown,
+  Info,
+  AlertTriangle,
+  ShieldCheck,
+  Save,
+} from 'lucide-react';
 
 const AlumniPositionCRUD = () => {
   const [positions, setPositions] = useState([]);
@@ -165,197 +178,200 @@ const AlumniPositionCRUD = () => {
 
   // 渲染優先度徽章
   const renderPriorityBadge = (priority) => {
-    let badgeVariant = "badge-neutral";
-    let tooltip = "一般成員職稱";
-
-    if (priority <= 3) {
-      badgeVariant = "badge-error";
-      tooltip = "管理者權限";
-    }
+    const isAdmin = priority <= 3;
+    const tooltip = isAdmin ? '管理者權限' : '一般成員職稱';
 
     return (
       <span className="tooltip" data-tip={tooltip}>
-        <span className={`badge ${badgeVariant} px-2`}>
+        <Badge variant={isAdmin ? 'error' : 'neutral'} soft={false} className="px-2.5">
           {priority}
-        </span>
+        </Badge>
       </span>
     );
   };
 
-  return (
-    <div className="container mx-auto px-4 py-4">
-      <div className="card card-bordered shadow-sm border-0 mb-4 bg-base-100">
-        <div className="px-5 py-3 text-white text-lg font-semibold rounded-t-xl" style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #3a75c4 100%)' }}>
-          <i className="fas fa-user-tag mr-2"></i>系友會職稱管理
-        </div>
+  // 可點擊排序的表頭
+  const SortableHeader = ({ column, children }) => (
+    <button
+      type="button"
+      onClick={() => handleSort(column)}
+      className="inline-flex items-center gap-1 font-medium text-base-content/70 hover:text-primary transition-colors"
+    >
+      {children}
+      <ArrowUpDown className="h-3.5 w-3.5 opacity-60" />
+    </button>
+  );
 
-        <div className="card-body">
-          <div className="alert alert-info flex items-center mb-4">
-            <i className="fas fa-info-circle mr-3 fa-lg"></i>
-            <div>
-              <strong>職稱管理功能說明：</strong>
-              <p className="mb-0 mt-1">此功能用於管理系友會內部職稱及設定其優先度。職稱用於區分系友會成員的角色與權限。</p>
-            </div>
-          </div>
-
-          <div className="alert alert-warning flex items-center mb-4">
-            <i className="fas fa-exclamation-triangle mr-3 fa-lg"></i>
-            <div>
-              <strong>權限說明重要提醒：</strong>
-              <p className="mb-0 mt-1">系統僅設有兩種基本角色，由職稱優先度決定：</p>
-              <ul className="mt-2 mb-1">
-                <li><span className="badge badge-error mr-1">1-3</span> 管理者權限 - 可使用系統管理功能</li>
-                <li><span className="badge badge-neutral mr-1">4-10</span> 一般成員 - 僅可使用一般功能</li>
-              </ul>
-              <p className="mb-0 text-error font-bold">請注意：優先度為 3 以上的職稱將擁有管理者權限，能夠操作管理頁面，請謹慎設定！</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-12 gap-4 mb-3 items-center">
-            <div className="col-span-12 md:col-span-6">
-              <Button
-                variant="primary"
-                onClick={handleAddNew}
-                className="flex items-center"
-                style={{ backgroundColor: '#3a75c4', borderColor: '#3a75c4' }}
-              >
-                <i className="fas fa-plus-circle mr-1"></i> 新增職稱
-              </Button>
-            </div>
-            <div className="col-span-12 md:col-span-6">
-              <div className="join w-full">
-                <span className="join-item btn btn-disabled no-animation flex items-center">
-                  <i className="fas fa-search"></i>
-                </span>
-                <input
-                  className="input input-bordered join-item w-full"
-                  placeholder="搜尋職稱或優先度..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                />
-                {searchTerm && (
-                  <Button
-                    variant="outline"
-                    className="join-item"
-                    onClick={() => {
-                      setSearchTerm('');
-                      setFilteredPositions(positions);
-                    }}
-                  >
-                    <i className="fas fa-times"></i>
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-5">
-              <Spinner center label="正在載入職稱資料..." />
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="table align-middle" style={{ borderCollapse: 'separate', borderSpacing: '0 8px' }}>
-                <thead className="bg-base-200">
-                  <tr>
-                    <th style={{ width: '5%' }}>#</th>
-                    <th
-                      style={{ width: '45%', cursor: 'pointer' }}
-                      onClick={() => handleSort('title')}
-                      className="flex items-center"
-                    >
-                      職稱名稱
-                      <i className={`fas fa-sort ml-1 text-base-content/60 small ${sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'}`}></i>
-                    </th>
-                    <th
-                      style={{ width: '20%', cursor: 'pointer' }}
-                      onClick={() => handleSort('priority')}
-                      className="flex items-center"
-                    >
-                      優先度
-                      <i className={`fas fa-sort ml-1 text-base-content/60 small ${sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'}`}></i>
-                      <span className="tooltip ml-2" data-tip="優先度影響系統權限，3以上擁有管理權限">
-                        <i className="fas fa-info-circle text-error"></i>
-                      </span>
-                    </th>
-                    <th style={{ width: '30%' }}>操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPositions.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="text-center py-4">
-                        {searchTerm ? (
-                          <div>
-                            <i className="fas fa-search fa-2x text-base-content/60 mb-2"></i>
-                            <p className="mb-0">找不到符合 "{searchTerm}" 的職稱資料</p>
-                          </div>
-                        ) : (
-                          <div>
-                            <i className="fas fa-users fa-2x text-base-content/60 mb-2"></i>
-                            <p className="mb-0">尚未新增任何職稱資料</p>
-                            <Button variant="link" onClick={handleAddNew} className="mt-2">
-                              立即新增第一筆職稱
-                            </Button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredPositions.map((position, index) => (
-                      <tr key={position.id} className={position.priority <= 3 ? 'border-l-4 border-error' : ''}>
-                        <td>{index + 1}</td>
-                        <td>
-                          <div className="flex items-center">
-                            <span className="ml-2">{position.title}</span>
-                            {position.priority <= 3 && (
-                              <span className="badge badge-error rounded-full ml-2 px-2 py-1">
-                                <i className="fas fa-shield-alt mr-1"></i> 管理者
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td>
-                          {renderPriorityBadge(position.priority)}
-                        </td>
-                        <td>
-                          <Button
-                            variant="outline"
-                            onClick={() => handleEdit(position)}
-                            className="mr-2 mb-1 btn-warning"
-                            size="sm"
-                          >
-                            <i className="fas fa-edit mr-1"></i> 修改
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => handleDelete(position.id, position.title, position.priority)}
-                            size="sm"
-                            className="mb-1 btn-error"
-                          >
-                            <i className="fas fa-trash-alt mr-1"></i> 刪除
-                          </Button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+  const columns = [
+    {
+      key: 'index',
+      header: '#',
+      className: 'w-12 text-base-content/50',
+      hideOnMobile: true,
+      render: (_row, i) => i + 1,
+    },
+    {
+      key: 'title',
+      header: <SortableHeader column="title">職稱名稱</SortableHeader>,
+      render: (position) => (
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-base-content">{position.title}</span>
+          {position.priority <= 3 && (
+            <Badge variant="error" soft={false} className="gap-1">
+              <ShieldCheck className="h-3 w-3" /> 管理者
+            </Badge>
           )}
+        </div>
+      ),
+    },
+    {
+      key: 'priority',
+      header: (
+        <span className="inline-flex items-center gap-1.5">
+          <SortableHeader column="priority">優先度</SortableHeader>
+          <span className="tooltip" data-tip="優先度影響系統權限，3以上擁有管理權限">
+            <Info className="h-3.5 w-3.5 text-error" />
+          </span>
+        </span>
+      ),
+      render: (position) => renderPriorityBadge(position.priority),
+    },
+    {
+      key: 'actions',
+      header: '操作',
+      className: 'w-48',
+      render: (position) => (
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => handleEdit(position)}>
+            <Pencil className="h-3.5 w-3.5 mr-1" /> 修改
+          </Button>
+          <Button
+            variant="error"
+            size="sm"
+            onClick={() => handleDelete(position.id, position.title, position.priority)}
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1" /> 刪除
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
-          <div className="text-base-content/60 mt-3 flex justify-between items-center">
-            <small>共 {filteredPositions.length} 筆資料{searchTerm ? `（搜尋結果）` : ''}</small>
+  const emptyNode = searchTerm ? (
+    <EmptyState
+      icon={<Search className="h-8 w-8" />}
+      title={`找不到符合 "${searchTerm}" 的職稱資料`}
+      description="請嘗試其他關鍵字，或清除搜尋條件。"
+    />
+  ) : (
+    <EmptyState
+      icon={<UserCog className="h-8 w-8" />}
+      title="尚未新增任何職稱資料"
+      description="建立系友會內部職稱，並設定其權限優先度。"
+      action={
+        <Button variant="primary" onClick={handleAddNew}>
+          <Plus className="h-4 w-4 mr-1" /> 立即新增第一筆職稱
+        </Button>
+      }
+    />
+  );
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-6">
+      <PageHeader
+        title="系友會職稱管理"
+        subtitle="管理系友會內部職稱及其優先度，優先度決定成員的角色與系統權限。"
+        icon={<UserCog className="h-5 w-5" />}
+        actions={
+          <Button variant="primary" onClick={handleAddNew}>
+            <Plus className="h-4 w-4 mr-1" /> 新增職稱
+          </Button>
+        }
+      />
+
+      {/* 功能說明 */}
+      <div className="mb-4 flex items-start gap-3 rounded-2xl border border-info/30 bg-info/5 p-4">
+        <Info className="mt-0.5 h-5 w-5 shrink-0 text-info" />
+        <div className="text-sm">
+          <p className="font-semibold text-base-content">職稱管理功能說明</p>
+          <p className="mt-1 text-base-content/70">
+            此功能用於管理系友會內部職稱及設定其優先度。職稱用於區分系友會成員的角色與權限。
+          </p>
+        </div>
+      </div>
+
+      {/* 權限提醒 */}
+      <div className="mb-6 flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning/5 p-4">
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+        <div className="text-sm">
+          <p className="font-semibold text-base-content">權限說明重要提醒</p>
+          <p className="mt-1 text-base-content/70">系統僅設有兩種基本角色，由職稱優先度決定：</p>
+          <ul className="mt-2 space-y-1.5">
+            <li className="flex items-center gap-2">
+              <Badge variant="error" soft={false}>1-3</Badge>
+              <span className="text-base-content/70">管理者權限 - 可使用系統管理功能</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <Badge variant="neutral" soft={false}>4-10</Badge>
+              <span className="text-base-content/70">一般成員 - 僅可使用一般功能</span>
+            </li>
+          </ul>
+          <p className="mt-2 font-bold text-error">
+            請注意：優先度為 3 以上的職稱將擁有管理者權限，能夠操作管理頁面，請謹慎設定！
+          </p>
+        </div>
+      </div>
+
+      {/* 搜尋列 */}
+      <Toolbar
+        left={
+          <div className="relative w-full sm:w-80">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-base-content/40" />
+            <input
+              className="input input-bordered w-full pl-9 pr-9"
+              placeholder="搜尋職稱或優先度..."
+              value={searchTerm}
+              onChange={handleSearch}
+            />
             {searchTerm && (
-              <Button variant="link" size="sm" onClick={() => {
-                setSearchTerm('');
-                setFilteredPositions(positions);
-              }}>
-                清除搜尋並顯示全部
-              </Button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchTerm('');
+                  setFilteredPositions(positions);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
+              >
+                <X className="h-4 w-4" />
+              </button>
             )}
           </div>
-        </div>
+        }
+      />
+
+      <DataTable
+        columns={columns}
+        data={filteredPositions}
+        rowKey={(row) => row.id}
+        loading={loading}
+        empty={emptyNode}
+      />
+
+      {/* 統計列 */}
+      <div className="mt-3 flex items-center justify-between text-sm text-base-content/60">
+        <span>共 {filteredPositions.length} 筆資料{searchTerm ? `（搜尋結果）` : ''}</span>
+        {searchTerm && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSearchTerm('');
+              setFilteredPositions(positions);
+            }}
+          >
+            清除搜尋並顯示全部
+          </Button>
+        )}
       </div>
 
       <AppModal
@@ -363,7 +379,7 @@ const AlumniPositionCRUD = () => {
         onHide={() => setShowModal(false)}
         closeOnBackdrop={false}
         title={isEdit ? '修改職稱' : '新增職稱'}
-        icon={isEdit ? <i className="fas fa-edit"></i> : <i className="fas fa-plus-circle"></i>}
+        icon={isEdit ? <Pencil className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
         footer={
           <>
             <Button variant="outline" onClick={() => setShowModal(false)}>
@@ -374,15 +390,15 @@ const AlumniPositionCRUD = () => {
               onClick={handleSave}
             >
               {isEdit ? (
-                <><i className="fas fa-save mr-1"></i>儲存修改</>
+                <><Save className="h-4 w-4 mr-1" />儲存修改</>
               ) : (
-                <><i className="fas fa-plus mr-1"></i>新增職稱</>
+                <><Plus className="h-4 w-4 mr-1" />新增職稱</>
               )}
             </Button>
           </>
         }
       >
-        <p className="text-base-content/60 mb-3">
+        <p className="mb-4 text-sm text-base-content/60">
           {isEdit ?
             '請編輯以下職稱資料，欄位標示 * 為必填項目。' :
             '請填寫職稱資料，設定系友會內部職務名稱與優先度。'
@@ -412,7 +428,7 @@ const AlumniPositionCRUD = () => {
               <span className="label-text font-medium text-base-content">
                 優先度<span className="text-error ml-0.5">*</span>
                 <span className="tooltip ml-2" data-tip="優先度影響系統權限，3以上擁有管理權限">
-                  <i className="fas fa-info-circle text-error"></i>
+                  <Info className="inline h-3.5 w-3.5 text-error" />
                 </span>
               </span>
             </label>
@@ -435,11 +451,13 @@ const AlumniPositionCRUD = () => {
             {(!currentPosition.priority || currentPosition.priority < 1 || currentPosition.priority > 10) && (
               <span className="label-text-alt text-error mt-1">優先度必須介於 1 至 10 之間</span>
             )}
-            <div className="mt-2 p-2 border border-warning bg-base-200 rounded">
-              <p className="mb-1 font-bold small"><i className="fas fa-exclamation-triangle text-warning mr-1"></i> 優先度權限對照表：</p>
-              <div className="flex flex-wrap gap-2 small">
-                <span className="badge badge-error">4-10: 一般使用者</span>
-                <span className="badge badge-neutral">1-3: 管理者</span>
+            <div className="mt-3 rounded-xl border border-warning/40 bg-warning/5 p-3">
+              <p className="mb-2 flex items-center gap-1.5 text-sm font-bold text-base-content">
+                <AlertTriangle className="h-4 w-4 text-warning" /> 優先度權限對照表：
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="error" soft={false}>4-10: 一般使用者</Badge>
+                <Badge variant="neutral" soft={false}>1-3: 管理者</Badge>
               </div>
             </div>
           </div>

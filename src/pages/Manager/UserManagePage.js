@@ -10,6 +10,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import AccountManageModal from 'components/Manage/UserManage/AccountModal';
 import UploadExcelModal from 'components/Manage/UserManage/MemberExcelModal';
 import useRWD from 'hooks/useRWD';
+import { PageHeader, Card } from 'components/common/ui';
+import { Users } from 'lucide-react';
 /**
  * 使用者管理元件
  * @returns
@@ -247,64 +249,72 @@ function UserManagement() {
   };
 
   return (
-    <div className="admin-container container mx-auto px-4 my-5" style={rwd.getContainerStyle()}>
-      <div className="grid grid-cols-12 gap-4 justify-center">
-        <div
-          className={`${rwd.isMobile ? 'col-span-12' : 'col-span-3'} bg-base-200 p-3 ${rwd.isMobile ? 'mb-3' : ''}`}
-        >
-          <UserFilter
-            filters={filters}
-            setFilters={setFilters}
-            applyFilters={applyFilters}
-            handleAddUser_easy={() => handleShowModal(false)}
-            handleAddUser_complex={() => handleShowModal(true)}
-            handleAccountModal={() =>handleShowACModal() }
-            handleExcelModal={() => handleShowExcelModal()}
-          />
-        </div>
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8" style={rwd.getContainerStyle()}>
+      <PageHeader
+        title="使用者管理"
+        subtitle="管理校友會帳號、繳費與啟用狀態，並可批次匯入系友資料"
+        icon={<Users className="h-5 w-5" />}
+      />
 
-        <div className={`${rwd.isMobile ? 'col-span-12' : 'col-span-9'} p-3`}>
-          {loading ? (
-            <div className="text-center">
-              <LoadingSpinner></LoadingSpinner>
-            </div>
-          ) : (
-            <div style={rwd.getContainerStyle()}>
-              {rwd.isMobile ? (
-                <div style={{
-                  overflowX: 'auto',
-                  WebkitOverflowScrolling: 'touch',
-                  msOverflowStyle: '-ms-autohiding-scrollbar',
-                  scrollbarWidth: 'thin'
-                }}>
-                  <div style={{ minWidth: '800px' }}>
-                    <UserTable
-                      users={users}
-                      handleShowModal={handleShowModal}
-                      handleEdit={handleEdit}
-                      handlePaymentStatus={handlePaymentStatus}
-                      handleToggleActive={handleToggleActive}
-                      handleDelete={handleDelete}
-                      handlePassword={handlePassword}
-                      style={rwd.getTableStyle()}
-                    />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <aside className="lg:col-span-4 xl:col-span-3">
+          <Card padding="md" className="lg:sticky lg:top-6">
+            <UserFilter
+              filters={filters}
+              setFilters={setFilters}
+              applyFilters={applyFilters}
+              handleAddUser_easy={() => handleShowModal(false)}
+              handleAddUser_complex={() => handleShowModal(true)}
+              handleAccountModal={() =>handleShowACModal() }
+              handleExcelModal={() => handleShowExcelModal()}
+            />
+          </Card>
+        </aside>
+
+        <section className="lg:col-span-8 xl:col-span-9">
+          <Card padding={rwd.isMobile ? 'sm' : 'md'}>
+            {loading ? (
+              <div className="flex min-h-[240px] items-center justify-center">
+                <LoadingSpinner></LoadingSpinner>
+              </div>
+            ) : (
+              <div style={rwd.getContainerStyle()}>
+                {rwd.isMobile ? (
+                  <div style={{
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                    msOverflowStyle: '-ms-autohiding-scrollbar',
+                    scrollbarWidth: 'thin'
+                  }}>
+                    <div style={{ minWidth: '800px' }}>
+                      <UserTable
+                        users={users}
+                        handleShowModal={handleShowModal}
+                        handleEdit={handleEdit}
+                        handlePaymentStatus={handlePaymentStatus}
+                        handleToggleActive={handleToggleActive}
+                        handleDelete={handleDelete}
+                        handlePassword={handlePassword}
+                        style={rwd.getTableStyle()}
+                      />
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <UserTable
-                  users={users}
-                  handleShowModal={handleShowModal}
-                  handleEdit={handleEdit}
-                  handlePaymentStatus={handlePaymentStatus}
-                  handleToggleActive={handleToggleActive}
-                  handleDelete={handleDelete}
-                  handlePassword={handlePassword}
-                  style={rwd.getTableStyle()}
-                />
-              )}
-            </div>
-          )}
-        </div>
+                ) : (
+                  <UserTable
+                    users={users}
+                    handleShowModal={handleShowModal}
+                    handleEdit={handleEdit}
+                    handlePaymentStatus={handlePaymentStatus}
+                    handleToggleActive={handleToggleActive}
+                    handleDelete={handleDelete}
+                    handlePassword={handlePassword}
+                    style={rwd.getTableStyle()}
+                  />
+                )}
+              </div>
+            )}
+          </Card>
+        </section>
       </div>
 
       <NewUserModal

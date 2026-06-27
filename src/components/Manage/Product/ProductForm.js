@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import AppModal from 'components/common/AppModal';
-import { Button, Field } from 'components/common/ui';
+import { Button, Field, Card, Badge } from 'components/common/ui';
 import { FaCamera, FaTrash, FaStar, FaRegStar, FaInfoCircle, FaCheck, FaTimes } from 'react-icons/fa';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
@@ -185,20 +185,24 @@ const ProductForm = ({
             closeOnBackdrop={false}
             footer={footer}
         >
-            <Button
-                variant="link"
-                size="sm"
-                className="mb-3 no-underline px-0"
-                onClick={() => setShowHelp(!showHelp)}
-            >
-                <FaInfoCircle className="mr-1" />
-                {showHelp ? '隱藏填寫說明' : '顯示填寫說明'}
-            </Button>
+            <div className="flex justify-end mb-4">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-[#1e3a8a] hover:bg-[#1e3a8a]/5"
+                    onClick={() => setShowHelp(!showHelp)}
+                >
+                    <FaInfoCircle />
+                    {showHelp ? '隱藏填寫說明' : '顯示填寫說明'}
+                </Button>
+            </div>
 
             {showHelp && (
-                <div className="alert alert-info mb-4 block">
-                    <h5 className="font-bold mb-2">產品資料填寫說明</h5>
-                    <ul className="mb-0 list-disc pl-5 space-y-1">
+                <div className="mb-6 rounded-xl border border-[#1e3a8a]/15 bg-[#1e3a8a]/5 p-4">
+                    <h5 className="mb-3 flex items-center gap-2 font-bold text-[#1e3a8a]">
+                        <FaInfoCircle /> 產品資料填寫說明
+                    </h5>
+                    <ul className="m-0 list-disc space-y-1.5 pl-5 text-sm text-base-content/80">
                         <li><strong>產品名稱</strong>：應簡潔明確，避免過長或難以理解的名稱，建議在30字以內。</li>
                         <li><strong>產品簡介</strong>：詳細描述產品特點與用途，可包含規格、特性等重要資訊。</li>
                         <li><strong>分類</strong>：選擇最符合產品的分類，以便客戶快速尋找。</li>
@@ -209,94 +213,104 @@ const ProductForm = ({
             )}
 
             <form>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <Field
-                            label="產品名稱"
-                            required
-                            type="text"
-                            name="name"
-                            value={productData.name}
-                            onChange={handleChange}
-                            placeholder="輸入產品名稱..."
-                            className={validationErrors.name ? 'is-invalid' : ''}
-                            maxLength={100}
-                            error={validationErrors.name}
-                            help={`建議30字以內，目前已輸入 ${productData.name.length} 字`}
-                        />
+                <Card padding="md" className="mb-5">
+                    <h6 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-[#1e3a8a]">
+                        <span className="h-4 w-1 rounded-full bg-[#a0781c]" />
+                        基本資料
+                    </h6>
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-1 md:grid-cols-2">
+                        <div>
+                            <Field
+                                label="產品名稱"
+                                required
+                                type="text"
+                                name="name"
+                                value={productData.name}
+                                onChange={handleChange}
+                                placeholder="輸入產品名稱..."
+                                className={validationErrors.name ? 'is-invalid' : ''}
+                                maxLength={100}
+                                error={validationErrors.name}
+                                help={`建議30字以內，目前已輸入 ${productData.name.length} 字`}
+                            />
 
-                        <Field
-                            as="select"
-                            label="分類"
-                            required
-                            name="category"
-                            value={productData.category}
-                            onChange={handleChange}
-                            className={validationErrors.category ? 'is-invalid' : ''}
-                            error={validationErrors.category}
-                        >
-                            <option value="">-- 選擇分類 --</option>
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </Field>
+                            <Field
+                                as="select"
+                                label="分類"
+                                required
+                                name="category"
+                                value={productData.category}
+                                onChange={handleChange}
+                                className={validationErrors.category ? 'is-invalid' : ''}
+                                error={validationErrors.category}
+                            >
+                                <option value="">-- 選擇分類 --</option>
+                                {categories.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </Field>
 
-                        <div className="form-control w-full mb-4">
-                            <label className="label pb-1">
-                                <span className="label-text font-medium text-base-content">狀態</span>
-                            </label>
-                            <div className="flex items-center p-2 border border-base-300 rounded-lg">
-                                <input
-                                    type="checkbox"
-                                    id="product-status-switch"
-                                    name="is_active"
-                                    checked={productData.is_active}
-                                    onChange={handleChange}
-                                    className="toggle toggle-primary mr-2"
-                                />
-                                <span>
+                            <div className="form-control mb-4 w-full">
+                                <label className="label pb-1">
+                                    <span className="label-text font-medium text-base-content">狀態</span>
+                                </label>
+                                <div className="flex items-center gap-3 rounded-lg border border-base-300 bg-base-100 p-3">
+                                    <input
+                                        type="checkbox"
+                                        id="product-status-switch"
+                                        name="is_active"
+                                        checked={productData.is_active}
+                                        onChange={handleChange}
+                                        className="toggle toggle-primary"
+                                    />
                                     {productData.is_active ? (
-                                        <><FaCheck className="text-success mr-1 inline" /> 產品已啟用</>
+                                        <Badge variant="success">
+                                            <FaCheck className="mr-1 inline" /> 產品已啟用
+                                        </Badge>
                                     ) : (
-                                        <><FaTimes className="text-error mr-1 inline" /> 產品未啟用</>
+                                        <Badge variant="error">
+                                            <FaTimes className="mr-1 inline" /> 產品未啟用
+                                        </Badge>
                                     )}
+                                </div>
+                                <span className="label-text-alt mt-1 text-base-content/60">
+                                    啟用的產品將顯示在前台，未啟用則不會顯示。
                                 </span>
                             </div>
-                            <span className="label-text-alt text-base-content/60 mt-1">
-                                啟用的產品將顯示在前台，未啟用則不會顯示。
-                            </span>
+                        </div>
+
+                        <div>
+                            <Field
+                                as="textarea"
+                                label="產品簡介"
+                                required
+                                name="description"
+                                value={productData.description}
+                                onChange={handleChange}
+                                placeholder="詳細描述產品的特點、用途、規格等..."
+                                className={validationErrors.description ? 'is-invalid' : ''}
+                                style={{ height: '172px' }}
+                                error={validationErrors.description}
+                            />
                         </div>
                     </div>
+                </Card>
 
-                    <div>
-                        <Field
-                            as="textarea"
-                            label="產品簡介"
-                            required
-                            name="description"
-                            value={productData.description}
-                            onChange={handleChange}
-                            placeholder="詳細描述產品的特點、用途、規格等..."
-                            className={validationErrors.description ? 'is-invalid' : ''}
-                            style={{ height: '172px' }}
-                            error={validationErrors.description}
-                        />
+                <Card padding="md">
+                    <div className="mb-4 flex items-center justify-between">
+                        <h6 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-[#1e3a8a]">
+                            <span className="h-4 w-1 rounded-full bg-[#a0781c]" />
+                            產品圖片<span className="text-error">*</span>
+                        </h6>
+                        {imagePreviews.length > 0 && (
+                            <Badge variant="primary">已上傳 {imagePreviews.length} 張</Badge>
+                        )}
                     </div>
-                </div>
-
-                <hr className="my-4 border-base-300" />
-
-                <div className="form-control w-full mb-3">
-                    <label className="label pb-1">
-                        <span className="label-text font-medium text-base-content">
-                            產品圖片<span className="text-error ml-0.5">*</span>
-                        </span>
-                    </label>
 
                     <div
-                        className={`upload-area p-4 text-center border rounded-lg mb-3 ${isDragging ? 'border-primary bg-base-200' : 'border-base-300'} ${validationErrors.images ? 'border-error' : ''}`}
+                        className={`mb-3 cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-colors ${isDragging ? 'border-[#1e3a8a] bg-[#1e3a8a]/5' : 'border-base-300 hover:border-[#1e3a8a]/50 hover:bg-base-200/50'} ${validationErrors.images ? 'border-error' : ''}`}
                         onDragOver={(e) => {
                             e.preventDefault();
                             setIsDragging(true);
@@ -304,11 +318,10 @@ const ProductForm = ({
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
-                        style={{ cursor: 'pointer' }}
                     >
-                        <FaCamera size={40} className="mb-3 text-primary mx-auto" />
-                        <h6 className="font-semibold">點擊或拖放圖片至此處上傳</h6>
-                        <p className="text-base-content/60 mb-0">支援 JPG、PNG 格式，每張圖片最大 5MB</p>
+                        <FaCamera size={40} className="mx-auto mb-3 text-[#1e3a8a]" />
+                        <h6 className="font-semibold text-base-content">點擊或拖放圖片至此處上傳</h6>
+                        <p className="m-0 text-sm text-base-content/60">支援 JPG、PNG 格式，每張圖片最大 5MB</p>
                         <input
                             ref={fileInputRef}
                             type="file"
@@ -320,67 +333,63 @@ const ProductForm = ({
                     </div>
 
                     {validationErrors.images && (
-                        <div className="text-error mb-3">{validationErrors.images}</div>
+                        <div className="mb-3 text-sm text-error">{validationErrors.images}</div>
                     )}
 
                     {imagePreviews.length > 0 && (
-                        <div className="card card-bordered shadow-sm bg-base-100">
-                            <div className="bg-base-200 px-4 py-3 rounded-t-2xl">
-                                <div className="flex justify-between items-center">
-                                    <span className="font-bold">已上傳圖片 ({imagePreviews.length})</span>
-                                    <Tippy content="第一張圖片將作為主圖顯示">
-                                        <span className="text-base-content/60">
-                                            <FaInfoCircle className="inline" /> 主圖標示為 <FaStar className="text-warning inline" />
-                                        </span>
-                                    </Tippy>
-                                </div>
+                        <div className="rounded-xl border border-base-300 bg-base-100">
+                            <div className="flex items-center justify-between border-b border-base-300 bg-base-200/60 px-4 py-3">
+                                <span className="font-bold text-base-content">已上傳圖片 ({imagePreviews.length})</span>
+                                <Tippy content="第一張圖片將作為主圖顯示">
+                                    <span className="flex items-center gap-1 text-sm text-base-content/60">
+                                        <FaInfoCircle /> 主圖標示為 <FaStar className="text-warning" />
+                                    </span>
+                                </Tippy>
                             </div>
-                            <div className="card-body">
-                                <div className="flex flex-wrap">
-                                    {imagePreviews.map((image, index) => (
-                                        <div key={index} className="relative mr-3 mb-3">
-                                            <div className="card card-bordered bg-base-100" style={{ width: '150px' }}>
-                                                <div style={{ height: '150px', overflow: 'hidden' }}>
-                                                    <img
-                                                        src={image}
-                                                        alt={`預覽圖片 ${index + 1}`}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                </div>
-                                                <div className="p-2 flex justify-between border-t border-base-300">
-                                                    <Tippy content={index === 0 ? "目前為主圖" : "設為主圖"}>
-                                                        <button
-                                                            type="button"
-                                                            className={`btn btn-sm ${index === 0 ? 'btn-warning' : 'btn-outline btn-warning'}`}
-                                                            onClick={() => index !== 0 && handleSetMainImage(index)}
-                                                            disabled={index === 0}
-                                                        >
-                                                            {index === 0 ? <FaStar /> : <FaRegStar />}
-                                                        </button>
-                                                    </Tippy>
-                                                    <Tippy content="刪除圖片">
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-sm btn-outline btn-error"
-                                                            onClick={() => handleDeleteImage(index)}
-                                                        >
-                                                            <FaTrash />
-                                                        </button>
-                                                    </Tippy>
-                                                </div>
+                            <div className="flex flex-wrap gap-3 p-4">
+                                {imagePreviews.map((image, index) => (
+                                    <div key={index} className="relative">
+                                        <div className="overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-sm" style={{ width: '150px' }}>
+                                            <div style={{ height: '150px', overflow: 'hidden' }}>
+                                                <img
+                                                    src={image}
+                                                    alt={`預覽圖片 ${index + 1}`}
+                                                    className="h-full w-full object-cover"
+                                                />
                                             </div>
-                                            {index === 0 && (
-                                                <span className="absolute top-0 left-0 badge badge-warning m-1">
-                                                    主圖
-                                                </span>
-                                            )}
+                                            <div className="flex justify-between border-t border-base-300 p-2">
+                                                <Tippy content={index === 0 ? "目前為主圖" : "設為主圖"}>
+                                                    <button
+                                                        type="button"
+                                                        className={`btn btn-sm ${index === 0 ? 'btn-warning' : 'btn-outline btn-warning'}`}
+                                                        onClick={() => index !== 0 && handleSetMainImage(index)}
+                                                        disabled={index === 0}
+                                                    >
+                                                        {index === 0 ? <FaStar /> : <FaRegStar />}
+                                                    </button>
+                                                </Tippy>
+                                                <Tippy content="刪除圖片">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-sm btn-outline btn-error"
+                                                        onClick={() => handleDeleteImage(index)}
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                </Tippy>
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
+                                        {index === 0 && (
+                                            <span className="absolute left-1 top-1 badge badge-warning gap-1">
+                                                <FaStar size={10} /> 主圖
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     )}
-                </div>
+                </Card>
             </form>
         </AppModal>
     );

@@ -3,10 +3,11 @@ import UploadImageModal from "components/Manage/Info/InfoPicModal";
 import React, { useState, useEffect } from "react";
 import useRWD from 'hooks/useRWD';
 import AppModal from "components/common/AppModal";
-import { Button, Spinner } from "components/common/ui";
+import { Button, PageHeader, DataTable, Badge, EmptyState } from "components/common/ui";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { BsPlusLg, BsPencil, BsPause, BsPlay, BsTrash, BsXLg, BsSave } from "react-icons/bs";
+import { FileText, FileEdit, Image as ImageIcon } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSearchParams } from "react-router-dom";
@@ -171,14 +172,14 @@ const InfoManager = () => {
   const totalContentPages = Math.ceil(records.length / itemsPerPage);
   const totalImagePages = Math.ceil(formImages.length / itemsPerPage);
 
-  // 共用分頁列（join + join-item btn 取代 react-bootstrap Pagination）
+  // 共用分頁列（深藍 admin 風格分頁）
   const renderPagination = (totalPages) =>
     totalPages > 1 && (
-      <div className="flex justify-center mt-4">
-        <div className="join">
+      <div className="flex justify-center mt-6">
+        <div className="join shadow-sm">
           <button
             type="button"
-            className="join-item btn"
+            className="join-item btn btn-sm sm:btn-md bg-base-100 border-base-300"
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
@@ -188,7 +189,9 @@ const InfoManager = () => {
             <button
               key={index + 1}
               type="button"
-              className={`join-item btn ${index + 1 === currentPage ? "btn-primary" : ""}`}
+              className={`join-item btn btn-sm sm:btn-md border-base-300 ${
+                index + 1 === currentPage ? "btn-primary" : "bg-base-100"
+              }`}
               onClick={() => setCurrentPage(index + 1)}
             >
               {index + 1}
@@ -196,7 +199,7 @@ const InfoManager = () => {
           ))}
           <button
             type="button"
-            className="join-item btn"
+            className="join-item btn btn-sm sm:btn-md bg-base-100 border-base-300"
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
           >
@@ -206,155 +209,161 @@ const InfoManager = () => {
       </div>
     );
 
-  return (
-    <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
-      <div className="flex items-center mb-4">
-        <div className="flex-1">
-          <h3 className="font-bold text-xl">{title}管理內容與相關照片</h3>
+  // 內容管理表格欄位
+  const contentColumns = [
+    {
+      key: "index",
+      header: "#",
+      className: "w-16 text-base-content/50",
+      render: (_row, i) => (currentPage - 1) * itemsPerPage + i + 1,
+    },
+    {
+      key: "created_at",
+      header: "建立時間",
+      render: (row) =>
+        new Date(row.created_at).toLocaleString("zh-TW", {
+          timeZone: "Asia/Taipei",
+        }),
+    },
+    {
+      key: "actions",
+      header: "操作",
+      className: "text-right",
+      render: (row) => (
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" onClick={() => handleEditContent(row)}>
+            <BsPencil className="mr-1" /> 編輯
+          </Button>
         </div>
-        <div className="text-right">
+      ),
+    },
+  ];
+
+  // 照片管理表格欄位
+  const imageColumns = [
+    {
+      key: "index",
+      header: "#",
+      className: "w-16 text-base-content/50",
+      hideOnMobile: true,
+      render: (_row, i) => (currentPage - 1) * itemsPerPage + i + 1,
+    },
+    {
+      key: "file",
+      header: "照片預覽",
+      render: (row) => (
+        <img
+          src={`${row.file}`}
+          alt="preview"
+          className="h-16 w-24 rounded-lg border border-base-300 object-cover"
+        />
+      ),
+    },
+    {
+      key: "is_active",
+      header: "狀態",
+      render: (row) => (
+        <Badge variant={row.is_active ? "success" : "neutral"}>
+          {row.is_active ? "啟用" : "停用"}
+        </Badge>
+      ),
+    },
+    {
+      key: "actions",
+      header: "操作",
+      className: "text-right",
+      render: (row) => (
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button
+            variant={row.is_active ? "outline" : "success"}
+            size="sm"
+            onClick={() => handlePhotoStatus(row.id)}
+          >
+            {row.is_active ? <BsPause className="mr-1" /> : <BsPlay className="mr-1" />}
+            {row.is_active ? "停用" : "啟用"}
+          </Button>
+          <Button variant="error" size="sm" onClick={() => handlePhotoDelete(row.id)}>
+            <BsTrash className="mr-1" /> 刪除
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+      <PageHeader
+        title={`${title}管理`}
+        subtitle="管理介紹內容與相關照片"
+        icon={<FileText size={22} />}
+        actions={
           <Button
             variant="primary"
-            className="rounded-full px-4"
-            style={rwd.getButtonStyle()}
             onClick={activeTab === "content" ? handleAddContent : handleAddPhoto}
           >
             <BsPlusLg className="mr-2" />
             {activeTab === "content" ? "新增紀錄" : "新增照片"}
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      {/* Tabs（DaisyUI tabs-bordered 取代 react-bootstrap Tabs） */}
-      <div className="tabs tabs-bordered mb-4">
+      {/* 分頁切換（segmented 風格） */}
+      <div className="mb-5 inline-flex w-full gap-1 rounded-xl bg-base-200/70 p-1 sm:w-auto">
         <button
           type="button"
-          className={`tab ${activeTab === "content" ? "tab-active" : ""}`}
+          className={`inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors sm:flex-none ${
+            activeTab === "content"
+              ? "bg-base-100 text-primary shadow-sm"
+              : "text-base-content/60 hover:text-base-content"
+          }`}
           onClick={() => {
             setActiveTab("content");
             setCurrentPage(1); // 切換 Tab 時重置頁碼
           }}
         >
+          <FileEdit size={16} />
           內容管理
         </button>
         <button
           type="button"
-          className={`tab ${activeTab === "images" ? "tab-active" : ""}`}
+          className={`inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors sm:flex-none ${
+            activeTab === "images"
+              ? "bg-base-100 text-primary shadow-sm"
+              : "text-base-content/60 hover:text-base-content"
+          }`}
           onClick={() => {
             setActiveTab("images");
             setCurrentPage(1); // 切換 Tab 時重置頁碼
           }}
         >
+          <ImageIcon size={16} />
           照片管理
         </button>
       </div>
 
       {activeTab === "content" && (
         <>
-          {loading ? (
-            <div className="text-center my-5">
-              <Spinner center label="載入中..." />
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="table shadow-sm" style={rwd.getTableStyle()}>
-                  <thead className="bg-base-200">
-                    <tr>
-                      <th>#</th>
-                      <th>建立時間</th>
-                      <th className="text-center">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginateItems(records).map((record, index) => (
-                      <tr key={record.id} className="hover">
-                        <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                        <td>
-                          {new Date(record.created_at).toLocaleString("zh-TW", {
-                            timeZone: "Asia/Taipei",
-                          })}
-                        </td>
-                        <td className="text-center">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditContent(record)}
-                          >
-                            <BsPencil /> 編輯
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {renderPagination(totalContentPages)}
-            </>
-          )}
+          <DataTable
+            columns={contentColumns}
+            data={paginateItems(records)}
+            rowKey={(row) => row.id}
+            loading={loading}
+            empty={<EmptyState title="尚無內容紀錄" description="點擊右上角「新增紀錄」開始建立。" />}
+          />
+          {!loading && renderPagination(totalContentPages)}
         </>
       )}
 
       {activeTab === "images" && (
         <>
-          {loading ? (
-            <div className="text-center my-5">
-              <Spinner center label="載入中..." />
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="table shadow-sm" style={rwd.getTableStyle()}>
-                  <thead className="bg-base-200">
-                    <tr>
-                      <th>#</th>
-                      <th>照片預覽</th>
-                      <th>狀態</th>
-                      <th className="text-center">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginateItems(formImages).map((image, index) => (
-                      <tr key={image.id} className="hover">
-                        <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                        <td>
-                          <img
-                            src={`${image.file}`} // 假設後端返回完整 URL
-                            alt="preview"
-                            style={{ maxWidth: "100px", borderRadius: "5px" }}
-                          />
-                        </td>
-                        <td>
-                          <span className={`badge ${image.is_active ? "badge-success" : "badge-ghost"}`}>
-                            {image.is_active ? "啟用" : "停用"}
-                          </span>
-                        </td>
-                        <td className="text-center">
-                          <Button
-                            variant={image.is_active ? "outline" : "success"}
-                            size="sm"
-                            className="mr-2"
-                            onClick={() => handlePhotoStatus(image.id)}
-                          >
-                            {image.is_active ? <BsPause /> : <BsPlay />}{" "}
-                            {image.is_active ? "停用" : "啟用"}
-                          </Button>
-                          <Button
-                            variant="error"
-                            size="sm"
-                            onClick={() => handlePhotoDelete(image.id)}
-                          >
-                            <BsTrash /> 刪除
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {renderPagination(totalImagePages)}
-            </>
-          )}
+          <DataTable
+            columns={imageColumns}
+            data={paginateItems(formImages)}
+            rowKey={(row) => row.id}
+            loading={loading}
+            empty={<EmptyState title="尚無照片" description="點擊右上角「新增照片」上傳。" />}
+          />
+          {!loading && renderPagination(totalImagePages)}
         </>
       )}
 
@@ -380,11 +389,9 @@ const InfoManager = () => {
           </>
         }
       >
-        <div className="form-control w-full mb-3">
-          <label className="label pb-1">
-            <span className="label-text font-medium text-base-content">
-              介紹內容 <span className="text-error">*</span>
-            </span>
+        <div className="w-full">
+          <label className="mb-2 block text-sm font-medium text-base-content">
+            介紹內容 <span className="text-error">*</span>
           </label>
           <ReactQuill
             value={formDescription}

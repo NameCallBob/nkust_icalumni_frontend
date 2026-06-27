@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaPlus, FaTags, FaInfoCircle, FaQuestion } from 'react-icons/fa';
+import { FaSearch, FaPlus, FaTags, FaInfoCircle } from 'react-icons/fa';
+import { Box, X } from 'lucide-react';
 import useRWD from 'hooks/useRWD';
 import Axios from 'common/Axios';
-import { Button, Field } from 'components/common/ui';
+import { Button, Field, Card, PageHeader, Toolbar } from 'components/common/ui';
 import ProductForm from 'components/Manage/Product/ProductForm';
 import ProductDetailModal from 'components/Manage/Product/ProductDetail';
 import ProductList from 'components/Manage/Product/ProductList';
@@ -276,163 +277,164 @@ const ProductManagement = () => {
 
     return (
         <div
-            className="container mx-auto px-4 admin-container py-4 product-management-container"
+            className="container mx-auto px-4 py-6 max-w-7xl"
             style={rwd.getContainerStyle()}
         >
+            <PageHeader
+                title="產品管理中心"
+                subtitle="管理公司所有產品，包括新增、編輯、刪除及分類"
+                icon={<Box size={22} />}
+                actions={(
+                    <>
+                        <Tippy content="管理產品分類">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowCategoryModal(true)}
+                            >
+                                <FaTags className="mr-1" /> 管理分類
+                            </Button>
+                        </Tippy>
+
+                        <Tippy content="新增產品到系統">
+                            <Button
+                                variant="success"
+                                onClick={() => {
+                                    resetProductFormData();
+                                    setShowProductModal(true);
+                                }}
+                            >
+                                <FaPlus className="mr-1" /> 新增商品
+                            </Button>
+                        </Tippy>
+                    </>
+                )}
+            />
+
             {isFirstVisit && (
-                <div className="alert alert-info flex items-start gap-3 mb-4">
-                    <div className="flex-1">
-                        <h3 className="font-bold flex items-center"><FaInfoCircle className="mr-2" />歡迎使用產品管理系統</h3>
-                        <p>
-                            這是您的產品管理中心，在這裡您可以管理所有公司產品。
-                            <ul className="list-disc pl-5 mt-1">
+                <Card padding="none" className="mb-6 overflow-hidden border-l-4 border-l-info">
+                    <div className="flex items-start gap-3 p-5">
+                        <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-info/10 text-info">
+                            <FaInfoCircle />
+                        </span>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-base-content">歡迎使用產品管理系統</h3>
+                            <p className="mt-1 text-sm text-base-content/70">
+                                這是您的產品管理中心，在這裡您可以管理所有公司產品。
+                            </p>
+                            <ul className="list-disc pl-5 mt-2 text-sm text-base-content/70 space-y-1">
                                 <li>使用<strong>搜尋欄</strong>快速尋找特定產品</li>
                                 <li>點擊<strong>新增商品</strong>按鈕來創建新產品</li>
                                 <li>使用<strong>管理分類</strong>功能組織您的產品</li>
                                 <li>點擊產品卡片查看詳細資訊，或使用編輯和刪除功能</li>
                             </ul>
-                        </p>
+                        </div>
+                        <button
+                            type="button"
+                            className="btn btn-ghost btn-sm btn-circle"
+                            onClick={() => setIsFirstVisit(false)}
+                            aria-label="關閉"
+                        >
+                            <X size={16} />
+                        </button>
                     </div>
-                    <button
-                        type="button"
-                        className="btn btn-ghost btn-sm btn-circle"
-                        onClick={() => setIsFirstVisit(false)}
-                        aria-label="關閉"
-                    >
-                        ✕
-                    </button>
-                </div>
+                </Card>
             )}
 
-            <div className="card card-bordered bg-base-100 shadow-sm mb-4">
-                <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white px-4 py-3 flex justify-between items-center rounded-t-2xl">
-                    <h3 className="mb-0 text-xl font-semibold">產品管理中心</h3>
-                    <Tippy content="在此管理您的所有產品，包括新增、編輯、刪除及分類">
-                        <button type="button" className="btn btn-ghost btn-sm btn-circle text-white">
-                            <FaQuestion />
-                        </button>
-                    </Tippy>
-                </div>
-                <div className="card-body">
-                    <div className="grid grid-cols-12 gap-4 items-end mb-4">
-                        <div className="col-span-12 md:col-span-3">
-                            <Field
-                                as="select"
-                                label={(
-                                    <span className="text-base-content/60 text-sm flex items-center">
-                                        <FaTags className="mr-1" />
-                                        依分類篩選
-                                    </span>
-                                )}
-                                value={selectedCategory}
-                                onChange={(e) => {
-                                    setSelectedCategory(e.target.value);
-                                    // 選擇分類後立即觸發搜尋
-                                    setCurrentPage(1);
-                                    const newCategory = e.target.value;
-                                    const params = {
-                                        search: searchTerm,
-                                        category: newCategory || undefined,
-                                        is_active: activeTab === 'active' ? true : activeTab === 'inactive' ? false : undefined
-                                    };
-                                    fetchProducts(params);
-                                }}
-                                className="shadow-sm"
-                            >
-                                <option value="">所有分類</option>
-                                {categories.map((category) => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </Field>
-                        </div>
-                        <div className="col-span-12 md:col-span-5">
-                            <label className="label pb-1">
-                                <span className="text-base-content/60 text-sm flex items-center">
-                                    <FaSearch className="mr-1" />
-                                    搜尋產品
-                                </span>
-                            </label>
-                            <div className="join w-full shadow-sm">
-                                <input
-                                    type="text"
-                                    placeholder="輸入產品名稱關鍵字..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            handleSearch();
-                                        }
+            <Card padding="md" className="mb-6">
+                <Toolbar
+                    left={(
+                        <>
+                            <div className="w-full sm:w-56">
+                                <Field
+                                    as="select"
+                                    label={(
+                                        <span className="text-base-content/60 text-sm flex items-center">
+                                            <FaTags className="mr-1" />
+                                            依分類篩選
+                                        </span>
+                                    )}
+                                    value={selectedCategory}
+                                    onChange={(e) => {
+                                        setSelectedCategory(e.target.value);
+                                        // 選擇分類後立即觸發搜尋
+                                        setCurrentPage(1);
+                                        const newCategory = e.target.value;
+                                        const params = {
+                                            search: searchTerm,
+                                            category: newCategory || undefined,
+                                            is_active: activeTab === 'active' ? true : activeTab === 'inactive' ? false : undefined
+                                        };
+                                        fetchProducts(params);
                                     }}
-                                    className="input input-bordered join-item w-full"
-                                />
-                                <Button
-                                    variant="primary"
-                                    onClick={handleSearch}
-                                    className="join-item"
                                 >
-                                    <FaSearch /> 搜尋
-                                </Button>
+                                    <option value="">所有分類</option>
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </Field>
                             </div>
-                        </div>
-                        <div className="col-span-12 md:col-span-4 flex md:justify-end mt-3 md:mt-0">
-                            <Tippy content="管理產品分類">
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => setShowCategoryModal(true)}
-                                    className="btn-outline mr-2"
-                                >
-                                    <FaTags className="mr-1" /> 管理分類
-                                </Button>
-                            </Tippy>
+                            <div className="w-full sm:w-80 md:w-96">
+                                <label className="label pb-1">
+                                    <span className="text-base-content/60 text-sm flex items-center">
+                                        <FaSearch className="mr-1" />
+                                        搜尋產品
+                                    </span>
+                                </label>
+                                <div className="join w-full">
+                                    <input
+                                        type="text"
+                                        placeholder="輸入產品名稱關鍵字..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleSearch();
+                                            }
+                                        }}
+                                        className="input input-bordered join-item w-full"
+                                    />
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleSearch}
+                                        className="join-item"
+                                    >
+                                        <FaSearch /> 搜尋
+                                    </Button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                />
 
-                            <Tippy content="新增產品到系統">
-                                <Button
-                                    variant="success"
-                                    onClick={() => {
-                                        resetProductFormData();
-                                        setShowProductModal(true);
-                                    }}
-                                    className="mr-2"
-                                >
-                                    <FaPlus className="mr-1" /> 新增商品
-                                </Button>
-                            </Tippy>
-                        </div>
-                    </div>
-
-                    {/* 標籤頁導覽（DaisyUI tabs），切換邏輯維持 handleTabChange */}
-                    <div role="tablist" className="tabs tabs-bordered mb-3">
-                        <button
-                            type="button"
-                            role="tab"
-                            className={`tab ${activeTab === 'all' ? 'tab-active' : ''}`}
-                            onClick={() => handleTabChange('all')}
-                        >
-                            所有產品
-                        </button>
-                        <button
-                            type="button"
-                            role="tab"
-                            className={`tab ${activeTab === 'active' ? 'tab-active' : ''}`}
-                            onClick={() => handleTabChange('active')}
-                        >
-                            已啟用產品
-                        </button>
-                        <button
-                            type="button"
-                            role="tab"
-                            className={`tab ${activeTab === 'inactive' ? 'tab-active' : ''}`}
-                            onClick={() => handleTabChange('inactive')}
-                        >
-                            未啟用產品
-                        </button>
-                    </div>
-
-                    {productPanel}
+                {/* 標籤頁導覽（分段式 pill），切換邏輯維持 handleTabChange */}
+                <div className="mb-4 inline-flex flex-wrap gap-1 rounded-xl bg-base-200/70 p-1">
+                    <button
+                        type="button"
+                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'all' ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/60 hover:text-base-content'}`}
+                        onClick={() => handleTabChange('all')}
+                    >
+                        所有產品
+                    </button>
+                    <button
+                        type="button"
+                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'active' ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/60 hover:text-base-content'}`}
+                        onClick={() => handleTabChange('active')}
+                    >
+                        已啟用產品
+                    </button>
+                    <button
+                        type="button"
+                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'inactive' ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/60 hover:text-base-content'}`}
+                        onClick={() => handleTabChange('inactive')}
+                    >
+                        未啟用產品
+                    </button>
                 </div>
-            </div>
+
+                {productPanel}
+            </Card>
 
             {/* 各種模態框 */}
             <ProductForm

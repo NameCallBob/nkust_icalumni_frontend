@@ -1,25 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { Button, Spinner } from "components/common/ui";
+import {
+  Button,
+  Card,
+  Badge,
+  PageHeader,
+  Toolbar,
+  DataTable,
+} from "components/common/ui";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  BsSortUp,
-  BsSortDown,
-  BsArrowDownUp,
-  BsArrowUp,
-  BsArrowDown,
-  BsPencil,
-  BsTrash,
-  BsSortAlphaDown,
-  BsPlusLg,
-} from "react-icons/bs";
+  Award,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  ChevronUp,
+  ChevronDown,
+  Pencil,
+  Trash2,
+  Plus,
+  ListOrdered,
+} from "lucide-react";
 import Axios from "common/Axios";
 import AddOutstandingAlumniModal from "components/Manage/OutstandingMana/OutstandingModal";
 import EditOutstandingAlumniModal from "components/Manage/OutstandingMana/EditOutstandingModal";
-import useRWD from 'hooks/useRWD';
 
 const OutstandingAlumniPage = () => {
-  const rwd = useRWD();
   const [alumniList, setAlumniList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -174,124 +180,170 @@ const OutstandingAlumniPage = () => {
   const currentAlumni = sortedAlumni.slice(indexOfFirstAlumni, indexOfLastAlumni);
   const totalPages = Math.ceil(sortedAlumni.length / alumniPerPage);
 
+  // ===== presentation helpers =====
   const getSortIcon = (field) => {
     if (sortField === field) {
       return sortDirection === "asc" ? (
-        <BsSortUp className="ml-1 inline" />
+        <ArrowUp className="h-3.5 w-3.5" />
       ) : (
-        <BsSortDown className="ml-1 inline" />
+        <ArrowDown className="h-3.5 w-3.5" />
       );
     }
-    return <BsArrowDownUp className="ml-1 inline text-base-content/60" />;
+    return <ArrowUpDown className="h-3.5 w-3.5 text-base-content/40" />;
   };
 
-  // 渲染卡片式佈局（移動設備）
-  const renderMobileCards = () => (
-    <div className="block md:hidden">
-      {currentAlumni.map((alumni, index) => {
-        const globalIndex = indexOfFirstAlumni + index;
-        return (
-          <div key={alumni.id} className="card card-bordered bg-base-100 shadow-sm mb-3">
-            <div className="card-body">
-              <div className="flex justify-between items-start mb-2">
-                <h5 className="card-title mb-0">{alumni.name}</h5>
-                <span className="badge badge-neutral text-base">
-                  {alumni.sort_order ?? globalIndex + 1}
-                </span>
-              </div>
+  const sortHeader = (field, label, align = "left") => (
+    <button
+      type="button"
+      onClick={() => handleSort(field)}
+      className={`inline-flex items-center gap-1 font-semibold transition-colors hover:text-primary ${
+        align === "center" ? "mx-auto" : ""
+      }`}
+    >
+      {label}
+      {getSortIcon(field)}
+    </button>
+  );
 
-              <p className="text-base-content/60 mb-3">{alumni.highlight}</p>
+  const featuredCell = (alumni) => (
+    <label className="inline-flex cursor-pointer items-center gap-2">
+      <input
+        type="checkbox"
+        className="toggle toggle-success toggle-sm"
+        checked={alumni.is_featured}
+        onChange={() => toggleFeatured(alumni)}
+      />
+      <Badge variant={alumni.is_featured ? "success" : "neutral"}>
+        {alumni.is_featured ? "展示中" : "未展示"}
+      </Badge>
+    </label>
+  );
 
-              <div className="flex justify-between items-center mb-3">
-                <div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="toggle toggle-success"
-                      checked={alumni.is_featured}
-                      onChange={() => toggleFeatured(alumni)}
-                    />
-                    <span className={`badge ${alumni.is_featured ? "badge-success" : "badge-ghost"}`}>
-                      {alumni.is_featured ? "展示中" : "未展示"}
-                    </span>
-                  </label>
-                </div>
-                <div className="join">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="btn-outline join-item"
-                    onClick={() => moveUp(globalIndex)}
-                    disabled={globalIndex === 0}
-                    title="向上移動"
-                    style={rwd.getButtonStyle()}
-                  >
-                    <BsArrowUp />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="btn-outline join-item"
-                    onClick={() => moveDown(globalIndex)}
-                    disabled={globalIndex === sortedAlumni.length - 1}
-                    title="向下移動"
-                    style={rwd.getButtonStyle()}
-                  >
-                    <BsArrowDown />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2 md:flex-row md:justify-end">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setEditData(alumni);
-                    setShowEditModal(true);
-                  }}
-                  style={rwd.getButtonStyle()}
-                >
-                  <BsPencil className="inline" /> 編輯
-                </Button>
-                <Button
-                  variant="error"
-                  size="sm"
-                  className="btn-outline"
-                  onClick={() => handleDeleteAlumni(alumni.id)}
-                  style={rwd.getButtonStyle()}
-                >
-                  <BsTrash className="inline" /> 刪除
-                </Button>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+  const reorderCell = (globalIndex) => (
+    <div className="inline-flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="btn-circle"
+        onClick={() => moveUp(globalIndex)}
+        disabled={globalIndex === 0}
+        title="向上移動"
+      >
+        <ChevronUp className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="btn-circle"
+        onClick={() => moveDown(globalIndex)}
+        disabled={globalIndex === sortedAlumni.length - 1}
+        title="向下移動"
+      >
+        <ChevronDown className="h-4 w-4" />
+      </Button>
     </div>
   );
 
+  const actionCell = (alumni) => (
+    <div className="inline-flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          setEditData(alumni);
+          setShowEditModal(true);
+        }}
+      >
+        <Pencil className="h-4 w-4" /> 編輯
+      </Button>
+      <Button
+        variant="error"
+        size="sm"
+        className="btn-outline"
+        onClick={() => handleDeleteAlumni(alumni.id)}
+      >
+        <Trash2 className="h-4 w-4" /> 刪除
+      </Button>
+    </div>
+  );
+
+  const columns = [
+    {
+      key: "order",
+      header: "順序",
+      className: "text-center w-20",
+      render: (row, i) => (
+        <Badge variant="primary" soft={false} className="text-sm">
+          {row.sort_order ?? indexOfFirstAlumni + i + 1}
+        </Badge>
+      ),
+    },
+    {
+      key: "name",
+      header: sortHeader("name", "名稱"),
+      render: (row) => (
+        <span className="font-semibold text-base-content">{row.name}</span>
+      ),
+    },
+    {
+      key: "highlight",
+      header: "摘要",
+      render: (row) => (
+        <span className="block max-w-[260px] truncate text-base-content/70">
+          {row.highlight}
+        </span>
+      ),
+    },
+    {
+      key: "is_featured",
+      header: sortHeader("is_featured", "展示於官網", "center"),
+      className: "text-center",
+      render: (row) => featuredCell(row),
+    },
+    {
+      key: "reorder",
+      header: "排序調整",
+      className: "text-center",
+      render: (row, i) => reorderCell(indexOfFirstAlumni + i),
+    },
+    {
+      key: "actions",
+      header: "操作",
+      className: "text-center",
+      render: (row) => actionCell(row),
+    },
+  ];
+
   return (
-    <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
-      <div className="flex flex-col md:flex-row md:items-center mb-4">
-        <div className="flex-1">
-          <h1 className="font-bold text-2xl">傑出系友管理</h1>
-          <p className="text-base-content/60">管理傑出系友資料並設置展示順序與狀態</p>
-        </div>
-        <div className={rwd.isMobile ? "text-left mt-3" : "text-right"}>
-          <div className={`flex ${rwd.isMobile ? "flex-col" : "flex-row"} items-stretch`}>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+      <PageHeader
+        title="傑出系友管理"
+        subtitle="管理傑出系友資料並設置展示順序與狀態"
+        icon={<Award className="h-5 w-5" />}
+        actions={
+          <Button variant="primary" onClick={() => setShowAddModal(true)}>
+            <Plus className="h-4 w-4" /> 新增傑出系友
+          </Button>
+        }
+      />
+
+      <Card padding="md">
+        <Toolbar
+          left={
             <div className="dropdown">
-              <Button
-                variant="ghost"
-                tabIndex={0}
-                className="btn-outline"
-                id="dropdown-basic"
-                style={rwd.getButtonStyle()}
-              >
-                <BsSortAlphaDown className="mr-2 inline" />
-                排序：{sortField === "name" ? "姓名" : sortField === "sort_order" ? "順序" : "展示狀態"}
+              <Button variant="outline" size="sm" tabIndex={0} id="dropdown-basic">
+                <ListOrdered className="h-4 w-4" />
+                排序：
+                {sortField === "name"
+                  ? "姓名"
+                  : sortField === "sort_order"
+                  ? "順序"
+                  : "展示狀態"}
               </Button>
-              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu z-[1] mt-2 w-52 rounded-box bg-base-100 p-2 shadow-lg"
+              >
                 <li>
                   <button type="button" onClick={() => handleSort("sort_order")}>
                     依順序排序
@@ -309,166 +361,56 @@ const OutstandingAlumniPage = () => {
                 </li>
               </ul>
             </div>
-            <Button
-              variant="primary"
-              onClick={() => setShowAddModal(true)}
-              className={rwd.isMobile ? "mt-2 rounded-full px-4" : "ml-2 rounded-full px-4"}
-              style={rwd.getButtonStyle()}
+          }
+          right={
+            <span className="text-sm text-base-content/50">
+              共 {sortedAlumni.length} 位傑出系友
+            </span>
+          }
+        />
+
+        <DataTable
+          columns={columns}
+          data={currentAlumni}
+          rowKey={(row) => row.id}
+          loading={loading}
+        />
+
+        {!loading && totalPages > 1 && (
+          <div className="join mt-6 flex justify-center">
+            <button
+              type="button"
+              className="join-item btn btn-sm"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
             >
-              <BsPlusLg className="mr-2 inline" /> 新增傑出系友
-            </Button>
+              «
+            </button>
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                type="button"
+                key={index + 1}
+                className={`join-item btn btn-sm ${
+                  index + 1 === currentPage ? "btn-primary btn-active" : ""
+                }`}
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="join-item btn btn-sm"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+            >
+              »
+            </button>
           </div>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="text-center my-5">
-          <Spinner size="lg" />
-          <p className="text-base-content/60 mt-2">載入中...</p>
-        </div>
-      ) : (
-        <>
-          {rwd.isMobile ? (
-            renderMobileCards()
-          ) : (
-            <div className="overflow-x-auto hidden md:block">
-              <table className="table table-zebra shadow-sm" style={rwd.getTableStyle()}>
-                <thead className="bg-base-200">
-                  <tr>
-                    <th className="text-center" style={{ width: "80px" }}>
-                      順序
-                    </th>
-                    <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
-                      名稱 {getSortIcon("name")}
-                    </th>
-                    <th>摘要</th>
-                    <th
-                      className="text-center"
-                      onClick={() => handleSort("is_featured")}
-                      style={{ cursor: "pointer" }}
-                    >
-                      展示於官網 {getSortIcon("is_featured")}
-                    </th>
-                    <th className="text-center">排序調整</th>
-                    <th className="text-center">操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentAlumni.map((alumni, index) => {
-                    const globalIndex = indexOfFirstAlumni + index;
-                    return (
-                      <tr key={alumni.id}>
-                        <td className="text-center">
-                          <span className="badge badge-neutral text-base">
-                            {alumni.sort_order ?? globalIndex + 1}
-                          </span>
-                        </td>
-                        <td>{alumni.name}</td>
-                        <td className="truncate" style={{ maxWidth: "250px" }}>
-                          {alumni.highlight}
-                        </td>
-                        <td className="text-center">
-                          <label className="flex items-center justify-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="toggle toggle-success"
-                              checked={alumni.is_featured}
-                              onChange={() => toggleFeatured(alumni)}
-                            />
-                            <span className={`badge ${alumni.is_featured ? "badge-success" : "badge-ghost"}`}>
-                              {alumni.is_featured ? "展示中" : "未展示"}
-                            </span>
-                          </label>
-                        </td>
-                        <td className="text-center">
-                          <div className="join">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="btn-outline join-item"
-                              onClick={() => moveUp(globalIndex)}
-                              disabled={globalIndex === 0}
-                              title="向上移動"
-                              style={rwd.getButtonStyle()}
-                            >
-                              <BsArrowUp />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="btn-outline join-item"
-                              onClick={() => moveDown(globalIndex)}
-                              disabled={globalIndex === sortedAlumni.length - 1}
-                              title="向下移動"
-                              style={rwd.getButtonStyle()}
-                            >
-                              <BsArrowDown />
-                            </Button>
-                          </div>
-                        </td>
-                        <td className="text-center">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="mr-2"
-                            onClick={() => {
-                              setEditData(alumni);
-                              setShowEditModal(true);
-                            }}
-                            style={rwd.getButtonStyle()}
-                          >
-                            <BsPencil className="inline" /> 編輯
-                          </Button>
-                          <Button
-                            variant="error"
-                            size="sm"
-                            className="btn-outline"
-                            onClick={() => handleDeleteAlumni(alumni.id)}
-                            style={rwd.getButtonStyle()}
-                          >
-                            <BsTrash className="inline" /> 刪除
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {totalPages > 1 && (
-            <div className="join flex justify-center mt-4">
-              <button
-                type="button"
-                className="join-item btn"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                «
-              </button>
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  type="button"
-                  key={index + 1}
-                  className={`join-item btn ${index + 1 === currentPage ? "btn-active btn-primary" : ""}`}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-              <button
-                type="button"
-                className="join-item btn"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                »
-              </button>
-            </div>
-          )}
-        </>
-      )}
+        )}
+      </Card>
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
