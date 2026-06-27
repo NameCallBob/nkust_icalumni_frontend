@@ -2,26 +2,18 @@
 
 ## 概述
 
-重新設計的 ErrorBoundary 元件使用 CSS Modules 進行樣式隔離，防止樣式污染，並提供更好的錯誤處理體驗。
+ErrorBoundary 採用「**先自動重整、仍失敗才顯示維護中**」的策略，並以本專案的**深藍 / 金色**品牌風格（對齊 `AppModal`、`PageLoader`）呈現，使用 CSS Modules 進行樣式隔離。
 
-## 特點
+## 錯誤處理流程
 
-### 🎨 樣式隔離
-- 使用 CSS Modules 完全避免樣式污染
-- 所有樣式都封裝在 `ErrorBoundary.module.css` 中
-- 響應式設計，支援各種螢幕尺寸
+當子元件樹發生未預期錯誤時：
 
-### 🔧 增強功能
-- **錯誤ID追蹤**: 每個錯誤都有唯一的ID，方便追蹤和除錯
-- **多種復原選項**: 提供重試、重新載入、返回、回首頁等選項
-- **詳細錯誤資訊**: 開發模式下顯示完整的錯誤資訊和堆疊追蹤
-- **自定義回調**: 支援錯誤發生時的自定義處理
+1. **首次發生** → 顯示品牌「重新整理中…」動畫，並於短暫延遲後**自動重整整個頁面**（無需使用者手動操作，也不會出現「請重新整理」之類的提示）。
+2. **重整後仍故障** → 若在時間窗（預設 15 秒）內再次捕獲到錯誤，判定為持續性故障／伺服器問題，顯示「**伺服器維護中**」訊息，且**不再提供重試按鈕**。
+3. **錯誤記錄** → 每次皆生成唯一錯誤ID 並輸出到 console；可透過 `onError` 回調送至監控服務。
+4. **開發模式診斷** → 僅在 `NODE_ENV === 'development'` 顯示錯誤ID、錯誤訊息與堆疊追蹤。
 
-### ✨ 使用者體驗
-- 現代化的視覺設計
-- 動畫效果和互動回饋
-- 多語言支援（中文）
-- 清晰的操作指引
+> 自動重整紀錄存放於 `sessionStorage`（鍵 `eb:autoReloadAt`）。頁面成功載入數秒後會自動清除，確保日後不相關的錯誤仍能獲得一次乾淨的自動重整機會。
 
 ## 使用方法
 
@@ -39,23 +31,19 @@ function App() {
 }
 ```
 
-### 進階用法
+### 搭配錯誤監控
 
 ```jsx
 import ErrorBoundary from 'components/common/ErrorBoundary';
 
 function App() {
   const handleError = (error, errorInfo, eventId) => {
-    // 發送錯誤報告到監控服務
+    // 發送錯誤報告到監控服務（Sentry、LogRocket…）
     console.log('Error ID:', eventId);
-    // 可以在這裡發送到 Sentry, LogRocket 等服務
   };
 
   return (
-    <ErrorBoundary
-      onError={handleError}
-      fallbackUrl="/dashboard"
-    >
+    <ErrorBoundary onError={handleError}>
       <YourComponent />
     </ErrorBoundary>
   );
@@ -68,70 +56,37 @@ function App() {
 |------|------|--------|------|
 | `children` | ReactNode | - | 要保護的子元件 |
 | `onError` | Function | - | 錯誤發生時的回調函式 `(error, errorInfo, eventId) => {}` |
-| `fallbackUrl` | String | `'/'` | 回到首頁按鈕的目標 URL |
 
 ## 檔案結構
 
 ```
 src/components/common/
-├── ErrorBoundary.js          # 主要元件邏輯
-├── ErrorBoundary.module.css  # CSS Modules 樣式
+├── ErrorBoundary.js          # 主要元件邏輯（自動重整 / 維護中判定）
+├── ErrorBoundary.module.css  # 深藍 / 金色品牌樣式（CSS Modules）
 └── ErrorBoundary.README.md   # 說明文件
 ```
 
-## 樣式自定義
+## 可調參數
 
-如需自定義樣式，請修改 `ErrorBoundary.module.css` 檔案。所有的 CSS 類別都使用模組化，不會污染全域樣式。
+於 `ErrorBoundary.js` 頂部：
 
-### 主要樣式類別
+| 常數 | 預設 | 說明 |
+|------|------|------|
+| `RELOAD_WINDOW_MS` | `15000` | 重整後多久內再次出錯，即判定為持續性故障 |
+| `RELOAD_DELAY_MS` | `650` | 顯示重整動畫後再實際重整的延遲 |
 
-- `.errorContainer` - 主容器
-- `.actionButton` - 操作按鈕
-- `.reloadButton` - 重試按鈕樣式
-- `.backButton` - 返回按鈕樣式
-- `.homeButton` - 首頁按鈕樣式
-- `.debugSection` - 除錯區域
+## 主要樣式類別
 
-## 錯誤處理流程
-
-1. **錯誤捕獲**: 當子元件發生錯誤時，ErrorBoundary 會捕獲錯誤
-2. **錯誤記錄**: 生成唯一的錯誤ID，並詳細記錄錯誤資訊到控制台
-3. **使用者介面**: 顯示友好的錯誤頁面，提供多種復原選項
-4. **錯誤報告**: 可透過 `onError` 回調發送錯誤報告到監控服務
-
-## 瀏覽器支援
-
-- Chrome 60+
-- Firefox 55+
-- Safari 12+
-- Edge 79+
+- `.container` - 全螢幕深藍漸層容器
+- `.goldTopLine` / `.goldLine` - 金色細線與底線
+- `.iconBox` / `.iconSvg` - 維護圖示
+- `.title` / `.subtitle` / `.description` - 文字（標題使用 Noto Serif TC）
+- `.spinner` / `.reloadingText` - 重新整理中畫面
+- `.debugSection` - 開發模式除錯區域
 
 ## 注意事項
 
-1. ErrorBoundary 只能捕獲其子元件樹中的錯誤
-2. 無法捕獲事件處理器、異步程式碼、伺服器端渲染錯誤
-3. 開發模式下會顯示詳細的除錯資訊
-4. 生產模式下只顯示使用者友好的錯誤訊息
-
-## 最佳實踐
-
-1. **適當的邊界設置**: 在路由層級設置 ErrorBoundary
-2. **錯誤監控**: 配合錯誤監控服務使用
-3. **使用者友好**: 提供清晰的錯誤訊息和復原指引
-4. **測試**: 定期測試錯誤邊界的功能
-
-```jsx
-// 推薦的應用結構
-<Router>
-  <ErrorBoundary onError={sendToErrorReporting}>
-    <Routes>
-      <Route path="/" element={
-        <ErrorBoundary fallbackUrl="/home">
-          <HomePage />
-        </ErrorBoundary>
-      } />
-      {/* 其他路由 */}
-    </Routes>
-  </ErrorBoundary>
-</Router>
-```
+1. ErrorBoundary 只能捕獲其子元件樹「**渲染期間**」的錯誤。
+2. 無法捕獲事件處理器、非同步程式碼、伺服器端渲染的錯誤。
+3. 生產模式下只顯示使用者友善的訊息，不顯示診斷資訊。
+4. 若 `sessionStorage` 不可用（如隱私模式），相關存取會靜默略過，不影響畫面顯示。

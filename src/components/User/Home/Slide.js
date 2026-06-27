@@ -59,15 +59,21 @@ function Slide() {
     description: "目前沒有活動照片",
   };
 
+  // 將圖片路徑解析為完整網址，並安全處理 image 為 null 的情況
+  const resolveImageUrl = (image) => {
+    if (!image) return fallbackImage.image;
+    return image.startsWith("/images/")
+      ? image
+      : process.env.REACT_APP_BASE_URL + image;
+  };
+
   // 處理圖片點擊，如果有連結則跳轉，否則顯示模態框
   const handleImageClick = (slide, index) => {
     if (slide.link_url) {
       window.open(slide.link_url, "_blank", "noopener,noreferrer");
       return;
     }
-    const imageUrl = slide.image.startsWith("/images/")
-      ? slide.image
-      : process.env.REACT_APP_BASE_URL + slide.image;
+    const imageUrl = resolveImageUrl(slide.image);
     setSelectedImage(imageUrl);
     setSelectedIndex(index);
     setShowModal(true);
@@ -116,11 +122,7 @@ function Slide() {
     const nextIndex = (selectedIndex + 1) % slideImage.length;
     const nextImage = slideImage[nextIndex];
     setSelectedIndex(nextIndex);
-    setSelectedImage(
-      nextImage.image.startsWith("/images/")
-        ? nextImage.image
-        : process.env.REACT_APP_BASE_URL + nextImage.image,
-    );
+    setSelectedImage(resolveImageUrl(nextImage.image));
     setZoomLevel(1);
     setPosition({ x: 0, y: 0 });
   };
@@ -132,11 +134,7 @@ function Slide() {
       selectedIndex === 0 ? slideImage.length - 1 : selectedIndex - 1;
     const prevImage = slideImage[prevIndex];
     setSelectedIndex(prevIndex);
-    setSelectedImage(
-      prevImage.image.startsWith("/images/")
-        ? prevImage.image
-        : process.env.REACT_APP_BASE_URL + prevImage.image,
-    );
+    setSelectedImage(resolveImageUrl(prevImage.image));
     setZoomLevel(1);
     setPosition({ x: 0, y: 0 });
   };
@@ -281,12 +279,7 @@ function Slide() {
                     <img
                       loading="lazy"
                       className="carousel-image-v2"
-                      src={getImageSrc(
-                        slide.image.startsWith("/images/")
-                          ? slide.image
-                          : process.env.REACT_APP_BASE_URL + slide.image,
-                        "activity",
-                      )}
+                      src={getImageSrc(resolveImageUrl(slide.image), "activity")}
                       alt={slide.title || "圖片"}
                       onClick={() => handleImageClick(slide, index)}
                       onError={(e) => handleImageError(e, "activity")}
@@ -350,12 +343,7 @@ function Slide() {
                 >
                   <img
                     loading="lazy"
-                    src={getImageSrc(
-                      slide.image.startsWith("/images/")
-                        ? slide.image
-                        : process.env.REACT_APP_BASE_URL + slide.image,
-                      "activity",
-                    )}
+                    src={getImageSrc(resolveImageUrl(slide.image), "activity")}
                     alt={slide.title || `縮略圖 ${index + 1}`}
                     onError={(e) => handleImageError(e, "activity")}
                   />

@@ -1,11 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 // Tailwind v3 + DaisyUI v4 — NKUST 校友系統深藍主題
-// 注意：遷移過渡期 Bootstrap 仍在 → preflight 暫設 false 以免重置撞爛 Bootstrap 頁面。
-//      P4 移除 Bootstrap 後，改為 preflight: true。
+// Bootstrap 已完全移除 → preflight 開啟，提供完整 CSS base reset（新 UI 設計地基）。
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   corePlugins: {
-    preflight: false, // ⚠️ 過渡期保護 Bootstrap；P4 去 Bootstrap 後改 true
+    preflight: true,
   },
   theme: {
     extend: {

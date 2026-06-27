@@ -7,12 +7,12 @@ import "css/user/homepage/News.css";
  * 單個文章項目組件，顯示完整年月日
  */
 const NewsItem = ({ time, title, onClick, index }) => {
-  // 處理日期格式
-  const formattedDate = time.split("T")[0]; // 取 "T" 前面的部分
+  // 處理日期格式（time 可能為 null）
+  const formattedDate = time ? time.split("T")[0] : ""; // 取 "T" 前面的部分
   const dateParts = formattedDate.split("-");
-  const year = dateParts[0];
-  const month = dateParts[1];
-  const day = dateParts[2];
+  const year = dateParts[0] || "";
+  const month = dateParts[1] || "";
+  const day = dateParts[2] || "";
   
   // 月份名稱映射
   const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];

@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'components/common/ui';
 import Axios from 'common/Axios';
-import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'css/user/login.css';
+import { GraduationCap, Mail, Lock, Eye, EyeOff, UserCircle2, ShieldAlert, ArrowLeft } from 'lucide-react';
 import SEO from 'SEO';
 
 const BLOCK_TIME_SECONDS = 300; // 封鎖持續時間：5分鐘
@@ -144,8 +142,9 @@ const Login = () => {
         });
         
         // 使用過渡動畫
-        document.querySelector('.login-container').classList.add('fade-out');
-        
+        const card = document.querySelector('.login-container');
+        if (card) card.classList.add('opacity-0', 'transition-opacity', 'duration-700');
+
         setTimeout(() => {
           navigator('/alumni/manage/');
         }, 1500);
@@ -179,48 +178,68 @@ const Login = () => {
         description="歡迎系友登入系統，上傳最新的消息讓大家了解！"
         keywords={["智慧商務", "登入", "忘記密碼", "系友會", "尊榮系友"]}
       />
-      <div className="login-page-wrapper">
-        <div className="login-background-overlay"></div>
-        <div className="container mx-auto px-4 login-container my-5 rounded shadow">
-          <div className="flex justify-center">
-            <div className="w-full md:w-2/3 lg:w-7/12">
-              <div className="text-center mb-5">
-                <h1 className="elite-title">
-                  {loginStage === 'email' ? '歡迎回來~' : welcomeMessage}
-                </h1>
-                <p className="text-base-content/60 subtitle">
-                  {loginStage === 'email'
-                    ? '請輸入您的電子郵件以繼續'
-                    : '請輸入您的密碼完成登入'}
-                </p>
-              </div>
 
-              {error && <div className="alert alert-error mb-4">{error}</div>}
+      {/* 全頁分割版面：左側品牌、右側表單；手機自動堆疊 */}
+      <div className="min-h-screen w-full flex flex-col lg:flex-row bg-base-100">
+        {/* 左側品牌面板（深藍漸層 + 金色細節） */}
+        <div className="relative lg:w-5/12 overflow-hidden bg-gradient-to-br from-[#1e3a8a] via-[#1e2f6e] to-[#0f172a] text-white px-8 py-12 lg:px-12 lg:py-0 flex flex-col justify-center">
+          {/* 裝飾光暈 */}
+          <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-amber-300/10 blur-3xl" />
+          <div className="relative max-w-md mx-auto lg:mx-0">
+            <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur mb-6">
+              <GraduationCap className="h-7 w-7 text-amber-300" />
+            </div>
+            <p className="tracking-[0.3em] text-xs text-white/60 mb-3">NKUST&nbsp;ICALUMNI</p>
+            <h1 className="font-serif text-3xl lg:text-4xl font-bold leading-tight">
+              國立高雄科技大學<br />智慧商務系系友會
+            </h1>
+            <div className="mt-5 h-px w-20 bg-gradient-to-r from-amber-300 to-transparent" />
+            <p className="mt-5 text-white/70 leading-relaxed max-w-sm">
+              連結系友、共享商務資源，登入以管理您的個人資料、發布消息與職缺。
+            </p>
+          </div>
+        </div>
 
-              {blockTimeLeft > 0 && (
-                <div className="alert alert-warning elegant-alert mb-4">
-                  <div className="flex items-center">
-                    <div className="alert-icon mr-3">
-                      <i className="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div>
-                      <strong>基於安全考量，登入暫時受限。</strong>
-                      <div className="countdown-timer">
-                        請等待 <span className="time-number">{Math.floor(blockTimeLeft / 60)}</span> 分
-                        <span className="time-number">{blockTimeLeft % 60}</span> 秒後再試
-                      </div>
-                    </div>
+        {/* 右側表單區 */}
+        <div className="flex-1 flex items-center justify-center px-5 py-10 sm:px-8">
+          <div className="login-container w-full max-w-md">
+            <div className="text-center mb-8">
+              <h2 className="font-serif text-2xl font-bold text-base-content">
+                {loginStage === 'email' ? '歡迎回來' : welcomeMessage || '歡迎回來'}
+              </h2>
+              <p className="mt-2 text-sm text-base-content/60">
+                {loginStage === 'email' ? '請輸入您的電子郵件以繼續' : '請輸入您的密碼完成登入'}
+              </p>
+            </div>
+
+            {error && <div className="alert alert-error mb-4 text-sm">{error}</div>}
+
+            {blockTimeLeft > 0 && (
+              <div className="alert alert-warning mb-4">
+                <ShieldAlert className="h-5 w-5 shrink-0" />
+                <div className="text-sm">
+                  <strong>基於安全考量，登入暫時受限。</strong>
+                  <div className="mt-1">
+                    請等待 <span className="font-bold">{Math.floor(blockTimeLeft / 60)}</span> 分
+                    <span className="font-bold"> {blockTimeLeft % 60}</span> 秒後再試
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              <form onSubmit={loginStage === 'password' ? handleLogin : (e) => {e.preventDefault(); handleEmailContinue();}}>
-                {loginStage === 'email' ? (
-                  <>
-                    <div className="form-control mb-4">
-                      <label htmlFor="formBasicEmail" className="label pb-1">
-                        <span className="elegant-label">電子郵件 <span className="text-accent">*</span></span>
-                      </label>
+            <form
+              onSubmit={loginStage === 'password' ? handleLogin : (e) => { e.preventDefault(); handleEmailContinue(); }}
+              className="space-y-5"
+            >
+              {loginStage === 'email' ? (
+                <>
+                  <div className="form-control">
+                    <label htmlFor="formBasicEmail" className="label pb-1.5">
+                      <span className="label-text font-medium">電子郵件 <span className="text-error">*</span></span>
+                    </label>
+                    <label className="input input-bordered flex items-center gap-2 focus-within:border-primary">
+                      <Mail className="h-4 w-4 text-base-content/40" />
                       <input
                         id="formBasicEmail"
                         type="email"
@@ -228,108 +247,110 @@ const Login = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="input input-bordered form-input elegant-input w-full"
+                        className="grow bg-transparent outline-none"
                         autoFocus
                       />
-                      <span className="label-text-alt text-base-content/60 mt-2">
-                        請輸入您註冊時使用的電子郵件地址
-                      </span>
-                    </div>
+                    </label>
+                    <span className="label-text-alt text-base-content/50 mt-1.5">
+                      請輸入您註冊時使用的電子郵件地址
+                    </span>
+                  </div>
 
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      className="w-full mb-4 elegant-button"
-                      disabled={!email || blockTimeLeft > 0}
-                    >
-                      繼續
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <div className="user-email-display mb-4" onClick={handleBackToEmail}>
-                      <div className="flex items-center">
-                        <div className="email-icon">
-                          <i className="fas fa-user-circle"></i>
-                        </div>
-                        <div className="ml-3">
-                          <div className="email-text">{email}</div>
-                          <Button variant="link" className="edit-button p-0">
-                            <small>編輯</small>
-                          </Button>
-                        </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-full"
+                    disabled={!email || blockTimeLeft > 0}
+                  >
+                    繼續
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleBackToEmail}
+                    className="w-full flex items-center gap-3 rounded-xl border border-base-300 bg-base-200/50 px-4 py-3 text-left hover:border-primary transition-colors"
+                  >
+                    <UserCircle2 className="h-9 w-9 text-primary/70 shrink-0" />
+                    <div className="min-w-0">
+                      <div className="truncate font-medium text-base-content">{email}</div>
+                      <div className="flex items-center gap-1 text-xs text-primary">
+                        <ArrowLeft className="h-3 w-3" /> 更換帳號
                       </div>
                     </div>
+                  </button>
 
-                    <div className="form-control mb-4">
-                      <label htmlFor="formBasicPassword" className="label pb-1">
-                        <span className="elegant-label">密碼 <span className="text-accent">*</span></span>
-                      </label>
-                      <div className="join w-full">
-                        <input
-                          id="formBasicPassword"
-                          type={passwordVisible ? 'text' : 'password'}
-                          placeholder="請輸入您的密碼"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          className="input input-bordered form-input elegant-input join-item w-full"
-                          autoFocus
-                        />
-                        <Button
-                          variant="outline"
-                          onClick={() => setPasswordVisible(!passwordVisible)}
-                          aria-label="切換密碼顯示"
-                          className="elegant-toggle-button join-item"
-                        >
-                          {passwordVisible ? '隱藏' : '顯示'}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="mb-4 flex justify-between items-center">
-                      <label className="label cursor-pointer gap-2 elegant-checkbox">
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-sm"
-                          checked={rememberMe}
-                          onChange={(e) => setRememberMe(e.target.checked)}
-                        />
-                        <span className="label-text">記住我</span>
-                      </label>
-                      <Button
-                        variant="link"
-                        className="p-0 no-underline forgot-password"
-                        onClick={() => navigator('/forgot')}
+                  <div className="form-control">
+                    <label htmlFor="formBasicPassword" className="label pb-1.5">
+                      <span className="label-text font-medium">密碼 <span className="text-error">*</span></span>
+                    </label>
+                    <label className="input input-bordered flex items-center gap-2 focus-within:border-primary">
+                      <Lock className="h-4 w-4 text-base-content/40" />
+                      <input
+                        id="formBasicPassword"
+                        type={passwordVisible ? 'text' : 'password'}
+                        placeholder="請輸入您的密碼"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="grow bg-transparent outline-none"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPasswordVisible(!passwordVisible)}
+                        aria-label="切換密碼顯示"
+                        className="text-base-content/50 hover:text-primary"
                       >
-                        忘記密碼？
-                      </Button>
-                    </div>
+                        {passwordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </label>
+                  </div>
 
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      className="w-full mb-4 elegant-button"
-                      disabled={isLoading || blockTimeLeft > 0}
+                  <div className="flex justify-between items-center">
+                    <label className="label cursor-pointer gap-2 p-0">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm checkbox-primary"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                      />
+                      <span className="label-text">記住我</span>
+                    </label>
+                    <button
+                      type="button"
+                      className="text-sm text-primary hover:underline"
+                      onClick={() => navigator('/forgot')}
                     >
-                      {isLoading ? (
-                        <>
-                          <span className="loading loading-spinner loading-sm mr-2" />
-                          登入中...
-                        </>
-                      ) : (
-                        '登入'
-                      )}
-                    </Button>
-                  </>
-                )}
-              </form>
-            </div>
+                      忘記密碼？
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-full"
+                    disabled={isLoading || blockTimeLeft > 0}
+                  >
+                    {isLoading ? (
+                      <>
+                        <span className="loading loading-spinner loading-sm" />
+                        登入中...
+                      </>
+                    ) : (
+                      '登入'
+                    )}
+                  </button>
+                </>
+              )}
+            </form>
+
+            <p className="mt-8 text-center text-xs text-base-content/40">
+              © 2026 國立高雄科技大學 智慧商務系系友會
+            </p>
           </div>
         </div>
-
       </div>
-      
+
       <ToastContainer position="top-center" />
     </>
   );
