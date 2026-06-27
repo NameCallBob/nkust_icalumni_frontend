@@ -1,5 +1,4 @@
 import React from 'react';
-import { Form } from 'react-bootstrap';
 
 function SearchBar({ onSearch }) {
     const handleSearchChange = (e) => {
@@ -7,15 +6,16 @@ function SearchBar({ onSearch }) {
     };
 
     return (
-        <Form>
-            <Form.Group controlId="formSearch">
-                <Form.Control
+        <form>
+            <div className="form-control">
+                <input
                     type="text"
+                    className="input input-bordered w-full"
                     placeholder="搜尋產品..."
                     onChange={handleSearchChange}
                 />
-            </Form.Group>
-        </Form>
+            </div>
+        </form>
     );
 }
 

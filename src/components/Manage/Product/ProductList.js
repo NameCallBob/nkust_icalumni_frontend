@@ -1,17 +1,22 @@
 import React from 'react';
-import { Row, Col, Card, Button, Carousel, Badge, Spinner } from 'react-bootstrap';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import { FaPen, FaTrash, FaEye, FaCheck, FaTimes, FaCalendarAlt, FaImage, FaInfoCircle } from 'react-icons/fa';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { Button, Spinner } from 'components/common/ui';
 import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
-const ProductList = ({ 
-    products, 
-    onEdit, 
-    onDelete, 
-    onProductClick, 
-    currentPage, 
-    totalPages, 
+const ProductList = ({
+    products,
+    onEdit,
+    onDelete,
+    onProductClick,
+    currentPage,
+    totalPages,
     onPageChange,
     isLoading
 }) => {
@@ -20,18 +25,18 @@ const ProductList = ({
         if (!image) return '/placeholder.png';
         return typeof image === 'string' ? image : process.env.REACT_APP_BASE_URL + image.image;
     };
-    
+
     // 格式化日期顯示
     const formatDate = (dateString) => {
         if (!dateString) return '無日期';
         const date = new Date(dateString);
-        return date.toLocaleDateString('zh-TW', { 
-            year: 'numeric', 
-            month: 'short', 
+        return date.toLocaleDateString('zh-TW', {
+            year: 'numeric',
+            month: 'short',
             day: 'numeric'
         });
     };
-    
+
     // 截斷文本
     const truncateText = (text, maxLength = 80) => {
         if (!text) return '';
@@ -41,9 +46,9 @@ const ProductList = ({
     // 如果正在加載，顯示加載指示器
     if (isLoading) {
         return (
-            <div className="text-center py-5">
-                <Spinner animation="border" variant="primary" />
-                <p className="mt-3 text-muted">正在載入產品資料...</p>
+            <div className="text-center py-12">
+                <Spinner size="lg" />
+                <p className="mt-3 text-base-content/60">正在載入產品資料...</p>
             </div>
         );
     }
@@ -51,40 +56,35 @@ const ProductList = ({
     // 如果沒有產品，顯示提示信息
     if (!products || products.length === 0) {
         return (
-            <div className="text-center py-5 bg-light rounded">
-                <FaInfoCircle size={40} className="text-muted mb-3" />
-                <h4 className="text-muted">無產品資料</h4>
-                <p className="text-muted">目前沒有符合查詢條件的產品，請嘗試調整搜索條件或新增產品。</p>
-                <style jsx>{`
-                    .empty-state {
-                        padding: 3rem;
-                        border-radius: 0.5rem;
-                        background-color: #f8f9fa;
-                    }
-                `}</style>
+            <div className="text-center py-12 bg-base-200 rounded-lg">
+                <FaInfoCircle size={40} className="text-base-content/60 mb-3 mx-auto" />
+                <h4 className="text-base-content/60 text-xl font-semibold">無產品資料</h4>
+                <p className="text-base-content/60">目前沒有符合查詢條件的產品，請嘗試調整搜索條件或新增產品。</p>
             </div>
         );
     }
 
     return (
         <>
-            <Row className="product-grid">
+            <div className="grid grid-cols-12 gap-4 product-grid">
                 {products.map((product) => (
-                    <Col md={6} lg={4} className="mb-4" key={product.id}>
-                        <Card className="h-100 product-card shadow-sm transition-hover">
-                            <div className="position-relative">
-                                <Carousel interval={null} variant="dark" className="product-carousel">
+                    <div className="col-span-12 md:col-span-6 lg:col-span-4 mb-4" key={product.id}>
+                        <div className="card card-bordered bg-base-100 h-full product-card shadow-sm transition-hover">
+                            <div className="relative">
+                                <Swiper
+                                    modules={[Navigation, Pagination]}
+                                    navigation
+                                    pagination={{ clickable: true }}
+                                    className="product-carousel"
+                                >
                                     {product.images && product.images.length > 0 ? (
                                         product.images.map((image, index) => (
-                                            <Carousel.Item key={index}>
-                                                <div 
-                                                    className="product-image-container"
+                                            <SwiperSlide key={index}>
+                                                <div
+                                                    className="product-image-container flex items-center justify-center"
                                                     style={{
                                                         height: '200px',
                                                         background: '#f8f9fa',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
                                                     }}
                                                 >
                                                     <img
@@ -101,76 +101,75 @@ const ProductList = ({
                                                     />
                                                 </div>
                                                 {index === 0 && (
-                                                    <div className="position-absolute top-0 start-0 bg-warning text-dark p-1 m-2 rounded-pill">
+                                                    <div className="absolute top-0 left-0 bg-warning text-warning-content p-1 m-2 rounded-full z-10">
                                                         <small>主圖</small>
                                                     </div>
                                                 )}
-                                            </Carousel.Item>
+                                            </SwiperSlide>
                                         ))
                                     ) : (
-                                        <Carousel.Item>
-                                            <div className="d-flex align-items-center justify-content-center bg-light" style={{height: '200px'}}>
-                                                <FaImage size={40} className="text-muted" />
+                                        <SwiperSlide>
+                                            <div className="flex items-center justify-center bg-base-200" style={{height: '200px'}}>
+                                                <FaImage size={40} className="text-base-content/60" />
                                             </div>
-                                        </Carousel.Item>
+                                        </SwiperSlide>
                                     )}
-                                </Carousel>
-                                
-                                <div className="position-absolute top-0 end-0 m-2">
-                                    <Badge 
-                                        bg={product.is_active ? 'success' : 'danger'} 
-                                        className="status-badge"
+                                </Swiper>
+
+                                <div className="absolute top-0 right-0 m-2 z-10">
+                                    <span
+                                        className={`badge ${product.is_active ? 'badge-success' : 'badge-error'} status-badge gap-1`}
                                     >
-                                        {product.is_active ? 
-                                            <><FaCheck className="me-1" /> 已啟用</> : 
-                                            <><FaTimes className="me-1" /> 未啟用</>
+                                        {product.is_active ?
+                                            <><FaCheck /> 已啟用</> :
+                                            <><FaTimes /> 未啟用</>
                                         }
-                                    </Badge>
+                                    </span>
                                 </div>
                             </div>
-                            
-                            <Card.Body className="d-flex flex-column">
-                                <Card.Title 
-                                    className="product-title fw-bold mb-2" 
+
+                            <div className="card-body flex flex-col">
+                                <h2
+                                    className="card-title product-title font-bold mb-2 text-base"
                                     style={{cursor: 'pointer'}}
                                     onClick={() => onProductClick(product)}
                                 >
                                     {product.name}
-                                </Card.Title>
-                                
-                                <Card.Text className="text-muted small mb-1">
-                                    <Badge bg="secondary" className="me-1">
+                                </h2>
+
+                                <p className="text-base-content/60 text-sm mb-1">
+                                    <span className="badge badge-neutral mr-1">
                                         {product.category_name || '未分類'}
-                                    </Badge>
-                                </Card.Text>
-                                
-                                <Card.Text className="product-description text-muted mb-3 small">
+                                    </span>
+                                </p>
+
+                                <p className="product-description text-base-content/60 mb-3 text-sm">
                                     {truncateText(product.description)}
-                                </Card.Text>
-                                
-                                <div className="text-muted small mb-3 mt-auto">
-                                    <FaCalendarAlt className="me-1" /> 
+                                </p>
+
+                                <div className="text-base-content/60 text-sm mb-3 mt-auto flex items-center gap-1">
+                                    <FaCalendarAlt />
                                     {formatDate(product.created_at)}
                                 </div>
-                                
-                                <div className="d-flex justify-content-between mt-auto">
+
+                                <div className="flex justify-between mt-auto">
                                     <Tippy content="查看詳情">
                                         <Button
-                                            variant="outline-primary"
+                                            variant="outline"
                                             size="sm"
-                                            className="me-1"
+                                            className="mr-1"
                                             onClick={() => onProductClick(product)}
                                         >
-                                            <FaEye className="me-1" /> 詳情
+                                            <FaEye className="mr-1" /> 詳情
                                         </Button>
                                     </Tippy>
-                                    
+
                                     <div>
                                         <Tippy content="編輯產品">
                                             <Button
-                                                variant="outline-secondary"
+                                                variant="ghost"
                                                 size="sm"
-                                                className="me-1"
+                                                className="mr-1"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     onEdit(product);
@@ -179,10 +178,10 @@ const ProductList = ({
                                                 <FaPen /> 編輯
                                             </Button>
                                         </Tippy>
-                                        
+
                                         <Tippy content="刪除產品">
                                             <Button
-                                                variant="outline-danger"
+                                                variant="error"
                                                 size="sm"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -196,39 +195,39 @@ const ProductList = ({
                                         </Tippy>
                                     </div>
                                 </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
+                            </div>
+                        </div>
+                    </div>
                 ))}
-            </Row>
-            
+            </div>
+
             {totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-4">
-                    <div className="pagination-container">
+                <div className="flex justify-center mt-4">
+                    <div className="join pagination-container">
                         {currentPage > 1 && (
                             <Button
-                                variant="outline-primary"
+                                variant="outline"
                                 onClick={() => onPageChange(currentPage - 1)}
-                                className="mx-1"
+                                className="join-item"
                             >
                                 &laquo; 上一頁
                             </Button>
                         )}
-                        
+
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
                             // 如果頁數太多，只顯示當前頁附近的頁碼
                             if (
                                 totalPages <= 7 ||
-                                page === 1 || 
+                                page === 1 ||
                                 page === totalPages ||
                                 (page >= currentPage - 1 && page <= currentPage + 1)
                             ) {
                                 return (
                                     <Button
                                         key={page}
-                                        variant={page === currentPage ? 'primary' : 'outline-primary'}
+                                        variant={page === currentPage ? 'primary' : 'outline'}
                                         onClick={() => onPageChange(page)}
-                                        className="mx-1"
+                                        className="join-item"
                                     >
                                         {page}
                                     </Button>
@@ -237,17 +236,17 @@ const ProductList = ({
                                 (page === currentPage - 2 && currentPage > 3) ||
                                 (page === currentPage + 2 && currentPage < totalPages - 2)
                             ) {
-                                return <span key={page} className="mx-1">...</span>;
+                                return <span key={page} className="join-item btn btn-disabled">...</span>;
                             } else {
                                 return null;
                             }
                         })}
-                        
+
                         {currentPage < totalPages && (
                             <Button
-                                variant="outline-primary"
+                                variant="outline"
                                 onClick={() => onPageChange(currentPage + 1)}
-                                className="mx-1"
+                                className="join-item"
                             >
                                 下一頁 &raquo;
                             </Button>
@@ -255,17 +254,17 @@ const ProductList = ({
                     </div>
                 </div>
             )}
-            
+
             <style jsx>{`
                 .product-card {
                     transition: transform 0.2s, box-shadow 0.2s;
                 }
-                
+
                 .product-card:hover {
                     transform: translateY(-5px);
                     box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
                 }
-                
+
                 .product-title {
                     display: -webkit-box;
                     -webkit-line-clamp: 2;
@@ -273,7 +272,7 @@ const ProductList = ({
                     overflow: hidden;
                     min-height: 48px;
                 }
-                
+
                 .product-description {
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
@@ -281,7 +280,7 @@ const ProductList = ({
                     overflow: hidden;
                     min-height: 60px;
                 }
-                
+
                 .status-badge {
                     font-size: 0.75rem;
                 }

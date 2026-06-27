@@ -1,5 +1,4 @@
 import React from "react";
-import { Form, InputGroup, FormText, Card } from "react-bootstrap";
 
 const IndustryDropdown = ({ industries, company, handleInputChange }) => {
   // 產業分類分組顯示
@@ -12,28 +11,31 @@ const IndustryDropdown = ({ industries, company, handleInputChange }) => {
 
   return (
     <div>
-      <Form.Group controlId="formIndustry" className="mb-4">
-        <Form.Label style={{ fontSize: "18px", fontWeight: "500" }}>
-          行業分類
-        </Form.Label>
-        <InputGroup>
-          <InputGroup.Text>
+      <div className="form-control w-full mb-4">
+        <label htmlFor="formIndustry" className="label pb-1">
+          <span className="label-text font-medium text-base-content" style={{ fontSize: "18px", fontWeight: "500" }}>
+            行業分類
+          </span>
+        </label>
+        {/* InputGroup：圖示前綴 + 下拉選單 */}
+        <div className="flex w-full">
+          <span className="flex items-center px-3 rounded-l-lg border border-r-0 border-base-300 bg-base-200">
             <span className="text-primary">🏢</span>
-          </InputGroup.Text>
-          <Form.Control
-            as="select"
+          </span>
+          <select
+            id="formIndustry"
             name="industry"
             value={company.industry}
             onChange={handleInputChange}
+            className="select select-bordered w-full rounded-l-none"
             style={{
               fontSize: "16px",
               padding: "12px",
-              borderRadius: "8px",
               borderColor: "#ced4da",
             }}
           >
             <option value="">-- 請選擇行業分類 --</option>
-            
+
             {Object.entries(groupedIndustries).map(([group, items]) => (
               items.length > 0 && (
                 <optgroup label={group} key={group}>
@@ -45,26 +47,26 @@ const IndustryDropdown = ({ industries, company, handleInputChange }) => {
                 </optgroup>
               )
             ))}
-          </Form.Control>
-        </InputGroup>
-        <FormText className="text-muted mt-2" style={{ fontSize: "14px" }}>
+          </select>
+        </div>
+        <span className="label-text-alt text-base-content/60 mt-2" style={{ fontSize: "14px" }}>
           <span>✅ 提示：選擇最能代表您公司的產業類型，這將幫助潛在客戶更容易找到您。</span>
-        </FormText>
-      </Form.Group>
-      
-      <Card className="bg-light mb-3">
-        <Card.Body>
-          <Card.Title style={{ fontSize: "16px" }}>為什麼選擇產業分類很重要？</Card.Title>
-          <Card.Text>
+        </span>
+      </div>
+
+      <div className="card card-bordered bg-base-200 mb-3">
+        <div className="card-body">
+          <h2 className="card-title" style={{ fontSize: "16px" }}>為什麼選擇產業分類很重要？</h2>
+          <div>
             正確選擇產業分類有助於：
             <ul>
               <li>提高在相關搜尋中的曝光率</li>
               <li>讓有興趣的客戶更容易找到您</li>
               <li>與同產業公司建立更多合作機會</li>
             </ul>
-          </Card.Text>
-        </Card.Body>
-      </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ForgotPassword from 'pages/User/func_forgot/ForgotPassPage';
 import ResetPassword from 'pages/User/func_forgot/ResetPassPage';
 import Axios from 'common/Axios';
-import { CheckCircleFill, XCircleFill, EnvelopeFill, KeyFill } from 'react-bootstrap-icons';
+import { CheckCircle, XCircle, Mail, Key } from 'lucide-react';
 
 const ForgotPasswordFlow = () => {
   // 基本狀態管理
@@ -14,7 +14,7 @@ const ForgotPasswordFlow = () => {
     show: false,
     message: '',
     variant: 'success',
-    icon: <CheckCircleFill className="mr-2" />
+    icon: <CheckCircle className="mr-2" size={18} />
   });
   
   // 載入狀態
@@ -61,8 +61,8 @@ const ForgotPasswordFlow = () => {
   // 統一的提示訊息顯示函數
   const showNotification = (message, variant) => {
     const icon = variant === 'success' ?
-      <CheckCircleFill className="mr-2" /> :
-      <XCircleFill className="mr-2" />;
+      <CheckCircle className="mr-2" size={18} /> :
+      <XCircle className="mr-2" size={18} />;
     
     setNotification({
       show: true,
@@ -94,7 +94,7 @@ const ForgotPasswordFlow = () => {
   
   // 獲取當前步驟的圖示
   const getStepIcon = () => {
-    return step === 1 ? <EnvelopeFill className="mr-2" /> : <KeyFill className="mr-2" />;
+    return step === 1 ? <Mail className="mr-2" size={20} /> : <Key className="mr-2" size={20} />;
   };
 
   return (

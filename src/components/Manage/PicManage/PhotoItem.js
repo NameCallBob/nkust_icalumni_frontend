@@ -1,6 +1,6 @@
 import Axios from 'common/Axios';
 import React from 'react';
-import { Card, Button } from 'react-bootstrap';
+import { Button } from 'components/common/ui';
 import { toast } from "react-toastify";
 
 const PhotoItem = ({ photo, type, refresh }) => {
@@ -46,30 +46,34 @@ const PhotoItem = ({ photo, type, refresh }) => {
     : photo.description;
 
   return (
-    <Card className="photo-card">
-      <Card.Img
-        variant="top"
-        src={`${process.env.REACT_APP_BASE_URL}${photo.image}`}
-        className="photo-preview"
-        style={{width:"350px"}}
-      />
-      <Card.Body>
-        <Card.Title>{photo.title}</Card.Title>
-        <Card.Text>{truncatedDescription}</Card.Text>
-        <Button
-          variant={photo.active ? "danger" : "success"}  // 使用不同顏色的按鈕
-          onClick={() => handleActive(photo.id, photo.active)}
-        >
-          {photo.active ? "停用" : "啟用"}
-        </Button>
-        <Button
-          variant="danger"
-          onClick={() => handleDelete(photo.id)}
-        >
-          刪除
-        </Button>
-      </Card.Body>
-    </Card>
+    <div className="card card-bordered bg-base-100 shadow-md photo-card">
+      <figure>
+        <img
+          src={`${process.env.REACT_APP_BASE_URL}${photo.image}`}
+          className="photo-preview"
+          style={{ width: "350px" }}
+          alt={photo.title}
+        />
+      </figure>
+      <div className="card-body">
+        <h2 className="card-title">{photo.title}</h2>
+        <p>{truncatedDescription}</p>
+        <div className="card-actions flex gap-2">
+          <Button
+            variant={photo.active ? "error" : "success"}  // 使用不同顏色的按鈕
+            onClick={() => handleActive(photo.id, photo.active)}
+          >
+            {photo.active ? "停用" : "啟用"}
+          </Button>
+          <Button
+            variant="error"
+            onClick={() => handleDelete(photo.id)}
+          >
+            刪除
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

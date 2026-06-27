@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KeyFill, EyeFill, EyeSlashFill, ShieldLockFill, CheckCircleFill, ArrowLeftCircleFill, InfoCircle } from 'react-bootstrap-icons';
+import { Key, Eye, EyeOff, ShieldCheck, CheckCircle, ArrowLeftCircle, Info } from 'lucide-react';
 import { Button, Spinner } from 'components/common/ui';
 import Axios from 'common/Axios';
 
@@ -196,12 +196,12 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
                       onClick={handleBack}
                       disabled={isLoading}
                     >
-                      <ArrowLeftCircleFill className="mr-1" /> 返回
+                      <ArrowLeftCircle size={16} className="mr-1" /> 返回
                     </button>
                   )}
                 </div>
                 <h4 className="mb-0 text-center flex-grow text-xl font-semibold flex items-center justify-center">
-                  <ShieldLockFill className="mr-2" /> 重設密碼
+                  <ShieldCheck size={20} className="mr-2" /> 重設密碼
                 </h4>
                 <div style={{ width: '60px' }}></div> {/* 為了保持標題居中 */}
               </div>
@@ -214,13 +214,13 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
 
               {error && (
                 <div className="alert alert-error flex items-center">
-                  <InfoCircle className="mr-2" /> {error}
+                  <Info size={18} className="mr-2" /> {error}
                 </div>
               )}
 
               {successMessage && (
                 <div className="alert alert-success flex items-center">
-                  <CheckCircleFill className="mr-2" /> {successMessage}
+                  <CheckCircle size={18} className="mr-2" /> {successMessage}
                 </div>
               )}
 
@@ -231,7 +231,7 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
                   </label>
                   <div className="join w-full">
                     <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">
-                      <KeyFill />
+                      <Key size={18} />
                     </span>
                     <input
                       id="formCode"
@@ -260,7 +260,7 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
                   </label>
                   <div className="join w-full">
                     <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">
-                      <KeyFill />
+                      <Key size={18} />
                     </span>
                     <input
                       id="formNewPassword"
@@ -278,7 +278,7 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
                       onClick={togglePasswordVisibility}
                       disabled={isLoading || !!successMessage}
                     >
-                      {showPassword ? <EyeSlashFill /> : <EyeFill />}
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                   {newPasswordInvalid && (
@@ -312,7 +312,7 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
                   </label>
                   <div className="join w-full">
                     <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">
-                      <KeyFill />
+                      <Key size={18} />
                     </span>
                     <input
                       id="formConfirmPassword"
@@ -330,7 +330,7 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
                       onClick={toggleConfirmPasswordVisibility}
                       disabled={isLoading || !!successMessage}
                     >
-                      {showConfirmPassword ? <EyeSlashFill /> : <EyeFill />}
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                   {confirmPasswordInvalid && (

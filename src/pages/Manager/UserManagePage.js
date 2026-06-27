@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
 import UserFilter from 'components/Manage/UserManage/UserFilter';
 import UserTable from 'components/Manage/UserManage/UserTable';
 import NewUserModal from 'components/Manage/UserManage/NewUserModal';
@@ -248,11 +247,10 @@ function UserManagement() {
   };
 
   return (
-    <Container className="admin-container my-5" style={rwd.getContainerStyle()}>
-      <Row className="justify-content-center">
-        <Col
-          md={rwd.isMobile ? 12 : 3}
-          className={`bg-light p-3 ${rwd.isMobile ? 'mb-3' : ''}`}
+    <div className="admin-container container mx-auto px-4 my-5" style={rwd.getContainerStyle()}>
+      <div className="grid grid-cols-12 gap-4 justify-center">
+        <div
+          className={`${rwd.isMobile ? 'col-span-12' : 'col-span-3'} bg-base-200 p-3 ${rwd.isMobile ? 'mb-3' : ''}`}
         >
           <UserFilter
             filters={filters}
@@ -263,9 +261,9 @@ function UserManagement() {
             handleAccountModal={() =>handleShowACModal() }
             handleExcelModal={() => handleShowExcelModal()}
           />
-        </Col>
+        </div>
 
-        <Col md={rwd.isMobile ? 12 : 9} className="p-3">
+        <div className={`${rwd.isMobile ? 'col-span-12' : 'col-span-9'} p-3`}>
           {loading ? (
             <div className="text-center">
               <LoadingSpinner></LoadingSpinner>
@@ -306,8 +304,8 @@ function UserManagement() {
               )}
             </div>
           )}
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       <NewUserModal
         showModal={showModal}
@@ -333,7 +331,7 @@ function UserManagement() {
         show={showExcelModal}
         handleClose={() => {handleCloseExcelModal()}}
       />
-    </Container>
+    </div>
   );
 }
 

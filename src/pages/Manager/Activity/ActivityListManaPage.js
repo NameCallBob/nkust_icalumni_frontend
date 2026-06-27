@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Container, Table, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'components/common/ui';
 import useRWD from 'hooks/useRWD';
 
 const ActivityList = () => {
@@ -16,11 +16,11 @@ const ActivityList = () => {
   };
 
   return (
-    <Container className="admin-container mt-5" style={rwd.getContainerStyle()}>
-      <h2>活動列表</h2>
+    <div className="admin-container container mx-auto px-4 mt-5" style={rwd.getContainerStyle()}>
+      <h2 className="text-2xl font-bold mb-3">活動列表</h2>
       {rwd.renderForDevice({
         desktop: (
-          <Table striped bordered hover style={rwd.getTableStyle()}>
+          <table className="table table-zebra w-full" style={rwd.getTableStyle()}>
             <thead>
               <tr>
                 <th>標題</th>
@@ -43,53 +43,51 @@ const ActivityList = () => {
                     >
                       編輯
                     </Button>{' '}
-                    <Button variant="danger" size="sm">
+                    <Button variant="error" size="sm">
                       刪除
                     </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </Table>
+          </table>
         ),
         mobile: (
           <div style={{ ...rwd.getTableStyle(), padding: '10px' }}>
             {activities.map((activity) => (
-              <div key={activity.id} style={{
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                padding: '15px',
-                marginBottom: '10px',
-                backgroundColor: '#f9f9f9'
-              }}>
-                <div style={{ marginBottom: '8px' }}>
-                  <strong>標題:</strong> {activity.title}
-                </div>
-                <div style={{ marginBottom: '8px' }}>
-                  <strong>類型:</strong> {activity.type}
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                  <strong>時間:</strong> {activity.date}
-                </div>
-                <div>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => handleEdit(activity.id)}
-                    style={{ marginRight: '10px', marginBottom: '5px' }}
-                  >
-                    編輯
-                  </Button>
-                  <Button variant="danger" size="sm">
-                    刪除
-                  </Button>
+              <div
+                key={activity.id}
+                className="card card-bordered bg-base-200 mb-3"
+              >
+                <div className="card-body p-4">
+                  <div className="mb-2">
+                    <strong>標題:</strong> {activity.title}
+                  </div>
+                  <div className="mb-2">
+                    <strong>類型:</strong> {activity.type}
+                  </div>
+                  <div className="mb-4">
+                    <strong>時間:</strong> {activity.date}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => handleEdit(activity.id)}
+                    >
+                      編輯
+                    </Button>
+                    <Button variant="error" size="sm">
+                      刪除
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )
       })}
-    </Container>
+    </div>
   );
 };
 
