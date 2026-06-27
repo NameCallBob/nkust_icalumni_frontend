@@ -148,8 +148,7 @@ export class CriticalCSSManager {
   preloadResources() {
     const resources = [
       { href: '/static/css/animations.css', as: 'style' },
-      { href: '/static/css/components.css', as: 'style' },
-      { href: '/static/js/bootstrap.bundle.min.js', as: 'script' }
+      { href: '/static/css/components.css', as: 'style' }
     ];
 
     resources.forEach(resource => {
