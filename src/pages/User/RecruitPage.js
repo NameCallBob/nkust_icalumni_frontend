@@ -12,7 +12,7 @@ import DOMPurify from 'dompurify';
 import SEO from 'SEO';
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
 import { BsCalendar, BsCalendarX, BsBuilding, BsEnvelope, BsTelephone, BsPerson } from 'react-icons/bs';
-import { Card, Button, Badge, EmptyState } from 'components/common/ui';
+import { Card, Button, Badge, EmptyState, ModalSection, ModalGrid, InfoItem } from 'components/common/ui';
 import { Briefcase, Table2, LayoutGrid, ArrowRight, AlertTriangle } from 'lucide-react';
 
 function RecruitPage() {
@@ -364,10 +364,13 @@ function RecruitPage() {
           show={show}
           onHide={handleClose}
           size="lg"
-          variant="showcase"
           title={selectedJob.title}
+          icon={<Briefcase size={18} />}
           footer={
             <>
+              <Button variant="ghost" size="sm" onClick={handleClose}>
+                關閉
+              </Button>
               {!detailLoading && selectedJob.contact && selectedJob.contact.email && (
                 <a
                   href={`mailto:${selectedJob.contact.email}?subject=應徵${selectedJob.title}職位`}
@@ -376,9 +379,6 @@ function RecruitPage() {
                   立即應徵
                 </a>
               )}
-              <Button variant="ghost" size="sm" onClick={handleClose}>
-                關閉
-              </Button>
             </>
           }
         >
@@ -389,79 +389,42 @@ function RecruitPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* 基本資訊 */}
-                <div className="rounded-2xl border border-base-300/70 bg-base-200/40 p-5">
-                  <h3 className="mb-3 border-b border-base-300/70 pb-2.5 font-serif text-base font-bold text-primary">
-                    基本資訊
-                  </h3>
-                  <p className="mb-2 text-sm text-base-content">
-                    <strong className="font-semibold">公司名稱：</strong>
-                    <span className="text-primary">{selectedJob.company_name}</span>
-                  </p>
-                  <p className="mb-2 inline-flex items-start gap-2 text-sm text-base-content">
-                    <BsCalendar className="mt-0.5 shrink-0 text-base-content/50" />
-                    <span><strong className="font-semibold">發布時間：</strong> {selectedJob.release_date}</span>
-                  </p>
-                  <p className="inline-flex items-start gap-2 text-sm text-base-content">
-                    <BsCalendarX className="mt-0.5 shrink-0 text-base-content/50" />
-                    <span><strong className="font-semibold">截止時間：</strong> {selectedJob.deadline}</span>
-                  </p>
-                </div>
+              <ModalGrid cols={2} className="gap-y-6">
+                <ModalSection title="基本資訊">
+                  <InfoItem icon={<BsBuilding />} label="公司名稱">
+                    <span className="text-primary">{selectedJob.company_name || '—'}</span>
+                  </InfoItem>
+                  <InfoItem icon={<BsCalendar />} label="發布時間">{selectedJob.release_date}</InfoItem>
+                  <InfoItem icon={<BsCalendarX />} label="截止時間">{selectedJob.deadline}</InfoItem>
+                </ModalSection>
 
-                {/* 聯絡方式 */}
-                <div className="rounded-2xl border border-base-300/70 bg-base-200/40 p-5">
-                  <h3 className="mb-3 border-b border-base-300/70 pb-2.5 font-serif text-base font-bold text-primary">
-                    聯絡方式
-                  </h3>
-                  <p className="mb-2 inline-flex items-start gap-2 text-sm text-base-content">
-                    <BsPerson className="mt-0.5 shrink-0 text-base-content/50" />
-                    <span>
-                      <strong className="font-semibold">聯絡人：</strong>
-                      {selectedJob.contact && selectedJob.contact.name
-                        ? selectedJob.contact.name
-                        : '未提供'}
-                    </span>
-                  </p>
-                  <p className="mb-2 inline-flex items-start gap-2 text-sm text-base-content break-all">
-                    <BsEnvelope className="mt-0.5 shrink-0 text-base-content/50" />
-                    <span>
-                      <strong className="font-semibold">Email：</strong>
-                      {selectedJob.contact && selectedJob.contact.email
-                        ? <a href={`mailto:${selectedJob.contact.email}`} className="text-primary hover:underline">{selectedJob.contact.email}</a>
-                        : '未提供'}
-                    </span>
-                  </p>
-                  <p className="inline-flex items-start gap-2 text-sm text-base-content">
-                    <BsTelephone className="mt-0.5 shrink-0 text-base-content/50" />
-                    <span>
-                      <strong className="font-semibold">電話：</strong>
-                      {selectedJob.contact && selectedJob.contact.phone
-                        ? selectedJob.contact.phone
-                        : '未提供'}
-                    </span>
-                  </p>
-                </div>
-              </div>
+                <ModalSection title="聯絡方式">
+                  <InfoItem icon={<BsPerson />} label="聯絡人">
+                    {selectedJob.contact && selectedJob.contact.name ? selectedJob.contact.name : '未提供'}
+                  </InfoItem>
+                  <InfoItem icon={<BsEnvelope />} label="Email" className="break-all">
+                    {selectedJob.contact && selectedJob.contact.email
+                      ? <a href={`mailto:${selectedJob.contact.email}`} className="text-primary hover:underline">{selectedJob.contact.email}</a>
+                      : '未提供'}
+                  </InfoItem>
+                  <InfoItem icon={<BsTelephone />} label="電話">
+                    {selectedJob.contact && selectedJob.contact.phone ? selectedJob.contact.phone : '未提供'}
+                  </InfoItem>
+                </ModalSection>
+              </ModalGrid>
 
-              <div className="mt-6">
-                <h3 className="mb-4 border-b border-base-300/70 pb-2.5 font-serif text-base font-bold text-primary">
-                  職位詳細資訊
-                </h3>
+              <ModalSection title="職位詳細資訊">
                 <div
                   className="prose prose-sm max-w-none text-base-content/80 break-words"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(selectedJob.intro),
                   }}
                 />
-              </div>
+              </ModalSection>
 
               {/* 照片幻燈片展示 */}
               {selectedJob.images && selectedJob.images.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="mb-4 border-b border-base-300/70 pb-2.5 font-serif text-base font-bold text-primary">
-                    公司環境照片
-                  </h3>
+                <ModalSection title="公司環境照片">
                   <Swiper
                     className="overflow-hidden rounded-2xl"
                     modules={[SwiperPagination, Navigation]}
@@ -481,7 +444,7 @@ function RecruitPage() {
                       </SwiperSlide>
                     ))}
                   </Swiper>
-                </div>
+                </ModalSection>
               )}
             </>
           )}
