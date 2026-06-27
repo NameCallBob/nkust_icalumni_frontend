@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
 import Axios from "common/Axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "css/user/AlumniAssociation.css";
 import SEO from "SEO";
 
 const AlumniAssociationBylaws = () => {

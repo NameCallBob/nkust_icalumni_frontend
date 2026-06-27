@@ -1,0 +1,11 @@
+/* Tailwind 入口 — 需在 src/index.js 以 `import './styles/tailwind.css';` 載入。
+   preflight 於 tailwind.config.js 暫時關閉（過渡期保護 Bootstrap）。 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Modal 旗艦視覺 token（深藍 / AI 專業 / 高級） */
+:root {
+  --modal-header-bg: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+  --modal-backdrop: rgba(8, 15, 40, 0.55);
+}

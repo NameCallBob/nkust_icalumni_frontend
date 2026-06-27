@@ -62,10 +62,10 @@ function CategoryDropdown() {
   return (
     <Dropdown as={ButtonGroup} className="w-100 category-dropdown-container" show={isOpen} onToggle={(isOpen) => setIsOpen(isOpen)}>
       <Dropdown.Toggle
-        variant="success"
+        variant="primary"
         id="category-dropdown"
-        className="w-100 py-3 dropdown-toggle-animated"
-        style={{ fontSize: '18px', fontWeight: '600', backgroundColor: 'rgb(25, 135, 84)' }}
+        className="w-100 py-2 dropdown-toggle-animated"
+        style={{ fontSize: '16px', fontWeight: '600' }}
         onClick={toggleDropdown}
       >
         行業別

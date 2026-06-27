@@ -7,9 +7,13 @@ import ContactInfo from "components/Manage/Company/Contact";
 import ProductInfo from "components/Manage/Company/Product";
 import IndustryDropdown from "components/Manage/Company/IndustryDropdown";
 import Axios from "common/Axios";
+import useRWD from 'hooks/useRWD';
 import "css/manage/company.css";
 
 const CompanyForm = () => {
+  // 響應式設計 hook
+  const rwd = useRWD();
+
   // 原有的狀態保持不變
   const [company, setCompany] = useState({
     name: "",
@@ -209,10 +213,15 @@ const CompanyForm = () => {
   };
   
   return (
-    <Container fluid className="py-4" style={{ maxWidth: "980px" }}>
+    <div style={rwd.getContainerStyle()}>
+    <Container fluid className="admin-container py-4" style={{ maxWidth: "980px", ...rwd.getContainerStyle() }}>
       <Card className="shadow mb-4">
         <Card.Body>
-          <h1 className="text-center mb-2" style={{ fontSize: "28px", fontWeight: "bold", color: "#0056b3" }}>
+          <h1 className="text-center mb-2" style={{
+            fontSize: rwd.isMobile ? "22px" : "28px",
+            fontWeight: "bold",
+            color: "#0056b3"
+          }}>
             公司資料維護
           </h1>
           
@@ -248,9 +257,11 @@ const CompanyForm = () => {
               activeKey={activeKey}
               onSelect={(k) => setActiveKey(k)}
               className="mb-4"
+              {...rwd.getTableResponsiveConfig()}
+              style={rwd.getTableStyle()}
             >
               <Tab eventKey="companyInfo" title={
-                <span style={{ fontSize: "16px", padding: "8px 0" }}>
+                <span style={{ fontSize: rwd.isMobile ? "14px" : "16px", padding: "8px 0" }}>
                   1. 公司資訊 {formProgress > 0 && <Badge bg="success" pill>已開始填寫</Badge>}
                 </span>
               }>
@@ -271,7 +282,7 @@ const CompanyForm = () => {
               </Tab>
               
               <Tab eventKey="industry" title={
-                <span style={{ fontSize: "16px", padding: "8px 0" }}>
+                <span style={{ fontSize: rwd.isMobile ? "14px" : "16px", padding: "8px 0" }}>
                   2. 產業分類 {company.industry && <Badge bg="success" pill>已填寫</Badge>}
                 </span>
               }>
@@ -293,7 +304,7 @@ const CompanyForm = () => {
               </Tab>
               
               <Tab eventKey="productInfo" title={
-                <span style={{ fontSize: "16px", padding: "8px 0" }}>
+                <span style={{ fontSize: rwd.isMobile ? "14px" : "16px", padding: "8px 0" }}>
                   3. 產品資訊 {(company.products || company.product_description) && <Badge bg="success" pill>已填寫</Badge>}
                 </span>
               }>
@@ -314,7 +325,7 @@ const CompanyForm = () => {
               </Tab>
               
               <Tab eventKey="contactInfo" title={
-                <span style={{ fontSize: "16px", padding: "8px 0" }}>
+                <span style={{ fontSize: rwd.isMobile ? "14px" : "16px", padding: "8px 0" }}>
                   4. 聯絡資訊 {(company.website || company.email || company.phone_number) && <Badge bg="success" pill>已填寫</Badge>}
                 </span>
               }>
@@ -336,32 +347,45 @@ const CompanyForm = () => {
               </Tab>
             </Tabs>
 
-            <div className="d-flex justify-content-between mt-4">
-              <Button 
-                variant="outline-secondary" 
+            <div className={rwd.isMobile ? "d-flex flex-column gap-3 mt-4" : "d-flex justify-content-between mt-4"}>
+              <Button
+                variant="outline-secondary"
                 onClick={() => navigateTabs('prev')}
                 disabled={activeKey === "companyInfo"}
-                size="lg"
-                style={{ padding: "12px 20px", fontSize: "16px" }}
+                size={rwd.isMobile ? "md" : "lg"}
+                style={{
+                  padding: rwd.isMobile ? "10px 15px" : "12px 20px",
+                  fontSize: rwd.isMobile ? "14px" : "16px",
+                  width: rwd.isMobile ? "100%" : "auto"
+                }}
               >
                 ← 上一步
               </Button>
               
-              <Button 
-                variant="success" 
-                type="submit" 
-                size="lg"
-                style={{ padding: "12px 30px", fontSize: "16px", fontWeight: "bold" }}
+              <Button
+                variant="success"
+                type="submit"
+                size={rwd.isMobile ? "md" : "lg"}
+                style={{
+                  padding: rwd.isMobile ? "10px 20px" : "12px 30px",
+                  fontSize: rwd.isMobile ? "14px" : "16px",
+                  fontWeight: "bold",
+                  width: rwd.isMobile ? "100%" : "auto"
+                }}
               >
                 {isEditMode ? "儲存變更" : "儲存資料"}
               </Button>
               
-              <Button 
-                variant="outline-primary" 
+              <Button
+                variant="outline-primary"
                 onClick={() => navigateTabs('next')}
                 disabled={activeKey === "contactInfo"}
-                size="lg"
-                style={{ padding: "12px 20px", fontSize: "16px" }}
+                size={rwd.isMobile ? "md" : "lg"}
+                style={{
+                  padding: rwd.isMobile ? "10px 15px" : "12px 20px",
+                  fontSize: rwd.isMobile ? "14px" : "16px",
+                  width: rwd.isMobile ? "100%" : "auto"
+                }}
               >
                 下一步 →
               </Button>
@@ -374,11 +398,11 @@ const CompanyForm = () => {
         <Card.Body>
           <h4>常見問題</h4>
           <Row>
-            <Col md={6}>
+            <Col md={rwd.isMobile ? 12 : 6} className={rwd.isMobile ? "mb-3" : ""}>
               <p><b>問：我需要填寫所有欄位嗎？</b></p>
               <p>答：不需要，所有欄位都是選填的，您可以只填寫對您重要的資訊。</p>
             </Col>
-            <Col md={6}>
+            <Col md={rwd.isMobile ? 12 : 6}>
               <p><b>問：我可以稍後再回來完善資料嗎？</b></p>
               <p>答：可以，您隨時可以回來修改或完善資料。</p>
             </Col>
@@ -386,6 +410,7 @@ const CompanyForm = () => {
         </Card.Body>
       </Card>
     </Container>
+    </div>
   );
 };
 

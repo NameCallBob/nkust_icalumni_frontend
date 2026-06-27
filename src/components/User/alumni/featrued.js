@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { Card, Row, Col, Button } from 'react-bootstrap';
+import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
 const FeaturedAlumni = ({ featuredAlumni }) => {
     const itemsPerPage = 6; // 每頁顯示6個
     const [currentPage, setCurrentPage] = useState(1); // 當前頁數
 
+    // 根據 sort_order 欄位排序（由小到大）
+    const sortedAlumni = [...featuredAlumni].sort((a, b) => {
+        const orderA = a.sort_order ?? 999;
+        const orderB = b.sort_order ?? 999;
+        return orderA - orderB;
+    });
+
     // 計算分頁的範圍
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentAlumni = featuredAlumni.slice(startIndex, startIndex + itemsPerPage);
+    const currentAlumni = sortedAlumni.slice(startIndex, startIndex + itemsPerPage);
 
     // 處理頁面切換
     const handleNextPage = () => {
-        if (currentPage < Math.ceil(featuredAlumni.length / itemsPerPage)) {
+        if (currentPage < Math.ceil(sortedAlumni.length / itemsPerPage)) {
             setCurrentPage(currentPage + 1);
         }
     };
@@ -34,9 +42,10 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                         >
                             <Card.Img
                                 variant="left"
-                                src={alumni.photo}
+                                src={getImageSrc(alumni.photo, 'avatar')}
                                 alt={alumni.name}
                                 style={{ width:'200px' , height: '200px', objectFit: 'cover' }}
+                                onError={(e) => handleImageError(e, 'avatar')}
                             />
                             <Card.Body>
                                 <Card.Title>
@@ -64,7 +73,7 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                     </Col>
                 ))}
             </Row>
-            {featuredAlumni.length > itemsPerPage && (
+            {sortedAlumni.length > itemsPerPage && (
                 <div className="d-flex justify-content-between">
                     <Button
                         variant="primary"
@@ -76,7 +85,7 @@ const FeaturedAlumni = ({ featuredAlumni }) => {
                     <Button
                         variant="primary"
                         onClick={handleNextPage}
-                        disabled={currentPage === Math.ceil(featuredAlumni.length / itemsPerPage)}
+                        disabled={currentPage === Math.ceil(sortedAlumni.length / itemsPerPage)}
                     >
                         下一頁
                     </Button>

@@ -1,20 +1,89 @@
 
+/* 字體載入優化 */
 @font-face {
   font-family: 'MyCustomFont';
-  src: url('/src/css/YuPearl-Medium.ttf') format('woff');
+  src: url('/src/css/YuPearl-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 使用 font-display: swap 避免 FOIT */
 }
 
+/* 字體載入狀態管理 */
+.fonts-loading body {
+  visibility: hidden; /* 防止 FOUT，但要小心使用 */
+}
+
+.fonts-loaded body,
+.fonts-fallback body {
+  visibility: visible;
+}
+
+/* 基礎字體棧 - 優化後 */
 body {
   margin: 0;
-  font-family: 'MyCustomFont', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Noto Serif TC', 'Noto Sans TC', 'MyCustomFont', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* 當使用後備字體時的樣式調整 */
+.fonts-fallback body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* 圖片載入錯誤處理樣式 */
+img.image-error {
+  background-color: #ffffff;
+  background-image: none;
+  min-height: 100px;
+  min-width: 100px;
+  display: block;
+  border: 1px solid #f0f0f0;
+}
+
+/* 確保所有圖片有白色背景作為後備 */
+img {
+  background-color: #ffffff;
+}
+
+/* 卡片中的圖片特別處理 */
+.card img,
+.card-img,
+.card-img-top,
+.alumni-card img,
+.company-card img,
+.product-image {
+  background-color: #ffffff;
+  object-fit: cover;
+}
+
+/* 當圖片載入失敗時保持容器不變形 */
+.image-wrapper {
+  background-color: #ffffff;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 確保 logo 區域有最小高度 */
+.logo-img {
+  min-height: 40px;
+  min-width: 40px;
+  background-color: #ffffff;
+}
+
+/* 安全圖片類別 */
+.safe-image {
+  background-color: #ffffff;
+  min-height: 50px;
+  min-width: 50px;
 }
 

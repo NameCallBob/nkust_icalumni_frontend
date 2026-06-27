@@ -126,5 +126,8 @@
   
   /* 活動項目高亮顯示 */
   .terms-sidebar .nav-link.active {
-    transform: translateX(5px);
+    /* 移除 transform 避免內容跳動 */
+    /* transform: translateX(5px); */
+    border-left: 3px solid #0d6efd;
+    padding-left: calc(1rem + 3px);
   }

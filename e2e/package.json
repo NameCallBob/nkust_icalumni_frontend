@@ -1,0 +1,27 @@
+{
+  "name": "nkust-icalumni-e2e",
+  "version": "1.0.0",
+  "description": "NKUST iCALUMNI E2E 自動化測試",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:auth": "playwright test tests/auth/",
+    "test:nav": "playwright test tests/navigation/",
+    "test:buttons": "playwright test tests/buttons/",
+    "test:forms": "playwright test tests/forms/",
+    "test:crud": "playwright test tests/crud/",
+    "test:error": "playwright test tests/error-states/",
+    "test:regression": "playwright test tests/regression/",
+    "test:manager": "playwright test --grep @manager",
+    "test:user": "playwright test --grep @user",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "report": "playwright show-report reports/html",
+    "codegen": "playwright codegen http://localhost:3000",
+    "install-browsers": "playwright install --with-deps chromium firefox"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

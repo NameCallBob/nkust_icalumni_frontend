@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Pagination, Alert } from 'react-bootstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { useNavigate } from 'react-router-dom';
+import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
 // 公司卡片子組件
 const CompanyCard = ({ 
@@ -33,13 +34,14 @@ const CompanyCard = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div style={imageContainerStyle}>
-        <img 
-          src={company.photo} 
+        <img
+          src={getImageSrc(company.photo, 'company')}
           alt={company.name}
           style={{
             ...imageStyle,
             ...(isHovered ? imageHoverStyle : {})
           }}
+          onError={(e) => handleImageError(e, 'company')}
         />
       </div>
       <div style={cardContentStyle}>
@@ -115,9 +117,9 @@ const CompanyListWithPagination = ({ companies }) => {
   
   const paginationActiveStyle = {
     ...paginationItemStyle,
-    background: '#6c63ff',
+    background: '#1e3a8a',
     color: 'white',
-    boxShadow: '0 4px 8px rgba(108, 99, 255, 0.3)',
+    boxShadow: '0 2px 8px rgba(30, 58, 138, 0.25)',
   };
   
   const paginationControlStyle = {
@@ -227,19 +229,20 @@ const CompanyListWithPagination = ({ companies }) => {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: '12px',
+    borderRadius: '8px',
     overflow: 'hidden',
-    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.05)',
-    transition: 'all 0.3s ease',
+    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.06)',
+    transition: 'all 0.25s ease',
     cursor: 'pointer',
     background: 'white',
-    border: 'none',
+    border: '1px solid #e2e8f0',
   };
-  
+
   // 卡片 hover 效果
   const cardHoverStyle = {
-    transform: 'translateY(-10px)',
-    boxShadow: '0 15px 30px rgba(0, 0, 0, 0.1)',
+    transform: 'translateY(-3px)',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+    borderColor: '#bfdbfe',
   };
   
   // 圖片容器樣式
@@ -303,12 +306,13 @@ const CompanyListWithPagination = ({ companies }) => {
   // 產品標籤樣式
   const productTagStyle = {
     display: 'inline-block',
-    background: '#f0f0f0',
-    padding: '0.25rem 0.75rem',
-    borderRadius: '20px',
-    fontSize: '0.8rem',
-    margin: '0.25rem',
-    color: '#555',
+    background: '#eff6ff',
+    padding: '0.2rem 0.6rem',
+    borderRadius: '4px',
+    fontSize: '0.75rem',
+    margin: '0.2rem',
+    color: '#1e3a8a',
+    border: '1px solid #bfdbfe',
   };
   
   return (

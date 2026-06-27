@@ -3,6 +3,7 @@ import { Row, Col, Card, Button, Carousel, Badge, Spinner } from 'react-bootstra
 import { FaPen, FaTrash, FaEye, FaCheck, FaTimes, FaCalendarAlt, FaImage, FaInfoCircle } from 'react-icons/fa';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
 const ProductList = ({ 
     products, 
@@ -92,9 +93,11 @@ const ProductList = ({
                                                             maxHeight: '200px',
                                                             maxWidth: '100%',
                                                             objectFit: 'contain',
+                                                            backgroundColor: '#ffffff'
                                                         }}
-                                                        src={getImageUrl(image)}
+                                                        src={getImageSrc(getImageUrl(image), 'product')}
                                                         alt={`${product.name} - 圖片 ${index + 1}`}
+                                                        onError={(e) => handleImageError(e, 'product')}
                                                     />
                                                 </div>
                                                 {index === 0 && (

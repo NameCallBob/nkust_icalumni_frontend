@@ -1,0 +1,94 @@
+.rwd-table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+/* Web View: Standard Table */
+.rwd-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.rwd-table th,
+.rwd-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.rwd-table th {
+  background-color: #f7f7f7;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rwd-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rwd-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* RWD View: Card List */
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 15px;
+}
+
+.card:last-child {
+  border-bottom: none;
+}
+
+.card-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.card-item-label {
+  font-weight: 600;
+  color: #555;
+  width: 100px; /* Fixed width for labels */
+  flex-shrink: 0;
+  margin-right: 15px;
+}
+
+.card-item-value {
+  font-size: 1rem;
+  color: #333;
+  flex-grow: 1;
+  word-break: break-word;
+}
+
+.actions-cell {
+  text-align: right;
+}
+
+.action-button {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-left: 5px;
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  background-color: #f0f0f0;
+  border-color: #aaa;
+}

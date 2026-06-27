@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "智商系友會",
+  "name": "國立高雄科技大學智慧商務系系友會",
+  "description": "國立高雄科技大學智慧商務系系友會 - 連結系友、分享商務資源，提供產學合作、職涯發展與人脈拓展的優質平台",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,9 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#1976d2",
+  "background_color": "#f5f5f5",
+  "categories": ["education", "business", "networking"],
+  "lang": "zh-TW",
+  "orientation": "portrait-primary"
 }

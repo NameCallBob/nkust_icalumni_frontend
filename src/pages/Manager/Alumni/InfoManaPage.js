@@ -1,6 +1,7 @@
 import Axios from "common/Axios";
 import UploadImageModal from "components/Manage/Info/InfoPicModal";
 import React, { useState, useEffect } from "react";
+import useRWD from 'hooks/useRWD';
 import {
   Container,
   Row,
@@ -23,6 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useSearchParams } from "react-router-dom";
 
 const InfoManager = () => {
+  const rwd = useRWD();
   const [activeTab, setActiveTab] = useState("content");
   const [records, setRecords] = useState([]);
   const [formImages, setFormImages] = useState([]);
@@ -182,7 +184,7 @@ const InfoManager = () => {
   const totalImagePages = Math.ceil(formImages.length / itemsPerPage);
 
   return (
-    <Container className="py-4">
+    <Container className="admin-container py-4" style={rwd.getContainerStyle()}>
       <Row className="mb-4 align-items-center">
         <Col>
           <h3 className="fw-bold">{title}管理內容與相關照片</h3>
@@ -191,6 +193,7 @@ const InfoManager = () => {
           <Button
             variant="primary"
             className="rounded-pill px-4"
+            style={rwd.getButtonStyle()}
             onClick={activeTab === "content" ? handleAddContent : handleAddPhoto}
           >
             <i className="bi bi-plus-lg me-2"></i>
@@ -215,7 +218,7 @@ const InfoManager = () => {
             </div>
           ) : (
             <>
-              <Table hover responsive className="shadow-sm">
+              <Table hover responsive className="shadow-sm" style={rwd.getTableStyle()}>
                 <thead className="bg-light">
                   <tr>
                     <th>#</th>
@@ -280,7 +283,7 @@ const InfoManager = () => {
             </div>
           ) : (
             <>
-              <Table hover responsive className="shadow-sm">
+              <Table hover responsive className="shadow-sm" style={rwd.getTableStyle()}>
                 <thead className="bg-light">
                   <tr>
                     <th>#</th>
@@ -372,7 +375,12 @@ const InfoManager = () => {
                 onChange={setFormDescription}
                 placeholder="輸入內容描述..."
                 modules={{
-                  toolbar: [
+                  toolbar: rwd.isMobile ? [
+                    [{ header: [1, 2, false] }],
+                    ["bold", "italic"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["clean"],
+                  ] : [
                     [{ header: [1, 2, false] }],
                     ["bold", "italic", "underline", "strike"],
                     [{ list: "ordered" }, { list: "bullet" }],
@@ -381,6 +389,7 @@ const InfoManager = () => {
                   ],
                 }}
                 className="shadow-sm"
+                style={rwd.isMobile ? { height: '200px' } : {}}
               />
             </Form.Group>
           </Form>
@@ -390,10 +399,11 @@ const InfoManager = () => {
             variant="outline-secondary"
             onClick={() => setShowContentModal(false)}
             disabled={loading}
+            style={rwd.getButtonStyle()}
           >
             <i className="bi bi-x-lg"></i> 取消
           </Button>
-          <Button variant="primary" onClick={handleSaveContent} disabled={loading}>
+          <Button variant="primary" onClick={handleSaveContent} disabled={loading} style={rwd.getButtonStyle()}>
             {loading ? (
               <Spinner size="sm" />
             ) : (

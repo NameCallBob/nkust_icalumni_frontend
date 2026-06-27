@@ -14,6 +14,7 @@ import {
 } from "react-bootstrap";
 import Axios from "common/Axios";
 import searchImage from "assets/searching.png"
+import "css/ProductDisplay.css";
 const ProductDisplay = ({ memberId }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -21,9 +22,16 @@ const ProductDisplay = ({ memberId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
   const itemsPerPage = 3;
 
   const fetchProducts = (category) => {
+    // 清除現有產品並重置動畫狀態
+    setIsLoadingProducts(true);
+    setFadeIn(false);
+    setProducts([]);
+
     const params = {
       member_id: memberId,
       category: category !== "All" ? category : undefined,
@@ -34,17 +42,38 @@ const ProductDisplay = ({ memberId }) => {
       .then((response) => {
         const transformedData = response.data.map((item) => {
           const sortedImages = item.images.sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
+
+          // 確保 category 是字串，如果是物件則取其 name 屬性
+          let categoryName = "";
+          if (typeof item.category === 'object' && item.category !== null) {
+            categoryName = item.category.name || item.category.id || "未分類";
+          } else if (typeof item.category === 'string' || typeof item.category === 'number') {
+            categoryName = String(item.category);
+          } else {
+            categoryName = "未分類";
+          }
+
           return {
             name: item.name,
             photos: sortedImages.map((image) => image.image),
-            tags: ["Category " + item.category],
+            tags: [categoryName], // 只保留類別名稱，不加前綴
             description: item.description,
-            price: 0, // Placeholder for price if not available in API
+            price: 0,
           };
         });
+
         setProducts(transformedData);
+        setIsLoadingProducts(false);
+
+        // 觸發淡入動畫
+        setTimeout(() => {
+          setFadeIn(true);
+        }, 50);
       })
-      .catch((error) => console.error("Error fetching products:", error));
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+        setIsLoadingProducts(false);
+      });
   };
 
   const fetchCategories = () => {
@@ -64,7 +93,13 @@ const ProductDisplay = ({ memberId }) => {
   const handleTabSelect = (tab) => {
     setActiveTab(tab);
     setCurrentPage(1);
-    fetchProducts(tab);
+    // 先清除產品，確保動畫能重新觸發
+    setProducts([]);
+    setFadeIn(false);
+    // 短暫延遲後再載入新產品
+    setTimeout(() => {
+      fetchProducts(tab);
+    }, 100);
   };
 
   const handleModalShow = (product) => {
@@ -92,13 +127,22 @@ const ProductDisplay = ({ memberId }) => {
         ))}
       </Tabs>
 
-      <Row className="g-4">
+      <Row className="g-4" style={{
+        opacity: fadeIn ? 1 : 0,
+        transform: fadeIn ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 0.5s ease-in-out, transform 0.5s ease-in-out'
+      }}>
       {paginatedProducts.length > 0 ? (
     paginatedProducts.map((product) => (
       <Col md={4} sm={6} xs={12} key={product.name}>
         <Card
           className="shadow-sm product-card"
           onClick={() => handleModalShow(product)}
+          style={{
+            animation: fadeIn ? 'fadeInUp 0.6s ease-in-out' : 'none',
+            animationDelay: `${paginatedProducts.indexOf(product) * 0.1}s`,
+            animationFillMode: 'both'
+          }}
         >
           <Carousel fade>
             {product.photos.map((photo, index) => (
@@ -118,6 +162,24 @@ const ProductDisplay = ({ memberId }) => {
           </Carousel>
           <Card.Body>
             <Card.Title>{product.name}</Card.Title>
+            {product.tags && product.tags.length > 0 && (
+              <div className="mt-2">
+                {product.tags.map((tag, tagIndex) => (
+                  <Badge
+                    key={tagIndex}
+                    bg="secondary"
+                    className="me-1"
+                    style={{
+                      animation: fadeIn ? 'fadeIn 0.8s ease-in-out' : 'none',
+                      animationDelay: `${(paginatedProducts.indexOf(product) * 0.1 + 0.2)}s`,
+                      animationFillMode: 'both'
+                    }}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </Card.Body>
         </Card>
       </Col>

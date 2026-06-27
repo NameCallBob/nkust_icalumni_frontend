@@ -1,50 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Container, Row, Col, Card, Tabs, Tab, Form, 
-  Button, Pagination, Alert, Badge, Spinner
+import {
+    Container, Row, Col, Card, Tabs, Tab, Form,
+    Button, Pagination, Alert, Badge, Spinner
 } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faSearch, faFilter, faGraduationCap, 
-  faBriefcase, faExclamationTriangle, faTrophy, faChevronRight
+import {
+    faSearch, faFilter, faGraduationCap,
+    faBriefcase, faExclamationTriangle, faTrophy, faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import 'css/AlumniListPage.css';
+import styles from 'css/AlumniListPage.module.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
-import FeaturedAlumni from 'components/User/alumni/featrued';
+import FeaturedAlumni from 'components/User/alumni/FeaturedAlumni';
 import SEO from 'SEO';
 import { debounce } from 'lodash';
+import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
 
 const AlumniListPage = () => {
     const [parentKey, setParentKey] = useState('級別');
-    const [childKey, setChildKey] = useState('全部');
+    const [childKey, setChildKey] = useState('全部');  // 級別預設為 '全部'
     const [childOptions, setChildOptions] = useState([]);
     const [alumniList, setAlumniList] = useState([]);
     const [featured, setFeaturedAlumni] = useState([]);
+    const [featuredSchool, setFeaturedSchoolAlumni] = useState([]); // 傑出校友
     const [searchQuery, setSearchQuery] = useState('');
-    const [yearsOrder, setYearOrder] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [emptyResult, setEmptyResult] = useState(false);
 
     // 分頁相關
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(12); // 增加每頁顯示的數量
+    const [itemsPerPage] = useState(6); // 每頁顯示6筆資料
     const [totalPages, setTotalPages] = useState(1);
-    
+
     // UI 相關狀態
     const [isSearching, setIsSearching] = useState(false);
     const [showFilterInfo, setShowFilterInfo] = useState(false);
 
     // 切換父級 Tabs 時
-    const handleParentKeyChange = (key) => {
-        setError(null);
+    const handleParentKeyChange = async (key) => {
         setParentKey(key);
-        setChildKey('全部');
-        fetchChildOptions(key);
+        await fetchChildOptions(key);
+        handleChildKeyChange(key === '級別' ? '全部' : 'all');
     };
 
     // 2. 修改 handleChildKeyChange 函數以處理職位"全部"的情況
@@ -52,52 +52,47 @@ const AlumniListPage = () => {
         setError(null);
         setChildKey(key);
         setCurrentPage(1); // 重置分頁
-        
-        // 處理職位"全部"的特殊情況
-        if (parentKey === '職位' && key === 'all') {
-            fetchAlumniList_normal(parentKey, null);
-        } else {
-            fetchAlumniList_normal(parentKey, key);
-        }
+
+        fetchAlumniList_normal(parentKey, key);
     };
 
 
-// 1. 修改 fetchChildOptions 函數
-const fetchChildOptions = (key) => {
-    setLoading(true);
-    setError(null);
-    const endpoint = key === '級別' ? 'member/graduate/unique-grades/' : 'member/position/get-all/';
-    
-    Axios().get(endpoint)
-        .then((res) => {
-            if (key === '級別') {
-                setChildOptions(['全部', ...res.data]);
-            } else {
-                // 確保數據格式正確
-                const positions = res.data && Array.isArray(res.data) 
-                    ? [{ id: 'all', title: '全部' }, ...res.data]
-                    : [{ id: 'all', title: '全部' }];
-                setChildOptions(positions);
-            }
-            setEmptyResult(false);
-            
-            // 在獲取新選項後，自動選擇"全部"選項
-            if (key === '級別') {
-                setChildKey('全部');
-                fetchAlumniList_normal('級別', '全部');
-            } else {
-                setChildKey('all');  // 使用 'all' 作為職位的全部選項ID
-                fetchAlumniList_normal('職位', 'all');
-            }
-        })
-        .catch((error) => {
-            setError(`無法獲取${key === '級別' ? '級別' : '職位'}資料，請稍後再試。`);
-            setChildOptions([]);
-        })
-        .finally(() => {
-            setLoading(false);
-        });
-};
+    // 1. 修改 fetchChildOptions 函數
+    const fetchChildOptions = (key) => {
+        setLoading(true);
+        setError(null);
+        const endpoint = key === '級別' ? 'member/graduate/unique-grades/' : 'member/position/get-all/';
+
+        Axios().get(endpoint)
+            .then((res) => {
+                let normalizedOptions = [];
+                if (key === '級別') {
+                    normalizedOptions = ['全部', ...res.data].map(grade => ({
+                        value: grade,
+                        label: grade === '全部' ? '全部' : `${grade}級`
+                    }));
+                } else {
+                    normalizedOptions = [{ value: 'all', label: '全部' }];
+                    if (res.data && Array.isArray(res.data)) {
+                        const positions = res.data.map(pos => {
+                            const id = pos.id || pos.pk;
+                            const title = pos.title || pos.name || '未知職位';
+                            return { value: String(id), label: title };
+                        }).filter(pos => pos.value); // 過濾掉無效ID的職位
+                        normalizedOptions.push(...positions);
+                    }
+                }
+                setChildOptions(normalizedOptions);
+                setEmptyResult(false);
+            })
+            .catch((error) => {
+                setError(`無法獲取${key === '級別' ? '級別' : '職位'}資料，請稍後再試。`);
+                setChildOptions([]);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
 
     // 從後端獲取系友資料 (具備錯誤處理與空結果處理)
     const fetchAlumniList_normal = (parent, child) => {
@@ -105,23 +100,23 @@ const fetchChildOptions = (key) => {
         setError(null);
         setEmptyResult(false);
         const endpoint = parent === '級別' ? 'member/any/get-by-grade/' : 'member/any/get-by-position/';
-        
+
         // 構建查詢參數
         let params = {
             page: currentPage,
             page_size: itemsPerPage
         };
-        
-        // 根據父標籤類型添加不同參數
+
         if (parent === '級別') {
-            params.grade = child === '全部' ? null : child;
-        } else {
-            // 職位參數 - 如果是 'all' 或者 null，則不添加 position 參數
+            if (child && child !== '全部') {
+                params.grade = child;
+            }
+        } else { // 職位
             if (child && child !== 'all') {
                 params.position = child;
             }
         }
-    
+
         Axios().get(endpoint, { params })
             .then((res) => {
                 if (res.data && Array.isArray(res.data)) {
@@ -150,14 +145,28 @@ const fetchChildOptions = (key) => {
     // 獲取傑出系友資料
     const fetchAlumniList_outstanding = () => {
         setLoading(true);
-        Axios().get('member/outstanding-alumni/featured/')
-            .then((res) => {
-                setFeaturedAlumni(res.data.results || []);
-            })
-            .catch((error) => {
-                // console.error('Error fetching featured alumni:', error);
-                // 傑出系友讀取失敗不顯示錯誤信息，只在控制台輸出
-                setFeaturedAlumni([]);
+        // 同時獲取傑出校友和傑出系友
+        const schoolAlumniPromise = Axios().get('member/school-outstanding-alumni/featured/')
+            .then(res => res.data.results || [])
+            .catch(err => {
+                // console.error('Error fetching school outstanding alumni:', err);
+                return []; // Return empty array on failure
+            });
+
+        const departmentAlumniPromise = Axios().get('member/outstanding-alumni/featured/')
+            .then(res => res.data.results || [])
+            .catch(err => {
+                // console.error('Error fetching department outstanding alumni:', err);
+                return []; // Return empty array on failure
+            });
+
+        Promise.all([
+            schoolAlumniPromise,
+            departmentAlumniPromise
+        ])
+            .then(([schoolAlumni, departmentAlumni]) => {
+                setFeaturedSchoolAlumni(schoolAlumni);
+                setFeaturedAlumni(departmentAlumni);
             })
             .finally(() => {
                 setLoading(false);
@@ -181,38 +190,38 @@ const fetchChildOptions = (key) => {
         setLoading(true);
         setError(null);
         setEmptyResult(false);
-           // 確保中文搜尋參數被正確編碼
-           const searchTerm = searchQuery.trim();
-    
-        Axios().get("member/any/alumni-search/", { 
-            params: { 
-                q: searchTerm, 
+        // 確保中文搜尋參數被正確編碼
+        const searchTerm = searchQuery.trim();
+
+        Axios().get("member/any/alumni-search/", {
+            params: {
+                q: searchTerm,
                 page: currentPage,
                 page_size: itemsPerPage
-            } 
-        })
-        .then((res) => {
-            if (res.data && Array.isArray(res.data)) {
-                setAlumniList(res.data);
-                setTotalPages(Math.ceil(res.data.length / itemsPerPage));
-                setEmptyResult(res.data.length === 0);
-            } else if (res.data && res.data.results) {
-                setAlumniList(res.data.results);
-                setTotalPages(Math.ceil(res.data.count / itemsPerPage));
-                setEmptyResult(res.data.results.length === 0);
-            } else {
-                setAlumniList([]);
-                setEmptyResult(true);
             }
         })
-        .catch((error) => {
-            // console.error('Error fetching search results:', error);
-            setError('搜尋時發生錯誤，請稍後再試。');
-            setAlumniList([]);
-        })
-        .finally(() => {
-            setLoading(false);
-        });
+            .then((res) => {
+                if (res.data && Array.isArray(res.data)) {
+                    setAlumniList(res.data);
+                    setTotalPages(Math.ceil(res.data.length / itemsPerPage));
+                    setEmptyResult(res.data.length === 0);
+                } else if (res.data && res.data.results) {
+                    setAlumniList(res.data.results);
+                    setTotalPages(Math.ceil(res.data.count / itemsPerPage));
+                    setEmptyResult(res.data.results.length === 0);
+                } else {
+                    setAlumniList([]);
+                    setEmptyResult(true);
+                }
+            })
+            .catch((error) => {
+                // console.error('Error fetching search results:', error);
+                setError('搜尋時發生錯誤，請稍後再試。');
+                setAlumniList([]);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     const handleSearch = () => {
@@ -228,8 +237,20 @@ const fetchChildOptions = (key) => {
     // 處理分頁切換
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
+
+        // 滾動到系友列表區塊的頂部
+        setTimeout(() => {
+            const alumniGridSection = document.querySelector('.alumni-grid-section');
+            if (alumniGridSection) {
+                const rect = alumniGridSection.getBoundingClientRect();
+                const scrollTop = window.pageYOffset + rect.top - 100; // 預留 100px 的空間
+                window.scrollTo({
+                    top: scrollTop,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+
         if (isSearching) {
             performSearch();
         } else {
@@ -258,24 +279,12 @@ const fetchChildOptions = (key) => {
     useEffect(() => {
         setLoading(true);
         setError(null);
-        
-        // 並行請求，提高加載效率
+
         const fetchInitialData = async () => {
             try {
-                // 獲取年級數據
-                const gradesResponse = await Axios().get("member/graduate/unique-grades/");
-                let tmp_array = ["全部"];
-                setYearOrder(tmp_array.concat(gradesResponse.data));
-                
-                // 獲取子級選項
                 await fetchChildOptions(parentKey);
-                
-                // 獲取系友列表
                 await fetchAlumniList_normal(parentKey, childKey);
-                
-                // 獲取傑出系友
                 await fetchAlumniList_outstanding();
-                
             } catch (error) {
                 // console.error('Error fetching initial data:', error);
                 setError('獲取初始資料時發生錯誤，請重新整理頁面。');
@@ -283,94 +292,122 @@ const fetchChildOptions = (key) => {
                 setLoading(false);
             }
         };
-        
+
         fetchInitialData();
     }, []);
 
     return (
-        <Container className="alumni-list-container py-5 my-5">
+        <Container fluid className="px-0" style={{ background: '#f8fafc', minHeight: '100vh' }}>
+            <Container className="px-0 px-md-3">
             <SEO
                 main={false}
                 title="系友列表 | 智慧商務系友會"
                 description="瀏覽智慧商務系友會成員名單，發現更多聯繫機會與合作夥伴。"
                 keywords={["智慧商務", "系友列表", "成員", "校友"]}
             />
+            </Container>
 
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+            {/* Page Header - Navy section */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
             >
-                <div className="header-section mb-5">
-                    <h1 className="text-center display-4 fw-bold mb-2">系友介紹</h1>
-                    <p className="text-center text-muted lead">探索並連結我們出色的校友網絡</p>
-                    <div className="header-divider"></div>
+                <div style={{
+                    background: '#1e3a8a',
+                    padding: '3.5rem 2rem 3rem',
+                    textAlign: 'center',
+                    marginBottom: '0'
+                }}>
+                    <h1 style={{ fontWeight: '700', fontSize: '2.4rem', color: '#ffffff', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>系友名錄</h1>
+                    <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.05rem', marginBottom: '0', maxWidth: '520px', margin: '0 auto' }}>探索並連結我們出色的校友網絡</p>
+                    <div style={{ height: '3px', width: '60px', background: '#a0781c', margin: '1.25rem auto 0', borderRadius: '2px' }}></div>
                 </div>
             </motion.div>
 
-            {/* 傑出系友區塊 */}
-            {featured && featured.length > 0 && (
-                <motion.div 
+            <Container className="py-4 py-md-5">
+
+            {/* 傑出校友區塊 */}
+            {featuredSchool && featuredSchool.length > 0 && (
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="featured-section mb-5"
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    style={{ background: '#0f172a', borderRadius: '8px', padding: '2.5rem 2rem', marginBottom: '1.5rem' }}
                 >
-                    <div className="section-header d-flex align-items-center mb-4">
-                        <FontAwesomeIcon icon={faTrophy} className="text-warning me-2" />
-                        <h2 className="m-0">傑出系友</h2>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem' }}>
+                        <FontAwesomeIcon icon={faTrophy} className="me-3" style={{ color: '#a0781c', fontSize: '1.5rem' }} />
+                        <h2 style={{ color: '#ffffff', fontWeight: '700', margin: '0', fontSize: '1.5rem', letterSpacing: '-0.3px' }}>傑出校友</h2>
+                    </div>
+                    <FeaturedAlumni featuredAlumni={featuredSchool} />
+                </motion.div>
+            )}
+
+            {/* 傑出系友區塊 */}
+            {featured && featured.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    style={{ background: '#0f172a', borderRadius: '8px', padding: '2.5rem 2rem', marginBottom: '1.5rem' }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem' }}>
+                        <FontAwesomeIcon icon={faTrophy} className="me-3" style={{ color: '#a0781c', fontSize: '1.5rem' }} />
+                        <h2 style={{ color: '#ffffff', fontWeight: '700', margin: '0', fontSize: '1.5rem', letterSpacing: '-0.3px' }}>傑出系友</h2>
                     </div>
                     <FeaturedAlumni featuredAlumni={featured} />
                 </motion.div>
             )}
 
+
+
             {/* 搜尋與篩選區塊 */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="filter-search-section mb-5"
+                className={`${styles.filterSearchSection} mb-5`}
             >
-                <Card className="shadow-sm border-0">
-                    <Card.Body>
-                        <div className="section-header d-flex align-items-center justify-content-between mb-4">
-                            <div className="d-flex align-items-center">
-                                <FontAwesomeIcon icon={faFilter} className="text-primary me-2" />
-                                <h3 className="m-0">尋找系友</h3>
+                <Card className={styles.filterCard}>
+                    <Card.Body className={styles.filterCardBody}>
+                        <div className={styles.filterHeader}>
+                            <div className={styles.filterHeaderLeft}>
+                                <FontAwesomeIcon icon={faFilter} className={styles.filterIcon} />
+                                <h3 className={styles.filterTitle}>尋找系友</h3>
                             </div>
-                            <Button 
-                                variant="link" 
-                                className="text-muted p-0" 
+                            <Button
+                                variant="link"
+                                className={styles.helpButton}
                                 onClick={toggleFilterInfo}
                             >
                                 <small>篩選說明</small>
                             </Button>
                         </div>
-                        
+
                         {showFilterInfo && (
-                            <Alert variant="info" className="mb-3">
+                            <Alert className={`${styles.infoAlert} mb-3`}>
                                 <small>
                                     您可以透過「級別」查看不同屆別的系友，或透過「職位」篩選特定職務的系友。
                                     也可以直接在搜尋框中輸入關鍵字，查找特定系友、公司或專長。
                                 </small>
                             </Alert>
                         )}
-                        
+
                         {/* 搜尋框 */}
-                        <Form className="mb-4 search-form" onKeyDown={handleEnterPress}>
-                            <div className="position-relative">
+                        <Form className={`${styles.searchForm} mb-4`} onKeyDown={handleEnterPress}>
+                            <div className={styles.searchInputWrapper}>
                                 <Form.Control
                                     type="text"
                                     placeholder="搜尋系友、公司、專長、產品..."
                                     value={searchQuery}
                                     onChange={handleSearchChange}
-                                    className="py-2 ps-4 shadow-sm border-0"
+                                    className={styles.searchInput}
                                 />
-                                <FontAwesomeIcon icon={faSearch} className="position-absolute search-icon" />
+                                <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
                                 {isSearching && searchQuery && (
-                                    <Button 
-                                        variant="link" 
-                                        className="position-absolute search-reset" 
+                                    <Button
+                                        variant="link"
+                                        className={styles.searchReset}
                                         onClick={resetSearch}
                                     >
                                         重置
@@ -378,76 +415,59 @@ const fetchChildOptions = (key) => {
                                 )}
                             </div>
                         </Form>
-                        
+
                         {/* 父級 Tabs */}
                         <Tabs
                             id="parent-tabs"
                             activeKey={parentKey}
                             onSelect={(key) => handleParentKeyChange(key)}
-                            className="mb-3 parent-tabs"
+                            className={`${styles.parentTabs} mb-3`}
                         >
-                            <Tab 
-                                eventKey="級別" 
+                            <Tab
+                                eventKey="級別"
                                 title={
                                     <span>
                                         <FontAwesomeIcon icon={faGraduationCap} className="me-2" />
                                         級別
                                     </span>
-                                } 
+                                }
                             />
-                            <Tab 
-                                eventKey="職位" 
+                            <Tab
+                                eventKey="職位"
                                 title={
                                     <span>
                                         <FontAwesomeIcon icon={faBriefcase} className="me-2" />
                                         職位
                                     </span>
-                                } 
+                                }
                             />
                         </Tabs>
 
                         {/* 子級 Tabs */}
                         {loading && !alumniList.length ? (
                             <div className="d-flex justify-content-center my-4">
-                                <LoadingSpinner />
+                                <div className={styles.loadingSpinner}></div>
                             </div>
                         ) : error ? (
-                            <Alert variant="danger" className="mb-3">
+                            <Alert className={`${styles.errorAlert} mb-3`}>
                                 <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
                                 {error}
                             </Alert>
                         ) : (
-                            <div className="child-tabs-container">
+                            <div className={styles.childTabsContainer}>
                                 <Tabs
                                     id="child-tabs"
                                     activeKey={childKey}
                                     onSelect={(key) => handleChildKeyChange(key)}
-                                    className="child-tabs"
+                                    className={styles.childTabs}
                                 >
-                                    {childOptions.map((option) => {
-                                        if (parentKey === '級別') {
-                                            // 級別是字符串
-                                            return (
-                                                <Tab 
-                                                    eventKey={option} 
-                                                    title={option === '全部' ? '全部' : `${option}級`} 
-                                                    key={option} 
-                                                />
-                                            );
-                                        } else {
-                                            // 職位是對象，檢查確保有必要的屬性
-                                            if (typeof option === 'object' && option !== null) {
-                                                return (
-                                                    <Tab 
-                                                        eventKey={option.id} 
-                                                        title={option.title || '未知職位'} 
-                                                        key={option.id || Math.random().toString()} 
-                                                    />
-                                                );
-                                            }
-                                            return null;
-                                        }
-                                    })}
+                                    {childOptions.map((option) => (
+                                        <Tab
+                                            eventKey={option.value}
+                                            title={option.label}
+                                            key={option.value}
+                                        />
+                                    ))}
                                 </Tabs>
                             </div>
                         )}
@@ -456,7 +476,7 @@ const fetchChildOptions = (key) => {
             </motion.div>
 
             {/* 系友列表區塊 */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
@@ -467,9 +487,9 @@ const fetchChildOptions = (key) => {
                         <Badge bg="primary" className="p-2">
                             搜尋: "{searchQuery}" {alumniList.length > 0 ? `(${alumniList.length} 位系友)` : ''}
                         </Badge>
-                        <Button 
-                            variant="outline-secondary" 
-                            size="sm" 
+                        <Button
+                            variant="outline-secondary"
+                            size="sm"
                             onClick={resetSearch}
                             className="ms-2"
                         >
@@ -477,26 +497,25 @@ const fetchChildOptions = (key) => {
                         </Button>
                     </div>
                 )}
-                
+
                 {loading && alumniList.length > 0 ? (
-                    <div className="alumni-loading-overlay">
-                        <Spinner animation="border" variant="primary" />
-                        <p className="mt-2">載入系友資料中...</p>
+                    <div className={styles.loadingOverlay}>
+                        <Spinner animation="border" className={styles.loadingSpinner} />
+                        <p className={`${styles.loadingText} mt-2`}>載入系友資料中...</p>
                     </div>
                 ) : error ? (
-                    <Alert variant="danger" className="mb-3">
+                    <Alert className={`${styles.errorAlert} mb-3`}>
                         <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
                         {error}
                     </Alert>
                 ) : emptyResult ? (
-                    <Alert variant="warning" className="text-center py-5">
+                    <Alert className={`${styles.warningAlert} text-center py-5`}>
                         <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" size="lg" />
                         <h4 className="mt-3">沒有找到符合條件的系友</h4>
                         <p className="mb-0">請嘗試其他搜尋條件或篩選方式</p>
                         {isSearching && (
-                            <Button 
-                                variant="outline-primary" 
-                                className="mt-3" 
+                            <Button
+                                className={`${styles.resetButton} mt-3`}
                                 onClick={resetSearch}
                             >
                                 查看所有系友
@@ -505,81 +524,80 @@ const fetchChildOptions = (key) => {
                     </Alert>
                 ) : (
                     <>
-                        <Row className="alumni-grid">
+                        <div className={styles.alumniGrid}>
                             {alumniList.map((alumni) => (
-                                <Col xs={12} sm={6} md={4} lg={3} className="mb-4" key={alumni.id}>
-                                    <motion.div
-                                        whileHover={{ 
-                                            y: -5,
-                                            transition: { duration: 0.2 }
-                                        }}
+                                <motion.div
+                                    key={alumni.id}
+                                    whileHover={{
+                                        y: -3,
+                                        transition: { duration: 0.2 }
+                                    }}
+                                >
+                                    <Card
+                                        className={`${styles.alumniCard} h-100`}
+                                        onClick={() => window.location.href = `/alumni/${alumni.id}`}
                                     >
-                                        <Card
-                                            className="alumni-card h-100 border-0 shadow-sm"
-                                            onClick={() => window.location.href = `/alumni/${alumni.id}`}
-                                        >
-                                            <div className="image-wrapper">
-                                                <div className="overlay"></div>
-                                                {alumni.photo ? (
+                                        <div className="row g-0 h-100">
+                                            <div className="col-4">
+                                                <div className={styles.imageWrapper}>
+                                                    <div className={styles.imageOverlay}></div>
                                                     <Card.Img
-                                                        variant="top"
-                                                        src={process.env.REACT_APP_BASE_URL + alumni.photo}
+                                                        src={getImageSrc(alumni.photo ? process.env.REACT_APP_BASE_URL + alumni.photo : null, 'avatar')}
                                                         alt={alumni.name}
-                                                        className="card-img"
-                                                        onError={(e) => {
-                                                            // 先前出現反覆拿預設圖片的問題
-                                                                if (!e.target.getAttribute('data-error-handled')) {
-                                                                    e.target.setAttribute('data-error-handled', 'true');
-                                                                    e.target.src = '/images/avatar-placeholder.png';
-                                                                }
-                                                        }}
+                                                        className={styles.cardImage}
+                                                        style={{ backgroundColor: '#f8fafc' }}
+                                                        onError={(e) => handleImageError(e, 'avatar')}
                                                     />
-                                                ) : (
-                                                    <Card.Img
-                                                        variant="top"
-                                                        src="/images/avatar-placeholder.png"
-                                                        alt={alumni.name}
-                                                        className="card-img"
-                                                    />
-                                                )}
-                                            </div>
-                                            <Card.Body className="d-flex flex-column align-items-start">
-                                                <Card.Title className="mb-1 fw-bold">{alumni.name || '未提供姓名'}</Card.Title>
-                                                <Card.Text className="text-muted small mb-1">
-                                                    {alumni.position && alumni.position.title ? alumni.position.title : '職位未提供'}
-                                                </Card.Text>
-                                                <Card.Text className="text-primary small mb-2">
-                                                    {alumni.graduate && alumni.graduate.grade ? `${alumni.graduate.grade}級` : '級別未提供'}
-                                                </Card.Text>
-                                                {alumni.company && (
-                                                    <Card.Text className="company-tag">
-                                                        {alumni.company}
-                                                    </Card.Text>
-                                                )}
-                                                <div className="mt-auto pt-2 w-100 text-end">
-                                                    <small className="text-muted view-profile">
-                                                        查看詳情 <FontAwesomeIcon icon={faChevronRight} size="xs" />
-                                                    </small>
                                                 </div>
-                                            </Card.Body>
-                                        </Card>
-                                    </motion.div>
-                                </Col>
+                                            </div>
+                                            <div className="col-8">
+                                                <Card.Body className={`${styles.cardBody} d-flex flex-column h-100`}>
+                                                    <Card.Title className={`${styles.cardTitle} mb-1`}>{alumni.name || '未提供姓名'}</Card.Title>
+                                                    <Card.Text className={`${styles.positionText} mb-1`}>
+                                                        {(() => {
+                                                            if (!alumni.position) {
+                                                                return '職位未提供';
+                                                            }
+                                                            if (typeof alumni.position === 'string') {
+                                                                return alumni.position;
+                                                            }
+                                                            if (typeof alumni.position === 'object' && alumni.position !== null) {
+                                                                return String(alumni.position.title || alumni.position.name || '職位未提供');
+                                                            }
+                                                            return '職位未提供';
+                                                        })()}
+                                                    </Card.Text>
+                                                    <span className={styles.gradeText}>
+                                                        {alumni.graduate && alumni.graduate.grade ? `${alumni.graduate.grade}級` : '級別未提供'}
+                                                    </span>
+                                                    {alumni.company && (
+                                                        <Card.Text className={`${styles.companyTag} mb-0`}>
+                                                            {alumni.company}
+                                                        </Card.Text>
+                                                    )}
+                                                    <div className={`${styles.viewProfile} mt-auto w-100`}>
+                                                        查看介紹 <FontAwesomeIcon icon={faChevronRight} size="xs" />
+                                                    </div>
+                                                </Card.Body>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </motion.div>
                             ))}
-                        </Row>
+                        </div>
 
                         {/* 分頁按鈕 */}
                         {totalPages > 1 && (
-                            <Pagination className="justify-content-center mt-5">
+                            <Pagination className={`${styles.pagination} justify-content-center mt-5`}>
                                 <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
                                 <Pagination.Prev onClick={() => handlePageChange(Math.max(1, currentPage - 1))} disabled={currentPage === 1} />
-                                
+
                                 {[...Array(totalPages)].map((_, index) => {
                                     const pageNumber = index + 1;
                                     // 只顯示當前頁附近的頁碼
                                     if (
-                                        pageNumber === 1 || 
-                                        pageNumber === totalPages || 
+                                        pageNumber === 1 ||
+                                        pageNumber === totalPages ||
                                         (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
                                     ) {
                                         return (
@@ -592,14 +610,14 @@ const fetchChildOptions = (key) => {
                                             </Pagination.Item>
                                         );
                                     } else if (
-                                        (pageNumber === currentPage - 2 && currentPage > 3) || 
+                                        (pageNumber === currentPage - 2 && currentPage > 3) ||
                                         (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
                                     ) {
                                         return <Pagination.Ellipsis key={`ellipsis-${pageNumber}`} />;
                                     }
                                     return null;
                                 })}
-                                
+
                                 <Pagination.Next onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} />
                                 <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
                             </Pagination>
@@ -607,6 +625,8 @@ const fetchChildOptions = (key) => {
                     </>
                 )}
             </motion.div>
+
+            </Container>
         </Container>
     );
 };

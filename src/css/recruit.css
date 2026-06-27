@@ -1,166 +1,166 @@
-/* 全局基本樣式設定 */
+/* ============================================================
+   recruit.css  –  Professional Corporate Style
+   Color palette:
+     Navy primary : #1e3a8a
+     CTA blue     : #2563eb
+     Text primary : #0f172a
+     Text secondary: #475569
+     Background   : #f8fafc
+     Surface      : #ffffff
+     Border       : #e2e8f0
+   ============================================================ */
+
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --accent-color: #e74c3c;
-  --light-bg: #f8f9fa;
-  --border-color: #e0e0e0;
-  --text-color: #333;
-  --text-muted: #6c757d;
+  --corp-navy: #1e3a8a;
+  --corp-blue: #2563eb;
+  --corp-text: #0f172a;
+  --corp-muted: #475569;
+  --corp-bg: #f8fafc;
+  --corp-surface: #ffffff;
+  --corp-border: #e2e8f0;
+  --corp-danger-bg: #fef2f2;
+  --corp-danger-text: #dc2626;
+  --corp-danger-border: #fecaca;
 }
 
 body {
-  color: var(--text-color);
-  font-family: 'Microsoft JhengHei', Arial, sans-serif;
+  color: var(--corp-text);
+  font-family: 'Microsoft JhengHei', 'Noto Sans TC', Arial, sans-serif;
 }
 
+/* ── Page wrapper ── */
 .recruit-page {
   padding-bottom: 3rem;
 }
 
-/* 標題區塊樣式 */
-.recruit-page h1 {
-  font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: 1.5rem;
-  position: relative;
-  padding-bottom: 0.5rem;
-}
-
-.recruit-page h1::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 3px;
-  background-color: var(--primary-color);
-}
-
-/* 無職位提示區塊 */
+/* ── No-job placeholder ── */
 .no-job {
   border-radius: 8px;
   padding: 3rem 1rem;
-  background-color: var(--light-bg);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  background-color: var(--corp-surface);
+  border: 1px solid var(--corp-border);
 }
 
 .no-job h2 {
-  color: var(--text-muted);
+  color: #94a3b8;
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
-/* 職位表格樣式 */
+/* ── Table header ── */
+.table-header-corporate th {
+  background-color: #1e3a8a;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.03em;
+  border: none;
+  padding: 12px 16px;
+}
+
+/* ── Table rows ── */
 .job-table {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--corp-border);
   border-radius: 8px;
   overflow: hidden;
 }
 
-.job-table thead {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.job-table th {
-  font-weight: 600;
-  padding: 1rem;
-  border-bottom: none;
+.job-table tbody tr td {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: var(--corp-text);
+  vertical-align: middle;
+  border-color: var(--corp-border);
 }
 
 .job-row {
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.15s ease;
 }
 
 .job-row:hover {
-  background-color: rgba(52, 152, 219, 0.1);
-  transform: translateY(-2px);
+  background-color: #eff6ff;
 }
 
-/* 職位卡片樣式 */
-.job-card {
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  height: 100%;
-}
-
-.job-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary-color);
-}
-
-.job-card .card-title {
-  font-size: 1.1rem;
+/* ── "即將截止" badge ── */
+.deadline-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background-color: var(--corp-danger-bg);
+  color: var(--corp-danger-text);
+  border: 1px solid var(--corp-danger-border);
+  border-radius: 4px;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-}
-
-.job-card .card-subtitle {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
-.job-card .card-footer {
-  background-color: transparent;
-  padding-top: 0;
-}
-
-.job-card .badge {
-  font-size: 0.7rem;
-  padding: 0.25rem 0.5rem;
   vertical-align: middle;
 }
 
-/* 模態框樣式 */
+/* ── Job card ── */
+.job-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--corp-surface);
+  border: 1px solid var(--corp-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Modal ── */
 .modal-header {
-  border-bottom: 2px solid var(--primary-color);
+  border-bottom: 2px solid var(--corp-navy);
 }
 
 .modal-title {
-  font-weight: 600;
-  color: var(--primary-color);
+  font-weight: 700;
+  color: var(--corp-text);
 }
 
+/* ── Detail info cards ── */
 .detail-card {
   min-height: 180px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  background-color: var(--corp-bg);
+  border: 1px solid var(--corp-border);
 }
 
 .detail-card h5 {
-  color: var(--primary-color);
+  color: var(--corp-navy);
   font-weight: 600;
 }
 
+/* ── Job description section ── */
 .job-description h5 {
-  color: var(--primary-color);
+  color: var(--corp-navy);
   font-weight: 600;
 }
 
 .job-content {
-  line-height: 1.6;
+  line-height: 1.7;
+  color: var(--corp-text);
+  font-size: 0.9rem;
 }
 
-/* 照片輪播樣式 */
+/* ── Image carousel ── */
 .carousel-img-container {
   border-radius: 8px;
   overflow: hidden;
-  height: 300px; /* 固定高度 */
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--light-bg);
+  background-color: var(--corp-bg);
+  border: 1px solid var(--corp-border);
 }
 
 .carousel-img-container img {
-  object-fit: contain; /* 保持圖片比例 */
+  object-fit: contain;
   max-height: 100%;
   max-width: 100%;
 }
@@ -180,48 +180,25 @@ body {
   margin-bottom: -1rem;
 }
 
-/* RWD 響應式調整 */
-@media (max-width: 767.98px) {
-  .recruit-page {
-    padding: 0 0.5rem 2rem;
-  }
-  
-  .recruit-page h1 {
-    font-size: 1.5rem;
-  }
-  
-  .job-table th, 
-  .job-table td {
-    padding: 0.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .detail-card {
-    min-height: auto;
-    margin-bottom: 1rem;
-  }
-  
-  .carousel-img-container {
-    height: 200px;
-  }
-  
-  .modal-body {
-    padding: 1rem;
-  }
+/* ── Pagination ── */
+.pagination .page-item .page-link {
+  color: var(--corp-navy);
+  border-color: var(--corp-border);
+  font-size: 0.875rem;
 }
 
-/* 平板裝置 */
-@media (min-width: 768px) and (max-width: 991.98px) {
-  .job-card .card-title {
-    font-size: 1rem;
-  }
-  
-  .job-card .card-subtitle {
-    font-size: 0.85rem;
-  }
+.pagination .page-item.active .page-link {
+  background-color: var(--corp-navy);
+  border-color: var(--corp-navy);
+  color: #ffffff;
 }
 
-/* 載入中動畫樣式 */
+.pagination .page-item .page-link:hover {
+  background-color: #eff6ff;
+  color: var(--corp-navy);
+}
+
+/* ── Loading container ── */
 .loading-spinner-container {
   display: flex;
   flex-direction: column;
@@ -230,18 +207,34 @@ body {
   padding: 2rem;
 }
 
-/* 分頁控制樣式 */
-.pagination .page-item .page-link {
-  color: var(--primary-color);
-  border-color: var(--border-color);
+/* ── Responsive ── */
+@media (max-width: 767.98px) {
+  .recruit-page {
+    padding: 0 0.5rem 2rem;
+  }
+
+  .job-table th,
+  .job-table td {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .detail-card {
+    min-height: auto;
+    margin-bottom: 1rem;
+  }
+
+  .carousel-img-container {
+    height: 200px;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
 }
 
-.pagination .page-item.active .page-link {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  color: white;
-}
-
-.pagination .page-item .page-link:hover {
-  background-color: var(--light-bg);
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .job-card .card-title {
+    font-size: 1rem;
+  }
 }

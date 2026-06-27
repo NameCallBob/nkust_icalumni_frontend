@@ -11,11 +11,13 @@ import {
   Spinner,
   InputGroup,
   Badge,
+  Dropdown,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { toast } from "react-toastify";
 import "bootstrap-icons/font/bootstrap-icons.css"; // 確保引入 Bootstrap Icons
+import useRWD from 'hooks/useRWD';
 
 const ArticleEditor = () => {
   const [articles, setArticles] = useState([]);
@@ -29,6 +31,7 @@ const ArticleEditor = () => {
   const [sortOrder, setSortOrder] = useState("publish_at");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const rwd = useRWD();
 
   useEffect(() => {
     fetchArticles();
@@ -83,7 +86,7 @@ const ArticleEditor = () => {
   const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
 
   return (
-    <Container fluid className="py-4">
+    <Container fluid className="admin-container py-4">
       <Row className="mb-4 align-items-center">
         <Col>
           <h2 className="fw-bold">文章管理-管理已發布與未發布的文章</h2>
@@ -93,6 +96,7 @@ const ArticleEditor = () => {
             variant="primary"
             onClick={() => navigate("/alumni/manage/article/new/")}
             className="rounded-pill px-4"
+            style={rwd.getButtonStyle()}
           >
             <i className="bi bi-plus-lg me-2"></i>新增文章
           </Button>
@@ -159,48 +163,77 @@ const ArticleEditor = () => {
         </div>
       ) : (
         <>
-          <Table hover responsive className="shadow-sm">
-            <thead className="bg-light">
-              <tr>
-                <th>標題</th>
-                <th>發布日期</th>
-                <th>結束日期</th>
-                <th>狀態</th>
-                <th className="text-center">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentArticles.map((article) => (
-                <tr key={article.id}>
-                  <td>{article.title}</td>
-                  <td>{moment(article.publish_at).format("YYYY-MM-DD HH:mm")}</td>
-                  <td>{moment(article.expire_at).format("YYYY-MM-DD HH:mm")}</td>
-                  <td>
-                    <Badge bg={article.active ? "success" : "secondary"}>
-                      {article.active ? "已發布" : "未發布"}
-                    </Badge>
-                  </td>
-                  <td className="text-center">
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleEdit(article)}
-                    >
-                      <i className="bi bi-pencil"></i>
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => handleDelete(article.id)}
-                    >
-                      <i className="bi bi-trash"></i>
-                    </Button>
-                  </td>
+          <div style={rwd.getContainerStyle()}>
+            <Table hover responsive className="shadow-sm" style={rwd.getTableStyle()}>
+              <thead className="bg-light">
+                <tr>
+                  <th>標題</th>
+                  <th>發布日期</th>
+                  <th>結束日期</th>
+                  <th>狀態</th>
+                  <th className="text-center">操作</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {currentArticles.map((article) => (
+                  <tr key={article.id}>
+                    <td>{article.title}</td>
+                    <td>{moment(article.publish_at).format("YYYY-MM-DD HH:mm")}</td>
+                    <td>{moment(article.expire_at).format("YYYY-MM-DD HH:mm")}</td>
+                    <td>
+                      <Badge bg={article.active ? "success" : "secondary"}>
+                        {article.active ? "已發布" : "未發布"}
+                      </Badge>
+                    </td>
+                    <td className="text-center">
+                      {rwd.isMobile ? (
+                        <Dropdown>
+                          <Dropdown.Toggle
+                            variant="outline-secondary"
+                            size="sm"
+                            style={rwd.getButtonStyle()}
+                          >
+                            <i className="bi bi-three-dots"></i>
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => handleEdit(article)}>
+                              <i className="bi bi-pencil me-2"></i>編輯
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              className="text-danger"
+                              onClick={() => handleDelete(article.id)}
+                            >
+                              <i className="bi bi-trash me-2"></i>刪除
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => handleEdit(article)}
+                            style={rwd.getButtonStyle()}
+                          >
+                            <i className="bi bi-pencil"></i>
+                          </Button>
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => handleDelete(article.id)}
+                            style={rwd.getButtonStyle()}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </Button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
 
           {/* 分頁 */}
           {totalPages > 1 && (

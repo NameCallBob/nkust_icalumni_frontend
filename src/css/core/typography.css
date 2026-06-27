@@ -1,0 +1,354 @@
+/* ============================================
+   學術字體系統 - Typography System
+   專業的字體層級與排版規範
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&family=Noto+Sans+TC:wght@400;500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ===== 基礎字體設定 ===== */
+html {
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+  color: var(--color-gray-800);
+}
+
+/* ===== 標題層級系統 ===== */
+.display-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-black);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tighter);
+  color: var(--color-primary);
+}
+
+h1, .h1 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-extrabold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--color-text-primary, #0f172a);
+  margin-bottom: 1rem;
+}
+
+h2, .h2 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--color-text-primary, #0f172a);
+  margin-bottom: 1rem;
+}
+
+h3, .h3 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-normal);
+  color: var(--color-text-primary, #0f172a);
+  margin-bottom: 0.875rem;
+}
+
+h4, .h4 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-normal);
+  color: var(--color-text-secondary, #475569);
+  margin-bottom: 0.75rem;
+}
+
+h5, .h5 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h5);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-normal);
+  color: var(--color-gray-700);
+  margin-bottom: 0.5rem;
+}
+
+h6, .h6 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-wide);
+  color: var(--color-gray-700);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+/* ===== 內容文字樣式 ===== */
+p, .text-body {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-relaxed);
+  color: var(--color-gray-700);
+  margin-bottom: 1rem;
+}
+
+.lead {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-relaxed);
+  color: var(--color-gray-600);
+}
+
+.text-large {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-relaxed);
+}
+
+.text-small {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-normal);
+}
+
+.text-caption {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-normal);
+  color: var(--color-gray-500);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+}
+
+/* ===== 學術專業樣式 ===== */
+.academic-title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.academic-title::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--gradient-secondary);
+  border-radius: 2px;
+}
+
+.academic-subtitle {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-medium);
+  color: var(--color-gray-600);
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-title {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--gradient-secondary);
+  border-radius: 2px;
+}
+
+.card-title {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  color: var(--color-gray-800);
+  margin-bottom: 0.75rem;
+}
+
+/* ===== 強調與裝飾文字 ===== */
+.text-gradient-primary {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-secondary {
+  background: var(--gradient-secondary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-academic {
+  background: var(--gradient-academic);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-highlight {
+  background: linear-gradient(135deg, rgba(160, 120, 28, 0.12) 0%, rgba(201, 168, 76, 0.12) 100%);
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  font-weight: var(--fw-semibold);
+}
+
+/* ===== 字重修飾類 ===== */
+.fw-thin { font-weight: var(--fw-thin); }
+.fw-extralight { font-weight: var(--fw-extralight); }
+.fw-light { font-weight: var(--fw-light); }
+.fw-regular { font-weight: var(--fw-regular); }
+.fw-medium { font-weight: var(--fw-medium); }
+.fw-semibold { font-weight: var(--fw-semibold); }
+.fw-bold { font-weight: var(--fw-bold); }
+.fw-extrabold { font-weight: var(--fw-extrabold); }
+.fw-black { font-weight: var(--fw-black); }
+
+/* ===== 行高修飾類 ===== */
+.lh-none { line-height: var(--lh-none); }
+.lh-tight { line-height: var(--lh-tight); }
+.lh-snug { line-height: var(--lh-snug); }
+.lh-normal { line-height: var(--lh-normal); }
+.lh-relaxed { line-height: var(--lh-relaxed); }
+.lh-loose { line-height: var(--lh-loose); }
+.lh-extra-loose { line-height: var(--lh-extra-loose); }
+
+/* ===== 字間距修飾類 ===== */
+.ls-tighter { letter-spacing: var(--ls-tighter); }
+.ls-tight { letter-spacing: var(--ls-tight); }
+.ls-normal { letter-spacing: var(--ls-normal); }
+.ls-wide { letter-spacing: var(--ls-wide); }
+.ls-wider { letter-spacing: var(--ls-wider); }
+.ls-widest { letter-spacing: var(--ls-widest); }
+
+/* ===== 特殊文字效果 ===== */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-strong {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* .text-glow - 移除霓虹文字發光效果 */
+
+/* ===== 引用與特殊內容 ===== */
+blockquote {
+  font-family: var(--font-serif);
+  font-size: var(--fs-lg);
+  font-style: italic;
+  color: var(--color-gray-600);
+  border-left: 4px solid var(--color-secondary);
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  position: relative;
+}
+
+blockquote::before {
+  content: '"';
+  font-size: 4rem;
+  color: var(--color-secondary);
+  position: absolute;
+  top: -1rem;
+  left: -0.5rem;
+  font-family: var(--font-serif);
+}
+
+.monospace {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  background: var(--color-gray-100);
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+}
+
+/* ===== 響應式字體調整 ===== */
+@media (max-width: 768px) {
+  .display-title {
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    line-height: var(--lh-snug);
+  }
+
+  .academic-title {
+    font-size: clamp(2rem, 6vw, 2.5rem);
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    margin-bottom: 1rem;
+  }
+
+  h1, .h1 {
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+  }
+
+  h2, .h2 {
+    font-size: clamp(1.5rem, 5vw, 1.875rem);
+  }
+
+  h3, .h3 {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+  }
+
+  p, .text-body {
+    font-size: var(--fs-sm);
+    line-height: var(--lh-relaxed);
+  }
+
+  .lead {
+    font-size: var(--fs-base);
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: var(--fs-sm);
+  }
+
+  .academic-subtitle {
+    font-size: var(--fs-base);
+    margin-bottom: 2rem;
+  }
+
+  blockquote {
+    font-size: var(--fs-base);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  blockquote::before {
+    font-size: 3rem;
+    top: -0.75rem;
+    left: -0.25rem;
+  }
+}

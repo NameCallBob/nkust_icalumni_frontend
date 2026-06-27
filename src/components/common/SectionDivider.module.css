@@ -1,0 +1,341 @@
+/* SectionDivider.module.css - 區塊分隔元件模組化CSS */
+
+.sectionDivider {
+  position: relative;
+  text-align: center;
+  margin: 4rem 0;
+  overflow: hidden;
+}
+
+.dividerLine {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  background: #ffffff;
+  padding: 0 2rem;
+  z-index: 2;
+  display: inline-block;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a365d;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #718096;
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+}
+
+.icon {
+  display: inline-block;
+  margin-right: 0.75rem;
+  font-size: 1.5rem;
+  vertical-align: middle;
+}
+
+.decorativeElements {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.decorativeElements span {
+  position: absolute;
+  color: #cbd5e0;
+  font-size: 1.2rem;
+  opacity: 0.6;
+  animation: float 3s ease-in-out infinite;
+}
+
+.element1 {
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.element2 {
+  left: 50%;
+  animation-delay: 1s;
+}
+
+.element3 {
+  right: 20%;
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-10px);
+    opacity: 0.8;
+  }
+}
+
+/* 尺寸變體 */
+.small {
+  margin: 2rem 0;
+}
+
+.small .title {
+  font-size: 1.5rem;
+}
+
+.small .subtitle {
+  font-size: 1rem;
+}
+
+.small .icon {
+  font-size: 1.2rem;
+}
+
+.medium {
+  margin: 3rem 0;
+}
+
+.large {
+  margin: 5rem 0;
+}
+
+.large .title {
+  font-size: 2.5rem;
+}
+
+.large .subtitle {
+  font-size: 1.3rem;
+}
+
+.large .icon {
+  font-size: 2rem;
+}
+
+/* 樣式變體 */
+.default .dividerLine {
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+}
+
+.default .title {
+  color: #1a365d;
+}
+
+.outstanding .dividerLine {
+  background: linear-gradient(90deg, transparent, #c9a961, #f4d03f, #c9a961, transparent);
+  height: 3px;
+}
+
+.outstanding .title {
+  background: linear-gradient(135deg, #c9a961, #f4d03f);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.outstanding .icon {
+  color: #f39c12;
+  filter: drop-shadow(0 2px 4px rgba(243, 156, 18, 0.3));
+}
+
+.outstanding .decorativeElements span {
+  color: #f4d03f;
+}
+
+.elegant .dividerLine {
+  background: linear-gradient(90deg, transparent, #9f7aea, #b794f6, #9f7aea, transparent);
+  height: 2px;
+}
+
+.elegant .title {
+  color: #553c9a;
+}
+
+.elegant .icon {
+  color: #9f7aea;
+}
+
+.elegant .decorativeElements span {
+  color: #b794f6;
+}
+
+.modern .dividerLine {
+  background: linear-gradient(90deg, transparent, #4299e1, #63b3ed, #4299e1, transparent);
+  height: 3px;
+  border-radius: 2px;
+}
+
+.modern .title {
+  color: #2c5282;
+  font-weight: 800;
+}
+
+.modern .icon {
+  color: #4299e1;
+}
+
+.modern .decorativeElements span {
+  color: #63b3ed;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .sectionDivider {
+    margin: 3rem 0;
+  }
+
+  .content {
+    padding: 0 1rem;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .icon {
+    font-size: 1.3rem;
+    margin-right: 0.5rem;
+  }
+
+  .large .title {
+    font-size: 2rem;
+  }
+
+  .large .subtitle {
+    font-size: 1.1rem;
+  }
+
+  .small .title {
+    font-size: 1.3rem;
+  }
+
+  .decorativeElements span {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionDivider {
+    margin: 2rem 0;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .icon {
+    font-size: 1.1rem;
+  }
+
+  .large .title {
+    font-size: 1.8rem;
+  }
+
+  .small .title {
+    font-size: 1.2rem;
+  }
+}
+
+/* 動畫效果 */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes expandLine {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.sectionDivider {
+  animation: slideInFromTop 0.6s ease-out;
+}
+
+.dividerLine {
+  animation: expandLine 1s ease-out 0.3s both;
+  transform-origin: center;
+}
+
+/* 特殊效果 */
+.outstanding::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(244, 208, 63, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.elegant::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(159, 122, 234, 0.3), transparent);
+  z-index: 0;
+}
+
+.modern::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: conic-gradient(from 0deg, rgba(66, 153, 225, 0.1), transparent, rgba(66, 153, 225, 0.1));
+  border-radius: 50%;
+  z-index: 0;
+  animation: spin 20s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

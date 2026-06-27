@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Nav, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import useRWD from 'hooks/useRWD';
 import MemberModal from 'components/Manage/Center/EditModal';
 import Axios from 'common/Axios';
 import { toast, ToastContainer } from 'react-toastify';
@@ -14,6 +15,7 @@ import ThankYouModal from 'components/Manage/Center/introModal';
  */
 function MemberCenter() {
     const navigate = useNavigate();
+    const rwd = useRWD();
 
     const [showEditModal, setShowEditModal] = useState(false);
     const [isEditMode, setIsEditMode] = useState(true);
@@ -40,7 +42,7 @@ function MemberCenter() {
         const apiEndpoint = isEditMode
             ? "/member/logined/partial_change/"
             : "/member/logined/new/"
-
+        console.log(formData)
         Axios()[isEditMode ? 'patch' : 'post'](apiEndpoint, changedData)
             .then((res) => {
                 toast.success(isEditMode ? "修改成功!" : "新增成功!", { position: 'top-right' });
@@ -48,11 +50,13 @@ function MemberCenter() {
             })
             .catch((err) => {
                 handleAxiosError(err);
+                console.log(err)
             })
             .finally(() => {
                 setLoading(false);
                 setShowEditModal(false);
             });
+        
     };
 
     const handleAxiosError = (err) => {
@@ -64,19 +68,24 @@ function MemberCenter() {
                 toast.error("Token 已失效，請重新登入", { position: toast.POSITION.TOP_RIGHT});
                 navigate('/login');
             } else {
-                switch (status) {
-                    case 400:
-                        toast.error("請確認資料是否輸入齊全，且照片有上傳", { position: 'top-right' });
-                        break;
-                    case 401:
-                        toast.error("未授權，請重新登入", { position: 'top-right' });
-                        navigate('/login');
-                        break;
-                    case 403:
-                        toast.error("禁止訪問，您沒有權限執行此操作", { position: 'top-right' });
-                        break;
-                    default:
-                        toast.error("發生錯誤，請稍後再試", { position: 'top-right' });
+                // 顯示後端回傳的錯誤訊息
+                if (errorMessage) {
+                    toast.error(errorMessage, { position: 'top-right' });
+                } else {
+                    switch (status) {
+                        case 400:
+                            toast.error("請確認資料是否輸入齊全，且照片有上傳", { position: 'top-right' });
+                            break;
+                        case 401:
+                            toast.error("未授權，請重新登入", { position: 'top-right' });
+                            navigate('/login');
+                            break;
+                        case 403:
+                            toast.error("禁止訪問，您沒有權限執行此操作", { position: 'top-right' });
+                            break;
+                        default:
+                            toast.error("發生錯誤，請稍後再試", { position: 'top-right' });
+                    }
                 }
             }
         } else {
@@ -128,8 +137,8 @@ function MemberCenter() {
                     </div>
                 ) : (
                     <>
-                        <h4 className="fw-bold mb-1">{userData.name}</h4>
-                        <p className="text-muted mb-3">{userData.email}</p>
+                        <h4 className="fw-bold mb-1" style={{ fontSize: rwd.getFontSize('h4') }}>{userData.name}</h4>
+                        <p className="text-muted mb-3" style={{ fontSize: rwd.getFontSize('body') }}>{userData.email}</p>
                         
                         <div className="d-grid gap-2 mb-3">
                             <Button 
@@ -154,7 +163,7 @@ function MemberCenter() {
                         
                         {/* 基本資訊列表 */}
                         <div className="text-start">
-                            <h6 className="mb-3 border-bottom pb-2">個人基本資訊</h6>
+                            <h6 className="mb-3 border-bottom pb-2" style={{ fontSize: rwd.getFontSize('h6') }}>個人基本資訊</h6>
                             <div className="d-flex mb-2">
                                 <div className="text-muted" style={{ width: '100px' }}>性別：</div>
                                 <div>{userData.gender === 'M' ? '男性' : userData.gender === 'F' ? '女性' : '其他'}</div>
@@ -199,11 +208,11 @@ function MemberCenter() {
                         <i className="bi bi-mortarboard-fill text-primary fs-4"></i>
                     </div>
                     <div>
-                        <h4 className="mb-0">歡迎回來，{userData.name || '系友'}！</h4>
-                        <p className="text-muted mb-0">高科大智慧商務系 系友專區</p>
+                        <h4 className="mb-0" style={{ fontSize: rwd.getFontSize('h4') }}>歡迎回來，{userData.name || '系友'}！</h4>
+                        <p className="text-muted mb-0" style={{ fontSize: rwd.getFontSize('body') }}>高科大智慧商務系 系友專區</p>
                     </div>
                 </div>
-                <p className="mt-3 mb-0">
+                <p className="mt-3 mb-0" style={{ fontSize: rwd.getFontSize('body') }}>
                     感謝您回到系友專區！在這裡您可以隨時更新個人資料、查看系上最新動態，以及與其他系友保持聯繫。
                     若您有任何問題或建議，請隨時與系辦聯絡。
                 </p>
@@ -211,85 +220,20 @@ function MemberCenter() {
         </Card>
     );
 
-    // 系友專區卡片
-    const renderAlumniCard = () => (
-        <Card className="border-0 rounded-4 shadow-sm">
-            <Card.Body className="p-4">
-                <h5 className="mb-4"><i className="bi bi-stars me-2 text-warning"></i>系友專屬資源</h5>
-                <Row xs={1} md={2} className="g-3">
-                    <Col>
-                        <Card className="h-100 border-0 shadow-sm hover-lift rounded-3">
-                            <Card.Body className="p-3">
-                                <div className="d-flex align-items-center mb-2">
-                                    <div className="rounded bg-info bg-opacity-10 p-2 me-2">
-                                        <i className="bi bi-journal-richtext text-info"></i>
-                                    </div>
-                                    <h6 className="mb-0">數位圖書館</h6>
-                                </div>
-                                <p className="small text-muted mb-0">持續使用學校數位資源，查閱期刊論文</p>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col>
-                        <Card className="h-100 border-0 shadow-sm hover-lift rounded-3">
-                            <Card.Body className="p-3">
-                                <div className="d-flex align-items-center mb-2">
-                                    <div className="rounded bg-success bg-opacity-10 p-2 me-2">
-                                        <i className="bi bi-briefcase text-success"></i>
-                                    </div>
-                                    <h6 className="mb-0">徵才平台</h6>
-                                </div>
-                                <p className="small text-muted mb-0">系友專屬就業資訊與工作機會</p>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col>
-                        <Card className="h-100 border-0 shadow-sm hover-lift rounded-3">
-                            <Card.Body className="p-3">
-                                <div className="d-flex align-items-center mb-2">
-                                    <div className="rounded bg-danger bg-opacity-10 p-2 me-2">
-                                        <i className="bi bi-calendar-event text-danger"></i>
-                                    </div>
-                                    <h6 className="mb-0">系友活動</h6>
-                                </div>
-                                <p className="small text-muted mb-0">各類系友聚會與聯誼活動資訊</p>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col>
-                        <Card className="h-100 border-0 shadow-sm hover-lift rounded-3">
-                            <Card.Body className="p-3">
-                                <div className="d-flex align-items-center mb-2">
-                                    <div className="rounded bg-warning bg-opacity-10 p-2 me-2">
-                                        <i className="bi bi-people text-warning"></i>
-                                    </div>
-                                    <h6 className="mb-0">系友名錄</h6>
-                                </div>
-                                <p className="small text-muted mb-0">尋找與連結您的同學與其他系友</p>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-            </Card.Body>
-        </Card>
-    );
 
     return (
-        <Container className="py-5">
+        <Container className="admin-container py-5" style={rwd.getContainerStyle()}>
             <Row className="g-4">
-                <Col lg={4}>
+                <Col lg={4} md={5} sm={12}>
                     {/* 左側會員資料卡片 */}
                     {renderProfileCard()}
                 </Col>
                 
-                <Col lg={8}>
+                <Col lg={8} md={7}>
                     {/* 右側內容區 */}
                     <div className="d-flex flex-column h-100">
                         {/* 歡迎卡片 */}
                         {renderWelcomeCard()}
-                        
-                        {/* 系友專區卡片 */}
-                        {/* {renderAlumniCard()} */}
                     </div>
                 </Col>
             </Row>

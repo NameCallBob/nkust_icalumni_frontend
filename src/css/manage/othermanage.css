@@ -127,45 +127,8 @@
   box-shadow: 0 4px 10px rgba(58, 117, 196, 0.3);
 }
 
-/* 表格樣式美化 */
-.table-responsive {
-  border-radius: 8px;
-  overflow: hidden;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-  display: block;
-}
-
-.table {
-  margin-bottom: 0;
-  width: 100%;
-  min-width: 600px;
-}
-
-.table thead th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-  color: #495057;
-  border-top: none;
-  padding: 0.85rem 0.75rem;
-}
-
-/* 表格行間隔 */
-.table-hover tbody tr {
-  transition: all 0.2s ease;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-.table-hover tbody tr:hover {
-  background-color: rgba(58, 117, 196, 0.05);
-}
-
-.table td {
-  vertical-align: middle;
-  padding: 0.85rem 0.75rem;
-  border-top: none;
-}
+/* 表格樣式 - 已移除統一設計 */
+/* 各頁面可根據需求自定義表格樣式 */
 
 /* 載入動畫 */
 @keyframes spin {
@@ -231,18 +194,8 @@
     font-size: 0.85rem;
   }
   
-  .table-responsive {
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  }
-  
-  .table .btn {
+  .btn {
     margin-bottom: 0.25rem;
     padding: 0.4rem 0.75rem;
-  }
-  
-  .table td, .table th {
-    white-space: nowrap;
-    padding: 0.75rem 0.5rem;
   }
 } 

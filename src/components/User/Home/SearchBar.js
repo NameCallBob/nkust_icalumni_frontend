@@ -24,12 +24,16 @@ const SearchBar = () => {
         style={{ height: '50px' }}
       />
       <Button
-        variant="success"
+        variant="primary"
         id="button-addon1"
         onClick={handleSearchClick}
         style={{
-          width:"100px",
-          height: '50px' }}
+          width: '100px',
+          height: '50px',
+          backgroundColor: '#1e3a8a',
+          borderColor: '#1e3a8a',
+          fontWeight: '600',
+        }}
       >
         搜尋
       </Button>

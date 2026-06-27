@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
 import logo from 'assets/logo.png'; // 請替換為你的 logo 圖片路徑
 import 'css/nav.css'; // 我們會建立這個檔案來包含所有自定義樣式
+import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
 
 /**
  * 現代化深藍色系友會導航欄 - 改進版
@@ -77,9 +78,11 @@ function UserNav() {
                         <Navbar.Brand href="/" className="navbar-brand-custom me-0">
                             <div className="logo-container">
                                 <img
-                                    src={logo}
+                                    src={getImageSrc(logo, 'default')}
                                     className="logo-img"
                                     alt="智商系友會LOGO"
+                                    style={{ backgroundColor: '#ffffff' }}
+                                    onError={(e) => handleImageError(e, 'default')}
                                 />
                                 <div className="brand-text d-none d-sm-flex">
                                     <span className="brand-main">智商系友會</span>
@@ -98,13 +101,13 @@ function UserNav() {
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="ms-auto nav-items">
                                 {/* 系友會介紹下拉選單 */}
-                                <div 
+                                <div
                                     className={`nav-item-wrapper ${activeDropdown === 'intro' ? 'active' : ''}`}
                                     onMouseEnter={() => handleDropdownEnter('intro')}
                                     onMouseLeave={handleDropdownLeave}
                                 >
-                                    <NavDropdown 
-                                        title={<span className="nav-link-text">系友會介紹</span>} 
+                                    <NavDropdown
+                                        title={<span className="nav-link-text">系友會介紹</span>}
                                         id="intro-dropdown"
                                         className="custom-dropdown"
                                         show={activeDropdown === 'intro'}
@@ -132,6 +135,7 @@ function UserNav() {
                                 <Nav.Link href="/recruit" className="nav-link-custom" onClick={handleNavItemClick}>
                                     <span className="nav-link-text">徵才啟示</span>
                                 </Nav.Link>
+
                                 
                                 {/* 系友專區下拉選單 */}
                                 <div 

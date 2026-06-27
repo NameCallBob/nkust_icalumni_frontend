@@ -1,0 +1,340 @@
+/* ErrorBoundary CSS Modules */
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.backgroundAnimation {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.backgroundBlur {
+  position: absolute;
+  top: -2.5rem;
+  left: -2.5rem;
+  right: -2.5rem;
+  bottom: -2.5rem;
+  opacity: 0.2;
+}
+
+.blob1 {
+  position: absolute;
+  top: 0;
+  left: -1rem;
+  width: 18rem;
+  height: 18rem;
+  background: #a855f7;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  filter: blur(3rem);
+  animation: pulse 2s infinite;
+}
+
+.blob2 {
+  position: absolute;
+  top: 0;
+  right: -1rem;
+  width: 18rem;
+  height: 18rem;
+  background: #06b6d4;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  filter: blur(3rem);
+  animation: pulse 2s infinite;
+  animation-delay: 2s;
+}
+
+.blob3 {
+  position: absolute;
+  bottom: -2rem;
+  left: 5rem;
+  width: 18rem;
+  height: 18rem;
+  background: #ec4899;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  filter: blur(3rem);
+  animation: pulse 2s infinite;
+  animation-delay: 4s;
+}
+
+.gridPattern {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.contentContainer {
+  position: relative;
+  z-index: 10;
+  max-width: 28rem;
+  width: 100%;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.iconContainer {
+  margin-bottom: 2rem;
+}
+
+.iconWrapper {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  margin: 0 auto 1.5rem;
+}
+
+.iconGlow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, #ef4444, #ec4899);
+  border-radius: 1rem;
+  filter: blur(0.75rem);
+  opacity: 0.75;
+  animation: pulse 2s infinite;
+}
+
+.iconBox {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #ef4444, #ec4899);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.iconSvg {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: white;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #ffffff, #d1d5db);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.75rem;
+}
+
+.description {
+  color: #d1d5db;
+  margin-bottom: 2rem;
+  line-height: 1.625;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.actionButton {
+  position: relative;
+  width: 100%;
+  color: white;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: scale(1);
+  overflow: hidden;
+}
+
+.actionButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.reloadButton {
+  background: linear-gradient(45deg, #2563eb, #1d4ed8);
+}
+
+.reloadButton:hover {
+  background: linear-gradient(45deg, #1d4ed8, #1e40af);
+  box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.25);
+}
+
+.backButton {
+  background: linear-gradient(45deg, #7c3aed, #6d28d9);
+}
+
+.backButton:hover {
+  background: linear-gradient(45deg, #6d28d9, #5b21b6);
+  box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.25);
+}
+
+.homeButton {
+  background: linear-gradient(45deg, #059669, #047857);
+}
+
+.homeButton:hover {
+  background: linear-gradient(45deg, #047857, #065f46);
+  box-shadow: 0 20px 25px -5px rgba(5, 150, 105, 0.25);
+}
+
+.buttonContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+.shimmerEffect {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  transform: skewX(-12deg) translateX(-100%);
+  transition: transform 0.7s ease;
+}
+
+.actionButton:hover .shimmerEffect {
+  transform: skewX(-12deg) translateX(100%);
+}
+
+.debugSection {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.debugSummary {
+  cursor: pointer;
+  color: #22d3ee;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.debugSummary:hover {
+  color: #67e8f9;
+}
+
+.debugIcon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+}
+
+.debugContent {
+  background: rgba(17, 24, 39, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid #374151;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.debugErrorTitle {
+  font-weight: 600;
+  color: #f87171;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.debugStackTitle {
+  font-weight: 600;
+  color: #fbbf24;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.debugPre {
+  color: #d1d5db;
+  white-space: pre-wrap;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  background: rgba(31, 41, 55, 0.5);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.debugStackPre {
+  color: #d1d5db;
+  white-space: pre-wrap;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  background: rgba(31, 41, 55, 0.5);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  max-height: 10rem;
+  overflow-y: auto;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 1rem;
+    max-width: 24rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .iconWrapper {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .iconSvg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .actionButton {
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentContainer {
+    padding: 0.75rem;
+    max-width: 20rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .buttonContainer {
+    gap: 0.75rem;
+  }
+}

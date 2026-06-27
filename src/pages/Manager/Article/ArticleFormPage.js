@@ -13,6 +13,7 @@ import Axios from "common/Axios";
 import ReactQuill from "react-quill";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import useRWD from 'hooks/useRWD';
 import "react-quill/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -22,6 +23,7 @@ import "css/manage/article/form.css"; // 自訂樣式文件
 const ArticleForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const rwd = useRWD();
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -66,7 +68,7 @@ const ArticleForm = () => {
         article.images.map((img) => ({
           id: img.id,
           url: `${process.env.REACT_APP_BASE_URL}${img.image}`,
-          size: img.pic_type,
+          pic_type: img.pic_type,
         }))
       );
       setOriginalData(article);
@@ -87,8 +89,10 @@ const ArticleForm = () => {
     });
     if (newImages.length > 0 || removedImages.length > 0) {
       changedFields.images = [
-        ...imageFiles.filter((img) => !removedImages.some((r) => r.id === img.id)),
-        ...newImages.map((img) => ({ image: img.file, pic_type: img.size })),
+        ...imageFiles
+          .filter((img) => !removedImages.some((r) => r.id === img.id))
+          .map((img) => ({ id: img.id, pic_type: img.pic_type })),
+        ...newImages.map((img) => ({ image: img.file, pic_type: img.pic_type })),
       ];
     }
     return changedFields;
@@ -109,8 +113,10 @@ const ArticleForm = () => {
         expire_at: expireAt,
         link,
         images: [
-          ...imageFiles.filter((img) => !removedImages.some((r) => r.id === img.id)),
-          ...newImages.map((img) => ({ image: img.file, pic_type: img.size })),
+          ...imageFiles
+            .filter((img) => !removedImages.some((r) => r.id === img.id))
+            .map((img) => ({ id: img.id, pic_type: img.pic_type })),
+          ...newImages.map((img) => ({ image: img.file, pic_type: img.pic_type })),
         ],
       };
 
@@ -142,12 +148,13 @@ const ArticleForm = () => {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = () =>
-          resolve({ url: reader.result, file: reader.result, size: imageSize });
+          resolve({ url: reader.result, file: reader.result, pic_type: imageSize });
         reader.readAsDataURL(file);
       });
     });
     const uploadedImages = await Promise.all(readFiles);
     setNewImages((prev) => [...prev, ...uploadedImages]);
+    setShowImageModal(false); // 關閉 modal
   };
 
   const handleRemoveImage = (index, isOriginal = false) => {
@@ -161,17 +168,18 @@ const ArticleForm = () => {
   };
 
   return (
-    <Container fluid className="py-4">
+    <Container fluid className="admin-container py-4" style={rwd.getContainerStyle()}>
       <Row className="mb-4 align-items-center">
         <Col>
           <h2 className="fw-bold">{id ? "編輯文章" : "新增文章"}</h2>
           <p className="text-muted">填寫文章資訊並保存</p>
         </Col>
-        <Col className="text-end">
+        <Col className={rwd.isMobile ? "text-start mt-2" : "text-end"}>
           <Button
             variant="outline-secondary"
             onClick={() => navigate("/alumni/manage/article/")}
-            className="me-2"
+            className={rwd.isMobile ? "mb-2 w-100" : "me-2"}
+            style={rwd.getButtonStyle()}
           >
             <i className="bi bi-arrow-left"></i> 返回
           </Button>
@@ -179,6 +187,8 @@ const ArticleForm = () => {
             variant="primary"
             onClick={handleSave}
             disabled={loading || !title || !content}
+            className={rwd.isMobile ? "w-100" : ""}
+            style={rwd.getButtonStyle()}
           >
             {loading ? <Spinner size="sm" /> : <i className="bi bi-save"></i>} 保存
           </Button>
@@ -188,9 +198,9 @@ const ArticleForm = () => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <Form className="bg-light p-4 rounded shadow-sm">
+        <Form className="bg-light p-4 rounded shadow-sm" style={{ padding: rwd.isMobile ? '1rem' : '2rem' }}>
           <Row>
-            <Col md={12}>
+            <Col xs={12}>
               <Form.Group className="mb-4">
                 <Form.Label>
                   標題 <span className="text-danger">*</span>
@@ -207,7 +217,7 @@ const ArticleForm = () => {
           </Row>
 
           <Row>
-            <Col md={4}>
+            <Col xs={12} md={rwd.isMobile ? 12 : 4}>
               <Form.Group className="mb-4">
                 <Form.Label>是否公開</Form.Label>
                 <Form.Check
@@ -218,7 +228,7 @@ const ArticleForm = () => {
                 />
               </Form.Group>
             </Col>
-            <Col md={4}>
+            <Col xs={12} md={rwd.isMobile ? 12 : 4}>
               <Form.Group className="mb-4">
                 <Form.Label>發布時間</Form.Label>
                 <Form.Control
@@ -228,7 +238,7 @@ const ArticleForm = () => {
                 />
               </Form.Group>
             </Col>
-            <Col md={4}>
+            <Col xs={12} md={rwd.isMobile ? 12 : 4}>
               <Form.Group className="mb-4">
                 <Form.Label>截止時間</Form.Label>
                 <Form.Control
@@ -241,7 +251,7 @@ const ArticleForm = () => {
           </Row>
 
           <Row>
-            <Col md={12}>
+            <Col xs={12}>
               <Form.Group className="mb-4">
                 <Form.Label>文章連結（選填）</Form.Label>
                 <Form.Control
@@ -255,7 +265,7 @@ const ArticleForm = () => {
           </Row>
 
           <Row>
-            <Col md={12}>
+            <Col xs={12}>
               <Form.Group className="mb-4">
                 <Form.Label>
                   內容 <span className="text-danger">*</span>
@@ -265,8 +275,18 @@ const ArticleForm = () => {
                   onChange={setContent}
                   theme="snow"
                   placeholder="輸入文章內容..."
+                  style={{
+                    height: rwd.isMobile ? '200px' : '300px',
+                    marginBottom: rwd.isMobile ? '50px' : '30px'
+                  }}
                   modules={{
-                    toolbar: [
+                    toolbar: rwd.isMobile ? [
+                      [{ header: [1, 2, false] }],
+                      ["bold", "italic"],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      ["link"],
+                      ["clean"],
+                    ] : [
                       [{ header: [1, 2, false] }],
                       ["bold", "italic", "underline", "strike"],
                       [{ list: "ordered" }, { list: "bullet" }],
@@ -280,27 +300,33 @@ const ArticleForm = () => {
           </Row>
 
           <Row>
-            <Col md={12}>
+            <Col xs={12}>
               <Form.Group className="mb-4">
                 <Form.Label>圖片管理</Form.Label>
                 <Button
                   variant="outline-primary"
                   onClick={() => setShowImageModal(true)}
-                  className="mb-3"
+                  className={rwd.isMobile ? "mb-3 w-100" : "mb-3"}
+                  style={rwd.getButtonStyle()}
                 >
                   <i className="bi bi-upload"></i> 上傳圖片
                 </Button>
-                <div className="image-preview-container">
+                <div className="image-preview-container" style={{
+                  display: 'grid',
+                  gridTemplateColumns: rwd.isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(150px, 1fr))',
+                  gap: '1rem'
+                }}>
                   {imageFiles.map((image, index) => (
                     <div key={index} className="image-preview">
                       <img src={image.url} alt={`original-${index}`} />
                       <Badge bg="info" className="mt-1">
-                        {image.size === "small" ? "小圖" : "大圖"}
+                        {image.pic_type === "small" ? "小圖" : "大圖"}
                       </Badge>
                       <Button
                         variant="outline-danger"
                         size="sm"
                         onClick={() => handleRemoveImage(index, true)}
+                        style={rwd.getButtonStyle()}
                       >
                         <i className="bi bi-trash"></i>
                       </Button>
@@ -310,12 +336,13 @@ const ArticleForm = () => {
                     <div key={index} className="image-preview">
                       <img src={image.url} alt={`new-${index}`} />
                       <Badge bg="info" className="mt-1">
-                        {image.size === "small" ? "小圖" : "大圖"}
+                        {image.pic_type === "small" ? "小圖" : "大圖"}
                       </Badge>
                       <Button
                         variant="outline-danger"
                         size="sm"
                         onClick={() => handleRemoveImage(index, false)}
+                        style={rwd.getButtonStyle()}
                       >
                         <i className="bi bi-trash"></i>
                       </Button>
@@ -356,7 +383,11 @@ const ArticleForm = () => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowImageModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowImageModal(false)}
+            style={rwd.getButtonStyle()}
+          >
             關閉
           </Button>
         </Modal.Footer>

@@ -1,73 +1,93 @@
-/* Navlogo.css - 導航欄樣式 */
+/* Navlogo.css - Professional Corporate Style */
 
 /* 基本導航欄樣式 */
 .navbar-custom {
   background-color: #ffffff !important;
-  transition: all 0.3s ease;
+  border-bottom: 1px solid #e2e8f0;
+  transition: box-shadow 0.25s ease;
   padding: 0.5rem 1rem;
-  /* 移除 position: fixed 或修改為 position: relative */
-  position: relative;
+  z-index: 1030;
 }
 
-
-/* Logo 樣式 */
+/* Logo */
 .logo-img {
   height: 40px;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
-/* 為固定頂部導航添加空間
+/* 固定頂部導航空間 */
 .navbar-spacer {
-  height: 70px; /* 應該與導航欄高度匹配 */
-/* } */
+  height: 70px;
+}
 
-/* 導航欄下拉菜單樣式 */
+/* 管理端內容區 */
+.admin-content {
+  padding-top: 70px;
+}
+
+.admin-container {
+  margin-top: 70px;
+}
+
+/* 下拉菜單 */
 .dropdown-menu {
-  border: none;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 0.5rem 0;
-  margin-top: 0.5rem;
-  min-width: 220px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 0.35rem 0;
+  margin-top: 0.35rem;
+  min-width: 200px;
   animation: fadeIn 0.2s ease-in-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
+  from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 下拉菜單項目樣式 */
+/* 下拉菜單項目 */
 .dropdown-item {
-  padding: 0.6rem 1.2rem;
-  transition: all 0.2s ease;
-  color: #333;
+  padding: 0.6rem 1.1rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: #475569;
   font-weight: 500;
+  font-size: 0.875rem;
 }
 
 .dropdown-item:hover {
-  background-color: #f8f9fa;
-  color: #0d6efd;
-  transform: translateX(5px);
+  background-color: #f8fafc !important;
+  color: #1e3a8a !important;
 }
 
 .dropdown-item:active {
-  background-color: #e9ecef;
+  background-color: #e2e8f0;
+  color: #0f172a;
 }
 
-/* 導航下拉選單標題樣式 */
+/* 導航下拉標題 */
 .nav-dropdown-title {
   display: flex;
   align-items: center;
   font-weight: 500;
+  color: #475569;
   padding: 0.2rem 0;
+  transition: color 0.25s ease;
 }
 
-/* 導航項目動畫效果 */
+.nav-item-animated:hover .nav-dropdown-title {
+  color: #1e3a8a;
+}
+
+/* 導航項目 */
 .nav-item-animated {
   position: relative;
-  margin: 0 0.5rem;
-  transition: all 0.3s ease;
+  margin: 0 0.25rem;
+  transition: color 0.25s ease;
+  border-radius: 0;
+}
+
+.nav-item-animated:hover {
+  background-color: transparent;
 }
 
 .nav-item-animated::after {
@@ -77,109 +97,114 @@
   height: 2px;
   bottom: 0;
   left: 50%;
-  background-color: #0d6efd;
-  transition: all 0.3s ease;
+  background-color: #1e3a8a;
+  transition: all 0.25s ease;
+  transform: translateX(-50%);
 }
 
 .nav-item-animated:hover::after {
   width: 100%;
-  left: 0;
 }
 
-/* 導航圖標樣式 */
+/* 導航圖標 */
 .nav-icon {
-  color: #0d6efd;
-  transition: all 0.3s ease;
+  color: #2563eb;
+  transition: color 0.25s ease;
 }
 
-/* 選項卡 active 狀態 */
-.nav-link.active, .nav-item.active {
-  color: #0d6efd !important;
+/* Active 狀態 */
+.nav-link.active,
+.nav-item.active {
+  color: #1e3a8a !important;
   font-weight: 600;
 }
 
-/* ===== 響應式設計 ===== */
-
-/* 確保在小螢幕上 logo 和漢堡菜單不換行 */
+/* ===== 響應式 ===== */
 @media (max-width: 576px) {
   .navbar-brand {
-      margin-right: 0;
-      padding: 0.25rem 0;
+    margin-right: 0;
+    padding: 0.25rem 0;
   }
-  
+
   .logo-img {
-      height: 35px;
+    height: 34px;
   }
-  
+
   .navbar-toggler {
-      padding: 0.25rem 0.5rem;
-      font-size: 1rem;
-      margin-left: auto;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    margin-left: auto;
   }
-  
+
   .navbar-custom {
-      padding: 0.5rem;
+    padding: 0.5rem;
   }
 }
 
-/* 中等螢幕設備樣式調整 */
 @media (min-width: 768px) and (max-width: 991.98px) {
   .nav-item-animated {
-      margin: 0 0.3rem;
+    margin: 0 0.2rem;
   }
 }
 
-/* 在展開的導航菜單中調整樣式（小螢幕） */
 @media (max-width: 991.98px) {
-  .navbar-collapse {
-      background-color: #ffffff;
-      border-radius: 0 0 15px 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      padding: 1rem;
-      max-height: 80vh;
-      overflow-y: auto;
+  .admin-content {
+    padding-top: 60px;
   }
-  
+
+  .admin-container {
+    margin-top: 60px;
+  }
+
+  .navbar-collapse {
+    background-color: #ffffff;
+    border-radius: 0 0 8px 8px;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    padding: 0.75rem 1rem;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
   .nav-item-animated {
-      margin: 0.5rem 0;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f0f0f0;
+    margin: 0.3rem 0;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f1f5f9;
   }
-  
+
   .nav-item-animated:last-child {
-      border-bottom: none;
+    border-bottom: none;
   }
-  
+
   .nav-item-animated:hover::after {
-      width: 0; /* 在移動版禁用下劃線動畫 */
+    width: 0;
   }
-  
+
   .dropdown-menu {
-      border: none;
-      box-shadow: none;
-      background-color: #f8f9fa;
-      margin-top: 0.5rem;
-      padding: 0.5rem;
-      border-radius: 8px;
+    border: none;
+    box-shadow: none;
+    background-color: #f8fafc;
+    margin-top: 0.35rem;
+    padding: 0.35rem;
+    border-radius: 6px;
   }
-  
-  /* 改善漢堡菜單按鈕樣式 */
+
   .navbar-toggler {
-      border: none;
-      padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    padding: 0.4rem 0.5rem;
+    border-radius: 6px;
   }
-  
+
   .navbar-toggler:focus {
-      box-shadow: none;
+    box-shadow: none;
   }
-  
-  /* 包含展開菜單的動畫 */
+
   .navbar-collapse {
-      animation: slideDown 0.3s ease-out;
+    animation: slideDown 0.25s ease-out;
   }
-  
+
   @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }

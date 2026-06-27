@@ -1,0 +1,355 @@
+/* FeaturedAlumni.module.css - Corporate Professional Style */
+
+.featuredContainer {
+  position: relative;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+/* Section divider - bottom stars row */
+.sectionDivider {
+  position: relative;
+  text-align: center;
+  margin: 2rem 0 0;
+}
+
+.sectionDivider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e2e8f0;
+  transform: translateY(-50%);
+}
+
+.sectionTitle {
+  position: relative;
+  background: #ffffff;
+  padding: 0.5rem 2rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #a0781c;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+/* 傑出系友卡片 */
+.outstandingCard {
+  position: relative;
+  background: #1e2d54;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  height: 200px;
+}
+
+/* Gold accent bar on top */
+.goldenBorder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #a0781c, #d4af37, #a0781c);
+  z-index: 2;
+}
+
+.outstandingCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.cardContent {
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* 圖片區域 - 左側 */
+.imageSection {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #152045;
+}
+
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+  opacity: 0.92;
+}
+
+.outstandingCard:hover .profileImage {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(30, 45, 84, 0) 60%,
+    rgba(30, 45, 84, 0.5) 100%
+  );
+  pointer-events: none;
+}
+
+/* Gold glow - simplified to subtle overlay */
+.goldenGlow {
+  display: none;
+}
+
+/* 內容區域 - 右側 */
+.contentSection {
+  height: 100%;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #1e2d54;
+}
+
+.contentWrapper {
+  flex: 1;
+}
+
+.alumniName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+}
+
+.alumniPosition {
+  color: #d4af37;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.achievements {
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.achievements > span {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.achievementIcon {
+  color: #d4af37;
+  font-size: 0.85rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.highlight {
+  color: #94a3b8;
+  font-size: 0.825rem;
+  line-height: 1.5;
+  font-style: italic;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.highlight > span {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.quoteIcon {
+  color: #d4af37;
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+/* 查看詳情按鈕 */
+.viewProfileBtn {
+  align-self: flex-end;
+  margin-top: auto;
+  background: transparent !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  color: #d4af37 !important;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  padding: 6px 10px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.viewProfileBtn:hover {
+  background: rgba(212, 175, 55, 0.12) !important;
+  border-color: #d4af37 !important;
+  color: #ffffff !important;
+  transform: translateX(3px);
+}
+
+.viewProfileBtn:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 分頁控制 */
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.paginationBtn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #e2e8f0 !important;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+.paginationBtn:disabled {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.paginationInfo {
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 響應式 */
+@media (max-width: 768px) {
+  .outstandingCard {
+    height: 185px;
+  }
+
+  .contentSection {
+    padding: 1rem 1.25rem;
+  }
+
+  .alumniName {
+    font-size: 1.05rem;
+  }
+
+  .paginationContainer {
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .paginationBtn {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .outstandingCard {
+    height: 172px;
+    border-radius: 6px;
+  }
+
+  .contentSection {
+    padding: 0.875rem 1rem;
+  }
+
+  .alumniName {
+    font-size: 1rem;
+  }
+
+  .achievements {
+    font-size: 0.8rem;
+  }
+
+  .highlight {
+    font-size: 0.775rem;
+  }
+
+  .viewProfileBtn {
+    font-size: 0.9rem;
+    padding: 5px 8px !important;
+  }
+
+  .featuredContainer {
+    padding: 0;
+  }
+}
+
+/* 空狀態 */
+.emptyState {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.emptyState h3 {
+  color: #cbd5e1;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.emptyState p {
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+  font-weight: 400;
+}

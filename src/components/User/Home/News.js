@@ -83,47 +83,62 @@ function News() {
       /* 基本樣式 */
       .news-card {
         background: white;
-        border-radius: 12px;
-        margin-bottom: 16px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 6px;
+        margin-bottom: 0;
+        border: 1px solid #e2e8f0;
+        border-bottom: none;
         display: flex;
         overflow: hidden;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: background 0.2s ease;
         opacity: 0;
         transform: translateY(20px);
         animation: fadeInUp 0.5s forwards;
       }
+
+      .news-card:last-of-type {
+        border-bottom: 1px solid #e2e8f0;
+        border-radius: 0 0 6px 6px;
+        margin-bottom: 16px;
+      }
+
+      .news-card:first-of-type {
+        border-radius: 6px 6px 0 0;
+      }
       
-      /* 日期區塊 - 改為年/日/月完整顯示 */
+      /* 日期區塊 - 簡潔企業風格 */
       .date-box {
-        width: 100px;
+        width: 90px;
         padding: 12px 8px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background: linear-gradient(135deg, #4a6fa5, #3d8bd9);
-        color: white;
-        font-weight: bold;
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
+        flex-shrink: 0;
       }
-      
+
       .date-year {
-        font-size: 14px;
+        font-size: 12px;
         line-height: 1;
         margin-bottom: 4px;
-        opacity: 0.9;
+        color: #475569;
+        font-weight: 500;
       }
-      
+
       .date-day {
-        font-size: 28px;
+        font-size: 24px;
         line-height: 1;
         margin-bottom: 4px;
+        color: #1e3a8a;
+        font-weight: 700;
       }
-      
+
       .date-month {
-        font-size: 15px;
-        opacity: 0.9;
+        font-size: 13px;
+        color: #475569;
+        font-weight: 500;
       }
       
       /* 內容區塊 */
@@ -135,11 +150,11 @@ function News() {
       }
       
       .article-title {
-        font-size: 17px;
+        font-size: 15px;
         font-weight: 500;
-        color: #445668;
-        transition: color 0.3s ease;
-        line-height: 1.4;
+        color: #0f172a;
+        transition: color 0.2s ease;
+        line-height: 1.5;
       }
       
       /* 動畫定義 */
@@ -156,90 +171,84 @@ function News() {
       
       /* 懸停效果 */
       .news-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        background: #f8fafc;
+        transform: none;
+        box-shadow: none;
       }
-      
+
       .news-card:hover .date-box {
-        background: linear-gradient(135deg, #3d8bd9, #5a9de0);
+        background: #f1f5f9;
       }
-      
+
       .news-card:hover .article-title {
-        color: #3d8bd9;
+        color: #2563eb;
       }
-      
+
       /* 點擊效果 */
       .news-card:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: #f1f5f9;
       }
       
       /* 標題樣式 */
       .news-title {
-        font-size: 26px;
-        margin-bottom: 24px;
-        color: #2c3e50;
+        font-size: 22px;
+        margin-bottom: 20px;
+        color: #1e3a8a;
         position: relative;
         padding-bottom: 12px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
       }
-      
+
       .news-title::after {
         content: '';
         position: absolute;
         left: 0;
         bottom: 0;
-        width: 70px;
-        height: 4px;
-        background: linear-gradient(90deg, #4a6fa5, #3d8bd9);
+        width: 48px;
+        height: 3px;
+        background: #1e3a8a;
         border-radius: 2px;
       }
       
       /* 分頁樣式增強 */
       .pagination {
-        margin-top: 32px;
+        margin-top: 24px;
       }
-      
+
       .pagination .page-item.active .page-link {
-        background-color: #4a6fa5;
-        border-color: #4a6fa5;
+        background-color: #1e3a8a;
+        border-color: #1e3a8a;
         color: white;
-        font-weight: 500;
+        font-weight: 600;
       }
-      
+
       .pagination .page-link {
-        color: #4a6fa5;
-        padding: 8px 14px;
-        font-size: 15px;
+        color: #1e3a8a;
+        padding: 6px 12px;
+        font-size: 14px;
+        border-color: #e2e8f0;
       }
-      
+
       .pagination .page-link:hover {
-        color: #3d8bd9;
-        background-color: #f0f5fa;
+        color: #2563eb;
+        background-color: #eff6ff;
+        border-color: #bfdbfe;
       }
       
       /* 媒體查詢 - 確保在較小屏幕上的良好顯示 */
       @media (max-width: 768px) {
-        .news-card {
-          flex-direction: column;
-        }
-        
         .date-box {
-          width: 100%;
-          padding: 10px;
-          flex-direction: row;
-          justify-content: center;
-          gap: 10px;
+          width: 72px;
+          padding: 10px 6px;
         }
-        
-        .date-year, .date-day, .date-month {
-          font-size: 16px;
-          margin-bottom: 0;
+
+        .date-day {
+          font-size: 20px;
         }
-        
+
         .content-box {
-          padding: 15px;
+          padding: 12px 14px;
         }
       }
     `;

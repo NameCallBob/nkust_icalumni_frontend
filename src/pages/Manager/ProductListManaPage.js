@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Row, Col, InputGroup, Card, Tabs, Tab, Alert } from 'react-bootstrap';
 import { FaSearch, FaPlus, FaTags, FaInfoCircle, FaQuestion } from 'react-icons/fa';
+import useRWD from 'hooks/useRWD';
 import Axios from 'common/Axios';
 import ProductForm from 'components/Manage/Product/ProductForm';
 import ProductDetailModal from 'components/Manage/Product/ProductDetail';
@@ -11,6 +12,9 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
 const ProductManagement = () => {
+    // 響應式設計 hook
+    const rwd = useRWD();
+
     // 狀態管理
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
@@ -161,7 +165,10 @@ const ProductManagement = () => {
     };
 
     return (
-        <Container className="py-4 product-management-container">
+        <Container
+            className="admin-container py-4 product-management-container"
+            style={rwd.getContainerStyle()}
+        >
             {isFirstVisit && (
                 <Alert variant="info" dismissible onClose={() => setIsFirstVisit(false)}>
                     <Alert.Heading><FaInfoCircle className="me-2" />歡迎使用產品管理系統</Alert.Heading>
@@ -276,70 +283,334 @@ const ProductManagement = () => {
                         className="mb-3"
                     >
                         <Tab eventKey="all" title="所有產品">
-                            <ProductList
-                                products={Array.isArray(filteredProducts)
-                                    ? filteredProducts.slice(
-                                        (currentPage - 1) * productsPerPage,
-                                        currentPage * productsPerPage
-                                    )
-                                    : []}
-                                onEdit={(product) => {
-                                    setProductFormData(product);
-                                    setShowProductModal(true);
-                                }}
-                                onDelete={handleDeleteProduct}
-                                onProductClick={setSelectedProduct}
-                                currentPage={currentPage}
-                                totalPages={Math.ceil(
-                                    (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
-                                )}
-                                onPageChange={setCurrentPage}
-                                isLoading={isLoading}
-                            />
+                            {rwd.renderForDevice(
+                                // 移動設備：卡片式佈局
+                                <div className="row g-3">
+                                    {Array.isArray(filteredProducts) &&
+                                        filteredProducts
+                                            .slice(
+                                                (currentPage - 1) * productsPerPage,
+                                                currentPage * productsPerPage
+                                            )
+                                            .map((product) => (
+                                                <div key={product.id} className="col-12">
+                                                    <Card className="h-100 shadow-sm" style={{ fontSize: rwd.getFontSize('body') }}>
+                                                        <Card.Body style={{ padding: rwd.getSpacing('medium') }}>
+                                                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                                                <h6 className="card-title mb-1" style={{ fontSize: rwd.getFontSize('h3') }}>
+                                                                    {product.name}
+                                                                </h6>
+                                                                <span className={`badge ${product.is_active ? 'bg-success' : 'bg-secondary'}`}>
+                                                                    {product.is_active ? '已啟用' : '未啟用'}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-muted small mb-2" style={{ fontSize: rwd.getFontSize('small') }}>
+                                                                {product.description}
+                                                            </p>
+                                                            <div className="d-flex flex-column gap-2">
+                                                                <Button
+                                                                    variant="primary"
+                                                                    size="sm"
+                                                                    onClick={() => setSelectedProduct(product)}
+                                                                    style={rwd.getButtonStyle('block')}
+                                                                >
+                                                                    查看詳情
+                                                                </Button>
+                                                                <div className="d-flex gap-2">
+                                                                    <Button
+                                                                        variant="outline-primary"
+                                                                        size="sm"
+                                                                        onClick={() => {
+                                                                            setProductFormData(product);
+                                                                            setShowProductModal(true);
+                                                                        }}
+                                                                        className="flex-fill"
+                                                                    >
+                                                                        編輯
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="outline-danger"
+                                                                        size="sm"
+                                                                        onClick={() => handleDeleteProduct(product.id)}
+                                                                        className="flex-fill"
+                                                                    >
+                                                                        刪除
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </Card.Body>
+                                                    </Card>
+                                                </div>
+                                            ))
+                                    }
+                                </div>,
+                                // 平板設備：表格佈局（橫向滾動）
+                                <div style={{ overflowX: 'auto' }}>
+                                    <ProductList
+                                        products={Array.isArray(filteredProducts)
+                                            ? filteredProducts.slice(
+                                                (currentPage - 1) * productsPerPage,
+                                                currentPage * productsPerPage
+                                            )
+                                            : []}
+                                        onEdit={(product) => {
+                                            setProductFormData(product);
+                                            setShowProductModal(true);
+                                        }}
+                                        onDelete={handleDeleteProduct}
+                                        onProductClick={setSelectedProduct}
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(
+                                            (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
+                                        )}
+                                        onPageChange={setCurrentPage}
+                                        isLoading={isLoading}
+                                        tableStyle={rwd.getTableStyle()}
+                                    />
+                                </div>,
+                                // 桌面設備：完整表格佈局
+                                <ProductList
+                                    products={Array.isArray(filteredProducts)
+                                        ? filteredProducts.slice(
+                                            (currentPage - 1) * productsPerPage,
+                                            currentPage * productsPerPage
+                                        )
+                                        : []}
+                                    onEdit={(product) => {
+                                        setProductFormData(product);
+                                        setShowProductModal(true);
+                                    }}
+                                    onDelete={handleDeleteProduct}
+                                    onProductClick={setSelectedProduct}
+                                    currentPage={currentPage}
+                                    totalPages={Math.ceil(
+                                        (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
+                                    )}
+                                    onPageChange={setCurrentPage}
+                                    isLoading={isLoading}
+                                    tableStyle={rwd.getTableStyle()}
+                                />
+                            )}
                         </Tab>
                         <Tab eventKey="active" title="已啟用產品">
-                            <ProductList
-                                products={Array.isArray(filteredProducts)
-                                    ? filteredProducts.slice(
-                                        (currentPage - 1) * productsPerPage,
-                                        currentPage * productsPerPage
-                                    )
-                                    : []}
-                                onEdit={(product) => {
-                                    setProductFormData(product);
-                                    setShowProductModal(true);
-                                }}
-                                onDelete={handleDeleteProduct}
-                                onProductClick={setSelectedProduct}
-                                currentPage={currentPage}
-                                totalPages={Math.ceil(
-                                    (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
-                                )}
-                                onPageChange={setCurrentPage}
-                                isLoading={isLoading}
-                            />
+                            {rwd.renderForDevice(
+                                // 移動設備：卡片式佈局
+                                <div className="row g-3">
+                                    {Array.isArray(filteredProducts) &&
+                                        filteredProducts
+                                            .slice(
+                                                (currentPage - 1) * productsPerPage,
+                                                currentPage * productsPerPage
+                                            )
+                                            .map((product) => (
+                                                <div key={product.id} className="col-12">
+                                                    <Card className="h-100 shadow-sm" style={{ fontSize: rwd.getFontSize('body') }}>
+                                                        <Card.Body style={{ padding: rwd.getSpacing('medium') }}>
+                                                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                                                <h6 className="card-title mb-1" style={{ fontSize: rwd.getFontSize('h3') }}>
+                                                                    {product.name}
+                                                                </h6>
+                                                                <span className={`badge ${product.is_active ? 'bg-success' : 'bg-secondary'}`}>
+                                                                    {product.is_active ? '已啟用' : '未啟用'}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-muted small mb-2" style={{ fontSize: rwd.getFontSize('small') }}>
+                                                                {product.description}
+                                                            </p>
+                                                            <div className="d-flex flex-column gap-2">
+                                                                <Button
+                                                                    variant="primary"
+                                                                    size="sm"
+                                                                    onClick={() => setSelectedProduct(product)}
+                                                                    style={rwd.getButtonStyle('block')}
+                                                                >
+                                                                    查看詳情
+                                                                </Button>
+                                                                <div className="d-flex gap-2">
+                                                                    <Button
+                                                                        variant="outline-primary"
+                                                                        size="sm"
+                                                                        onClick={() => {
+                                                                            setProductFormData(product);
+                                                                            setShowProductModal(true);
+                                                                        }}
+                                                                        className="flex-fill"
+                                                                    >
+                                                                        編輯
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="outline-danger"
+                                                                        size="sm"
+                                                                        onClick={() => handleDeleteProduct(product.id)}
+                                                                        className="flex-fill"
+                                                                    >
+                                                                        刪除
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </Card.Body>
+                                                    </Card>
+                                                </div>
+                                            ))
+                                    }
+                                </div>,
+                                // 平板設備：表格佈局（橫向滾動）
+                                <div style={{ overflowX: 'auto' }}>
+                                    <ProductList
+                                        products={Array.isArray(filteredProducts)
+                                            ? filteredProducts.slice(
+                                                (currentPage - 1) * productsPerPage,
+                                                currentPage * productsPerPage
+                                            )
+                                            : []}
+                                        onEdit={(product) => {
+                                            setProductFormData(product);
+                                            setShowProductModal(true);
+                                        }}
+                                        onDelete={handleDeleteProduct}
+                                        onProductClick={setSelectedProduct}
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(
+                                            (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
+                                        )}
+                                        onPageChange={setCurrentPage}
+                                        isLoading={isLoading}
+                                        tableStyle={rwd.getTableStyle()}
+                                    />
+                                </div>,
+                                // 桌面設備：完整表格佈局
+                                <ProductList
+                                    products={Array.isArray(filteredProducts)
+                                        ? filteredProducts.slice(
+                                            (currentPage - 1) * productsPerPage,
+                                            currentPage * productsPerPage
+                                        )
+                                        : []}
+                                    onEdit={(product) => {
+                                        setProductFormData(product);
+                                        setShowProductModal(true);
+                                    }}
+                                    onDelete={handleDeleteProduct}
+                                    onProductClick={setSelectedProduct}
+                                    currentPage={currentPage}
+                                    totalPages={Math.ceil(
+                                        (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
+                                    )}
+                                    onPageChange={setCurrentPage}
+                                    isLoading={isLoading}
+                                    tableStyle={rwd.getTableStyle()}
+                                />
+                            )}
                         </Tab>
                         <Tab eventKey="inactive" title="未啟用產品">
-                            <ProductList
-                                products={Array.isArray(filteredProducts)
-                                    ? filteredProducts.slice(
-                                        (currentPage - 1) * productsPerPage,
-                                        currentPage * productsPerPage
-                                    )
-                                    : []}
-                                onEdit={(product) => {
-                                    setProductFormData(product);
-                                    setShowProductModal(true);
-                                }}
-                                onDelete={handleDeleteProduct}
-                                onProductClick={setSelectedProduct}
-                                currentPage={currentPage}
-                                totalPages={Math.ceil(
-                                    (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
-                                )}
-                                onPageChange={setCurrentPage}
-                                isLoading={isLoading}
-                            />
+                            {rwd.renderForDevice(
+                                // 移動設備：卡片式佈局
+                                <div className="row g-3">
+                                    {Array.isArray(filteredProducts) &&
+                                        filteredProducts
+                                            .slice(
+                                                (currentPage - 1) * productsPerPage,
+                                                currentPage * productsPerPage
+                                            )
+                                            .map((product) => (
+                                                <div key={product.id} className="col-12">
+                                                    <Card className="h-100 shadow-sm" style={{ fontSize: rwd.getFontSize('body') }}>
+                                                        <Card.Body style={{ padding: rwd.getSpacing('medium') }}>
+                                                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                                                <h6 className="card-title mb-1" style={{ fontSize: rwd.getFontSize('h3') }}>
+                                                                    {product.name}
+                                                                </h6>
+                                                                <span className={`badge ${product.is_active ? 'bg-success' : 'bg-secondary'}`}>
+                                                                    {product.is_active ? '已啟用' : '未啟用'}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-muted small mb-2" style={{ fontSize: rwd.getFontSize('small') }}>
+                                                                {product.description}
+                                                            </p>
+                                                            <div className="d-flex flex-column gap-2">
+                                                                <Button
+                                                                    variant="primary"
+                                                                    size="sm"
+                                                                    onClick={() => setSelectedProduct(product)}
+                                                                    style={rwd.getButtonStyle('block')}
+                                                                >
+                                                                    查看詳情
+                                                                </Button>
+                                                                <div className="d-flex gap-2">
+                                                                    <Button
+                                                                        variant="outline-primary"
+                                                                        size="sm"
+                                                                        onClick={() => {
+                                                                            setProductFormData(product);
+                                                                            setShowProductModal(true);
+                                                                        }}
+                                                                        className="flex-fill"
+                                                                    >
+                                                                        編輯
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="outline-danger"
+                                                                        size="sm"
+                                                                        onClick={() => handleDeleteProduct(product.id)}
+                                                                        className="flex-fill"
+                                                                    >
+                                                                        刪除
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </Card.Body>
+                                                    </Card>
+                                                </div>
+                                            ))
+                                    }
+                                </div>,
+                                // 平板設備：表格佈局（橫向滾動）
+                                <div style={{ overflowX: 'auto' }}>
+                                    <ProductList
+                                        products={Array.isArray(filteredProducts)
+                                            ? filteredProducts.slice(
+                                                (currentPage - 1) * productsPerPage,
+                                                currentPage * productsPerPage
+                                            )
+                                            : []}
+                                        onEdit={(product) => {
+                                            setProductFormData(product);
+                                            setShowProductModal(true);
+                                        }}
+                                        onDelete={handleDeleteProduct}
+                                        onProductClick={setSelectedProduct}
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(
+                                            (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
+                                        )}
+                                        onPageChange={setCurrentPage}
+                                        isLoading={isLoading}
+                                        tableStyle={rwd.getTableStyle()}
+                                    />
+                                </div>,
+                                // 桌面設備：完整表格佈局
+                                <ProductList
+                                    products={Array.isArray(filteredProducts)
+                                        ? filteredProducts.slice(
+                                            (currentPage - 1) * productsPerPage,
+                                            currentPage * productsPerPage
+                                        )
+                                        : []}
+                                    onEdit={(product) => {
+                                        setProductFormData(product);
+                                        setShowProductModal(true);
+                                    }}
+                                    onDelete={handleDeleteProduct}
+                                    onProductClick={setSelectedProduct}
+                                    currentPage={currentPage}
+                                    totalPages={Math.ceil(
+                                        (Array.isArray(filteredProducts) ? filteredProducts.length : 0) / productsPerPage
+                                    )}
+                                    onPageChange={setCurrentPage}
+                                    isLoading={isLoading}
+                                    tableStyle={rwd.getTableStyle()}
+                                />
+                            )}
                         </Tab>
                     </Tabs>
                 </Card.Body>

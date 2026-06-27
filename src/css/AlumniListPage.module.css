@@ -1,0 +1,618 @@
+/* AlumniListPage.module.css - Corporate Professional Style */
+
+.alumniListContainer {
+  font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #0f172a;
+  padding-bottom: 3rem;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+/* 頁面頂部 Header */
+.pageHeader {
+  background: #1e3a8a;
+  padding: 3.5rem 2rem 3rem;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.headerTitle {
+  font-weight: 700;
+  font-size: 2.4rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.headerSubtitle {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 400;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.headerDivider {
+  height: 3px;
+  width: 60px;
+  background: #a0781c;
+  margin: 1.25rem auto 0;
+  border-radius: 2px;
+}
+
+/* 傑出系友區塊 */
+.featuredSection {
+  background: #0f172a;
+  padding: 3rem 2rem;
+  margin-bottom: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sectionIcon {
+  color: #a0781c;
+  font-size: 1.6rem;
+  margin-right: 0.875rem;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+/* 搜尋與篩選區塊 */
+.filterSearchSection {
+  margin: 2rem 0;
+}
+
+.filterCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.filterCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filterCardBody {
+  padding: 2rem;
+}
+
+.filterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.filterHeaderLeft {
+  display: flex;
+  align-items: center;
+}
+
+.filterIcon {
+  color: #2563eb;
+  font-size: 1.1rem;
+  margin-right: 0.75rem;
+}
+
+.filterTitle {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #0f172a;
+  margin: 0;
+}
+
+.helpButton {
+  color: #475569 !important;
+  text-decoration: none !important;
+  font-size: 0.875rem;
+  padding: 0 !important;
+  transition: color 0.2s ease;
+}
+
+.helpButton:hover {
+  color: #2563eb !important;
+}
+
+.infoAlert {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  color: #1e40af;
+  margin-bottom: 1.25rem;
+}
+
+/* 搜尋框樣式 */
+.searchForm {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.searchInputWrapper {
+  position: relative;
+}
+
+.searchInput {
+  height: 48px !important;
+  border-radius: 8px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  padding-left: 3rem !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  color: #0f172a !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.searchInput:focus {
+  background: #ffffff !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  outline: none !important;
+}
+
+.searchInput::placeholder {
+  color: #94a3b8 !important;
+  font-weight: 400 !important;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 15px;
+  left: 14px;
+  color: #94a3b8;
+  font-size: 1rem;
+  z-index: 2;
+}
+
+.searchReset {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  font-size: 0.825rem !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.searchReset:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* 父級 Tabs 樣式 */
+.parentTabs :global(.nav-link) {
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  color: #475569 !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 0 !important;
+  margin-right: 0.5rem !important;
+  background: transparent !important;
+  transition: all 0.2s ease !important;
+}
+
+.parentTabs :global(.nav-link.active) {
+  color: #1e3a8a !important;
+  background: transparent !important;
+  border-bottom-color: #2563eb !important;
+}
+
+.parentTabs :global(.nav-link:hover:not(.active)) {
+  color: #1e3a8a !important;
+  background: #f8fafc !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+/* 子級 Tabs 樣式 */
+.childTabsContainer {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 transparent;
+  padding-bottom: 6px;
+}
+
+.childTabsContainer::-webkit-scrollbar {
+  height: 4px;
+}
+
+.childTabsContainer::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 2px;
+}
+
+.childTabsContainer::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 2px;
+}
+
+.childTabs {
+  border-bottom: none !important;
+  white-space: nowrap;
+}
+
+.childTabs :global(.nav-link) {
+  padding: 0.5rem 1.25rem !important;
+  margin-right: 0.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #475569 !important;
+  transition: all 0.2s ease !important;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.childTabs :global(.nav-link:hover:not(.active)) {
+  background: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #1e3a8a !important;
+}
+
+.childTabs :global(.nav-link.active) {
+  background: #1e3a8a !important;
+  color: white !important;
+  border-color: #1e3a8a !important;
+}
+
+/* 系友網格樣式 */
+.alumniGridSection {
+  position: relative;
+}
+
+.searchStatus {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.alumniGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+/* 系友卡片 - Corporate Style */
+.alumniCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  height: 200px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.alumniCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #bfdbfe !important;
+}
+
+/* 圖片區域 */
+.imageWrapper {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.alumniCard:hover .cardImage {
+  transform: scale(1.04);
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0.04) 100%
+  );
+  pointer-events: none;
+}
+
+/* 卡片內容區 */
+.cardBody {
+  padding: 1.25rem 1.5rem !important;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.cardTitle {
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  margin-bottom: 0.375rem !important;
+  letter-spacing: -0.2px;
+}
+
+.positionText {
+  color: #475569 !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  margin-bottom: 0.375rem !important;
+}
+
+.gradeText {
+  display: inline-block;
+  background: #eff6ff;
+  color: #1e3a8a !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  padding: 0.2rem 0.65rem;
+  border-radius: 4px;
+  margin-bottom: 0.625rem !important;
+  border: 1px solid #bfdbfe;
+}
+
+.companyTag {
+  display: inline-block;
+  color: #475569 !important;
+  font-size: 0.825rem !important;
+  font-weight: 400 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  margin-top: 0.25rem !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.viewProfile {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  width: 100%;
+  color: #2563eb !important;
+  font-size: 0.825rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.alumniCard:hover .viewProfile {
+  color: #1d4ed8 !important;
+  gap: 0.625rem;
+}
+
+/* 載入中和錯誤狀態 */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.88);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loadingSpinner {
+  color: #2563eb !important;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.loadingText {
+  margin-top: 1rem;
+  color: #475569;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.errorAlert {
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+  border-radius: 8px !important;
+  color: #991b1b !important;
+  padding: 1.25rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.warningAlert {
+  background: #fffbeb !important;
+  border: 1px solid #fde68a !important;
+  border-radius: 8px !important;
+  color: #92400e !important;
+  padding: 2.5rem 2rem !important;
+  text-align: center;
+}
+
+.warningAlert h4 {
+  color: #78350f !important;
+  font-weight: 600 !important;
+  margin-top: 0.75rem !important;
+}
+
+.warningAlert p {
+  color: #92400e !important;
+  font-size: 1rem !important;
+}
+
+.resetButton {
+  background: #2563eb !important;
+  border: none !important;
+  color: white !important;
+  padding: 0.6rem 1.5rem !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  margin-top: 1rem !important;
+  transition: background 0.2s ease !important;
+}
+
+.resetButton:hover {
+  background: #1d4ed8 !important;
+}
+
+/* 分頁樣式 */
+.pagination {
+  justify-content: center !important;
+  margin-top: 2rem !important;
+  gap: 0.25rem;
+}
+
+.pagination :global(.page-item .page-link) {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  color: #475569 !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 0.875rem !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+  transition: all 0.15s ease !important;
+}
+
+.pagination :global(.page-item:hover .page-link) {
+  background: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #1e3a8a !important;
+}
+
+.pagination :global(.page-item.active .page-link) {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: white !important;
+}
+
+.pagination :global(.page-item.disabled .page-link) {
+  background: #f8fafc !important;
+  color: #cbd5e0 !important;
+  border-color: #e2e8f0 !important;
+  cursor: not-allowed;
+}
+
+/* 響應式設計 */
+@media (max-width: 1200px) {
+  .alumniGrid {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .alumniGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .headerTitle {
+    font-size: 1.8rem;
+  }
+
+  .filterCardBody {
+    padding: 1.5rem;
+  }
+
+  .searchInput {
+    height: 44px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .alumniGrid {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  .alumniCard {
+    height: 175px;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerTitle {
+    font-size: 1.5rem;
+  }
+
+  .filterCardBody {
+    padding: 1.25rem;
+  }
+
+  .filterHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .alumniCard {
+    height: 160px;
+  }
+
+  .cardBody {
+    padding: 1rem 1.25rem !important;
+  }
+
+  .cardTitle {
+    font-size: 1rem !important;
+  }
+
+  .pagination :global(.page-item .page-link) {
+    padding: 0.45rem 0.7rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* 動畫效果 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alumniGrid {
+  animation: fadeInUp 0.4s ease-out;
+}

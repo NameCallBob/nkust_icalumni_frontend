@@ -1,3 +1,58 @@
-# https://www.robotstxt.org/robotstxt.html
+# robots.txt for https://nkusticalumni.org/
+# Allow all search engines to crawl the website
+
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /manager/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /*.pdf$
+
+# Allow search engines to access static resources
+Allow: /static/
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.ico$
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Sitemap location
+Sitemap: https://nkusticalumni.org/sitemap.xml

@@ -18,6 +18,7 @@ const SlideManager = () => {
     id: null,
     title: "",
     description: "",
+    link_url: "",
     image: "",
     active: true,
   });
@@ -74,25 +75,41 @@ const SlideManager = () => {
 
   const handleShowModal = (slide = null) => {
     setCurrentSlide(slide);
-    setFormData(slide || { id: null, title: "", description: "", image: "", active: true });
+    setFormData(slide || { id: null, title: "", description: "", link_url: "", image: "", active: true });
     setErrors({});
     setShowModal(true);
   };
 
   const handleSave = async () => {
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
       if (formData.id) {
-        await Axios().put("picture/slide-images/change/", formData);
-        toast.success("圖片已成功更新！");
+        const payload = {};
+        Object.keys(formData).forEach(key => {
+          if (formData[key] !== currentSlide[key]) {
+            payload[key] = formData[key];
+          }
+        });
+        
+        // The id is required for the backend to identify the record.
+        payload.id = formData.id;
+
+        // If no fields have changed, don't send the request.
+        if (Object.keys(payload).length > 1) {
+            await Axios().patch("picture/slide-images/change/", payload);
+            toast.success("圖片已成功更新！");
+        } else {
+            toast.info("沒有偵測到任何變更");
+        }
+
       } else {
         await Axios().post("picture/slide-images/add/", formData);
         toast.success("已成功新增圖片！");
       }
       setShowModal(false);
-      
+
       const response = await Axios().get("picture/slide-images/all/");
       setSlides(response.data);
     } catch (error) {
@@ -210,11 +227,12 @@ const SlideManager = () => {
             <thead>
               <tr>
                 <th style={{ width: '5%' }}>#</th>
-                <th style={{ width: '15%' }}>縮圖</th>
-                <th style={{ width: '20%' }}>標題</th>
-                <th style={{ width: '25%' }}>描述</th>
+                <th style={{ width: '12%' }}>縮圖</th>
+                <th style={{ width: '18%' }}>標題</th>
+                <th style={{ width: '20%' }}>描述</th>
+                <th style={{ width: '15%' }}>跳轉連結</th>
                 <th style={{ width: '10%' }}>狀態</th>
-                <th style={{ width: '25%' }}>操作</th>
+                <th style={{ width: '20%' }}>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -237,6 +255,21 @@ const SlideManager = () => {
                     <div style={{ maxHeight: '60px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {slide.description || <span className="text-muted">(無描述)</span>}
                     </div>
+                  </td>
+                  <td>
+                    {slide.link_url ? (
+                      <a
+                        href={slide.link_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-decoration-none"
+                        style={{ fontSize: '0.9em' }}
+                      >
+                        {slide.link_url.length > 30 ? `${slide.link_url.substring(0, 30)}...` : slide.link_url}
+                      </a>
+                    ) : (
+                      <span className="text-muted">(無連結)</span>
+                    )}
                   </td>
                   <td>
                     <Badge bg={slide.active ? "success" : "danger"}>
@@ -341,16 +374,31 @@ const SlideManager = () => {
             
             <Form.Group className="mb-3">
               <Form.Label>描述 <span className="text-muted">(選填)</span></Form.Label>
-              <Form.Control 
-                as="textarea" 
-                rows={3} 
-                value={formData.description} 
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="請輸入詳細描述（非必填）"
               />
               <Form.Text className="text-muted">
                 添加詳細說明，幫助您日後識別此輪播圖片的用途。
               </Form.Text>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>點擊跳轉連結 <span className="text-muted">(選填)</span></Form.Label>
+              <Form.Control
+                type="url"
+                value={formData.link_url}
+                onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
+                placeholder="請輸入完整網址，例如：https://www.example.com"
+                isInvalid={!!errors.link_url}
+              />
+              <Form.Text className="text-muted">
+                當使用者點擊輪播圖片時，將跳轉到此連結。留空則不會有跳轉功能。
+              </Form.Text>
+              {errors.link_url && <Form.Control.Feedback type="invalid">{errors.link_url}</Form.Control.Feedback>}
             </Form.Group>
             
             <div className="mb-3 border-bottom pb-2">

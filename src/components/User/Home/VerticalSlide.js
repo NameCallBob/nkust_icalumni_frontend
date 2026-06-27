@@ -1,270 +1,164 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Axios from 'common/Axios';
+import { handleImageError, getImageSrc, DEFAULT_IMAGES } from '../../../utils/imageDefaults';
 
 // 公司卡片組件
-const CompanyCard = ({ company, onClick, isActive, index }) => {
+const CompanyCard = ({ company, onClick, index }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredProductIndex, setHoveredProductIndex] = useState(null);
   const [showAllProducts, setShowAllProducts] = useState(false);
-  
+
   // 最大顯示產品數
   const MAX_VISIBLE_PRODUCTS = 3;
-  
-  // 確保 company 存在，但在調用 hooks 之後再進行檢查
+
+  // 檢測是否為小螢幕
+  const isMobile = window.innerWidth <= 768;
+
+  // 確保 company 存在
   if (!company) {
     return null;
   }
-  
-  // 安全地獲取 photo URL，確保它存在
-  const photoUrl = company && company.photo 
+
+  // 安全地獲取 photo URL
+  const photoUrl = company && company.photo
     ? `${process.env.REACT_APP_BASE_URL}${company.photo}`
-    : 'https://via.placeholder.com/400x300?text=無圖片';
-    
-  // 卡片樣式生成函數
-  const getCardStyles = (isHovered, isActive) => {
-    // 卡片樣式 - 增加卡片尺寸
-    const cardStyle = {
-      background: 'white',
-      borderRadius: '16px',
-      overflow: 'hidden',
-      boxShadow: '0 15px 30px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-      cursor: 'pointer',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'relative',
-      opacity: isActive ? 1 : 0.7,
-      transform: `${isActive ? 'scale(1)' : 'scale(0.95)'} ${isHovered ? 'translateY(-15px)' : 'translateY(0)'}`,
-      // 增加較大的卡片尺寸
-      maxWidth: '100%',
-      margin: '0 auto',
-    };
+    : DEFAULT_IMAGES.company;
 
-    // 圖片容器樣式 - 增加高度
-    const imageContainerStyle = {
-      overflow: 'hidden',
-      position: 'relative',
-      height: '280px', // 較大的圖片容器
-    };
-
-    // 圖片樣式 - 優化過渡效果
-    const imageStyle = {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-      transform: isHovered ? 'scale(1.1) rotate(1deg)' : 'scale(1)',
-    };
-
-    // 內容區域樣式 - 增加間距，文字對齊
-    const contentStyle = {
-      padding: '2rem',
-      flexGrow: 1,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      background: 'linear-gradient(to bottom, rgba(255,255,255,0.95), white)',
-      overflow: 'hidden',
-    };
-
-    // 公司名稱樣式 - 文字置中
-    const nameStyle = {
-      fontSize: '1.5rem',
-      fontWeight: '700',
-      color: '#222',
-      marginBottom: '1.2rem',
-      textAlign: 'center',
-      letterSpacing: '0.5px',
-    };
-
-    // 資訊項目樣式 - 文字對齊
-    const infoItemStyle = {
-      display: 'flex',
-      marginBottom: '0.8rem',
-      fontSize: '1rem',
-      color: '#555',
-      lineHeight: '1.6',
-    };
-
-    // 資訊標籤樣式
-    const labelStyle = {
-      fontWeight: '600',
-      minWidth: '4rem',
-      color: '#444',
-      textAlign: 'left',
-    };
-
-    // 資訊值樣式 - 文字對齊
-    const valueStyle = {
-      flexGrow: 1,
-      textAlign: 'left',
-      paddingLeft: '0.5rem',
-    };
-
-    // 產品容器樣式 - 限制產品區域最大高度
-    const productsContainerStyle = {
-      display: 'flex',
-      flexWrap: 'wrap',
-      maxHeight: '120px',
-      overflow: 'auto',
-      marginTop: '0.5rem',
-      scrollbarWidth: 'thin',
-      scrollbarColor: '#e0e0e0 transparent',
-    };
-
-    // 產品標籤樣式 - 更具視覺吸引力
-    const productStyle = {
-      display: 'inline-block',
-      background: 'linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%)',
-      borderRadius: '30px',
-      padding: '0.35rem 0.8rem',
-      margin: '0.3rem 0.2rem',
-      fontSize: '0.9rem',
-      color: '#0066cc',
-      boxShadow: '0 2px 8px rgba(0, 102, 204, 0.15)',
-      transition: 'all 0.3s ease',
-      transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-      maxWidth: '140px',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      position: 'relative',
-    };
-
-    // 產品tooltip樣式 - 顯示完整內容
-    const tooltipStyle = {
-      position: 'absolute',
-      bottom: 'calc(100% + 10px)',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      color: 'white',
-      padding: '8px 12px',
-      borderRadius: '6px',
-      fontSize: '0.85rem',
-      zIndex: 100,
-      whiteSpace: 'normal',
-      maxWidth: '200px',
-      width: 'auto',
-      boxShadow: '0 5px 15px rgba(0, 0, 0, 0.2)',
-      opacity: 0,
-      visibility: 'hidden',
-      transition: 'all 0.3s ease',
-      pointerEvents: 'none',
-    };
-
-    // tooltip箭頭樣式
-    const tooltipArrowStyle = {
-      position: 'absolute',
-      top: '100%',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      borderWidth: '5px',
-      borderStyle: 'solid',
-      borderColor: 'rgba(0, 0, 0, 0.8) transparent transparent transparent',
-    };
-
-    // 裝飾元素動畫 - 更華麗的裝飾
-    const decorationStyle = {
-      position: 'absolute',
-      width: '60px',
-      height: '60px',
-      borderRadius: '50%',
-      background: 'linear-gradient(135deg, #6c63ff 0%, #3b82f6 100%)',
-      top: isHovered ? '-15px' : '-30px',
-      right: isHovered ? '-15px' : '-30px',
-      opacity: isHovered ? 0.8 : 0,
-      transition: 'all 0.5s ease',
-      zIndex: 1,
-    };
-
-    // 添加遮罩效果 - 增強滑動感
-    const overlayStyle = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 100%)',
-      opacity: isHovered ? 0.5 : 0,
-      transition: 'opacity 0.5s ease',
-      pointerEvents: 'none',
-      zIndex: 2,
-    };
-
-    // 新增卡片邊框光暈效果
-    const glowEffectStyle = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      borderRadius: '16px',
-      boxShadow: isHovered ? '0 0 30px rgba(107, 99, 255, 0.3)' : 'none',
-      transition: 'box-shadow 0.5s ease',
-      pointerEvents: 'none',
-      zIndex: 0,
-    };
-    
-    return {
-      cardStyle,
-      imageContainerStyle,
-      imageStyle,
-      contentStyle,
-      nameStyle,
-      infoItemStyle,
-      labelStyle,
-      valueStyle,
-      productStyle,
-      decorationStyle,
-      overlayStyle,
-      glowEffectStyle,
-      tooltipStyle,
-      tooltipArrowStyle,
-      productsContainerStyle
-    };
+  // 卡片樣式
+  const cardStyle = {
+    background: 'white',
+    borderRadius: isMobile ? '8px' : '12px',
+    overflow: 'hidden',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    cursor: 'pointer',
+    minHeight: isMobile ? '200px' : '180px',
+    height: 'auto',
+    display: 'flex',
+    flexDirection: isMobile ? 'column' : 'row',
+    position: 'relative',
+    transform: isHovered && !isMobile ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+    maxWidth: '100%',
+    margin: '0 auto 1.5rem',
+    border: '1px solid #f0f0f0',
+    animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
   };
 
+  // 圖片容器樣式
+  const imageContainerStyle = {
+    overflow: 'hidden',
+    position: 'relative',
+    width: isMobile ? '100%' : '250px',
+    height: isMobile ? '180px' : '100%',
+    flexShrink: 0,
+  };
 
-  // 取得所有樣式對象
-  const { 
-    cardStyle, 
-    imageContainerStyle, 
-    imageStyle, 
-    contentStyle, 
-    nameStyle, 
-    infoItemStyle, 
-    labelStyle, 
-    valueStyle, 
-    productStyle, 
-    decorationStyle, 
-    overlayStyle, 
-    glowEffectStyle,
-    tooltipStyle,
-    tooltipArrowStyle,
-    productsContainerStyle
-  } = getCardStyles(isHovered, isActive);
-  
+  // 圖片樣式
+  const imageStyle = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    transition: 'transform 0.6s ease',
+    transform: isHovered && !isMobile ? 'scale(1.08)' : 'scale(1)',
+  };
+
+  // 內容區域樣式
+  const contentStyle = {
+    padding: isMobile ? '1rem' : '1.25rem',
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: isMobile ? 'flex-start' : 'space-between',
+    background: 'white',
+    overflow: 'visible',
+    minHeight: 0,
+  };
+
+  // 公司名稱樣式
+  const nameStyle = {
+    fontSize: isMobile ? '1.1rem' : '1.2rem',
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: isMobile ? '0.5rem' : '0.75rem',
+    textAlign: 'left',
+    lineHeight: 1.4,
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+  };
+
+  // 資訊項目樣式
+  const infoItemStyle = {
+    display: 'flex',
+    marginBottom: '0.4rem',
+    fontSize: isMobile ? '0.85rem' : '0.9rem',
+    color: '#666',
+    lineHeight: '1.5',
+  };
+
+  // 資訊標籤樣式
+  const labelStyle = {
+    fontWeight: '500',
+    minWidth: isMobile ? '3rem' : '3.5rem',
+    color: '#888',
+    textAlign: 'left',
+    fontSize: 'inherit',
+  };
+
+  // 資訊值樣式
+  const valueStyle = {
+    flexGrow: 1,
+    textAlign: 'left',
+    paddingLeft: '0.5rem',
+  };
+
+  // 產品容器樣式
+  const productsContainerStyle = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    maxHeight: 'none',
+    overflow: 'visible',
+    marginTop: '0.3rem',
+    gap: '0.4rem',
+    alignItems: 'flex-start',
+    width: '100%',
+  };
+
+  // 產品標籤樣式
+  const productStyle = {
+    display: 'inline-block',
+    background: '#f5f5f5',
+    borderRadius: '4px',
+    padding: '0.2rem 0.4rem',
+    margin: '0',
+    fontSize: isMobile ? '0.7rem' : '0.75rem',
+    color: '#666',
+    border: '1px solid #e0e0e0',
+    whiteSpace: 'normal',
+    wordBreak: 'break-word',
+    maxWidth: isMobile ? '120px' : '150px',
+    lineHeight: 1.3,
+    transition: 'all 0.2s ease',
+  };
+
   return (
     <div
       style={cardStyle}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`company-card ${isActive ? 'active' : ''} ${isHovered ? 'hovered' : ''}`}
+      className={`company-card ${isHovered ? 'hovered' : ''}`}
     >
-      <div style={glowEffectStyle}></div>
-      <div style={decorationStyle}></div>
       <div style={imageContainerStyle}>
-        <div style={overlayStyle}></div>
         <img
-          src={photoUrl}
+          src={getImageSrc(photoUrl, 'company')}
           alt={company.name || '公司'}
           style={imageStyle}
+          onError={(e) => handleImageError(e, 'company')}
         />
       </div>
       <div style={contentStyle}>
@@ -283,47 +177,32 @@ const CompanyCard = ({ company, onClick, isActive, index }) => {
           <div style={{ ...infoItemStyle, alignItems: 'flex-start', marginTop: '1rem' }}>
             <span style={labelStyle}>產品：</span>
             <div style={productsContainerStyle}>
-              {company.products ? 
+              {company.products ?
                 (() => {
                   const productList = company.products.split(',').map(p => p.trim()).filter(p => p);
                   const visibleProducts = showAllProducts ? productList : productList.slice(0, MAX_VISIBLE_PRODUCTS);
-                  
+
                   return (
                     <>
                       {visibleProducts.map((product, idx) => (
-                        <span 
-                          key={idx} 
+                        <span
+                          key={idx}
                           style={productStyle}
                           onMouseEnter={() => setHoveredProductIndex(idx)}
                           onMouseLeave={() => setHoveredProductIndex(null)}
                         >
                           {product || '未提供'}
-                          {hoveredProductIndex === idx && (
-                            <div style={{
-                              ...tooltipStyle,
-                              opacity: 1,
-                              visibility: 'visible'
-                            }}>
-                              {product}
-                              <div style={tooltipArrowStyle}></div>
-                            </div>
-                          )}
                         </span>
                       ))}
-                      
+
                       {!showAllProducts && productList.length > MAX_VISIBLE_PRODUCTS && (
-                        <span 
+                        <span
                           style={{
-                            display: 'inline-block',
-                            background: 'linear-gradient(135deg, #eef6ff 0%, #dae7f7 100%)',
-                            borderRadius: '30px',
-                            padding: '0.35rem 0.8rem',
-                            margin: '0.3rem 0.2rem',
-                            fontSize: '0.9rem',
-                            color: '#3a75c4',
-                            boxShadow: '0 2px 8px rgba(0, 102, 204, 0.1)',
+                            ...productStyle,
+                            background: '#e8f4fd',
+                            color: '#1976d2',
+                            border: '1px solid #bbdefb',
                             cursor: 'pointer',
-                            transition: 'all 0.3s ease',
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -333,20 +212,15 @@ const CompanyCard = ({ company, onClick, isActive, index }) => {
                           +{productList.length - MAX_VISIBLE_PRODUCTS} 更多
                         </span>
                       )}
-                      
+
                       {showAllProducts && productList.length > MAX_VISIBLE_PRODUCTS && (
-                        <span 
+                        <span
                           style={{
-                            display: 'inline-block',
-                            background: 'linear-gradient(135deg, #eef6ff 0%, #dae7f7 100%)',
-                            borderRadius: '30px',
-                            padding: '0.35rem 0.8rem',
-                            margin: '0.3rem 0.2rem',
-                            fontSize: '0.9rem',
-                            color: '#3a75c4',
-                            boxShadow: '0 2px 8px rgba(0, 102, 204, 0.1)',
+                            ...productStyle,
+                            background: '#e8f4fd',
+                            color: '#1976d2',
+                            border: '1px solid #bbdefb',
                             cursor: 'pointer',
-                            transition: 'all 0.3s ease',
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -358,7 +232,7 @@ const CompanyCard = ({ company, onClick, isActive, index }) => {
                       )}
                     </>
                   );
-                })() : 
+                })() :
                 <span style={productStyle}>未提供產品資訊</span>
               }
             </div>
@@ -371,12 +245,16 @@ const CompanyCard = ({ company, onClick, isActive, index }) => {
 
 const VerticalCarousel = ({ title }) => {
   const [companies, setCompanies] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const autoPlayRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'list'
   const navigate = useNavigate();
-  
+  const isMobile = window.innerWidth <= 768;
+  const itemsPerView = isMobile ? 1 : 2;
+
   const apilist = {
     "最多點閱": "company/data/mostView/",
     "最新上架": "company/data/newUpload/"
@@ -386,383 +264,552 @@ const VerticalCarousel = ({ title }) => {
     navigate(`/alumni/${id}`);
   };
 
+  // 自動播放邏輯
   useEffect(() => {
+    if (isAutoPlaying && companies.length > itemsPerView) {
+      const interval = setInterval(() => {
+        setCurrentIndex(prev => (prev + 1) % (companies.length - itemsPerView + 1));
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [isAutoPlaying, companies.length, itemsPerView]);
+
+  // 觸控手勢處理
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && currentIndex < companies.length - itemsPerView) {
+      setCurrentIndex(prev => prev + 1);
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    }
+  };
+
+  // 獲取數據
+  useEffect(() => {
+    setIsLoading(true);
     Axios().get(apilist[title])
       .then((res) => {
         setCompanies(res.data || []);
+        setIsLoading(false);
       })
       .catch(error => {
         console.error("Error fetching companies:", error);
         setCompanies([]);
+        setIsLoading(false);
       });
   }, [title]);
 
-  // 自動播放功能
-  useEffect(() => {
-    const play = () => {
-      if (isAutoPlay && companies.length > 0) {
-        setIsTransitioning(true);
-        setActiveIndex((prevIndex) => (prevIndex + 1) % (Math.ceil(companies.length / 2) * 2));
-        setTimeout(() => setIsTransitioning(false), 500);
-      }
-    };
-
-    autoPlayRef.current = play;
-  }, [isAutoPlay, companies.length]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (autoPlayRef.current) {
-        autoPlayRef.current();
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // 暫停/恢復自動播放
-  const pauseAutoPlay = () => setIsAutoPlay(false);
-  const resumeAutoPlay = () => setIsAutoPlay(true);
-
-  // 手動切換到下一個或上一個
-  const nextSlide = () => {
-    setIsTransitioning(true);
-    setActiveIndex((prevIndex) => (prevIndex + 2) % (Math.ceil(companies.length / 2) * 2));
-    setTimeout(() => setIsTransitioning(false), 500);
-    pauseAutoPlay();
-    setTimeout(resumeAutoPlay, 8000);
-  };
-
-  const prevSlide = () => {
-    setIsTransitioning(true);
-    setActiveIndex((prevIndex) => (prevIndex - 2 + companies.length) % (Math.ceil(companies.length / 2) * 2));
-    setTimeout(() => setIsTransitioning(false), 500);
-    pauseAutoPlay();
-    setTimeout(resumeAutoPlay, 8000);
-  };
-
-  // 標題樣式
-  const titleStyle = {
-    fontSize: '1.8rem',
-    fontWeight: '600',
-    marginBottom: '1.5rem',
-    color: '#333',
+  // 容器樣式
+  const containerStyle = {
     position: 'relative',
-    display: 'inline-block',
+    minHeight: isMobile ? '250px' : '300px',
   };
-
-  // 標題裝飾線
-  const titleDecorationStyle = {
-    content: '""',
-    position: 'absolute',
-    width: '60%',
-    height: '3px',
-    bottom: '-8px',
-    left: '0',
-    background: 'linear-gradient(90deg, #6c63ff, #3b82f6)',
-    borderRadius: '2px',
-  };
-
-  // 卡片容器樣式 - 增加間距
-  const carouselContainerStyle = {
-    position: 'relative',
-    // padding: '2rem 3.5rem',
-    // margin: '2rem 0 3rem',
-    overflow: 'hidden',
-  };
-
-  // 輪播控制器樣式 - 更大的控制按鈕
-  const controlStyle = {
-    width: '50px',
-    height: '50px',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'white',
-    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.15)',
-    cursor: 'pointer',
-    position: 'absolute',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    transition: 'all 0.3s ease',
-    zIndex: 10,
-    border: '1px solid #f0f0f0',
-  };
-
-  // 進度指示器樣式
-  const indicatorsStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '0.5rem',
-    marginTop: '1.5rem',
-  };
-
-  const indicatorStyle = (index) => ({
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    background: Math.floor(activeIndex / 2) === index ? '#3b82f6' : '#e0e0e0',
-    transition: 'all 0.3s ease',
-    cursor: 'pointer',
-    transform: Math.floor(activeIndex / 2) === index ? 'scale(1.3)' : 'scale(1)',
-  });
-
-  // 計算總頁數
-  const totalPages = Math.ceil(companies.length / 2);
-
-  // 根據當前活動索引獲取顯示的公司
-  const getPageContent = (index) => {
-    // 確保 companies 有數據
-    if (!companies || companies.length === 0) {
-      return [];
-    }
-    
-    const adjustedIndex = index % companies.length;
-    const nextIndex = (index + 1) % companies.length;
-    
-    return [
-      companies[adjustedIndex],
-      companies.length > 1 ? companies[nextIndex] : null,
-    ].filter(Boolean); // 過濾掉 null 或 undefined 值
-  };
-
-  // 只有當 companies 有數據時才獲取當前公司
-  const currentCompanies = companies.length > 0 ? getPageContent(activeIndex) : [];
 
   return (
-    <div className="vertical-carousel">
-      <Row>
-        <Col>
-          <h4 style={titleStyle}>
-            {title}
-            <div style={titleDecorationStyle}></div>
-          </h4>
-        </Col>
-      </Row>
+    <div className="vertical-carousel-v2">
+      {/* 標題區域 */}
+      <div className="header-section">
+        <h4 className="carousel-title">
+          {title}
+          <div className="title-decoration"></div>
+        </h4>
 
-      <div style={carouselContainerStyle} 
-        onMouseEnter={pauseAutoPlay} 
-        onMouseLeave={resumeAutoPlay}
-        className={isTransitioning ? 'transitioning' : ''}
-      >
-        {/* 左箭頭 */}
-        <div 
-          style={{ ...controlStyle, left: '0' }} 
-          onClick={prevSlide}
-          className="carousel-control prev"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18L9 12L15 6" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-
-        {/* 右箭頭 */}
-        <div 
-          style={{ ...controlStyle, right: '0' }} 
-          onClick={nextSlide}
-          className="carousel-control next"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 6L15 12L9 18" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-
-        {/* 桌面版雙欄顯示 */}
-        <Row className="d-none d-md-flex justify-content-center">
-          {currentCompanies.length > 0 ? (
-            currentCompanies.map((company, index) => (
-              <Col md={6} key={index} className="p-3">
-                {company && (
-                  <CompanyCard 
-                    company={company} 
-                    onClick={() => handleItemClick(company.member)}
-                    isActive={true}
-                    index={index}
-                  />
-                )}
-              </Col>
-            ))
-          ) : (
-            <Col md={12}>
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
-                正在載入資料...
-              </div>
-            </Col>
+        <div className="header-controls">
+          {!isMobile && (
+            <div className="view-toggle">
+              <button
+                className={`toggle-btn ${viewMode === 'cards' ? 'active' : ''}`}
+                onClick={() => setViewMode('cards')}
+                title="卡片視圖"
+              >
+                ⊞
+              </button>
+              <button
+                className={`toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+                title="列表視圖"
+              >
+                ☰
+              </button>
+            </div>
           )}
-        </Row>
 
-        {/* 行動裝置單欄顯示 */}
-        <Row className="d-flex d-md-none">
-          {companies.length > 0 && activeIndex < companies.length ? (
-            <Col xs={12} className="p-3">
-              {companies[activeIndex % companies.length] && (
-                <CompanyCard 
-                  company={companies[activeIndex % companies.length]} 
-                  onClick={() => handleItemClick(companies[activeIndex % companies.length].member)}
-                  isActive={true}
-                  index={0}
-                />
-              )}
-            </Col>
-          ) : (
-            <Col xs={12}>
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
-                正在載入資料...
-              </div>
-            </Col>
-          )}
-        </Row>
-
-        {/* 進度指示器 */}
-        <div style={indicatorsStyle}>
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <div 
-              key={index} 
-              style={indicatorStyle(index)}
-              onClick={() => {
-                setIsTransitioning(true);
-                setActiveIndex(index * 2);
-                setTimeout(() => setIsTransitioning(false), 500);
-                pauseAutoPlay();
-                setTimeout(resumeAutoPlay, 8000);
-              }}
-            />
-          ))}
+          <button
+            className={`auto-play-btn ${isAutoPlaying ? 'playing' : 'paused'}`}
+            onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+            title={isAutoPlaying ? '暫停自動播放' : '開始自動播放'}
+          >
+            {isAutoPlaying ? '⏸️' : '▶️'}
+          </button>
         </div>
       </div>
 
-      {/* 添加樣式 */}
+      {/* 內容區域 */}
+      <div className="carousel-container" style={containerStyle}>
+        {isLoading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>正在載入{title}資料...</p>
+          </div>
+        ) : companies.length > 0 ? (
+          <>
+            {/* 桌面版輪播 */}
+            {!isMobile ? (
+              <div className="desktop-carousel">
+                <div className="carousel-wrapper">
+                  <div
+                    className="carousel-track"
+                    style={{
+                      transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
+                      width: `${(companies.length / itemsPerView) * 100}%`
+                    }}
+                  >
+                    {companies.map((company, index) => (
+                      <div
+                        key={index}
+                        className={`carousel-item ${viewMode}`}
+                        style={{ width: `${100 / companies.length}%` }}
+                      >
+                        <CompanyCard
+                          company={company}
+                          onClick={() => handleItemClick(company.member)}
+                          index={index}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 桌面版導航 */}
+                {companies.length > itemsPerView && (
+                  <div className="desktop-nav">
+                    <button
+                      className="nav-arrow prev"
+                      onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
+                      disabled={currentIndex === 0}
+                    >
+                      ◀
+                    </button>
+                    <button
+                      className="nav-arrow next"
+                      onClick={() => setCurrentIndex(Math.min(companies.length - itemsPerView, currentIndex + 1))}
+                      disabled={currentIndex >= companies.length - itemsPerView}
+                    >
+                      ▶
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* 移動版觸控輪播 */
+              <div
+                className="mobile-carousel"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div className="mobile-carousel-wrapper">
+                  <div
+                    className="mobile-carousel-track"
+                    style={{
+                      transform: `translateX(-${currentIndex * 100}%)`,
+                      width: `${companies.length * 100}%`
+                    }}
+                  >
+                    {companies.map((company, index) => (
+                      <div
+                        key={index}
+                        className="mobile-carousel-item"
+                        style={{ width: `${100 / companies.length}%` }}
+                      >
+                        <CompanyCard
+                          company={company}
+                          onClick={() => handleItemClick(company.member)}
+                          index={index}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 移動版指示器 */}
+                {companies.length > 1 && (
+                  <div className="mobile-indicators">
+                    {companies.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`indicator ${index === currentIndex ? 'active' : ''}`}
+                        onClick={() => setCurrentIndex(index)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="empty-state">
+            <div className="empty-icon">📭</div>
+            <p>暫無{title}資料</p>
+          </div>
+        )}
+      </div>
+
+      {/* 增強版 CSS 樣式 */}
       <style jsx="true">{`
-        .vertical-carousel {
-          padding: 1rem;
+        .vertical-carousel-v2 {
+          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+          border-radius: ${isMobile ? '15px' : '20px'};
+          padding: ${isMobile ? '20px' : '30px'};
+          margin-bottom: 30px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          border: 1px solid rgba(255,255,255,0.2);
+          position: relative;
           overflow: hidden;
         }
 
-        .carousel-control {
-          opacity: 0.8;
-          transform: translateY(-50%) scale(0.9);
+        .vertical-carousel-v2::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981);
         }
 
-        .carousel-control:hover {
-          opacity: 1;
-          transform: translateY(-50%) scale(1.05);
+        .header-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 25px;
+          flex-wrap: wrap;
+          gap: 15px;
         }
 
-        .transitioning .company-card {
-          transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                      opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        .carousel-title {
+          font-size: ${isMobile ? '1.5rem' : '1.8rem'};
+          font-weight: 700;
+          color: #1e293b;
+          position: relative;
+          margin: 0;
+          animation: slideInLeft 0.8s ease-out;
         }
 
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
+        .title-decoration {
+          position: absolute;
+          bottom: -8px;
+          left: 0;
+          width: 60%;
+          height: 3px;
+          background: linear-gradient(90deg, #6366f1, #3b82f6);
+          border-radius: 2px;
+          animation: expandWidth 1s ease-out 0.5s both;
         }
 
-        @keyframes slideInFromRight {
-          from { opacity: 0; transform: translateX(50px); }
-          to { opacity: 1; transform: translateX(0); }
+        .header-controls {
+          display: flex;
+          align-items: center;
+          gap: 15px;
         }
 
-        @keyframes slideInFromLeft {
-          from { opacity: 0; transform: translateX(-50px); }
-          to { opacity: 1; transform: translateX(0); }
+        .view-toggle {
+          display: flex;
+          background: rgba(255,255,255,0.8);
+          border-radius: 25px;
+          padding: 4px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .company-card {
-          animation: fadeIn 0.8s ease forwards;
-          transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                      opacity 0.6s ease,
-                      box-shadow 0.6s ease;
+        .toggle-btn {
+          background: transparent;
+          border: none;
+          padding: 8px 12px;
+          border-radius: 20px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 16px;
+          min-width: 40px;
         }
 
-        .company-card.active.hovered {
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        .toggle-btn.active {
+          background: #3b82f6;
+          color: white;
+          box-shadow: 0 2px 8px rgba(59,130,246,0.3);
         }
 
-        /* 自定義滾動條樣式 */
+        .auto-play-btn {
+          background: rgba(255,255,255,0.9);
+          border: none;
+          border-radius: 50%;
+          width: 45px;
+          height: 45px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+        }
+
+        .auto-play-btn:hover {
+          transform: scale(1.05);
+          box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
+        .auto-play-btn.playing {
+          background: #10b981;
+          color: white;
+        }
+
+        .carousel-container {
+          position: relative;
+        }
+
+        /* 桌面版輪播樣式 */
+        .desktop-carousel {
+          position: relative;
+        }
+
+        .carousel-wrapper {
+          overflow: hidden;
+          border-radius: 15px;
+          position: relative;
+        }
+
+        .carousel-track {
+          display: flex;
+          transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .carousel-item {
+          padding: 0 10px;
+          box-sizing: border-box;
+        }
+
+        .carousel-item.list {
+          width: 100% !important;
+        }
+
+        .desktop-nav {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          right: 0;
+          transform: translateY(-50%);
+          display: flex;
+          justify-content: space-between;
+          pointer-events: none;
+          z-index: 10;
+        }
+
+        .nav-arrow {
+          background: rgba(255,255,255,0.9);
+          border: none;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          cursor: pointer;
+          pointer-events: auto;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          font-size: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .nav-arrow:hover:not(:disabled) {
+          background: white;
+          transform: scale(1.1);
+          box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        .nav-arrow:disabled {
+          opacity: 0.3;
+          cursor: not-allowed;
+        }
+
+        .nav-arrow.prev {
+          margin-left: -25px;
+        }
+
+        .nav-arrow.next {
+          margin-right: -25px;
+        }
+
+        /* 移動版輪播樣式 */
+        .mobile-carousel {
+          position: relative;
+          touch-action: pan-y;
+        }
+
+        .mobile-carousel-wrapper {
+          overflow: hidden;
+          border-radius: 15px;
+        }
+
+        .mobile-carousel-track {
+          display: flex;
+          transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .mobile-carousel-item {
+          padding: 0 5px;
+          box-sizing: border-box;
+        }
+
+        .mobile-indicators {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 20px;
+        }
+
+        .indicator {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: none;
+          background: rgba(59,130,246,0.3);
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+          background: #3b82f6;
+          transform: scale(1.2);
+          box-shadow: 0 0 10px rgba(59,130,246,0.4);
+        }
+
+        .indicator:hover {
+          background: rgba(59,130,246,0.6);
+        }
+
+        /* 載入狀態 */
+        .loading-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 20px;
+          color: #64748b;
+        }
+
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          border: 3px solid #e2e8f0;
+          border-top: 3px solid #3b82f6;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 15px;
+        }
+
+        /* 空狀態 */
+        .empty-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 20px;
+          color: #64748b;
+        }
+
+        .empty-icon {
+          font-size: 48px;
+          margin-bottom: 15px;
+          opacity: 0.6;
+        }
+
+        /* 動畫 */
+        @keyframes fadeInUp {
+          0% {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInLeft {
+          0% {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes expandWidth {
+          0% { width: 0%; }
+          100% { width: 60%; }
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        /* 響應式調整 */
+        @media (max-width: 768px) {
+          .vertical-carousel-v2 {
+            padding: 15px;
+            margin-bottom: 20px;
+          }
+
+          .header-section {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+          }
+
+          .header-controls {
+            align-self: flex-end;
+          }
+
+          .view-toggle {
+            display: none;
+          }
+        }
+
+        /* 自定義滾動條 */
         ::-webkit-scrollbar {
-          width: 5px;
-          height: 5px;
+          width: 6px;
+          height: 6px;
         }
 
         ::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 10px;
+          background: rgba(226,232,240,0.5);
+          border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb {
-          background: #c1c1c1;
-          border-radius: 10px;
+          background: rgba(148,163,184,0.5);
+          border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-          background: #a1a1a1;
-        }
-
-        .fade-enter {
-          opacity: 0;
-          transform: scale(0.9) translateY(20px);
-        }
-        .fade-enter-active {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-          transition: opacity 600ms, transform 600ms;
-        }
-        .fade-exit {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-        }
-        .fade-exit-active {
-          opacity: 0;
-          transform: scale(0.9) translateY(-20px);
-          transition: opacity 600ms, transform 600ms;
-        }
-
-        /* 增加滑動特效 */
-        .slide-left-enter {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-        .slide-left-enter-active {
-          transform: translateX(0);
-          opacity: 1;
-          transition: all 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .slide-left-exit {
-          transform: translateX(0);
-          opacity: 1;
-        }
-        .slide-left-exit-active {
-          transform: translateX(-100%);
-          opacity: 0;
-          transition: all 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .slide-right-enter {
-          transform: translateX(-100%);
-          opacity: 0;
-        }
-        .slide-right-enter-active {
-          transform: translateX(0);
-          opacity: 1;
-          transition: all 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .slide-right-exit {
-          transform: translateX(0);
-          opacity: 1;
-        }
-        .slide-right-exit-active {
-          transform: translateX(100%);
-          opacity: 0;
-          transition: all 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @media (max-width: 768px) {
-          .carousel-control {
-            width: 40px;
-            height: 40px;
-          }
+          background: rgba(100,116,139,0.7);
         }
       `}</style>
     </div>

@@ -60,8 +60,8 @@ function ManagerNav() {
     }, [navigator]);
 
     // 處理下拉選單點擊事件
-    const handleDropdownToggle = (eventKey, isOpen) => {
-        setOpenDropdown(isOpen ? eventKey : null);
+    const handleDropdownToggle = (eventKey) => {
+        setOpenDropdown(openDropdown === eventKey ? null : eventKey);
     };
 
     // 處理選單項目點擊事件（僅在點擊實際項目時關閉選單）
@@ -114,16 +114,16 @@ function ManagerNav() {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ms-auto">
                             {/* 一般管理 */}
-                            <NavDropdown 
+                            <NavDropdown
                                 title={
                                     <span className="nav-dropdown-title">
                                         <FaUsers className="me-1 nav-icon" /> 一般管理
                                     </span>
-                                } 
-                                id="general-management-dropdown" 
+                                }
+                                id="general-management-dropdown"
                                 className={navItemClassName}
                                 show={openDropdown === 'general-management-dropdown'}
-                                onToggle={(isOpen) => handleDropdownToggle('general-management-dropdown', isOpen)}
+                                onClick={() => handleDropdownToggle('general-management-dropdown')}
                             >
                                 <NavDropdown.Item href="/alumni/manage/" onClick={handleNavItemClick}>
                                     <FaUsers className="me-2 text-primary" /> 個人頁面
@@ -144,16 +144,16 @@ function ManagerNav() {
 
                             {/* 管理者管理 - 只對管理員顯示 */}
                             {isAdmin && (
-                                <NavDropdown 
+                                <NavDropdown
                                     title={
                                         <span className="nav-dropdown-title">
                                             <FaTasks className="me-1 nav-icon" /> 管理者管理
                                         </span>
-                                    } 
-                                    id="admin-management-dropdown" 
+                                    }
+                                    id="admin-management-dropdown"
                                     className={navItemClassName}
                                     show={openDropdown === 'admin-management-dropdown'}
-                                    onToggle={(isOpen) => handleDropdownToggle('admin-management-dropdown', isOpen)}
+                                    onClick={() => handleDropdownToggle('admin-management-dropdown')}
                                 >
                                     <NavDropdown.Item href="/alumni/manage/member/" onClick={handleNavItemClick}>
                                         <FaUsers className="me-2 text-primary" /> 使用者管理
@@ -164,6 +164,9 @@ function ManagerNav() {
                                     <NavDropdown.Item href="/alumni/manage/outstanding/" onClick={handleNavItemClick}>
                                         <FaUsers className="me-2 text-primary" /> 傑出系友設置
                                     </NavDropdown.Item>
+                                    <NavDropdown.Item href="/alumni/manage/outstanding-alumni/" onClick={handleNavItemClick}>
+                                        <FaUsers className="me-2 text-primary" /> 傑出校友設置
+                                    </NavDropdown.Item>
                                     {/* <NavDropdown.Item onClick={handleRecruitAdminClick}> */}
                                     <NavDropdown.Item href="/alumni/manage/recruit/all/" onClick={handleNavItemClick}>
                                         <FaClipboardList className="me-2 text-primary" /> 招募總管理
@@ -173,16 +176,16 @@ function ManagerNav() {
 
                             {/* 官網管理 - 只對管理員顯示 */}
                             {isAdmin && (
-                                <NavDropdown 
+                                <NavDropdown
                                     title={
                                         <span className="nav-dropdown-title">
                                             <FaGlobe className="me-1 nav-icon" /> 官網管理
                                         </span>
-                                    } 
-                                    id="website-management-dropdown" 
+                                    }
+                                    id="website-management-dropdown"
                                     className={navItemClassName}
                                     show={openDropdown === 'website-management-dropdown'}
-                                    onToggle={(isOpen) => handleDropdownToggle('website-management-dropdown', isOpen)}
+                                    onClick={() => handleDropdownToggle('website-management-dropdown')}
                                 >
                                     <NavDropdown.Item href="/alumni/manage/website/" onClick={handleNavItemClick}>
                                         <FaGlobe className="me-2 text-primary" /> 官網照片設置
@@ -195,16 +198,16 @@ function ManagerNav() {
 
                             {/* 系友會資訊管理 - 只對管理員顯示 */}
                             {isAdmin && (
-                                <NavDropdown 
+                                <NavDropdown
                                     title={
                                         <span className="nav-dropdown-title">
                                             <FaInfoCircle className="me-1 nav-icon" /> 系友會資訊
                                         </span>
-                                    } 
-                                    id="alumni-info-dropdown" 
+                                    }
+                                    id="alumni-info-dropdown"
                                     className={navItemClassName}
                                     show={openDropdown === 'alumni-info-dropdown'}
-                                    onToggle={(isOpen) => handleDropdownToggle('alumni-info-dropdown', isOpen)}
+                                    onClick={() => handleDropdownToggle('alumni-info-dropdown')}
                                 >
 
                                     <NavDropdown.Item href="/alumni/manage/info/?type=rule" onClick={handleNavItemClick}>
@@ -224,24 +227,24 @@ function ManagerNav() {
                             )}
 
                             {/* 帳號相關 */}
-                            <NavDropdown 
+                            <NavDropdown
                                 title={
                                     <span className="nav-dropdown-title">
                                         <FaSignOutAlt className="me-1 nav-icon" /> 帳號相關
                                     </span>
-                                } 
-                                id="account-dropdown" 
+                                }
+                                id="account-dropdown"
                                 className={navItemClassName}
                                 align="end"
                                 show={openDropdown === 'account-dropdown'}
-                                onToggle={(isOpen) => handleDropdownToggle('account-dropdown', isOpen)}
+                                onClick={() => handleDropdownToggle('account-dropdown')}
                             >
                                 <NavDropdown.Item onClick={() => { handleLogout(); handleNavItemClick(); }}>
                                     <FaSignOutAlt className="me-2 text-danger" /> 登出
                                 </NavDropdown.Item>
-                                <NavDropdown.Item href="/Manager/User" onClick={handleNavItemClick}>
+                                {/* <NavDropdown.Item href="/Manager/User" onClick={handleNavItemClick}>
                                     <FaInfoCircle className="me-2 text-primary" /> 使用說明
-                                </NavDropdown.Item>
+                                </NavDropdown.Item> */}
                             </NavDropdown>
                         </Nav>
                     </Navbar.Collapse>

@@ -1,0 +1,385 @@
+/* ============================================
+   全域主題樣式
+   基於 Bootstrap 的學術專業覆蓋樣式
+   ============================================ */
+
+@import './variables.css';
+@import './typography.css';
+
+/* ===== 基礎重置與全域設定 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--color-gray-800);
+  background: linear-gradient(135deg, #F5F7FA 0%, #E9ECEF 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* 背景保持簡潔 - 移除科技感動態網格 */
+
+/* ===== Bootstrap 元件覆蓋 ===== */
+
+/* 容器增強 */
+.container, .container-fluid {
+  position: relative;
+  z-index: 1;
+}
+
+/* 卡片專業企業設計 */
+.card {
+  background: #ffffff;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+}
+
+/* 按鈕科技感設計 */
+.btn {
+  font-weight: var(--fw-medium);
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-base) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+  border: none;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.btn-primary {
+  background: var(--color-cta, #2563eb);
+  color: white;
+  border: none;
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: var(--gradient-secondary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+}
+
+.btn-outline-primary {
+  background: transparent;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  position: relative;
+}
+
+.btn-outline-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: var(--gradient-primary);
+  transition: width var(--duration-base);
+  z-index: -1;
+}
+
+.btn-outline-primary:hover {
+  color: white;
+  border-color: transparent;
+}
+
+.btn-outline-primary:hover::after {
+  width: 100%;
+}
+
+/* .btn-ai - AI 按鈕樣式請在頁面專屬 CSS 中定義 */
+
+/* 隱藏金黃色按鈕 (btn-warning) */
+.btn-warning {
+  display: none !important;
+}
+
+/* 表單輸入框科技感 */
+.form-control, .form-select {
+  background: var(--glass-white-solid);
+  border: 1px solid rgba(94, 114, 228, 0.2);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  transition: all var(--duration-base);
+  font-size: var(--fs-sm);
+}
+
+.form-control:focus, .form-select:focus {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.15);
+  outline: none;
+}
+
+.form-label {
+  font-weight: var(--fw-medium);
+  color: var(--color-gray-700);
+  margin-bottom: 0.5rem;
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 導航列科技感 */
+.navbar {
+  background: var(--glass-white-solid);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 0;
+  transition: all var(--duration-base);
+}
+
+.navbar.scrolled {
+  padding: 0.5rem 0;
+  box-shadow: var(--shadow-lg);
+}
+
+.navbar-brand {
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-xl);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: transform var(--duration-base);
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+.nav-link {
+  color: var(--color-gray-700);
+  font-weight: var(--fw-medium);
+  padding: 0.5rem 1rem !important;
+  margin: 0 0.25rem;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-base);
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transform: translateX(-50%);
+  transition: width var(--duration-base);
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--color-primary);
+    background: rgba(42, 82, 190, 0.1);}
+
+.nav-link:hover::after, .nav-link.active::after {
+  width: 80%;
+}
+
+/* 下拉選單科技感 */
+.dropdown-menu {
+  background: var(--glass-white-solid);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  animation: slideDown var(--duration-fast) var(--ease-out);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  border-radius: var(--radius-md);
+  padding: 0.5rem 1rem;
+  transition: all var(--duration-fast);
+  font-weight: var(--fw-medium);
+}
+
+.dropdown-item:hover {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+  transform: translateX(4px);
+}
+
+/* 確保導航欄下拉選單項目的 hover 效果有足夠優先級 */
+.custom-dropdown .dropdown-item-custom:hover,
+.navbar .dropdown-item:hover,
+.nav-item-animated .dropdown-item:hover {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+}
+
+/* 徽章科技感 */
+.badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.badge-primary {
+  background: var(--gradient-primary);
+}
+
+/* .badge-glow - 移除霓虹光暈效果 */
+
+/* 提示框科技感 */
+.alert {
+  background: var(--glass-white-solid);
+  backdrop-filter: var(--backdrop-blur);
+  border: none;
+  border-left: 4px solid;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.alert-primary {
+  border-left-color: var(--color-primary);
+  background: rgba(94, 114, 228, 0.1);
+}
+
+.alert-success {
+  border-left-color: var(--color-success);
+  background: rgba(45, 206, 137, 0.1);
+}
+
+/* 進度條科技感 */
+.progress {
+  height: 8px;
+  background: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: visible;
+  box-shadow: var(--shadow-inner);
+}
+
+.progress-bar {
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 模態框科技感 */
+.modal-content {
+  background: var(--glass-white-solid);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2xl);
+  overflow: hidden;
+}
+
+.modal-header {
+  background: var(--gradient-primary);
+  color: white;
+  border-bottom: none;
+  padding: 1.5rem;
+}
+
+.modal-backdrop {
+  background: rgba(11, 25, 41, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+/* 表格基本樣式 - 已移除統一設計 */
+/* 各頁面可自定義表格樣式 */
+
+/* 頁碼科技感 */
+.pagination {
+  gap: 0.5rem;
+}
+
+.page-link {
+  background: var(--glass-white-solid);
+  border: 1px solid rgba(94, 114, 228, 0.2);
+  color: var(--color-gray-700);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-weight: var(--fw-medium);
+  transition: all var(--duration-fast);
+}
+
+.page-link:hover {
+  background: var(--gradient-primary);
+  color: white;
+  border-color: transparent;
+  /* 移除 transform 避免內容跳動 */
+  /* transform: translateY(-2px); */
+  box-shadow: var(--shadow-md);
+}
+
+.page-item.active .page-link {
+  background: var(--gradient-primary);
+  border-color: transparent;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 麵包屑導航 */
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.breadcrumb-item {
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-sm);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: '›';
+  color: var(--color-gray-500);
+  font-weight: var(--fw-bold);
+}
+
+.breadcrumb-item.active {
+  color: var(--color-primary);
+}

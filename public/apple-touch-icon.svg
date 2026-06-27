@@ -1,0 +1,15 @@
+<svg width="180" height="180" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+    <rect width="180" height="180" rx="36" ry="36" fill="url(#iconGrad)"/>
+    <text x="90" y="70" font-family="Arial, sans-serif" font-size="20" font-weight="bold"
+          text-anchor="middle" fill="white">高科大</text>
+    <text x="90" y="100" font-family="Arial, sans-serif" font-size="16" font-weight="bold"
+          text-anchor="middle" fill="white">智慧商務</text>
+    <text x="90" y="125" font-family="Arial, sans-serif" font-size="14"
+          text-anchor="middle" fill="#e5e7eb">系友會</text>
+</svg>

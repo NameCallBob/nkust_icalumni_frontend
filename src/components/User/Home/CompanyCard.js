@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Card, Button, Badge } from "react-bootstrap";
+import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
 const CompanyCard = ({ company }) => {
     // 使用狀態追蹤卡片是否被懸停
@@ -119,9 +120,10 @@ const CompanyCard = ({ company }) => {
             <div style={{ overflow: "hidden" }}>
                 <Card.Img
                     variant="top"
-                    src={company.imageUrl}
+                    src={getImageSrc(company.imageUrl, 'company')}
                     style={imageStyle}
                     alt={`${company.name}公司圖片`}
+                    onError={(e) => handleImageError(e, 'company')}
                 />
             </div>
             

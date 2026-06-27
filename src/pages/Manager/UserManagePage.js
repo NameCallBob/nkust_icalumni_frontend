@@ -10,11 +10,13 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AccountManageModal from 'components/Manage/UserManage/AccountModal';
 import UploadExcelModal from 'components/Manage/UserManage/MemberExcelModal';
+import useRWD from 'hooks/useRWD';
 /**
  * 使用者管理元件
  * @returns
  */
 function UserManagement() {
+  const rwd = useRWD();
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
     gender: '',
@@ -246,9 +248,12 @@ function UserManagement() {
   };
 
   return (
-    <Container className="my-5">
+    <Container className="admin-container my-5" style={rwd.getContainerStyle()}>
       <Row className="justify-content-center">
-        <Col md={3} className="bg-light p-3">
+        <Col
+          md={rwd.isMobile ? 12 : 3}
+          className={`bg-light p-3 ${rwd.isMobile ? 'mb-3' : ''}`}
+        >
           <UserFilter
             filters={filters}
             setFilters={setFilters}
@@ -260,21 +265,46 @@ function UserManagement() {
           />
         </Col>
 
-        <Col md={9} className="p-3">
+        <Col md={rwd.isMobile ? 12 : 9} className="p-3">
           {loading ? (
             <div className="text-center">
               <LoadingSpinner></LoadingSpinner>
             </div>
           ) : (
-            <UserTable
-              users={users}
-              handleShowModal={handleShowModal}
-              handleEdit={handleEdit}
-              handlePaymentStatus={handlePaymentStatus}
-              handleToggleActive={handleToggleActive}
-              handleDelete={handleDelete}
-              handlePassword={handlePassword}
-            />
+            <div style={rwd.getContainerStyle()}>
+              {rwd.isMobile ? (
+                <div style={{
+                  overflowX: 'auto',
+                  WebkitOverflowScrolling: 'touch',
+                  msOverflowStyle: '-ms-autohiding-scrollbar',
+                  scrollbarWidth: 'thin'
+                }}>
+                  <div style={{ minWidth: '800px' }}>
+                    <UserTable
+                      users={users}
+                      handleShowModal={handleShowModal}
+                      handleEdit={handleEdit}
+                      handlePaymentStatus={handlePaymentStatus}
+                      handleToggleActive={handleToggleActive}
+                      handleDelete={handleDelete}
+                      handlePassword={handlePassword}
+                      style={rwd.getTableStyle()}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <UserTable
+                  users={users}
+                  handleShowModal={handleShowModal}
+                  handleEdit={handleEdit}
+                  handlePaymentStatus={handlePaymentStatus}
+                  handleToggleActive={handleToggleActive}
+                  handleDelete={handleDelete}
+                  handlePassword={handlePassword}
+                  style={rwd.getTableStyle()}
+                />
+              )}
+            </div>
           )}
         </Col>
       </Row>
@@ -299,7 +329,7 @@ function UserManagement() {
         show={showAcModal}
         handleClose={handleCloseACModal}
       />
-      <UploadExcelModal 
+      <UploadExcelModal
         show={showExcelModal}
         handleClose={() => {handleCloseExcelModal()}}
       />

@@ -11,6 +11,13 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
   const [serverValidating, setServerValidating] = useState(false); // 後端驗證中
   const [isSubmitting, setIsSubmitting] = useState(false); // 提交防抖變數
 
+  // 添加新的狀態來追蹤每個步驟的完成狀態
+  const [stepCompletionStatus, setStepCompletionStatus] = useState({
+    1: false,
+    2: false,
+    3: false
+  });
+
   // 初始化表單數據
   const [formData, setFormData] = useState(
     isEditMode
@@ -105,16 +112,16 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
       return null;
     },
     "graduate.grade": (value) => {
-      if (!value || value.trim() === "") return ["入學學年為必填項"];
+      if (!value) return null; // 改為非必填
       if (!/^\d{3}$/.test(value)) return ["入學學年應為3位數"];
       return null;
     },
     "graduate.school": (value) => {
-      if (!value || value.trim() === "") return ["畢業學校為必填項"];
+      if (!value) return null; // 改為非必填
       return null;
     },
     "graduate.student_id": (value) => {
-      if (!value || value.trim() === "") return ["學號為必填項"];
+      if (!value) return null; // 改為非必填
       return null;
     },
     photo: (file) => {
@@ -502,6 +509,112 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
     return changedData;
   };
 
+  // 檢查當前步驟的完成狀態
+  const checkStepCompletion = (stepNumber) => {
+    const currentStepFields = formSteps[stepNumber - 1].fields;
+    let isComplete = true;
+    
+    currentStepFields.forEach(field => {
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
+        const value = formData[parent]?.[child];
+        const fieldErrors = validateField(field, value);
+        
+        if (fieldErrors) {
+          isComplete = false;
+        }
+      } else {
+        const value = formData[field];
+        const fieldErrors = validateField(field, value);
+        
+        if (field === 'home_phone' || field === 'address' || field === 'intro' || field === 'is_show') {
+          if (fieldErrors && value) isComplete = false;
+        } else if (fieldErrors) {
+          isComplete = false;
+        }
+      }
+    });
+    
+    return isComplete;
+  };
+
+  // 更新步驟完成狀態
+  useEffect(() => {
+    const newStatus = {
+      1: checkStepCompletion(1),
+      2: checkStepCompletion(2),
+      3: checkStepCompletion(3)
+    };
+    setStepCompletionStatus(newStatus);
+  }, [formData]);
+
+  // 修改箭頭提示組件
+  const RequiredFieldArrow = ({ fieldName }) => {
+    const shouldShowArrow = () => {
+      // 檢查欄位是否為空
+      const isFieldEmpty = () => {
+        if (fieldName.includes('.')) {
+          const [parent, child] = fieldName.split('.');
+          return !formData[parent]?.[child] || formData[parent][child].trim() === '';
+        }
+        return !formData[fieldName] || formData[fieldName].trim() === '';
+      };
+
+      // 檢查是否有驗證錯誤
+      const hasValidationError = () => {
+        if (fieldName.includes('.')) {
+          const [parent, child] = fieldName.split('.');
+          return errors[parent]?.[child] || apiErrors[fieldName];
+        }
+        return errors[fieldName] || apiErrors[fieldName];
+      };
+
+      // 如果是必填欄位且為空，或是有驗證錯誤，則顯示箭頭
+      const requiredFields = ['name', 'gender', 'birth_date', 'mobile_phone', 'photo'];
+      return (requiredFields.includes(fieldName) && isFieldEmpty()) || hasValidationError();
+    };
+
+    if (shouldShowArrow()) {
+      return (
+        <div className="position-absolute" style={{
+          right: '-30px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 1000
+        }}>
+          <div className="text-danger">
+            <i className="bi bi-arrow-left-circle-fill" style={{ fontSize: '1.5rem' }}></i>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // 修改步驟導航渲染
+  const renderStepNavigation = () => (
+    <div className="step-indicator mb-4 position-relative">
+      <ProgressBar now={formSteps[activeStep - 1].percent} label={`${formSteps[activeStep - 1].percent}%`} />
+      <div className="d-flex justify-content-between mt-2">
+        {formSteps.map((step, index) => (
+          <div key={index} className="position-relative">
+            <Button 
+              variant={activeStep === index + 1 ? "primary" : "outline-secondary"}
+              size="sm"
+              onClick={() => setActiveStep(index + 1)}
+              disabled={loading || (!stepCompletionStatus[index + 1] && index + 1 > activeStep)}
+            >
+              {index + 1}. {step.title}
+            </Button>
+            {index + 1 === activeStep && !stepCompletionStatus[index + 1] && (
+              <RequiredFieldArrow fieldName={step.fields[0]} />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   // 渲染當前步驟的表單欄位
   const renderFormFields = () => {
     if (loading) {
@@ -520,28 +633,21 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
     return (
       <div className="form-step">
         {/* 步驟導航 */}
-        <div className="step-indicator mb-4">
-          <ProgressBar now={currentStep.percent} label={`${currentStep.percent}%`} />
-          <div className="d-flex justify-content-between mt-2">
-            {formSteps.map((step, index) => (
-              <Button 
-                key={index} 
-                variant={activeStep === index + 1 ? "primary" : "outline-secondary"}
-                size="sm"
-                onClick={() => setActiveStep(index + 1)}
-                disabled={loading}
-              >
-                {index + 1}. {step.title}
-              </Button>
-            ))}
-          </div>
-        </div>
+        {renderStepNavigation()}
         
         {/* 欄位提示區 */}
         {focusedField && fieldHints[focusedField] && (
           <Alert variant="info" className="mb-3">
             <i className="bi bi-info-circle me-2"></i>
             {fieldHints[focusedField]}
+          </Alert>
+        )}
+        
+        {/* 未完成提示 */}
+        {!stepCompletionStatus[activeStep] && (
+          <Alert variant="warning" className="mb-3">
+            <i className="bi bi-exclamation-triangle me-2"></i>
+            請完成所有必填欄位後再繼續
           </Alert>
         )}
         
@@ -569,7 +675,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               <Row>
                 {/* 姓名 */}
                 <Col xs={12} md={6}>
-                  <Form.Group controlId="name" className="mb-3">
+                  <Form.Group controlId="name" className="mb-3 position-relative">
                     <Form.Label>
                       姓名 <span className="text-danger">*</span>
                     </Form.Label>
@@ -584,6 +690,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       placeholder="請輸入真實姓名"
                       autoComplete="name"
                     />
+                    <RequiredFieldArrow fieldName="name" />
                     <Form.Control.Feedback type="invalid">
                       {errors.name || apiErrors.name}
                     </Form.Control.Feedback>
@@ -592,7 +699,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
 
                 {/* 性別 */}
                 <Col xs={12} md={6}>
-                  <Form.Group controlId="gender" className="mb-3">
+                  <Form.Group controlId="gender" className="mb-3 position-relative">
                     <Form.Label>
                       性別 <span className="text-danger">*</span>
                     </Form.Label>
@@ -610,6 +717,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       <option value="F">女性</option>
                       <option value="O">其他</option>
                     </Form.Control>
+                    <RequiredFieldArrow fieldName="gender" />
                     <Form.Control.Feedback type="invalid">
                       {errors.gender || apiErrors.gender}
                     </Form.Control.Feedback>
@@ -620,7 +728,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               <Row>
                 {/* 生日 */}
                 <Col xs={12} md={6}>
-                  <Form.Group controlId="birth_date" className="mb-3">
+                  <Form.Group controlId="birth_date" className="mb-3 position-relative">
                     <Form.Label>
                       生日 <span className="text-danger">*</span>
                     </Form.Label>
@@ -633,6 +741,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       onBlur={handleBlur}
                       isInvalid={(submitAttempted && errors.birth_date) || apiErrors.birth_date}
                     />
+                    <RequiredFieldArrow fieldName="birth_date" />
                     <Form.Control.Feedback type="invalid">
                       {errors.birth_date || apiErrors.birth_date}
                     </Form.Control.Feedback>
@@ -641,7 +750,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
 
                 {/* 行動電話 */}
                 <Col xs={12} md={6}>
-                  <Form.Group controlId="mobile_phone" className="mb-3">
+                  <Form.Group controlId="mobile_phone" className="mb-3 position-relative">
                     <Form.Label>
                       行動電話 <span className="text-danger">*</span>
                     </Form.Label>
@@ -656,6 +765,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       placeholder="09開頭的10位數字"
                       autoComplete="tel"
                     />
+                    <RequiredFieldArrow fieldName="mobile_phone" />
                     <Form.Control.Feedback type="invalid">
                       {errors.mobile_phone || apiErrors.mobile_phone}
                     </Form.Control.Feedback>
@@ -666,7 +776,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               {/* 市內電話 */}
               <Row>
                 <Col xs={12}>
-                  <Form.Group controlId="home_phone" className="mb-3">
+                  <Form.Group controlId="home_phone" className="mb-3 position-relative">
                     <Form.Label>市內電話（選填）</Form.Label>
                     <Form.Control
                       type="text"
@@ -679,6 +789,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       placeholder="不含區碼的6-10位數字（選填）"
                       autoComplete="tel"
                     />
+                    <RequiredFieldArrow fieldName="home_phone" />
                     <Form.Control.Feedback type="invalid">
                       {errors.home_phone || apiErrors.home_phone}
                     </Form.Control.Feedback>
@@ -691,7 +802,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
           {currentStep.title === '聯絡與學校資料' && (
             <>
               {/* 地址 */}
-              <Form.Group controlId="address" className="mb-3">
+              <Form.Group controlId="address" className="mb-3 position-relative">
                 <Form.Label>地址（選填）</Form.Label>
                 <Form.Control
                   as="textarea"
@@ -705,6 +816,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   placeholder="請輸入您的詳細地址"
                   autoComplete="street-address"
                 />
+                <RequiredFieldArrow fieldName="address" />
                 <Form.Control.Feedback type="invalid">
                   {errors.address || apiErrors.address}
                 </Form.Control.Feedback>
@@ -713,10 +825,8 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               <Row>
                 {/* 入學學年 */}
                 <Col xs={12} md={6}>
-                  <Form.Group controlId="graduate.grade" className="mb-3">
-                    <Form.Label>
-                      入學學年 <span className="text-danger">*</span>
-                    </Form.Label>
+                  <Form.Group controlId="graduate.grade" className="mb-3 position-relative">
+                    <Form.Label>入學學年（選填）</Form.Label>
                     <Form.Control
                       type="text"
                       name="graduate.grade"
@@ -727,6 +837,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       isInvalid={(submitAttempted && errors.graduate?.grade) || apiErrors["graduate.grade"]}
                       placeholder="例如：113"
                     />
+                    <RequiredFieldArrow fieldName="graduate.grade" />
                     <Form.Control.Feedback type="invalid">
                       {errors.graduate?.grade || apiErrors["graduate.grade"]}
                     </Form.Control.Feedback>
@@ -735,10 +846,8 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
 
                 {/* 畢業學校 */}
                 <Col xs={12} md={6}>
-                  <Form.Group controlId="graduate.school" className="mb-3">
-                    <Form.Label>
-                      畢業學校 <span className="text-danger">*</span>
-                    </Form.Label>
+                  <Form.Group controlId="graduate.school" className="mb-3 position-relative">
+                    <Form.Label>畢業學校（選填）</Form.Label>
                     <Form.Control
                       type="text"
                       name="graduate.school"
@@ -749,6 +858,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       isInvalid={(submitAttempted && errors.graduate?.school) || apiErrors["graduate.school"]}
                       placeholder="例如：國立高雄科技大學智慧商務系"
                     />
+                    <RequiredFieldArrow fieldName="graduate.school" />
                     <Form.Control.Feedback type="invalid">
                       {errors.graduate?.school || apiErrors["graduate.school"]}
                     </Form.Control.Feedback>
@@ -757,10 +867,8 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               </Row>
 
               {/* 學號 */}
-              <Form.Group controlId="graduate.student_id" className="mb-3">
-                <Form.Label>
-                  學號 <span className="text-danger">*</span>
-                </Form.Label>
+              <Form.Group controlId="graduate.student_id" className="mb-3 position-relative">
+                <Form.Label>學號（選填）</Form.Label>
                 <Form.Control
                   type="text"
                   name="graduate.student_id"
@@ -771,6 +879,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   isInvalid={(submitAttempted && errors.graduate?.student_id) || apiErrors["graduate.student_id"]}
                   placeholder="例如：J12345678"
                 />
+                <RequiredFieldArrow fieldName="graduate.student_id" />
                 <Form.Control.Feedback type="invalid">
                   {errors.graduate?.student_id || apiErrors["graduate.student_id"]}
                 </Form.Control.Feedback>
@@ -781,7 +890,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
           {currentStep.title === '個人介紹與設定' && (
             <>
               {/* 照片 */}
-              <Form.Group controlId="photo" className="mb-4">
+              <Form.Group controlId="photo" className="mb-4 position-relative">
                 <Form.Label>
                   照片 <span className="text-danger">*</span>
                 </Form.Label>
@@ -813,6 +922,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       isInvalid={(submitAttempted && errors.photo) || apiErrors.photo}
                       accept="image/*"
                     />
+                    <RequiredFieldArrow fieldName="photo" />
                     <Form.Control.Feedback type="invalid">
                       {errors.photo || apiErrors.photo}
                     </Form.Control.Feedback>
@@ -824,7 +934,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               </Form.Group>
 
               {/* 自我介紹 */}
-              <Form.Group controlId="intro" className="mb-3">
+              <Form.Group controlId="intro" className="mb-3 position-relative">
                 <Form.Label>自我介紹（選填）</Form.Label>
                 <Form.Control
                   as="textarea"
@@ -838,6 +948,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   placeholder="請輸入有關於您的自我介紹，可說明專長、職業以利於被搜尋到"
                   maxLength={200}
                 />
+                <RequiredFieldArrow fieldName="intro" />
                 <Form.Control.Feedback type="invalid">
                   {errors.intro || apiErrors.intro}
                 </Form.Control.Feedback>
@@ -847,7 +958,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               </Form.Group>
 
               {/* 是否展現於官網 */}
-              <Form.Group className="mb-3" controlId="is_show">
+              <Form.Group className="mb-3 position-relative" controlId="is_show">
                 <Form.Check
                   type="checkbox"
                   name="is_show"
@@ -857,6 +968,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   onFocus={() => handleFocus("is_show")}
                   onBlur={handleBlur}
                 />
+                <RequiredFieldArrow fieldName="is_show" />
                 <Form.Text className="text-muted">
                   勾選此項後，您的資料將會顯示在官網上
                 </Form.Text>
@@ -875,6 +987,12 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
       </Modal.Header>
       
       <Modal.Body className="p-4">
+        {/* 必填欄位說明 */}
+        <Alert variant="info" className="mb-3">
+          <i className="bi bi-info-circle me-2"></i>
+          標記 <span className="text-danger">*</span> 的欄位為必填項目
+        </Alert>
+
         {/* 表單進度指示器 */}
         {!loading && (
           <div className="mb-4">

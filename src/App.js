@@ -1,62 +1,88 @@
-// App.js
-import React from 'react';
-import { BrowserRouter as Router, Routes ,Route} from 'react-router-dom';
+// App.js - 優化版本，使用 React.lazy() 進行代碼分割
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { PageLoading } from 'components/common/LoadingComponent';
+import ErrorBoundary from 'components/common/ErrorBoundary';
+import PageLoader from 'components/common/PageLoader';
 import Footer from 'components/User/UserFooter';
-import "./App.css"
-
-// 使用端頁面
-import UserNav from 'components/User/UserNav';
-import Home from 'pages/User/HomePage';
-import Login from 'pages/User/LoginPage';
-import Search from 'pages/User/SearchPage';
-import AlumniDetailPage from 'pages/User/AlumniIntroPage';
-import AlumniListPage from 'pages/User/AlumniListPage';
-import RecruitPage from 'pages/User/RecruitPage';
-import ForgotPasswordFlow from 'pages/User/func_forgot/ForgotStep';
-import NotFoundPage from 'pages/NotFoundPage';
-import TermsAndConditionsPage from 'pages/User/TermsPage';
-
-// 管理端頁面
-import ManagerNav from 'components/Manage/ManagerNav.js';
-import MemberCenter from 'pages/Manager/ManagerMainPage';
-import MemberManagement from 'pages/Manager/UserManagePage';
-import RecruitManaPage from 'pages/Manager/RecruitManaPage';
-import PhotoManagementPage from 'pages/Manager/PicManaPage';
-import CompanyForm from 'pages/Manager/CompanyManaPage';
-import OtherManage from 'pages/Manager/OtherManagePage';
-import ArticleEditor from 'pages/Manager/Article/ArticleManaPage';
-import ArticleForm from 'pages/Manager/Article/ArticleFormPage';
-import EventDetail from 'pages/User/ActivityPage';
-import WebPicManager from 'pages/Manager/WebsiteManaPage';
-import ContactUsPage from 'pages/User/ContactUsPage';
-import InfoManager from 'pages/Manager/Alumni/InfoManaPage';
-import RuleManaPage from 'pages/Manager/Alumni/RuleManaPage';
-import JoinUsPage from 'pages/User/icalumni_Intro/JoinPage';
-import StructurePage from 'pages/User/icalumni_Intro/strucPage';
-import AlumniAssociationBylaws from 'pages/User/icalumni_Intro/RulePage';
-import IntroPage from 'pages/User/icalumni_Intro/IntroPage';
-import OutstandingAlumniPage from 'pages/Manager/OutstandingMemberManaPage';
 import GoogleAnalyticsWrapper from 'GA';
 import PosterModal from 'components/User/Home/PosterModal';
-import ProductManagement from 'pages/Manager/ProductListManaPage';
-import AllRecruitManaPage from 'pages/Manager/AllRecruitManaPage';
+import "./App.css"
+
+// 核心導航組件 - 立即載入
+import UserNav from 'components/User/UserNav';
+import ManagerNav from 'components/Manage/ManagerNav.js';
+
+// 使用 React.lazy() 進行代碼分割 - 使用者端頁面
+const Home = React.lazy(() => import('pages/User/HomePage'));
+const Login = React.lazy(() => import('pages/User/LoginPage'));
+const Search = React.lazy(() => import('pages/User/SearchPage'));
+const AlumniDetailPage = React.lazy(() => import('pages/User/AlumniIntroPage'));
+const AlumniListPage = React.lazy(() => import('pages/User/AlumniListPage'));
+const RecruitPage = React.lazy(() => import('pages/User/RecruitPage'));
+const ForgotPasswordFlow = React.lazy(() => import('pages/User/func_forgot/ForgotStep'));
+const NotFoundPage = React.lazy(() => import('pages/NotFoundPage'));
+const TermsAndConditionsPage = React.lazy(() => import('pages/User/TermsPage'));
+const EventDetail = React.lazy(() => import('pages/User/ActivityPage'));
+const ContactUsPage = React.lazy(() => import('pages/User/ContactUsPage'));
+
+// 使用者端介紹頁面
+const JoinUsPage = React.lazy(() => import('pages/User/icalumni_Intro/JoinPage'));
+const StructurePage = React.lazy(() => import('pages/User/icalumni_Intro/strucPage'));
+const AlumniAssociationBylaws = React.lazy(() => import('pages/User/icalumni_Intro/RulePage'));
+const IntroPage = React.lazy(() => import('pages/User/icalumni_Intro/IntroPage'));
+
+// 管理端頁面 - 按功能分組
+const MemberCenter = React.lazy(() => import('pages/Manager/ManagerMainPage'));
+const MemberManagement = React.lazy(() => import('pages/Manager/UserManagePage'));
+const RecruitManaPage = React.lazy(() => import('pages/Manager/RecruitManaPage'));
+const PhotoManagementPage = React.lazy(() => import('pages/Manager/PicManaPage'));
+const CompanyForm = React.lazy(() => import('pages/Manager/CompanyManaPage'));
+const OtherManage = React.lazy(() => import('pages/Manager/OtherManagePage'));
+const WebPicManager = React.lazy(() => import('pages/Manager/WebsiteManaPage'));
+const InfoManager = React.lazy(() => import('pages/Manager/Alumni/InfoManaPage'));
+const RuleManaPage = React.lazy(() => import('pages/Manager/Alumni/RuleManaPage'));
+const OutstandingAlumniPage = React.lazy(() => import('pages/Manager/OutstandingMemberManaPage'));
+const OutstandingAlumniManaPage = React.lazy(() => import('pages/Manager/OutstandingAlumniManaPage'));
+const ProductManagement = React.lazy(() => import('pages/Manager/ProductListManaPage'));
+const AllRecruitManaPage = React.lazy(() => import('pages/Manager/AllRecruitManaPage'));
+
+// 文章管理模組
+const ArticleEditor = React.lazy(() => import('pages/Manager/Article/ArticleManaPage'));
+const ArticleForm = React.lazy(() => import('pages/Manager/Article/ArticleFormPage'));
+
+// SEO 優化頁面
+const SmartBusinessLanding = React.lazy(() => import('pages/SEO/SmartBusinessLanding'));
+const ICDepartmentLanding = React.lazy(() => import('pages/SEO/ICDepartmentLanding'));
+const NKUSTICLanding = React.lazy(() => import('pages/SEO/NKUSTICLanding'));
+const AboutDepartment = React.lazy(() => import('pages/SEO/AboutDepartment'));
+const CareerProspects = React.lazy(() => import('pages/SEO/CareerProspects'));
+const RWDTableDemo = React.lazy(() => import('pages/RWDTableDemo'));
 
 function App() {
   return (
-    <>
+    <ErrorBoundary>
+      <PageLoader />
       <Router>
-      <GoogleAnalyticsWrapper>
-      <PosterModal />
-
-        <Routes>
-        {/* 使用者端路由 */}
-        {/* 首頁 */}
-    <Route path="/" element={
-      <>
-        <UserNav />
-        <Home />
-      </>
-    } />
+        <GoogleAnalyticsWrapper>
+          <PosterModal />
+          <Suspense fallback={<PageLoading />}>
+            <Routes>
+              {/* 開發展示頁面 */}
+              <Route path="/dev/rwd-table-demo" element={
+                <>
+                  <UserNav />
+                  <RWDTableDemo />
+                </>
+              } />
+              {/* 使用者端路由 */}
+              {/* 首頁 */}
+              <Route path="/" element={
+                <>
+                  <UserNav />
+                  <Home />
+                </>
+              } />
   {/* 聯絡我們 */}
  <Route path="/IC/contactUs" element={
       <>
@@ -153,6 +179,7 @@ function App() {
       </>
     } />
 
+
     {/* 忘記密碼流程 */}
     <Route path="/forgot-password" element={
       <>
@@ -160,6 +187,48 @@ function App() {
         <ForgotPasswordFlow />
       </>
     } />
+
+    {/* SEO 優化頁面路由 */}
+    {/* 智慧商務系專頁 */}
+    <Route path="/smart-business-department" element={
+      <>
+        <UserNav />
+        <SmartBusinessLanding />
+      </>
+    } />
+
+    {/* 智商系專頁 */}
+    <Route path="/ic-department" element={
+      <>
+        <UserNav />
+        <ICDepartmentLanding />
+      </>
+    } />
+
+    {/* NKUST智慧商務系專頁 */}
+    <Route path="/nkust-ic" element={
+      <>
+        <UserNav />
+        <NKUSTICLanding />
+      </>
+    } />
+
+    {/* 系所介紹專頁 */}
+    <Route path="/about-department" element={
+      <>
+        <UserNav />
+        <AboutDepartment />
+      </>
+    } />
+
+    {/* 就業前景專頁 */}
+    <Route path="/career-prospects" element={
+      <>
+        <UserNav />
+        <CareerProspects />
+      </>
+    } />
+
         {/* 管理者端路由 */}
         <Route path="/alumni/manage/" element={
       <>
@@ -197,6 +266,7 @@ function App() {
         <ProductManagement />
       </>
     } />
+
     {/* 照片管理 */}
     <Route path="/alumni/manage/pic/" element={
       <>
@@ -254,6 +324,13 @@ function App() {
         <OutstandingAlumniPage></OutstandingAlumniPage>
       </>
     } />
+    {/* 傑出校友 */}
+    <Route path="/alumni/manage/outstanding-alumni/" element={
+      <>
+        <ManagerNav />
+        <OutstandingAlumniManaPage></OutstandingAlumniManaPage>
+      </>
+    } />
         {/* 招募總管理 */}
         <Route path="/alumni/manage/recruit/all/" element={
       <>
@@ -282,19 +359,20 @@ function App() {
         <ArticleForm />
       </>
     } />
-        {/*　其他　- 404 頁面 */}
-        <Route path="*" element={
-          <>
-            <UserNav />
-            <NotFoundPage />
-          </>
-        } />
-        </Routes>
+              {/*　其他　- 404 頁面 */}
+              <Route path="*" element={
+                <>
+                  <UserNav />
+                  <NotFoundPage />
+                </>
+              } />
+            </Routes>
+          </Suspense>
         </GoogleAnalyticsWrapper>
       </Router>
 
       <Footer />
-    </>
+    </ErrorBoundary>
   );
 }
 

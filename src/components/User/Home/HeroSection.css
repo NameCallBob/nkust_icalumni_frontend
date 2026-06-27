@@ -1,0 +1,360 @@
+/* ============================================
+   Hero Section 樣式
+   企業顧問風格 - 專業、沉穩、權威
+   ============================================ */
+
+.hero-section {
+  position: relative;
+  background: #1e3a8a;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: white;
+}
+
+/* 簡潔的背景紋理，無動畫 */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 2;
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+/* Hero 內容區域 */
+.hero-content {
+  padding: 2rem 0;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-badge {
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.375rem 1rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: border-color 0.2s ease;
+}
+
+.hero-badge-university {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.hero-badge-nkust {
+  background: #a0781c;
+  color: #ffffff;
+  font-weight: 700;
+  border-color: #a0781c;
+}
+
+.hero-badge:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  text-shadow: none;
+}
+
+.hero-highlight {
+  color: #ffffff;
+  display: block;
+  font-weight: 700;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-description {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+}
+
+/* Hero 按鈕樣式 */
+.hero-actions {
+  margin-bottom: 3rem;
+}
+
+.hero-btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid transparent;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9375rem;
+}
+
+/* Primary: white bg + navy text */
+.hero-btn-primary {
+  background: #ffffff;
+  color: #1e3a8a;
+  border-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hero-btn-primary:hover {
+  background: #f0f4ff;
+  color: #1e3a8a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Outline: transparent bg + white border */
+.hero-btn-outline {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.hero-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Secondary: gold accent */
+.hero-btn-secondary {
+  background: #a0781c;
+  color: #ffffff;
+  border-color: #a0781c;
+  font-weight: 700;
+}
+
+.hero-btn-secondary:hover {
+  background: #8a6516;
+  border-color: #8a6516;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(160, 120, 28, 0.35);
+}
+
+/* 統計數據樣式 */
+.hero-stats {
+  padding: 2rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.375rem;
+}
+
+.stat-label {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* Hero 視覺區域 */
+.hero-visual {
+  position: relative;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 浮動卡片 - 保留結構，移除動畫 */
+.hero-floating-card {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 220px;
+}
+
+.card-1 {
+  top: 20%;
+  left: 10%;
+}
+
+.card-2 {
+  top: 50%;
+  right: 10%;
+}
+
+.card-3 {
+  bottom: 20%;
+  left: 20%;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  background: #1e3a8a;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.card-text h6 {
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0 0 0.2rem 0;
+  font-size: 0.9375rem;
+}
+
+.card-text p {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+/* 背景裝飾元素 - 靜態，無動畫 */
+.hero-background-shape {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 360px;
+  height: 360px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hero-background-dots {
+  display: none;
+}
+
+/* 響應式設計 */
+@media (max-width: 991.98px) {
+  .hero-section {
+    min-height: auto;
+    padding: 4rem 0;
+  }
+
+  .hero-visual {
+    height: 300px;
+    margin-top: 3rem;
+  }
+
+  .hero-floating-card {
+    min-width: 180px;
+    padding: 1rem;
+  }
+
+  .card-text h6 {
+    font-size: 0.875rem;
+  }
+
+  .card-text p {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .hero-actions .row {
+    --bs-gutter-x: 0.75rem;
+  }
+
+  .hero-btn {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .hero-floating-card {
+    position: relative;
+    margin: 1rem 0;
+    width: 100%;
+  }
+
+  .card-1, .card-2, .card-3 {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+  }
+
+  .hero-visual {
+    height: auto;
+  }
+
+  .hero-image-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .stat-number {
+    font-size: 1.875rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hero-section {
+    padding: 3rem 0;
+  }
+
+  .hero-stats {
+    padding: 1.5rem 0;
+  }
+
+  .hero-floating-card {
+    padding: 0.75rem;
+    min-width: auto;
+  }
+}

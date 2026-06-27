@@ -1,54 +1,269 @@
+/* AlumniAssociation.css - Professional Corporate Style */
+
+/* ===== 章程頁面容器 ===== */
 .bylaws-container {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    min-height: 100vh;
-  }
-  
-  .bylaws-card {
-    border: none;
-    border-radius: 15px;
-    background: #ffffff;
-    overflow: hidden;
-  }
-  
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+/* ===== 內容卡片 ===== */
+.bylaws-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* ===== 卡片標題 ===== */
+.card-header-custom {
+  background: #1e3a8a;
+  color: #ffffff;
+  padding: 1.25rem 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ===== 介紹文字 ===== */
+.introduction {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #374151;
+}
+
+/* ===== PDF 檢視器 ===== */
+.pdf-viewer {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 0;
+  overflow: auto;
+  max-height: 80vh;
+  border: 1px solid #e2e8f0;
+}
+
+/* ===== 錯誤卡片 ===== */
+.error-card {
+  border-radius: 8px;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+}
+
+/* ===== 頁面標題區（適用各 IC 頁面） ===== */
+.ic-page-header {
+  background-color: #1e3a8a;
+  color: #ffffff;
+  padding: 3rem 2rem;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.ic-page-header h1,
+.ic-page-header .page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* ===== 頁面內容區 ===== */
+.ic-page-content {
+  background: #ffffff;
+  max-width: 900px;
+  margin: 2.5rem auto;
+  padding: 2.5rem 2rem;
+  border-radius: 8px;
+}
+
+/* ===== 段落標題 ===== */
+.ic-page-content h2,
+.ic-page-content h3 {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.ic-page-content h2 {
+  font-size: 1.4rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1.25rem;
+}
+
+.ic-page-content h3 {
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+}
+
+/* ===== 內文 ===== */
+.ic-page-content p,
+.ic-page-content li {
+  color: #374151;
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+/* ===== 分隔線 ===== */
+.ic-section-divider {
+  border: none;
+  border-top: 2px solid #e2e8f0;
+  margin: 2rem 0;
+}
+
+/* ===== 加入步驟（JoinPage） ===== */
+.join-steps {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.join-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  min-width: 120px;
+  position: relative;
+}
+
+.join-step-number {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #1e3a8a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-bottom: 0.75rem;
+}
+
+.join-step-label {
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.join-step-connector {
+  position: absolute;
+  top: 22px;
+  left: calc(50% + 22px);
+  right: calc(-50% + 22px);
+  height: 1px;
+  background-color: #e2e8f0;
+}
+
+.join-step:last-child .join-step-connector {
+  display: none;
+}
+
+/* ===== 組織架構（strucPage） ===== */
+.org-chart-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  text-align: center;
+  font-weight: 500;
+  color: #0f172a;
+  font-size: 0.9rem;
+}
+
+.org-chart-line {
+  border-color: #94a3b8;
+}
+
+/* ===== 圖片區塊標題 ===== */
+.ic-images-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* ===== Bootstrap 組件覆蓋 ===== */
+
+/* 章程頁面的 bg-primary 標題 */
+.bg-primary.text-white {
+  background-color: #1e3a8a !important;
+  padding: 0.85rem 1rem;
+  border-radius: 6px 6px 0 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* 預覽文件標題 */
+.bg-secondary.text-white {
+  background-color: #334155 !important;
+  padding: 0.65rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* 顯示/隱藏 PDF 按鈕 */
+.btn.btn-outline-primary {
+  color: #2563eb;
+  border-color: #2563eb;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn.btn-outline-primary:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* ===== 響應式 ===== */
+@media (max-width: 768px) {
   .card-header-custom {
-    background: linear-gradient(90deg, #007bff, #00c4ff);
-    color: white;
-    padding: 1.5rem;
-    font-size: 1.75rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 1rem;
   }
-  
+
   .introduction {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
   }
-  
+
   .pdf-viewer {
-    background: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    overflow: auto;
-    max-height: 80vh;
-    border: 1px solid #e0e0e0;
+    padding: 0;
   }
-  
-  .error-card {
-    border-radius: 10px;
-    background: #fff5f5;
-    border: 1px solid #ffcccc;
+
+  .ic-page-header {
+    padding: 2rem 1.5rem;
+    min-height: 140px;
   }
-  
-  /* 響應式設計 */
-  @media (max-width: 768px) {
-    .card-header-custom {
-      font-size: 1.5rem;
-      padding: 1rem;
-    }
-  
-    .introduction {
-      font-size: 1rem;
-    }
-  
-    .pdf-viewer {
-      padding: 10px;
-    }
+
+  .ic-page-header h1,
+  .ic-page-header .page-title {
+    font-size: 1.5rem;
   }
+
+  .ic-page-content {
+    margin: 1.5rem 1rem;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .join-steps {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .join-step-connector {
+    display: none;
+  }
+}

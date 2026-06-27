@@ -3,10 +3,12 @@ import { Form, Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactQuill from 'react-quill'; // 安裝 react-quill
 import 'react-quill/dist/quill.snow.css';
+import useRWD from 'hooks/useRWD';
 
 const ActivityEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const rwd = useRWD();
 
   const [title, setTitle] = useState('');
   const [type, setType] = useState('');
@@ -48,52 +50,116 @@ const ActivityEdit = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>編輯活動</h2>
-      <Form>
-        <Form.Group controlId="formTitle">
+    <div style={rwd.getContainerStyle()}>
+      <h2 style={{ marginBottom: rwd.isMobile ? '20px' : '30px' }}>編輯活動</h2>
+      <Form style={{
+        padding: rwd.isMobile ? '15px' : '0',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: rwd.isMobile ? '15px' : '20px'
+      }}>
+        <Form.Group controlId="formTitle" style={{
+          marginBottom: rwd.isMobile ? '10px' : '15px'
+        }}>
           <Form.Label>活動標題</Form.Label>
           <Form.Control
             type="text"
             placeholder="輸入標題"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            style={{
+              fontSize: rwd.isMobile ? '14px' : '16px',
+              padding: rwd.isMobile ? '8px 12px' : '10px 15px'
+            }}
           />
         </Form.Group>
 
-        <Form.Group controlId="formType">
+        <Form.Group controlId="formType" style={{
+          marginBottom: rwd.isMobile ? '10px' : '15px'
+        }}>
           <Form.Label>活動類型</Form.Label>
           <Form.Control
             type="text"
             placeholder="輸入類型"
             value={type}
             onChange={(e) => setType(e.target.value)}
+            style={{
+              fontSize: rwd.isMobile ? '14px' : '16px',
+              padding: rwd.isMobile ? '8px 12px' : '10px 15px'
+            }}
           />
         </Form.Group>
 
-        <Form.Group controlId="formDate">
+        <Form.Group controlId="formDate" style={{
+          marginBottom: rwd.isMobile ? '10px' : '15px'
+        }}>
           <Form.Label>活動時間</Form.Label>
           <Form.Control
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            style={{
+              fontSize: rwd.isMobile ? '14px' : '16px',
+              padding: rwd.isMobile ? '8px 12px' : '10px 15px'
+            }}
           />
         </Form.Group>
 
-        <Form.Group controlId="formContent">
+        <Form.Group controlId="formContent" style={{
+          marginBottom: rwd.isMobile ? '15px' : '20px'
+        }}>
           <Form.Label>活動內容</Form.Label>
-          <ReactQuill value={content} onChange={setContent} />
+          <div style={{
+            minHeight: rwd.isMobile ? '200px' : '300px'
+          }}>
+            <ReactQuill
+              value={content}
+              onChange={setContent}
+              style={{
+                height: rwd.isMobile ? '150px' : '250px'
+              }}
+            />
+          </div>
         </Form.Group>
 
-        <Button variant="secondary" onClick={handleSaveDraft} className="mr-2">
-          保存草稿
-        </Button>
-        <Button variant="primary" onClick={handleSubmit} className="mr-2">
-          送出
-        </Button>
-        <Button variant="light" onClick={handleBack}>
-          回上一頁
-        </Button>
+        <div style={{
+          display: 'flex',
+          flexDirection: rwd.isMobile ? 'column' : 'row',
+          gap: rwd.isMobile ? '10px' : '15px',
+          marginTop: rwd.isMobile ? '20px' : '30px',
+          justifyContent: rwd.isMobile ? 'center' : 'flex-start'
+        }}>
+          <Button
+            variant="secondary"
+            onClick={handleSaveDraft}
+            style={{
+              ...rwd.getButtonStyle(),
+              width: rwd.isMobile ? '100%' : 'auto'
+            }}
+          >
+            保存草稿
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            style={{
+              ...rwd.getButtonStyle(),
+              width: rwd.isMobile ? '100%' : 'auto'
+            }}
+          >
+            送出
+          </Button>
+          <Button
+            variant="light"
+            onClick={handleBack}
+            style={{
+              ...rwd.getButtonStyle(),
+              width: rwd.isMobile ? '100%' : 'auto'
+            }}
+          >
+            回上一頁
+          </Button>
+        </div>
       </Form>
     </div>
   );

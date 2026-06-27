@@ -24,6 +24,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
     highlight: "",
     achievements: "",
     is_featured: false,
+    sort_order: 0,
   });
   const [loading, setLoading] = useState(false);
 
@@ -69,7 +70,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
     setSearchQuery("");
     setPage(1);
     setSelectedMember(null);
-    setAlumniData({ highlight: "", achievements: "", is_featured: false });
+    setAlumniData({ highlight: "", achievements: "", is_featured: false, sort_order: 0 });
     onClose();
   };
 
@@ -201,6 +202,21 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
                   setAlumniData({ ...alumniData, achievements: e.target.value })
                 }
               />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>顯示順序</Form.Label>
+              <Form.Control
+                type="number"
+                min="0"
+                placeholder="輸入顯示順序（數字越小越前面）"
+                value={alumniData.sort_order}
+                onChange={(e) =>
+                  setAlumniData({ ...alumniData, sort_order: parseInt(e.target.value) || 0 })
+                }
+              />
+              <Form.Text className="text-muted">
+                順序數字越小，在列表中顯示越前面
+              </Form.Text>
             </Form.Group>
             <Form.Group>
               <Form.Check

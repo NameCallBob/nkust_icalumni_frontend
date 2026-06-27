@@ -1,6 +1,5 @@
-/* login.css - 簡化版本 */
+/* login.css - Professional Corporate Consultant Style */
 
-/* 基礎重置 */
 * {
   box-sizing: border-box;
 }
@@ -9,256 +8,374 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
 }
 
-/* 登入頁面容器 */
+/* ===== 頁面外層容器 ===== */
 .login-page-wrapper {
   min-height: 100vh;
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f5;
-  padding: 2rem;
+  align-items: stretch;
+  background-color: #f8fafc;
+  padding: 0;
 }
 
-/* 登入容器 */
+/* 移除背景覆蓋層（原本的glassmorphism背景） */
+.login-background-overlay {
+  display: none;
+}
+
+/* ===== 分欄佈局：左側品牌面板 + 右側表單面板 ===== */
+
+/* 登入容器改為全寬分欄 */
 .login-container {
-  background-color: #ffffff;
-  border-radius: 12px;
-  border: 2px solid #0e4c92;  /* 深藍色邊框 */
-  overflow: hidden;
-  transition: all 0.3s ease;
-  max-width: 700px;
+  display: flex;
+  flex-direction: row;
   width: 100%;
-  margin: 0 auto;
-  padding: 3rem 2.5rem;
+  max-width: 100%;
+  min-height: 100vh;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
   position: relative;
   z-index: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* 標題與副標題 */
+/* ===== 左側品牌面板 ===== */
+.login-container > .row {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex: 1;
+}
+
+/* 利用偽元素製作左側品牌面板 */
+.login-page-wrapper::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 42%;
+  height: 100%;
+  background-color: #1e3a8a;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 767.98px) {
+  .login-page-wrapper::before {
+    display: none;
+  }
+}
+
+/* 左側品牌文字區域（品牌資訊以 CSS 方式展示） */
+.login-brand-panel {
+  display: none; /* 由 CSS before 處理背景，品牌文字見下方 */
+}
+
+/* ===== 右側表單面板 ===== */
+
+/* Row 內的 Col 作為右側面板 */
+.login-container .row {
+  align-items: center;
+  min-height: 100vh;
+}
+
+.login-container .col-md-8,
+.login-container .col-lg-7 {
+  padding: 3rem 2.5rem;
+}
+
+/* 在桌面版，讓 col 靠右放置（偏移左側寬度） */
+@media (min-width: 768px) {
+  .login-container .row {
+    margin-left: 42%;
+    width: 58%;
+    min-height: 100vh;
+    background: #ffffff;
+  }
+
+  .login-container .col-md-8,
+  .login-container .col-lg-7 {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+}
+
+/* ===== 標題 ===== */
 .elite-title {
-  color: #0e4c92;  /* 深藍色標題，增強對比 */
+  color: #1e3a8a;
   font-weight: 700;
-  font-size: 2.4rem;
-  margin-bottom: 0.8rem;
-  letter-spacing: -0.5px;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: #333333;  /* 更深的字體顏色，增強對比 */
-  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  color: #475569;
+  margin-bottom: 1.5rem;
 }
 
-/* 輸入欄位樣式 */
+/* ===== 表單標籤 ===== */
 .elegant-label {
   font-weight: 600;
-  color: #222222;  /* 更深的標籤顏色，增強對比 */
-  font-size: 1.05rem;
-  margin-bottom: 0.5rem;
+  color: #0f172a;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
   display: block;
 }
 
+/* ===== 輸入欄位 ===== */
 .elegant-input {
   border-radius: 8px;
-  border: 2px solid #d0d0d0;
-  padding: 1.2rem 1.5rem;
-  font-size: 1.1rem;
-  transition: all 0.3s;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   height: auto;
   background-color: #ffffff;
+  color: #0f172a;
 }
 
 .elegant-input:focus {
-  border-color: #0e4c92;
-  box-shadow: 0 0 0 3px rgba(14, 76, 146, 0.1);
-  background-color: #fff;
+  border-color: #2563eb;
+  border-width: 2px;
+  box-shadow: none;
+  background-color: #ffffff;
+  outline: none;
 }
 
 .form-input {
   width: 100%;
 }
 
+/* ===== 顯示/隱藏密碼按鈕 ===== */
 .elegant-toggle-button {
-  background-color: #f5f5f5;
-  border: none;
-  color: #333333;
-  padding: 0 1.5rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: none;
+  color: #475569;
+  padding: 0 1rem;
   border-radius: 0 8px 8px 0;
   font-weight: 500;
-  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .elegant-toggle-button:hover {
-  background-color: #e5e5e5;
-  color: #222222;
+  background-color: #e2e8f0;
+  color: #0f172a;
 }
 
-/* 按鈕樣式 */
+/* ===== 送出按鈕 ===== */
 .elegant-button {
-  padding: 1.1rem;
+  padding: 0.75rem 1rem;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 1.1rem;
-  background-color: #0e4c92;
+  font-size: 0.95rem;
+  background-color: #2563eb;
   border: none;
-  transition: all 0.3s;
-  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease;
+  letter-spacing: 0.01em;
   color: #ffffff;
 }
 
 .elegant-button:hover:not(:disabled) {
-  background-color: #083872;  /* 深藍色的暗色調 */
-  transform: translateY(-2px);
+  background-color: #1d4ed8;
+  transform: none;
+  color: #ffffff;
 }
 
 .elegant-button:active:not(:disabled) {
-  transform: translateY(0);
+  background-color: #1e40af;
+  transform: none;
 }
 
 .elegant-button:disabled {
-  background-color: #a0a0a0;
+  background-color: #94a3b8;
   cursor: not-allowed;
 }
 
-/* 文字顏色 */
+/* ===== 重音色 ===== */
 .text-accent {
-  color: #0e4c92;
+  color: #2563eb;
 }
 
-/* 複選框樣式 */
+/* ===== 複選框 ===== */
 .elegant-checkbox .form-check-input {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
   margin-top: 0.2rem;
+  border-color: #e2e8f0;
 }
 
 .elegant-checkbox .form-check-input:checked {
-  background-color: #0e4c92;
-  border-color: #0e4c92;
+  background-color: #2563eb;
+  border-color: #2563eb;
 }
 
 .elegant-checkbox .form-check-label {
-  font-size: 1rem;
+  font-size: 0.9rem;
   padding-left: 0.3rem;
-  color: #333333;
+  color: #475569;
 }
 
-/* 忘記密碼連結 */
+/* ===== 忘記密碼連結 ===== */
 .forgot-password {
-  color: #0e4c92;
-  font-size: 1rem;
+  color: #2563eb;
+  font-size: 0.9rem;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .forgot-password:hover {
-  color: #083872;
+  color: #1d4ed8;
   text-decoration: underline !important;
 }
 
-/* 電子郵件顯示區塊 */
+/* ===== 電子郵件顯示區塊 ===== */
 .user-email-display {
-  padding: 1rem 1.2rem;
-  background-color: #f8f8f8;
+  padding: 0.85rem 1rem;
+  background-color: #f8fafc;
   border-radius: 8px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   cursor: pointer;
-  border: 1px solid #d0d0d0;
-  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .user-email-display:hover {
-  background-color: #f0f0f0;
-  border-color: #b0b0b0;
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
 .email-icon {
-  width: 40px;
-  height: 40px;
-  background-color: #e6eff8;
+  width: 36px;
+  height: 36px;
+  background-color: #dbeafe;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0e4c92;
-  font-size: 1.4rem;
+  color: #2563eb;
+  font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
 .email-text {
-  font-size: 1.1rem;
-  color: #222222;
+  font-size: 0.95rem;
+  color: #0f172a;
   font-weight: 500;
 }
 
 .edit-button {
-  color: #0e4c92;
-  transition: color 0.2s;
+  color: #2563eb;
+  font-size: 0.8rem;
+  transition: color 0.2s ease;
 }
 
 .edit-button:hover {
-  color: #083872;
+  color: #1d4ed8;
   text-decoration: underline !important;
 }
 
-/* 警告提示樣式 */
+/* ===== 警告訊息 ===== */
 .elegant-alert {
   border: none;
-  border-left: 4px solid #e67e22;
-  background-color: #fef9e7;
-  border-radius: 8px;
-  padding: 1rem 1.2rem;
+  border-left: 3px solid #f59e0b;
+  background-color: #fffbeb;
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
 }
 
 .alert-icon {
-  color: #e67e22;
-  font-size: 1.5rem;
+  color: #f59e0b;
+  font-size: 1.2rem;
 }
 
 .countdown-timer {
   font-weight: 500;
-  margin-top: 5px;
-  color: #333333;
+  margin-top: 4px;
+  color: #475569;
+  font-size: 0.875rem;
 }
 
 .time-number {
   font-weight: 700;
-  color: #222222;
+  color: #0f172a;
   margin: 0 2px;
 }
 
-/* 頁腳樣式 */
-.login-footer {
-  margin-top: 2rem;
-  color: #555555;
-  font-size: 0.9rem;
-  text-align: center;
-  position: relative;
-  z-index: 1;
+/* ===== 錯誤訊息 ===== */
+.alert-danger {
+  color: #dc2626;
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  border-radius: 6px;
 }
 
-/* 淡出動畫 */
+/* ===== 登入底部 ===== */
+.login-footer {
+  margin-top: 1.5rem;
+  color: #64748b;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ===== 淡出動畫 ===== */
 .fade-out {
   opacity: 0;
-  transform: translateY(-30px);
+  transform: translateY(-20px);
 }
 
-/* 響應式調整 */
-@media (max-width: 768px) {
+/* ===== 響應式 ===== */
+@media (max-width: 767.98px) {
+  .login-page-wrapper {
+    padding: 1.5rem 1rem;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+  }
+
   .login-container {
+    min-height: auto;
+    background: #ffffff !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08) !important;
+    padding: 0 !important;
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .login-container .row {
+    margin-left: 0;
+    width: 100%;
+    min-height: auto;
+    background: transparent;
+  }
+
+  .login-container .col-md-8,
+  .login-container .col-lg-7 {
     padding: 2rem 1.5rem;
-    margin: 1rem;
+    max-width: 100%;
   }
-  
+
   .elite-title {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
-  
-  .elegant-input, .elegant-button {
-    padding: 1rem;
+
+  .elegant-input {
+    padding: 0.65rem 0.875rem;
+  }
+
+  .elegant-button {
+    padding: 0.65rem 1rem;
   }
 }

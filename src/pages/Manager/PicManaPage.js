@@ -8,8 +8,10 @@ import LoadingSpinner from 'components/LoadingSpinner';
 import Axios from 'common/Axios';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useRWD from 'hooks/useRWD';
 
 const PhotoManager = () => {
+  const rwd = useRWD();
   const [selectedCategory, setSelectedCategory] = useState('自身照片');
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -57,7 +59,7 @@ const PhotoManager = () => {
   };
 
   return (
-    <Container fluid className="photo-manager py-4">
+    <Container fluid className="photo-manager admin-container py-4" style={rwd.getContainerStyle()}>
       <ToastContainer />
       
       {/* 頁面標題 */}
@@ -72,7 +74,7 @@ const PhotoManager = () => {
       </Row>
       
       <Row>
-        <Col md={3} className="sidebar">
+        <Col md={rwd.isMobile ? 12 : 3} className="sidebar">
           <Card className="shadow-sm mb-4">
             <Card.Header className="bg-light">
               <h5 className="mb-0">照片分類</h5>
@@ -123,7 +125,7 @@ const PhotoManager = () => {
           </Card>
         </Col>
 
-        <Col md={9} className="main-panel">
+        <Col md={rwd.isMobile ? 12 : 9} className="main-panel">
           {/* 類別說明與操作按鈕 */}
           <Card className="shadow-sm mb-4">
             <Card.Body>
@@ -167,8 +169,23 @@ const PhotoManager = () => {
           ) : (
             <Row className="g-4">
               {photos.map((photo) => (
-                <Col md={6} lg={4} key={photo.id} className="photo-item">
-                  <PhotoItem photo={photo} type={selectedCategory} refresh={refreshPhotos} />
+                <Col
+                  xs={12}
+                  sm={rwd.isMobile ? 12 : 6}
+                  md={rwd.isMobile ? 12 : rwd.isTablet ? 6 : rwd.getCardColumns()}
+                  lg={rwd.getCardColumns()}
+                  key={photo.id}
+                  className="photo-item"
+                >
+                  <PhotoItem
+                    photo={photo}
+                    type={selectedCategory}
+                    refresh={refreshPhotos}
+                    style={{
+                      height: rwd.isMobile ? '250px' : rwd.isTablet ? '300px' : '350px',
+                      objectFit: 'cover'
+                    }}
+                  />
                 </Col>
               ))}
             </Row>

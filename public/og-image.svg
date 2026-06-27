@@ -1,0 +1,17 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+    <rect width="1200" height="630" fill="url(#grad)"/>
+    <text x="600" y="250" font-family="Arial, sans-serif" font-size="48" font-weight="bold"
+          text-anchor="middle" fill="white">國立高雄科技大學</text>
+    <text x="600" y="320" font-family="Arial, sans-serif" font-size="40" font-weight="bold"
+          text-anchor="middle" fill="white">智慧商務系系友會</text>
+    <text x="600" y="400" font-family="Arial, sans-serif" font-size="24"
+          text-anchor="middle" fill="#e5e7eb">NKUST iCommerce Alumni Association</text>
+    <text x="600" y="450" font-family="Arial, sans-serif" font-size="20"
+          text-anchor="middle" fill="#9ca3af">聯繫校友 · 共創未來</text>
+</svg>

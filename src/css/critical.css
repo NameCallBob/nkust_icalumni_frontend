@@ -1,0 +1,205 @@
+/* ============================================
+   關鍵 CSS - 首屏渲染所需的最小 CSS
+   應該內聯到 HTML 中以避免 FOUC
+   ============================================ */
+
+/* 基礎重置和變數 - 只包含首屏需要的 */
+:root {
+  /* 關鍵色彩變數 */
+  --color-primary: #1e3a8a;
+  --color-gray-900: #0f172a;
+  --color-gray-100: #f1f5f9;
+  --color-white: #ffffff;
+
+  /* 關鍵字體變數 */
+  --font-primary: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+
+  /* 關鍵間距 */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* 關鍵動畫時間 */
+  --duration-base: 300ms;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* 基礎元素重置 - 防止佈局偏移 */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-white);
+  color: var(--color-gray-900);
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 防止字體載入時的閃爍 */
+.fonts-loading * {
+  font-family: system-ui, -apple-system, sans-serif !important;
+}
+
+/* 首屏載入狀態 */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 導航欄關鍵樣式 - 首屏可見 */
+.navbar, .nav {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-100);
+  position: relative;
+  z-index: 1000;
+}
+
+.navbar-brand, .nav-brand {
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+/* 主要內容區域 */
+.main-content {
+  flex: 1;
+  padding-top: var(--spacing-lg);
+}
+
+/* 載入動畫關鍵框架 */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--color-gray-100);
+  border-top: 2px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 基礎按鈕樣式 - 防止佈局偏移 */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-out);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+/* 響應式圖片 */
+img {
+  max-width: 100%;
+  height: auto;
+  background-color: var(--color-gray-100);
+}
+
+/* 卡片基礎樣式 */
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-100);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* 容器基礎樣式 */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* 基礎響應式設計 */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  html {
+    font-size: 14px;
+  }
+}
+
+/* 標題基礎樣式 - 防止佈局偏移 */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 var(--spacing-md) 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-gray-900);
+}
+
+h1 { font-size: clamp(1.875rem, 4vw, 2.5rem); }
+h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); }
+h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); }
+
+/* 段落基礎樣式 */
+p {
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: 1.6;
+}
+
+/* 連結基礎樣式 */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+a:hover {
+  color: #1e40af;
+}
+
+/* 表單元素基礎樣式 */
+input, textarea, select {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--color-gray-100);
+  border-radius: 0.375rem;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* 隱藏元素但保持輔助功能 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

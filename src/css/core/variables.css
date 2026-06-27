@@ -1,0 +1,184 @@
+/* ============================================
+   設計系統變數定義
+   專業企業顧問風格設計系統
+   ============================================ */
+
+:root {
+  /* ===== 主色調系統 ===== */
+  /* 專業企業配色系統 */
+  --color-primary: #1e3a8a;        /* 深藍 - 學術權威 */
+  --color-primary-light: #3b82f6;  /* 中藍 */
+  --color-primary-dark: #1e40af;   /* 深藍 */
+  --color-secondary: #a0781c;      /* 沉穩金 - 專業榮譽 */
+  --color-secondary-light: #c9a84c; /* 淺金 */
+  --color-secondary-dark: #ca8a04;  /* 深金 */
+  --color-accent: #0f766e;         /* 深綠 - 專業穩重 */
+  --color-accent-light: #14b8a6;   /* 青綠 */
+
+  /* 企業漸層色彩 */
+  --gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  --gradient-secondary: linear-gradient(135deg, #a0781c 0%, #c9a84c 100%);
+  --gradient-accent: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+  --gradient-academic: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #a0781c 100%);
+
+  /* 企業語義色彩 */
+  --color-gold: #a0781c;           /* 沉穩金 */
+  --color-gold-light: #c9a84c;     /* 淺金 */
+  --color-cta: #2563eb;            /* CTA 按鈕專用 */
+  --color-surface: #f8fafc;        /* 區塊背景 */
+  --color-border: #e2e8f0;         /* 卡片邊框 */
+  --color-text-primary: #0f172a;   /* 主要文字 */
+  --color-text-secondary: #475569; /* 次要文字 */
+  --color-text-muted: #94a3b8;     /* 輔助文字 */
+
+  /* 中性色彩系統 */
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+
+  /* 功能性色彩 */
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+  --color-info: #0284c7;
+
+  /* 玻璃效果與背景 */
+  --glass-white: rgba(255, 255, 255, 0.25);
+  --glass-white-solid: rgba(255, 255, 255, 0.95);
+  --glass-blue: rgba(30, 58, 138, 0.15);
+  --glass-gold: rgba(160, 120, 28, 0.12);
+
+  --glass-blur: 12px;
+
+  /* ===== 字型系統 ===== */
+  /* 學術專業字體家族 */
+  --font-primary: 'Noto Serif TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  --font-heading: 'Noto Serif TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  --font-serif: 'Noto Serif TC', 'Playfair Display', 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'Roboto Mono', 'Courier New', monospace;
+
+  /* 語義化字型大小 - 學術層級系統 */
+  --fs-display: clamp(3.5rem, 8vw, 5rem);     /* 主標題 */
+  --fs-h1: clamp(2.5rem, 6vw, 3.5rem);       /* 頁面標題 */
+  --fs-h2: clamp(2rem, 5vw, 2.75rem);        /* 區域標題 */
+  --fs-h3: clamp(1.5rem, 4vw, 2rem);         /* 子標題 */
+  --fs-h4: clamp(1.25rem, 3.5vw, 1.5rem);    /* 小標題 */
+  --fs-h5: clamp(1.125rem, 3vw, 1.25rem);    /* 段落標題 */
+  --fs-h6: clamp(1rem, 2.5vw, 1.125rem);     /* 細標題 */
+
+  /* 內容字型大小 */
+  --fs-xl: clamp(1.125rem, 3vw, 1.25rem);    /* 大文字 */
+  --fs-lg: clamp(1rem, 2.5vw, 1.125rem);     /* 大內容 */
+  --fs-base: clamp(0.875rem, 2vw, 1rem);     /* 基礎內容 */
+  --fs-sm: clamp(0.8rem, 1.8vw, 0.875rem);   /* 小文字 */
+  --fs-xs: clamp(0.75rem, 1.5vw, 0.8rem);    /* 極小文字 */
+  --fs-caption: clamp(0.7rem, 1.3vw, 0.75rem); /* 說明文字 */
+
+  /* 學術權威字重系統 */
+  --fw-thin: 100;
+  --fw-extralight: 200;
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+  --fw-black: 900;
+
+  /* 專業行高系統 */
+  --lh-none: 1;
+  --lh-tight: 1.2;
+  --lh-snug: 1.3;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.6;
+  --lh-loose: 1.8;
+  --lh-extra-loose: 2;
+
+  /* 字間距系統 */
+  --ls-tighter: -0.05em;
+  --ls-tight: -0.025em;
+  --ls-normal: 0;
+  --ls-wide: 0.025em;
+  --ls-wider: 0.05em;
+  --ls-widest: 0.1em;
+
+  /* ===== 間距系統 ===== */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --spacing-4xl: 6rem;
+
+  /* ===== 圓角系統 ===== */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* ===== 陰影系統 ===== */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  /* 卡片陰影 - 企業專業風格 */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+
+  /* 低調陰影 - 替代光暈效果 */
+  --glow-primary: 0 4px 12px rgba(30, 58, 138, 0.2);
+  --glow-secondary: 0 4px 12px rgba(160, 120, 28, 0.2);
+  --glow-accent: 0 4px 12px rgba(15, 118, 110, 0.2);
+  --glow-academic: 0 4px 16px rgba(30, 58, 138, 0.15);
+
+  /* ===== 動畫時間 ===== */
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 700ms;
+
+  /* 動畫緩動函數 */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ===== 斷點系統 ===== */
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ===== Z-Index 層級 ===== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+
+  /* ===== 其他效果 ===== */
+  --backdrop-blur: blur(12px);
+  --backdrop-saturate: saturate(180%);
+  --opacity-disabled: 0.6;
+  --opacity-hover: 0.8;
+}

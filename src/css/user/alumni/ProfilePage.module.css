@@ -1,0 +1,757 @@
+/* ProfilePage.module.css - Corporate Professional Style */
+
+.profilePageContainer {
+  font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #f8fafc;
+  min-height: 100vh;
+  color: #0f172a;
+}
+
+/* 404 Not Found 樣式 */
+.notFoundContainer {
+  padding: 5rem 1rem;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 8px;
+  margin: 2rem auto;
+  max-width: 560px;
+  border: 1px solid #e2e8f0;
+}
+
+.notFoundContainer img {
+  max-width: 380px;
+  width: 100%;
+  height: auto;
+}
+
+.notFoundContainer h3 {
+  color: #991b1b;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* 載入中樣式 */
+.loadingContainer {
+  padding: 5rem 1rem;
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingText {
+  margin-top: 1.25rem;
+  color: #475569;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* 個人檔案英雄區塊 */
+.profileHero {
+  margin-bottom: 2rem;
+}
+
+.profileCard {
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  transition: box-shadow 0.2s ease;
+  position: relative;
+}
+
+/* Navy top accent bar */
+.profileCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #1e3a8a;
+  z-index: 2;
+}
+
+.profileCard:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.profileImageContainer {
+  position: relative;
+  background: #1e3a8a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  min-height: 280px;
+}
+
+.profileImageWrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.profileCard:hover .profileImage {
+  transform: scale(1.04);
+}
+
+.profileInfo {
+  padding: 2.5rem;
+  background: #ffffff;
+}
+
+.profileHeader {
+  margin-bottom: 1.5rem;
+}
+
+.profileHeaderTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.profileName {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.875rem;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.profileBadges {
+  display: flex;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.profileBadges :global(.badge) {
+  padding: 0.45rem 1rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  border-radius: 4px !important;
+}
+
+.profileBadges :global(.badge:first-child) {
+  background: #1e3a8a !important;
+  color: white !important;
+}
+
+.profileBadges :global(.badge:last-child) {
+  background: #eff6ff !important;
+  color: #1e3a8a !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.shareDropdown {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  color: #475569 !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1.125rem !important;
+  transition: all 0.2s ease !important;
+  font-size: 0.875rem !important;
+}
+
+.shareDropdown:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e0 !important;
+  color: #0f172a !important;
+}
+
+/* 區塊標題 */
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1.25rem;
+  padding-left: 12px;
+  border-left: 4px solid #2563eb;
+}
+
+.profileIntro {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #475569;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+.emptyDataHint {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px dashed #cbd5e0;
+  color: #64748b;
+}
+
+.emptyDataHint h5,
+.emptyDataHint p {
+  color: #64748b;
+  margin-bottom: 0.75rem;
+}
+
+.emptyDataHint small {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* 主要內容區 */
+.mainContent {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+/* Tabs styling via global override */
+.profileTabs :global(.nav-link) {
+  padding: 1rem 2rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: #f8fafc !important;
+  transition: all 0.2s ease !important;
+  position: relative;
+}
+
+.profileTabs :global(.nav-link::before) {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.profileTabs :global(.nav-link.active) {
+  background: #ffffff !important;
+  color: #1e3a8a !important;
+  font-weight: 700 !important;
+}
+
+.profileTabs :global(.nav-link.active::before) {
+  background: #2563eb;
+}
+
+.profileTabs :global(.nav-link:hover:not(.active)) {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* 照片集錦樣式 */
+.photoAlbumContainer {
+  padding: 2rem;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.photoCol {
+  /* styling handled by grid */
+}
+
+.photoCard {
+  background: #ffffff;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+}
+
+.photoCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.photoImgContainer {
+  position: relative;
+  height: 185px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.photoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.photoCard:hover .photoImg {
+  transform: scale(1.04);
+}
+
+.photoCaption {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.photoCaption h5 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.375rem;
+}
+
+.photoCaption p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.hintIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.875rem;
+}
+
+/* 公司資訊樣式 */
+.companyHeader {
+  margin-bottom: 2rem;
+  padding: 2rem;
+}
+
+.companyImage {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  transition: transform 0.25s ease;
+}
+
+.companyImage:hover {
+  transform: scale(1.02);
+}
+
+.companyTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  letter-spacing: -0.3px;
+}
+
+.companyDescription {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #475569;
+  margin-bottom: 1.5rem;
+}
+
+.companyContactInfo {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.875rem;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.contactItem:last-child {
+  margin-bottom: 0;
+}
+
+.contactItem .icon {
+  color: #2563eb;
+  margin-right: 0.875rem;
+  font-size: 1rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.contactItem a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.contactItem a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.productInfoCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.productInfoCard :global(.card-header) {
+  background: #1e3a8a !important;
+  color: white !important;
+  border-bottom: none !important;
+  padding: 1rem 1.5rem !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+}
+
+.productInfoCard :global(.card-body) {
+  padding: 1.5rem !important;
+}
+
+.productInfoCard :global(.card-title) {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.productInfoCard :global(.card-text) {
+  font-size: 0.95rem !important;
+  line-height: 1.7 !important;
+  color: #475569 !important;
+}
+
+/* 商品展示區塊 */
+.productSliderContainer {
+  padding: 0 2rem 2rem;
+}
+
+.productSlider {
+  padding: 0.75rem 0;
+}
+
+.productSlide {
+  padding: 0.75rem;
+}
+
+.productCard {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  height: 100%;
+  background: #ffffff;
+}
+
+.productCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.productImgContainer {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.productImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.productCard:hover .productImg {
+  transform: scale(1.04);
+}
+
+.productCard :global(.card-body) {
+  padding: 1.25rem !important;
+}
+
+.productCard :global(.card-title) {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.productCard :global(.card-text) {
+  color: #64748b !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+}
+
+/* 地圖樣式 */
+.mapCard {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.mapCard :global(.card-body) {
+  padding: 0 !important;
+}
+
+.companyMap iframe {
+  border-radius: 0 0 6px 6px;
+  width: 100%;
+  height: 380px;
+  border: none;
+}
+
+.noCompanyInfo {
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+/* Lightbox 樣式 */
+.lightboxCaption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+  color: white;
+  padding: 1.5rem 1.5rem 1rem;
+  text-align: center;
+}
+
+.lightboxCaption h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+}
+
+.lightboxCaption p {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+  opacity: 0.85;
+}
+
+/* 響應式 */
+@media (max-width: 1200px) {
+  .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .profileImageContainer {
+    min-height: 240px;
+    padding: 2rem;
+  }
+
+  .profileImageWrapper {
+    width: 170px;
+    height: 170px;
+  }
+
+  .profileInfo {
+    padding: 2rem;
+  }
+
+  .profileName {
+    font-size: 1.75rem;
+  }
+
+  .companyHeader {
+    padding: 1.5rem;
+  }
+
+  .companyTitle {
+    font-size: 1.5rem;
+  }
+
+  .productSliderContainer {
+    padding: 0 1.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profileCard {
+    border-radius: 6px;
+  }
+
+  .profileHeaderTop {
+    flex-direction: column;
+    gap: 0.875rem;
+    align-items: flex-start;
+  }
+
+  .profileName {
+    font-size: 1.5rem;
+  }
+
+  .profileTabs :global(.nav-link) {
+    padding: 0.875rem 1.25rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+    gap: 1rem;
+  }
+
+  .photoAlbumContainer {
+    padding: 1.5rem;
+  }
+
+  .companyHeader {
+    padding: 1.25rem;
+  }
+
+  .companyContactInfo {
+    padding: 1.25rem;
+  }
+
+  .productSliderContainer {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .photoImgContainer {
+    height: 155px;
+  }
+
+  .productImgContainer {
+    height: 175px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileImageWrapper {
+    width: 145px;
+    height: 145px;
+  }
+
+  .profileName {
+    font-size: 1.35rem;
+  }
+
+  .profileBadges {
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .profileTabs :global(.nav-link) {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  .photoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .photoAlbumContainer {
+    padding: 1rem;
+  }
+
+  .companyHeader {
+    padding: 1rem;
+  }
+
+  .companyTitle {
+    font-size: 1.3rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.15rem;
+  }
+
+  .productSliderContainer {
+    padding: 0 1rem 1rem;
+  }
+}
+
+/* 動畫 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profileHero {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.mainContent {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.photoCard {
+  animation: fadeInUp 0.35s ease-out;
+}
+
+.productCard {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Swiper 自定義樣式 */
+:global(.swiper-button-next),
+:global(.swiper-button-prev) {
+  color: #2563eb !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 50% !important;
+  width: 44px !important;
+  height: 44px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+:global(.swiper-button-next::after),
+:global(.swiper-button-prev::after) {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+}
+
+:global(.swiper-pagination-bullet) {
+  background: #cbd5e0 !important;
+  opacity: 1 !important;
+}
+
+:global(.swiper-pagination-bullet-active) {
+  background: #2563eb !important;
+}

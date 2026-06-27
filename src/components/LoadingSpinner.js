@@ -24,7 +24,7 @@ const EnhancedLoadingSpinner = ({ initialMessage = "正在載入中..." }) => {
     useEffect(() => {
         const waitTimer = setInterval(() => {
             setWaitTime(prevTime => prevTime + 1);
-            
+
             // 每10秒更換一次安撫訊息
             if (waitTime % 10 === 0 && waitTime > 0) {
                 const messageIndex = Math.min(Math.floor(waitTime / 10), comfortMessages.length - 1);
@@ -61,16 +61,16 @@ const EnhancedLoadingSpinner = ({ initialMessage = "正在載入中..." }) => {
                         <div className="w-3 h-3 bg-blue-500 rounded-full animate-ping"></div>
                     </div>
                 </div>
-                
+
                 {/* 安撫訊息 */}
                 <div className="mt-8">
                     <h4 className="text-xl font-semibold text-gray-800">{message}{dots}</h4>
                     <p className="text-gray-600 mt-2">已等待 {waitTime} 秒</p>
                 </div>
-                
+
                 {/* 進度條 */}
                 <div className="mt-6 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div 
+                    <div
                         className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300"
                         style={{width: `${progressPercentage}%`}}
                     ></div>

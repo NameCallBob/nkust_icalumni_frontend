@@ -1,5 +1,6 @@
 import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
+import useRWD from 'hooks/useRWD';
 import {
   Container,
   Table,
@@ -19,6 +20,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const RuleManaPage = () => {
+  const rwd = useRWD();
   const [rules, setRules] = useState([]);
   const [viewRule, setViewRule] = useState(null);
   const [currentRule, setCurrentRule] = useState({
@@ -168,10 +170,10 @@ const RuleManaPage = () => {
   const totalPages = Math.ceil(rules.length / rulesPerPage);
 
   return (
-    <Container  className="py-4">
+    <Container className="admin-container py-4" style={rwd.getContainerStyle()}>
       <Row className="mb-4 align-items-center">
         <Col>
-          <h1 className="fw-bold">章程管理-管理章程資料與相關 PDF 文件</h1>
+          <h1 className="fw-bold" style={{ fontSize: rwd.getFontSize('title') }}>章程管理-管理章程資料與相關 PDF 文件</h1>
           <p className="text-muted"></p>
         </Col>
         <Col className="text-end">
@@ -179,6 +181,7 @@ const RuleManaPage = () => {
             variant="primary"
             onClick={() => handleShow()}
             className="rounded-pill px-4"
+            style={rwd.getButtonStyle()}
           >
             <i className="bi bi-plus-lg me-2"></i> 新增章程
           </Button>
@@ -211,6 +214,7 @@ const RuleManaPage = () => {
                       size="sm"
                       className="me-2"
                       onClick={() => handleView(rule)}
+                      style={rwd.getButtonStyle()}
                     >
                       <i className="bi bi-eye"></i> 查看
                     </Button>
@@ -219,6 +223,7 @@ const RuleManaPage = () => {
                       size="sm"
                       className="me-2"
                       onClick={() => handleShow(rule)}
+                      style={rwd.getButtonStyle()}
                     >
                       <i className="bi bi-pencil"></i> 編輯
                     </Button>
@@ -226,6 +231,7 @@ const RuleManaPage = () => {
                       variant="outline-danger"
                       size="sm"
                       onClick={() => handleDelete(rule.id)}
+                      style={rwd.getButtonStyle()}
                     >
                       <i className="bi bi-trash"></i> 刪除
                     </Button>
@@ -273,7 +279,12 @@ const RuleManaPage = () => {
                 value={currentRule.intro}
                 onChange={(value) => setCurrentRule((prev) => ({ ...prev, intro: value }))}
                 modules={{
-                  toolbar: [
+                  toolbar: rwd.isMobile ? [
+                    [{ header: [1, 2, false] }],
+                    ["bold", "italic"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["clean"],
+                  ] : [
                     [{ header: [1, 2, false] }],
                     ["bold", "italic", "underline", "strike"],
                     [{ list: "ordered" }, { list: "bullet" }],
@@ -283,6 +294,7 @@ const RuleManaPage = () => {
                 }}
                 placeholder="請輸入章程簡介"
                 className="shadow-sm"
+                style={{ fontSize: rwd.getFontSize('body') }}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -302,13 +314,14 @@ const RuleManaPage = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={handleClose} disabled={loading}>
+          <Button variant="outline-secondary" onClick={handleClose} disabled={loading} style={rwd.getButtonStyle()}>
             <i className="bi bi-x-lg"></i> 取消
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
             disabled={loading || !currentRule.intro}
+            style={rwd.getButtonStyle()}
           >
             {loading ? (
               <Spinner size="sm" />
@@ -343,7 +356,7 @@ const RuleManaPage = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={handleCloseViewModal}>
+          <Button variant="outline-secondary" onClick={handleCloseViewModal} style={rwd.getButtonStyle()}>
             <i className="bi bi-x-lg"></i> 關閉
           </Button>
         </Modal.Footer>

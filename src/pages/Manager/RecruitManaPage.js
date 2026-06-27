@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Container, Row, Col, Card, Button, Table, Badge, 
+import {
+  Container, Row, Col, Card, Button, Table, Badge,
   Pagination, Form, InputGroup, Spinner, Modal, Alert
 } from 'react-bootstrap';
-import { 
-  PlusCircle, Search, Info, Calendar, CheckCircle, 
+import {
+  PlusCircle, Search, Info, Calendar, CheckCircle,
   XCircle, AlertTriangle, FileText, Edit, Trash2, Eye
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -12,8 +12,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 import RecruitFormModal from 'components/Manage/recruitModal'; // 引入剛才優化的表單元件
+import useRWD from 'hooks/useRWD';
 
 function RecruitManaPage() {
+  const rwd = useRWD();
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -454,7 +456,7 @@ function RecruitManaPage() {
   };
 
   return (
-    <Container className="py-4">
+    <Container className="admin-container py-4" style={rwd.getContainerStyle()}>
       <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} />
       
       {/* 頁面標題和說明 */}
@@ -480,15 +482,16 @@ function RecruitManaPage() {
         <Col xs={12} md={6} lg={9}>
           <Card className="shadow-sm mb-3 mb-md-0">
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
+              <div className={`d-flex ${rwd.isMobile ? 'flex-column' : 'justify-content-between'} align-items-center`}>
+                <div className={rwd.isMobile ? 'text-center mb-3' : ''}>
                   <h5 className="mb-0">職缺總覽</h5>
                   <small className="text-muted">總共 {jobs.length} 個職缺</small>
                 </div>
-                <Button 
-                  variant="success" 
+                <Button
+                  variant="success"
                   className="d-flex align-items-center"
                   onClick={handleShowAddModal}
+                  style={rwd.getButtonStyle()}
                 >
                   <PlusCircle size={18} className="me-1" />
                   新增職位
@@ -518,10 +521,11 @@ function RecruitManaPage() {
                   : '嘗試調整搜尋條件或篩選選項'}
               </p>
               {jobs.length === 0 && (
-                <Button 
-                  variant="primary" 
+                <Button
+                  variant="primary"
                   onClick={handleShowAddModal}
                   className="mt-2"
+                  style={rwd.getButtonStyle()}
                 >
                   <PlusCircle size={18} className="me-1" />
                   新增您的第一個職缺
@@ -531,16 +535,16 @@ function RecruitManaPage() {
           ) : (
             <>
               <div className="table-responsive">
-                <Table hover responsive className="mb-0">
+                <Table hover className="mb-0" style={rwd.getTableStyle()}>
                   <thead>
                     <tr>
-                      <th style={{ width: '5%' }}>ID</th>
-                      <th style={{ width: '25%' }}>職位名稱</th>
-                      <th style={{ width: '20%' }}>公司</th>
-                      <th style={{ width: '15%' }}>發布日期</th>
-                      <th style={{ width: '15%' }}>截止日期</th>
-                      <th style={{ width: '10%' }}>狀態</th>
-                      <th style={{ width: '10%' }}>操作</th>
+                      {!rwd.isMobile && <th style={{ width: '5%' }}>ID</th>}
+                      <th style={{ width: rwd.isMobile ? '40%' : '25%' }}>職位名稱</th>
+                      {!rwd.isMobile && <th style={{ width: '20%' }}>公司</th>}
+                      {!rwd.isMobile && <th style={{ width: '15%' }}>發布日期</th>}
+                      {!rwd.isMobile && <th style={{ width: '15%' }}>截止日期</th>}
+                      <th style={{ width: rwd.isMobile ? '30%' : '10%' }}>狀態</th>
+                      <th style={{ width: rwd.isMobile ? '30%' : '10%' }}>操作</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -549,44 +553,61 @@ function RecruitManaPage() {
                       
                       return (
                         <tr key={job.id}>
-                          <td>{job.id}</td>
-                          <td className="fw-bold">{job.title}</td>
-                          <td>{job.company_name || '個人公司'}</td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <Calendar size={14} className="me-1 text-muted" />
-                              {formatDate(job.release_date)}
-                            </div>
+                          {!rwd.isMobile && <td>{job.id}</td>}
+                          <td className="fw-bold">
+                            {job.title}
+                            {rwd.isMobile && (
+                              <div className="small text-muted mt-1">
+                                <div>{job.company_name || '個人公司'}</div>
+                                <div>{formatDate(job.release_date)} - {formatDate(job.deadline)}</div>
+                              </div>
+                            )}
                           </td>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <Calendar size={14} className="me-1 text-muted" />
-                              {formatDate(job.deadline)}
-                            </div>
-                          </td>
+                          {!rwd.isMobile && <td>{job.company_name || '個人公司'}</td>}
+                          {!rwd.isMobile && (
+                            <td>
+                              <div className="d-flex align-items-center">
+                                <Calendar size={14} className="me-1 text-muted" />
+                                {formatDate(job.release_date)}
+                              </div>
+                            </td>
+                          )}
+                          {!rwd.isMobile && (
+                            <td>
+                              <div className="d-flex align-items-center">
+                                <Calendar size={14} className="me-1 text-muted" />
+                                {formatDate(job.deadline)}
+                              </div>
+                            </td>
+                          )}
                           <td>
                             <Badge bg={jobStatus.variant} pill>
                               {jobStatus.text}
                             </Badge>
                           </td>
                           <td>
-                            <div className="d-flex">
-                              <Button 
-                                variant="outline-primary" 
-                                size="sm" 
-                                className="me-1"
+                            <div className={`d-flex ${rwd.isMobile ? 'flex-column' : ''}`}>
+                              <Button
+                                variant="outline-primary"
+                                size="sm"
+                                className={rwd.isMobile ? "mb-1 w-100" : "me-1"}
                                 onClick={() => handleEditJob(job.id)}
                                 title="編輯"
+                                style={rwd.getButtonStyle()}
                               >
                                 <Edit size={16} />
+                                {rwd.isMobile && ' 編輯'}
                               </Button>
-                              <Button 
-                                variant="outline-danger" 
+                              <Button
+                                variant="outline-danger"
                                 size="sm"
+                                className={rwd.isMobile ? "w-100" : ""}
                                 onClick={() => confirmDeleteJob(job.id)}
                                 title="刪除"
+                                style={rwd.getButtonStyle()}
                               >
                                 <Trash2 size={16} />
+                                {rwd.isMobile && ' 刪除'}
                               </Button>
                             </div>
                           </td>
@@ -655,13 +676,18 @@ function RecruitManaPage() {
           <p>刪除後，此職缺將不再顯示於網站上，且相關資料將被永久移除。</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowDeleteModal(false)}
+            style={rwd.getButtonStyle()}
+          >
             取消
           </Button>
-          <Button 
-            variant="danger" 
+          <Button
+            variant="danger"
             onClick={handleDeleteJob}
             disabled={loading}
+            style={rwd.getButtonStyle()}
           >
             {loading ? (
               <>
@@ -756,7 +782,11 @@ function RecruitManaPage() {
           
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseHelpModal}>
+          <Button
+            variant="primary"
+            onClick={handleCloseHelpModal}
+            style={rwd.getButtonStyle()}
+          >
             我了解了
           </Button>
         </Modal.Footer>

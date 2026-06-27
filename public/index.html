@@ -1,27 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW" data-theme="nkust">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#1976d2" />
 
+    <!-- 基本 SEO Meta Tags -->
+    <meta name="description" content="國立高雄科技大學智慧商務系系友會 - 連結系友、分享商務資源，提供產學合作、職涯發展與人脈拓展的優質平台。智慧商務系是國立高雄科技大學的頂尖系所，培育AI、大數據、電商等領域專業人才。">
+    <meta name="keywords" content="國立高雄科技大學,智慧商務系,系友會,NKUST,智商系友會,高科大智商系,智商系,NKUST IC,人工智慧,大數據分析,電子商務,數位轉型,產學合作,職涯發展,校友網絡,機器學習,資料科學,數位行銷,商業智慧,區塊鏈,物聯網">
+    <meta name="author" content="國立高雄科技大學智慧商務系系友會">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="國立高雄科技大學 智慧商務系系友會 | 連結系友・共創未來">
+    <meta property="og:description" content="智慧商務系是國立高雄科技大學的頂尖系所，培育AI、大數據、電商等領域專業人才。加入系友會，拓展人脈、分享資源、共創商機！">
     <meta property="og:type" content="website">
-    <meta
-    property="og:title"
-    content="">
+    <meta property="og:url" content="https://nkusticalumni.org/">
+    <meta property="og:image" content="https://nkusticalumni.org/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="zh_TW">
+    <meta property="og:site_name" content="國立高雄科技大學智慧商務系系友會">
 
-    <meta
-    property="og:description"
-    content="智慧商務系是國立高雄科技大學的靈魂，港都資訊管理界的神話，全國排名一流的系所，現更為世界知名的菁英學系，身為系(所)友的你(妳)，我們以您為榮，快來為我們更上一層加油！">
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="國立高雄科技大學 智慧商務系系友會">
+    <meta name="twitter:description" content="連結系友、分享商務資源，提供產學合作與職涯發展的優質平台">
+    <meta name="twitter:image" content="https://nkusticalumni.org/og-image.jpg">
 
-    <!-- <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/6134/6134346.png" /> -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Additional SEO Meta Tags -->
+    <link rel="canonical" href="https://nkusticalumni.org/">
+    <link rel="alternate" hreflang="zh-TW" href="https://nkusticalumni.org/">
+    <meta name="format-detection" content="telephone=no">
 
-    <meta
-    name="keywords"
-    content="系友會,智商系友會,智慧商務系系友會,智慧商務系,高科大智商系,">
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 
+    <!-- 字體預載入優化 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- 預載入關鍵字體 -->
+    <link rel="preload"
+          href="https://fonts.gstatic.com/s/notosanstc/v35/-nFuOG829Oofr2wohFbTp9iFOSsLA.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin="anonymous">
+
+    <!-- 非阻塞字體載入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
+          rel="stylesheet"
+          media="print"
+          onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap"
+          rel="stylesheet"
+          media="print"
+          onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
+    </noscript>
+
+    <!-- Manifest -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
     <!-- Google tag (gtag.js) -->
@@ -34,10 +76,294 @@
       gtag('config', 'G-3QKMFJSBYQ');
     </script>
     
-    <title>國立高雄科技大學 智慧商務系系友會</title>
+    <title>國立高雄科技大學 智慧商務系系友會 | 連結系友・共創未來</title>
+
+    <!-- 結構化數據 Schema.org -->
+    <!-- 教育機構 Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "@id": "https://nkusticalumni.org/#educational-organization",
+      "name": "國立高雄科技大學智慧商務系",
+      "alternateName": ["NKUST智慧商務系", "智商系", "NKUST IC Department", "高科大智商系"],
+      "url": "https://nkusticalumni.org/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://nkusticalumni.org/logo.png",
+        "width": 200,
+        "height": 200
+      },
+      "description": "國立高雄科技大學智慧商務系，培育人工智慧、大數據分析、電子商務、數位轉型等領域專業人才的頂尖學系。提供學士、碩士學位課程，結合理論與實務，為產業界培養智慧商務專業人才。",
+      "foundingDate": "2018",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "建工路415號",
+        "addressLocality": "高雄市",
+        "addressRegion": "三民區",
+        "postalCode": "807",
+        "addressCountry": "TW"
+      },
+      "telephone": "+886-7-381-4526",
+      "email": "ic@nkust.edu.tw",
+      "parentOrganization": {
+        "@type": "CollegeOrUniversity",
+        "name": "國立高雄科技大學",
+        "alternateName": "NKUST",
+        "url": "https://www.nkust.edu.tw/"
+      },
+      "department": [
+        {
+          "@type": "Organization",
+          "name": "智慧商務學士班",
+          "description": "培育具備人工智慧、大數據分析、電子商務專業能力的學士人才"
+        },
+        {
+          "@type": "Organization",
+          "name": "智慧商務碩士班",
+          "description": "培育智慧商務領域高階研究與管理人才"
+        }
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "智慧商務系課程目錄",
+        "itemListElement": [
+          {
+            "@type": "Course",
+            "name": "人工智慧與機器學習",
+            "description": "深度學習、機器學習演算法與應用"
+          },
+          {
+            "@type": "Course",
+            "name": "大數據分析",
+            "description": "資料科學、統計分析、數據視覺化"
+          },
+          {
+            "@type": "Course",
+            "name": "電子商務",
+            "description": "數位行銷、電商平台設計與營運"
+          },
+          {
+            "@type": "Course",
+            "name": "數位轉型",
+            "description": "企業數位化策略與實務應用"
+          }
+        ]
+      },
+      "keywords": "智慧商務系,智商系,NKUST,人工智慧,大數據,電子商務,數位轉型,機器學習,資料科學,數位行銷",
+      "sameAs": [
+        "https://www.facebook.com/nkusticalumni",
+        "https://www.instagram.com/nkusticalumni"
+      ]
+    }
+    </script>
+
+    <!-- 系友會組織 Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://nkusticalumni.org/#alumni-organization",
+      "name": "國立高雄科技大學智慧商務系系友會",
+      "alternateName": ["NKUST IC Alumni Association", "智商系友會", "高科大智商系友會"],
+      "url": "https://nkusticalumni.org/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://nkusticalumni.org/logo.png",
+        "width": 200,
+        "height": 200
+      },
+      "description": "國立高雄科技大學智慧商務系系友會，連結系友、分享商務資源、提供產學合作機會與職涯發展的優質平台。促進系友間情感交流，共創商業機會，回饋母系發展。",
+      "foundingDate": "2020",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "建工路415號",
+        "addressLocality": "高雄市",
+        "addressRegion": "三民區",
+        "postalCode": "807",
+        "addressCountry": "TW"
+      },
+      "email": "alumni@nkusticalumni.org",
+      "memberOf": {
+        "@id": "https://nkusticalumni.org/#educational-organization"
+      },
+      "makesOffer": [
+        {
+          "@type": "Offer",
+          "name": "系友聯誼活動",
+          "description": "定期舉辦系友聚會、產業交流會"
+        },
+        {
+          "@type": "Offer",
+          "name": "職涯發展服務",
+          "description": "提供就業媒合、職涯諮詢服務"
+        },
+        {
+          "@type": "Offer",
+          "name": "產學合作平台",
+          "description": "促進系友企業與學系間產學合作"
+        }
+      ],
+      "keywords": "系友會,校友網絡,產學合作,職涯發展,智慧商務,NKUST,人脈拓展",
+      "sameAs": [
+        "https://www.facebook.com/nkusticalumni",
+        "https://www.instagram.com/nkusticalumni"
+      ]
+    }
+    </script>
+
+    <!-- 本地商業 Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "@id": "https://nkusticalumni.org/#local-business",
+      "name": "國立高雄科技大學智慧商務系系友會",
+      "image": "https://nkusticalumni.org/og-image.jpg",
+      "telephone": "+886-7-381-4526",
+      "email": "alumni@nkusticalumni.org",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "建工路415號",
+        "addressLocality": "高雄市",
+        "addressRegion": "三民區",
+        "postalCode": "807",
+        "addressCountry": "TW"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 22.6273,
+        "longitude": 120.3014
+      },
+      "url": "https://nkusticalumni.org/",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "17:00"
+        }
+      ],
+      "areaServed": {
+        "@type": "AdministrativeArea",
+        "name": "台灣"
+      },
+      "serviceArea": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": 22.6273,
+          "longitude": 120.3014
+        },
+        "geoRadius": "100000"
+      },
+      "priceRange": "免費",
+      "currenciesAccepted": "TWD",
+      "paymentAccepted": "現金, 轉帳"
+    }
+    </script>
+
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "什麼是智慧商務系？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "國立高雄科技大學智慧商務系（簡稱智商系）是結合人工智慧、大數據分析、電子商務與數位轉型的跨領域學系。培育學生具備AI技術應用、資料科學分析、數位行銷與商業策略規劃的專業能力，為智慧商務時代培養頂尖人才。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "智慧商務系系友會提供哪些服務？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "系友會提供多元化服務包括：定期系友聚會與產業交流活動、職涯發展諮詢與就業媒合服務、產學合作機會媒介、創業輔導與資源分享、專業技能研習課程、人脈網絡拓展平台等，協助系友在職涯發展上獲得全方位支持。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "如何加入智慧商務系系友會？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "凡國立高雄科技大學智慧商務系畢業校友皆可申請加入系友會。請透過官方網站線上申請，或聯繫系友會秘書處(alumni@nkusticalumni.org)索取入會申請表。入會後即可享有各項系友服務與活動參與權益。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "智慧商務系主要學習哪些課程？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "主要課程包括人工智慧與機器學習、大數據分析與視覺化、電子商務平台設計、數位行銷策略、商業智慧系統、區塊鏈技術應用、物聯網商務模式、數位轉型管理等。結合理論與實務，培養學生跨領域整合能力。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "智慧商務系畢業生就業方向為何？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "畢業生就業領域廣泛，包括：數據分析師、AI工程師、電商營運專員、數位行銷經理、產品經理、商業分析師、系統分析師、創業家等。可投入科技業、金融業、零售業、顧問業等各行各業的數位轉型工作。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "NKUST智慧商務系有什麼特色？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "本系特色包括：1.跨領域整合課程設計 2.產學合作實務專題 3.業界師資協同教學 4.國際交流與雙聯學制 5.創新創業培育計畫 6.完善實驗設備與學習環境 7.豐富的企業實習機會 8.活躍的系友網絡支持。"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Website Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://nkusticalumni.org/#website",
+      "url": "https://nkusticalumni.org/",
+      "name": "國立高雄科技大學智慧商務系系友會",
+      "description": "國立高雄科技大學智慧商務系系友會官方網站，提供系友服務、活動資訊、職涯發展與產學合作平台",
+      "publisher": {
+        "@id": "https://nkusticalumni.org/#alumni-organization"
+      },
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://nkusticalumni.org/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      ],
+      "inLanguage": "zh-TW",
+      "keywords": "智慧商務系,系友會,NKUST,校友網絡,產學合作,職涯發展"
+    }
+    </script>
+
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首頁",
+        "item": "https://nkusticalumni.org/"
+      }]
+    }
+    </script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>您需要啟用 JavaScript 才能使用此應用程式。</noscript>
     <div id="root"></div>
   </body>
 </html>

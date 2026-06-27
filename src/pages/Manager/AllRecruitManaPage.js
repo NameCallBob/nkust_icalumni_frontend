@@ -14,8 +14,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 import RecruitFormModal from 'components/Manage/recruitModalForAll';
+import useRWD from 'hooks/useRWD';
 
 function AllRecruitManaPage() {
+  const rwd = useRWD();
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -547,8 +549,77 @@ function AllRecruitManaPage() {
       });
   };
 
+  // 渲染卡片式佈局（移動設備）
+  const renderMobileCard = (job) => {
+    const jobStatus = getJobStatus(job);
+
+    return (
+      <Card key={job.id} className="mb-3 shadow-sm">
+        <Card.Body>
+          <div className="d-flex justify-content-between align-items-start mb-2">
+            <h6 className="fw-bold mb-1">{job.title}</h6>
+            <Badge bg={jobStatus.variant} pill>
+              {jobStatus.text}
+            </Badge>
+          </div>
+
+          <p className="text-muted mb-1">
+            <Building size={14} className="me-1" />
+            {job._company_name || '個人公司'}
+          </p>
+
+          <p className="text-muted mb-1">
+            <User size={14} className="me-1" />
+            {job.user_name || '未知用戶'}
+          </p>
+
+          <div className="row small text-muted mb-3">
+            <div className="col-6">
+              <Calendar size={12} className="me-1" />
+              發布: {formatDate(job.release_date)}
+            </div>
+            <div className="col-6">
+              <Calendar size={12} className="me-1" />
+              截止: {formatDate(job.deadline)}
+            </div>
+          </div>
+
+          <div className="d-flex gap-2">
+            <Button
+              variant="outline-info"
+              size="sm"
+              onClick={() => handleViewJob(job.id)}
+              className="flex-fill"
+            >
+              <Eye size={16} className="me-1" />
+              查看
+            </Button>
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={() => handleEditJob(job.id)}
+              className="flex-fill"
+            >
+              <Edit size={16} className="me-1" />
+              編輯
+            </Button>
+            <Button
+              variant="outline-danger"
+              size="sm"
+              onClick={() => confirmDeleteJob(job.id)}
+              className="flex-fill"
+            >
+              <Trash2 size={16} className="me-1" />
+              下架
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
+    );
+  };
+
   return (
-    <Container fluid className="py-4">
+    <Container fluid className="admin-container py-4" style={rwd.getContainerStyle()}>
       <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} />
       
       {/* 頁面標題和說明 */}
@@ -664,8 +735,15 @@ function AllRecruitManaPage() {
             </div>
           ) : (
             <>
-              <div className="table-responsive">
-                <Table hover className="mb-0 align-middle">
+              {rwd.isMobile ? (
+                // 移動設備卡片佈局
+                <div className="mobile-card-container">
+                  {currentJobs.map((job) => renderMobileCard(job))}
+                </div>
+              ) : (
+                // 桌面設備表格佈局
+                <div className="table-responsive">
+                  <Table hover className="mb-0 align-middle" style={rwd.getTableStyle()}>
                   <thead>
                     <tr>
                       <th className="text-nowrap" style={{ cursor: 'pointer' }} onClick={() => handleSort('id')}>
@@ -757,9 +835,10 @@ function AllRecruitManaPage() {
                       );
                     })}
                   </tbody>
-                </Table>
-              </div>
-              
+                  </Table>
+                </div>
+              )}
+
               {/* 分頁 */}
               {renderPagination()}
             </>

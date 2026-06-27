@@ -2,7 +2,7 @@
   "name": "nkust_icalumni",
   "version": "0.1.0",
   "private": false,
-  "homepage": "http://nkusticalumni.org/",
+  "homepage": "https://nkusticalumni.org/",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -59,9 +59,10 @@
     "yet-another-react-lightbox": "^3.23.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "postbuild": "react-snap",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -81,5 +82,58 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.24",
+    "postcss": "^8.4.41",
+    "prettier": "3.6.2",
+    "puppeteer": "^25.2.1",
+    "react-snap": "^1.23.0",
+    "tailwindcss": "^3.4.10"
+  },
+  "reactSnap": {
+    "crawl": false,
+    "inlineCss": true,
+    "skipThirdPartyRequests": true,
+    "headless": true,
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ],
+    "include": [
+      "/",
+      "/search",
+      "/IC/intro",
+      "/IC/structure",
+      "/IC/joinUs",
+      "/IC/contactUs",
+      "/alumni",
+      "/alumni-list",
+      "/recruit",
+      "/smart-business-department",
+      "/ic-department",
+      "/nkust-ic",
+      "/about-department",
+      "/career-prospects"
+    ],
+    "userAgent": "ReactSnap",
+    "asyncScriptTags": true,
+    "removeStyleTags": false,
+    "removeScriptTags": false,
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "ignoreForPrerender": [
+      "**/api/**",
+      "**/static/**"
+    ],
+    "minifyHtml": {
+      "collapseWhitespace": false,
+      "removeComments": false
+    },
+    "cacheAjaxRequests": false
   }
 }

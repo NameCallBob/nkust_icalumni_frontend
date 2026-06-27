@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  Modal, 
-  Button, 
-  Container, 
-  Carousel, 
-  Card, 
-  Badge, 
-  Row, 
-  Col, 
+import {
+  Table,
+  Modal,
+  Button,
+  Container,
+  Carousel,
+  Card,
+  Badge,
+  Row,
+  Col,
   Spinner,
   Pagination
 } from 'react-bootstrap';
@@ -18,6 +18,8 @@ import LoadingSpinner from 'components/LoadingSpinner';
 // 預防 XSS 攻擊
 import DOMPurify from 'dompurify';
 import SEO from 'SEO';
+import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
+import { BsCalendar, BsCalendarX, BsBuilding, BsEnvelope, BsTelephone, BsPerson } from 'react-icons/bs';
 
 function RecruitPage() {
   const [show, setShow] = useState(false);
@@ -55,7 +57,7 @@ function RecruitPage() {
   const fetchJobs = (page = 1) => {
     setLoading(true);
     setError(null);
-    
+
     Axios()
       .get('/recruit/data/tableOutput/', {
         params: {
@@ -155,7 +157,7 @@ function RecruitPage() {
   const renderTableView = () => (
     <div className="table-responsive">
       <Table hover className="job-table">
-        <thead className="table-primary">
+        <thead className="table-header-corporate">
           <tr>
             <th className="d-none d-md-table-cell">編號</th>
             <th>職位</th>
@@ -176,12 +178,18 @@ function RecruitPage() {
               <td>
                 {job.title}
                 {isDeadlineSoon(job.deadline) && (
-                  <Badge pill bg="danger" className="ms-2">即將截止</Badge>
+                  <span className="deadline-soon-badge ms-2">即將截止</span>
                 )}
               </td>
-              <td>{job.company_name}</td>
-              <td className="d-none d-md-table-cell">{job.release_date}</td>
-              <td>{job.deadline}</td>
+              <td style={{ color: '#2563eb' }}>{job.company_name}</td>
+              <td className="d-none d-md-table-cell" style={{ color: '#475569', fontSize: '0.875rem' }}>
+                <BsCalendar style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                {job.release_date}
+              </td>
+              <td style={{ color: '#475569', fontSize: '0.875rem' }}>
+                <BsCalendarX style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                {job.deadline}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -194,192 +202,409 @@ function RecruitPage() {
     <Row className="g-4">
       {jobs.map((job, index) => (
         <Col key={job.id} xs={12} md={6} lg={4}>
-          <Card 
-            className="h-100 job-card" 
+          <div
+            className="job-card"
             onClick={() => handleShow(job)}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', height: '100%' }}
           >
-            <Card.Body>
-              <Card.Title>
-                {job.title}
+            <div style={{ padding: '20px', flex: 1 }}>
+              <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+                <h5
+                  style={{
+                    margin: 0,
+                    fontSize: '1.1rem',
+                    fontWeight: '600',
+                    color: '#0f172a',
+                    lineHeight: '1.4',
+                  }}
+                >
+                  {job.title}
+                </h5>
                 {isDeadlineSoon(job.deadline) && (
-                  <Badge pill bg="danger" className="ms-2">即將截止</Badge>
+                  <span className="deadline-soon-badge" style={{ flexShrink: 0 }}>即將截止</span>
                 )}
-              </Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">{job.company_name}</Card.Subtitle>
-              <div className="d-flex justify-content-between mt-3">
-                <small className="text-muted">發布: {job.release_date}</small>
-                <small className="text-muted">截止: {job.deadline}</small>
               </div>
-            </Card.Body>
-            <Card.Footer className="text-center bg-white border-0">
-              <small className="text-primary">點擊查看詳情</small>
-            </Card.Footer>
-          </Card>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  marginBottom: '12px',
+                  color: '#2563eb',
+                  fontSize: '0.9rem',
+                  fontWeight: '500',
+                }}
+              >
+                <BsBuilding />
+                {job.company_name}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#475569' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <BsCalendar />
+                  發布: {job.release_date}
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <BsCalendarX />
+                  截止: {job.deadline}
+                </span>
+              </div>
+            </div>
+            <div
+              style={{
+                borderTop: '1px solid #e2e8f0',
+                padding: '12px 20px',
+                background: '#f8fafc',
+                textAlign: 'center',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '0.875rem',
+                  color: '#2563eb',
+                  fontWeight: '500',
+                }}
+              >
+                查看詳情 →
+              </span>
+            </div>
+          </div>
         </Col>
       ))}
     </Row>
   );
 
   return (
-    <Container className="mt-5 pb-5 recruit-page">
+    <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
       <SEO
         main={false}
         title="招募查詢"
         description="了解智慧商務系友會中系友們的招募需求與最新機會，加入我們，共創未來。"
         keywords={["智慧商務", "招募", "招聘", "加入系友會"]}
       />
-      
-      <h1 className="mb-4 text-center">系友公司徵才資訊</h1>
-      
-      {/* 視圖切換和搜尋欄 */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div className="btn-group" role="group" aria-label="切換視圖">
-          <Button 
-            variant={viewMode === 'table' ? 'primary' : 'outline-primary'} 
-            onClick={() => setViewMode('table')}
-            className="d-none d-md-inline"
-          >
-            表格視圖
-          </Button>
-          <Button 
-            variant={viewMode === 'card' ? 'primary' : 'outline-primary'} 
-            onClick={() => setViewMode('card')}
-          >
-            {window.innerWidth >= 768 ? '卡片視圖' : '視圖'}
-          </Button>
-        </div>
+
+      {/* Page Header */}
+      <div
+        style={{
+          background: '#1e3a8a',
+          minHeight: '200px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px 24px',
+        }}
+      >
+        <h1
+          style={{
+            color: '#ffffff',
+            fontWeight: '700',
+            fontSize: '2rem',
+            margin: 0,
+            letterSpacing: '0.02em',
+          }}
+        >
+          系友企業職缺
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.7)', margin: '8px 0 0', fontSize: '1rem' }}>
+          探索系友企業徵才機會，共創職涯未來
+        </p>
       </div>
 
-      {/* 載入中狀態 */}
-      {loading && (
-        <div className="text-center my-5">
-          <LoadingSpinner />
-          <p className="mt-2">載入徵才資訊中...</p>
-        </div>
-      )}
-
-      {/* 錯誤訊息 */}
-      {error && !loading && (
-        <div className="alert alert-danger text-center" role="alert">
-          {error}
-        </div>
-      )}
-
-      {/* 無職位訊息 */}
-      {!loading && !error && jobs.length === 0 && (
-        <div className="no-job text-center py-5 my-4 bg-light rounded">
-          <h2>暫無招募</h2>
-          <p>目前沒有可用的招募資訊，請稍後再來查看。</p>
-        </div>
-      )}
-
-      {/* 職位列表 - 根據視圖模式顯示 */}
-      {!loading && !error && jobs.length > 0 && (
-        <>
-          {viewMode === 'table' && window.innerWidth >= 768 ? renderTableView() : renderCardView()}
-          {renderPagination()}
-        </>
-      )}
-
-      {/* 職位詳情模態框 */}
-      <Modal show={show} onHide={handleClose} size="lg" centered>
-        <Modal.Header closeButton className="bg-light">
-          <Modal.Title>{selectedJob.title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {detailLoading ? (
-            <div className="text-center py-5">
-              <LoadingSpinner />
-              <p className="mt-2">載入職位資訊中...</p>
-            </div>
-          ) : (
-            <>
-              <Row className="mb-4">
-                <Col md={6}>
-                  <div className="detail-card p-3 bg-light rounded mb-3">
-                    <h5 className="border-bottom pb-2 mb-3">基本資訊</h5>
-                    <p><strong>公司名稱：</strong> {selectedJob.company_name}</p>
-                    <p><strong>發布時間：</strong> {selectedJob.release_date}</p>
-                    <p><strong>截止時間：</strong> {selectedJob.deadline}</p>
-                  </div>
-                </Col>
-                <Col md={6}>
-                  <div className="detail-card p-3 bg-light rounded">
-                    <h5 className="border-bottom pb-2 mb-3">聯絡方式</h5>
-                    <p>
-                      <strong>聯絡人：</strong> 
-                      {selectedJob.contact && selectedJob.contact.name
-                        ? selectedJob.contact.name
-                        : '未提供'}
-                    </p>
-                    <p>
-                      <strong>Email：</strong> 
-                      {selectedJob.contact && selectedJob.contact.email
-                        ? <a href={`mailto:${selectedJob.contact.email}`}>{selectedJob.contact.email}</a>
-                        : '未提供'}
-                    </p>
-                    <p>
-                      <strong>電話：</strong> 
-                      {selectedJob.contact && selectedJob.contact.phone
-                        ? selectedJob.contact.phone
-                        : '未提供'}
-                    </p>
-                  </div>
-                </Col>
-              </Row>
-
-              <div className="job-description mt-4">
-                <h5 className="border-bottom pb-2 mb-3">職位詳細資訊</h5>
-                <div
-                  className="job-content"
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(selectedJob.intro),
-                  }}
-                />
-              </div>
-
-              {/* 照片幻燈片展示 */}
-              {selectedJob.images && selectedJob.images.length > 0 && (
-                <div className="photos-section mt-4">
-                  <h5 className="border-bottom pb-2 mb-3">公司環境照片</h5>
-                  <Carousel 
-                    className="job-carousel" 
-                    indicators={selectedJob.images.length > 1}
-                    controls={selectedJob.images.length > 1}
-                  >
-                    {selectedJob.images.map((image, index) => (
-                      <Carousel.Item key={index}>
-                        <div className="carousel-img-container">
-                          <img
-                            className="d-block w-100 rounded"
-                            src={process.env.REACT_APP_BASE_URL + image.image}
-                            alt={`${selectedJob.company_name} 環境照片 ${index + 1}`}
-                          />
-                        </div>
-                      </Carousel.Item>
-                    ))}
-                  </Carousel>
-                </div>
-              )}
-            </>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          {!detailLoading && selectedJob.contact && selectedJob.contact.email && (
-            <Button 
-              variant="primary" 
-              href={`mailto:${selectedJob.contact.email}?subject=應徵${selectedJob.title}職位`}
+      <Container className="recruit-page" style={{ paddingTop: '32px', paddingBottom: '48px' }}>
+        {/* View Toggle */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div className="btn-group" role="group" aria-label="切換視圖">
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className="d-none d-md-inline-block"
+              style={{
+                padding: '8px 16px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px 0 0 6px',
+                background: viewMode === 'table' ? '#1e3a8a' : '#ffffff',
+                color: viewMode === 'table' ? '#ffffff' : '#475569',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+              }}
             >
-              立即應徵
-            </Button>
-          )}
-          <Button variant="secondary" onClick={handleClose}>
-            關閉
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+              表格視圖
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('card')}
+              style={{
+                padding: '8px 16px',
+                border: '1px solid #e2e8f0',
+                borderRadius: viewMode === 'table' ? '0 6px 6px 0' : '6px',
+                background: viewMode === 'card' ? '#1e3a8a' : '#ffffff',
+                color: viewMode === 'card' ? '#ffffff' : '#475569',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+              }}
+            >
+              {window.innerWidth >= 768 ? '卡片視圖' : '視圖'}
+            </button>
+          </div>
+        </div>
+
+        {/* 載入中狀態 */}
+        {loading && (
+          <div className="text-center my-5">
+            <LoadingSpinner />
+            <p className="mt-2" style={{ color: '#475569' }}>載入徵才資訊中...</p>
+          </div>
+        )}
+
+        {/* 錯誤訊息 */}
+        {error && !loading && (
+          <div
+            style={{
+              padding: '16px',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              color: '#dc2626',
+              textAlign: 'center',
+            }}
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
+
+        {/* 無職位訊息 */}
+        {!loading && !error && jobs.length === 0 && (
+          <div
+            className="no-job text-center py-5 my-4"
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+            }}
+          >
+            <h2 style={{ color: '#94a3b8', fontWeight: '600' }}>暫無招募</h2>
+            <p style={{ color: '#475569' }}>目前沒有可用的招募資訊，請稍後再來查看。</p>
+          </div>
+        )}
+
+        {/* 職位列表 - 根據視圖模式顯示 */}
+        {!loading && !error && jobs.length > 0 && (
+          <>
+            {viewMode === 'table' && window.innerWidth >= 768 ? renderTableView() : renderCardView()}
+            {renderPagination()}
+          </>
+        )}
+
+        {/* 職位詳情模態框 */}
+        <Modal show={show} onHide={handleClose} size="lg" centered>
+          <Modal.Header
+            closeButton
+            style={{
+              borderBottom: '2px solid #1e3a8a',
+              background: '#ffffff',
+            }}
+          >
+            <Modal.Title
+              style={{
+                fontWeight: '700',
+                color: '#0f172a',
+                fontSize: '1.15rem',
+              }}
+            >
+              {selectedJob.title}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body style={{ padding: '24px' }}>
+            {detailLoading ? (
+              <div className="text-center py-5">
+                <LoadingSpinner />
+                <p className="mt-2" style={{ color: '#475569' }}>載入職位資訊中...</p>
+              </div>
+            ) : (
+              <>
+                <Row className="mb-4">
+                  <Col md={6}>
+                    <div
+                      style={{
+                        padding: '16px',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        marginBottom: '16px',
+                        minHeight: '180px',
+                      }}
+                    >
+                      <h5
+                        style={{
+                          color: '#1e3a8a',
+                          fontWeight: '600',
+                          paddingBottom: '10px',
+                          borderBottom: '1px solid #e2e8f0',
+                          marginBottom: '12px',
+                        }}
+                      >
+                        基本資訊
+                      </h5>
+                      <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#0f172a' }}>
+                        <strong>公司名稱：</strong>
+                        <span style={{ color: '#2563eb' }}>{selectedJob.company_name}</span>
+                      </p>
+                      <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#0f172a' }}>
+                        <BsCalendar style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
+                        <strong>發布時間：</strong> {selectedJob.release_date}
+                      </p>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: '#0f172a' }}>
+                        <BsCalendarX style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
+                        <strong>截止時間：</strong> {selectedJob.deadline}
+                      </p>
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div
+                      style={{
+                        padding: '16px',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        minHeight: '180px',
+                      }}
+                    >
+                      <h5
+                        style={{
+                          color: '#1e3a8a',
+                          fontWeight: '600',
+                          paddingBottom: '10px',
+                          borderBottom: '1px solid #e2e8f0',
+                          marginBottom: '12px',
+                        }}
+                      >
+                        聯絡方式
+                      </h5>
+                      <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#0f172a' }}>
+                        <BsPerson style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
+                        <strong>聯絡人：</strong>
+                        {selectedJob.contact && selectedJob.contact.name
+                          ? selectedJob.contact.name
+                          : '未提供'}
+                      </p>
+                      <p style={{ margin: '0 0 8px', fontSize: '0.9rem', color: '#0f172a' }}>
+                        <BsEnvelope style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
+                        <strong>Email：</strong>
+                        {selectedJob.contact && selectedJob.contact.email
+                          ? <a href={`mailto:${selectedJob.contact.email}`} style={{ color: '#2563eb' }}>{selectedJob.contact.email}</a>
+                          : '未提供'}
+                      </p>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: '#0f172a' }}>
+                        <BsTelephone style={{ marginRight: '6px', verticalAlign: 'middle', color: '#475569' }} />
+                        <strong>電話：</strong>
+                        {selectedJob.contact && selectedJob.contact.phone
+                          ? selectedJob.contact.phone
+                          : '未提供'}
+                      </p>
+                    </div>
+                  </Col>
+                </Row>
+
+                <div className="job-description mt-4">
+                  <h5
+                    style={{
+                      color: '#1e3a8a',
+                      fontWeight: '600',
+                      paddingBottom: '10px',
+                      borderBottom: '1px solid #e2e8f0',
+                      marginBottom: '16px',
+                    }}
+                  >
+                    職位詳細資訊
+                  </h5>
+                  <div
+                    className="job-content"
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(selectedJob.intro),
+                    }}
+                  />
+                </div>
+
+                {/* 照片幻燈片展示 */}
+                {selectedJob.images && selectedJob.images.length > 0 && (
+                  <div className="photos-section mt-4">
+                    <h5
+                      style={{
+                        color: '#1e3a8a',
+                        fontWeight: '600',
+                        paddingBottom: '10px',
+                        borderBottom: '1px solid #e2e8f0',
+                        marginBottom: '16px',
+                      }}
+                    >
+                      公司環境照片
+                    </h5>
+                    <Carousel
+                      className="job-carousel"
+                      indicators={selectedJob.images.length > 1}
+                      controls={selectedJob.images.length > 1}
+                    >
+                      {selectedJob.images.map((image, index) => (
+                        <Carousel.Item key={index}>
+                          <div className="carousel-img-container">
+                            <img
+                              className="d-block w-100 rounded"
+                              src={getImageSrc(process.env.REACT_APP_BASE_URL + image.image, 'company')}
+                              alt={`${selectedJob.company_name} 環境照片 ${index + 1}`}
+                              style={{ backgroundColor: '#f8fafc' }}
+                              onError={(e) => handleImageError(e, 'company')}
+                            />
+                          </div>
+                        </Carousel.Item>
+                      ))}
+                    </Carousel>
+                  </div>
+                )}
+              </>
+            )}
+          </Modal.Body>
+          <Modal.Footer style={{ borderTop: '1px solid #e2e8f0', background: '#f8fafc' }}>
+            {!detailLoading && selectedJob.contact && selectedJob.contact.email && (
+              <a
+                href={`mailto:${selectedJob.contact.email}?subject=應徵${selectedJob.title}職位`}
+                style={{
+                  padding: '8px 20px',
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: '600',
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  display: 'inline-block',
+                }}
+              >
+                立即應徵
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={handleClose}
+              style={{
+                padding: '8px 20px',
+                background: '#ffffff',
+                color: '#475569',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                fontWeight: '500',
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+              }}
+            >
+              關閉
+            </button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
+    </div>
   );
 }
 

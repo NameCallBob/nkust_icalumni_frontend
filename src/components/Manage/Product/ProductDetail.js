@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Button, Row, Col, Image, Card, Badge, Carousel, Tab, Tabs } from 'react-bootstrap';
 import { FaCheck, FaTimes, FaTag, FaCalendarAlt, FaInfoCircle } from 'react-icons/fa';
+import { handleImageError, getImageSrc } from '../../../utils/imageDefaults';
 
 const ProductDetailModal = ({ product, show, onClose }) => {
     if (!product) return null;
@@ -42,9 +43,13 @@ const ProductDetailModal = ({ product, show, onClose }) => {
                                             <Carousel.Item key={index}>
                                                 <div style={{ height: '300px', background: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     <Image
-                                                        src={typeof image === 'string' ? image : process.env.REACT_APP_BASE_URL + image.image}
+                                                        src={getImageSrc(
+                                                            typeof image === 'string' ? image : process.env.REACT_APP_BASE_URL + image.image,
+                                                            'product'
+                                                        )}
                                                         alt={`產品圖片 ${index + 1}`}
                                                         style={{ maxHeight: '300px', maxWidth: '100%', objectFit: 'contain' }}
+                                                        onError={(e) => handleImageError(e, 'product')}
                                                     />
                                                 </div>
                                                 {index === 0 && (

@@ -1,0 +1,476 @@
+/* ============================================
+   首頁元件優化樣式
+   企業顧問風格 - 移除科技特效，保留版面結構
+   ============================================ */
+
+/* ===== Hero Section ===== */
+.hero-section {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #1e3a8a;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  color: white;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 400;
+  opacity: 0.85;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ===== 搜索欄 ===== */
+.search-container {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.search-bar-enhanced {
+  position: relative;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 0.25rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.search-bar-enhanced:focus-within {
+  box-shadow: 0 4px 16px rgba(30, 58, 138, 0.15);
+}
+
+.search-bar-enhanced .form-control {
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  padding-right: 120px;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.search-bar-enhanced .form-control:focus {
+  box-shadow: none;
+}
+
+.search-bar-enhanced .btn-search {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e3a8a;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1.25rem;
+  color: white;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.search-bar-enhanced .btn-search:hover {
+  background: #16307a;
+  transform: translateY(-50%);
+}
+
+/* ===== 產業類別下拉選單 ===== */
+.category-dropdown-enhanced {
+  position: relative;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 0.75rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease;
+  border: 1px solid #e2e8f0;
+}
+
+.category-dropdown-enhanced:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.category-dropdown-enhanced .dropdown-toggle {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-dropdown-enhanced .dropdown-toggle:hover {
+  border-color: #1e3a8a;
+  background: #f8fafc;
+}
+
+.category-dropdown-enhanced .dropdown-toggle::after {
+  transition: transform 0.2s ease;
+}
+
+.category-dropdown-enhanced .dropdown-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+/* ===== 輪播圖 ===== */
+.carousel-enhanced {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.carousel-enhanced .carousel-item {
+  position: relative;
+  background: #1e3a8a;
+}
+
+.carousel-enhanced .carousel-item img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+  opacity: 0.85;
+}
+
+.carousel-enhanced .carousel-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+.carousel-enhanced .carousel-caption {
+  bottom: 2rem;
+  z-index: 2;
+}
+
+.carousel-enhanced .carousel-caption h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  margin-bottom: 0.5rem;
+}
+
+.carousel-enhanced .carousel-caption p {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.carousel-enhanced .carousel-indicators {
+  bottom: 1rem;
+}
+
+.carousel-enhanced .carousel-indicators [data-bs-target] {
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  transition: background 0.2s ease;
+}
+
+.carousel-enhanced .carousel-indicators .active {
+  background: #ffffff;
+}
+
+.carousel-enhanced .carousel-control-prev,
+.carousel-enhanced .carousel-control-next {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.carousel-enhanced:hover .carousel-control-prev,
+.carousel-enhanced:hover .carousel-control-next {
+  opacity: 1;
+}
+
+.carousel-enhanced .carousel-control-prev {
+  left: 1rem;
+}
+
+.carousel-enhanced .carousel-control-next {
+  right: 1rem;
+}
+
+.carousel-enhanced .carousel-control-prev:hover,
+.carousel-enhanced .carousel-control-next:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ===== 新聞區塊 ===== */
+.news-section {
+  margin-bottom: 3rem;
+}
+
+.news-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.news-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.news-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.news-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.news-card-content {
+  padding: 1.25rem;
+}
+
+.news-card-date {
+  color: #475569;
+  font-size: 0.8125rem;
+  margin-bottom: 0.5rem;
+}
+
+.news-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  transition: color 0.2s ease;
+}
+
+.news-card:hover .news-card-title {
+  color: #2563eb;
+}
+
+.news-card-link {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  transition: gap 0.2s ease;
+}
+
+.news-card-link:hover {
+  gap: 0.5rem;
+  color: #1e3a8a;
+}
+
+/* ===== 公司展示區 ===== */
+.company-section {
+  margin-bottom: 3rem;
+}
+
+.company-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.375rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.company-tab {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #475569;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.company-tab:hover {
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+
+.company-tab.active {
+  background: #1e3a8a;
+  color: white;
+}
+
+.company-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.company-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.company-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #bfdbfe;
+}
+
+.company-name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: #0f172a;
+}
+
+.company-industry {
+  text-align: center;
+  color: #475569;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.company-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  justify-content: center;
+}
+
+.company-tag {
+  background: #eff6ff;
+  color: #1e3a8a;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid #bfdbfe;
+}
+
+/* ===== 輪播卡片 ===== */
+.carousel-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.carousel-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: #bfdbfe;
+}
+
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.carousel-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+/* ===== 響應式調整 ===== */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.25rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .carousel-enhanced .carousel-item {
+    height: 250px;
+  }
+
+  .news-grid,
+  .company-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-tabs {
+    flex-direction: column;
+  }
+
+  .news-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+/* ===== 無障礙支援 ===== */
+@media (prefers-reduced-motion: reduce) {
+  .company-card,
+  .news-card,
+  .carousel-card {
+    transition: none;
+  }
+
+  .company-card:hover,
+  .news-card:hover,
+  .carousel-card:hover {
+    transform: none;
+  }
+}
