@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Form,
-  Container,
-  Row,
-  Col,
-  Modal,
-  Spinner,
-  Badge,
-} from "react-bootstrap";
+import AppModal from "components/common/AppModal";
+import { Button, Field, Spinner } from "components/common/ui";
 import Axios from "common/Axios";
 import ReactQuill from "react-quill";
 import { useParams, useNavigate } from "react-router-dom";
@@ -168,17 +160,18 @@ const ArticleForm = () => {
   };
 
   return (
-    <Container fluid className="admin-container py-4" style={rwd.getContainerStyle()}>
-      <Row className="mb-4 align-items-center">
-        <Col>
-          <h2 className="fw-bold">{id ? "編輯文章" : "新增文章"}</h2>
-          <p className="text-muted">填寫文章資訊並保存</p>
-        </Col>
-        <Col className={rwd.isMobile ? "text-start mt-2" : "text-end"}>
+    <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
+      {/* 頁首：標題與操作按鈕 */}
+      <div className="flex flex-wrap items-center mb-4">
+        <div className="flex-1">
+          <h2 className="font-bold text-2xl">{id ? "編輯文章" : "新增文章"}</h2>
+          <p className="text-base-content/60">填寫文章資訊並保存</p>
+        </div>
+        <div className={rwd.isMobile ? "text-start mt-2 w-full" : "text-end"}>
           <Button
-            variant="outline-secondary"
+            variant="secondary"
             onClick={() => navigate("/alumni/manage/article/")}
-            className={rwd.isMobile ? "mb-2 w-100" : "me-2"}
+            className={`btn-outline ${rwd.isMobile ? "mb-2 w-full" : "mr-2"}`}
             style={rwd.getButtonStyle()}
           >
             <i className="bi bi-arrow-left"></i> 返回
@@ -187,89 +180,87 @@ const ArticleForm = () => {
             variant="primary"
             onClick={handleSave}
             disabled={loading || !title || !content}
-            className={rwd.isMobile ? "w-100" : ""}
+            className={rwd.isMobile ? "w-full" : ""}
             style={rwd.getButtonStyle()}
           >
             {loading ? <Spinner size="sm" /> : <i className="bi bi-save"></i>} 保存
           </Button>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <Form className="bg-light p-4 rounded shadow-sm" style={{ padding: rwd.isMobile ? '1rem' : '2rem' }}>
-          <Row>
-            <Col xs={12}>
-              <Form.Group className="mb-4">
-                <Form.Label>
-                  標題 <span className="text-danger">*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="輸入文章標題"
-                  required
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+        <form className="bg-base-200 rounded-lg shadow-sm" style={{ padding: rwd.isMobile ? '1rem' : '2rem' }}>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-12">
+              <Field
+                label="標題"
+                required
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="輸入文章標題"
+              />
+            </div>
+          </div>
 
-          <Row>
-            <Col xs={12} md={rwd.isMobile ? 12 : 4}>
-              <Form.Group className="mb-4">
-                <Form.Label>是否公開</Form.Label>
-                <Form.Check
-                  type="switch"
-                  label={active ? "公開" : "不公開"}
-                  checked={active}
-                  onChange={(e) => setActive(e.target.checked)}
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} md={rwd.isMobile ? 12 : 4}>
-              <Form.Group className="mb-4">
-                <Form.Label>發布時間</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  value={publishAt}
-                  onChange={(e) => setPublishAt(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} md={rwd.isMobile ? 12 : 4}>
-              <Form.Group className="mb-4">
-                <Form.Label>截止時間</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  value={expireAt}
-                  onChange={(e) => setExpireAt(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+          <div className="grid grid-cols-12 gap-4">
+            <div className={rwd.isMobile ? "col-span-12" : "col-span-12 md:col-span-4"}>
+              {/* 是否公開 切換開關 */}
+              <div className="form-control w-full mb-4">
+                <label className="label pb-1">
+                  <span className="label-text font-medium text-base-content">是否公開</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                    checked={active}
+                    onChange={(e) => setActive(e.target.checked)}
+                  />
+                  <span className="label-text">{active ? "公開" : "不公開"}</span>
+                </label>
+              </div>
+            </div>
+            <div className={rwd.isMobile ? "col-span-12" : "col-span-12 md:col-span-4"}>
+              <Field
+                label="發布時間"
+                type="datetime-local"
+                value={publishAt}
+                onChange={(e) => setPublishAt(e.target.value)}
+              />
+            </div>
+            <div className={rwd.isMobile ? "col-span-12" : "col-span-12 md:col-span-4"}>
+              <Field
+                label="截止時間"
+                type="datetime-local"
+                value={expireAt}
+                onChange={(e) => setExpireAt(e.target.value)}
+              />
+            </div>
+          </div>
 
-          <Row>
-            <Col xs={12}>
-              <Form.Group className="mb-4">
-                <Form.Label>文章連結（選填）</Form.Label>
-                <Form.Control
-                  type="url"
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  placeholder="輸入外部連結（如有）"
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-12">
+              <Field
+                label="文章連結（選填）"
+                type="url"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                placeholder="輸入外部連結（如有）"
+              />
+            </div>
+          </div>
 
-          <Row>
-            <Col xs={12}>
-              <Form.Group className="mb-4">
-                <Form.Label>
-                  內容 <span className="text-danger">*</span>
-                </Form.Label>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-12">
+              <div className="form-control w-full mb-4">
+                <label className="label pb-1">
+                  <span className="label-text font-medium text-base-content">
+                    內容 <span className="text-error">*</span>
+                  </span>
+                </label>
                 <ReactQuill
                   value={content}
                   onChange={setContent}
@@ -295,18 +286,20 @@ const ArticleForm = () => {
                     ],
                   }}
                 />
-              </Form.Group>
-            </Col>
-          </Row>
+              </div>
+            </div>
+          </div>
 
-          <Row>
-            <Col xs={12}>
-              <Form.Group className="mb-4">
-                <Form.Label>圖片管理</Form.Label>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-12">
+              <div className="form-control w-full mb-4">
+                <label className="label pb-1">
+                  <span className="label-text font-medium text-base-content">圖片管理</span>
+                </label>
                 <Button
-                  variant="outline-primary"
+                  variant="outline"
                   onClick={() => setShowImageModal(true)}
-                  className={rwd.isMobile ? "mb-3 w-100" : "mb-3"}
+                  className={rwd.isMobile ? "mb-3 w-full" : "mb-3"}
                   style={rwd.getButtonStyle()}
                 >
                   <i className="bi bi-upload"></i> 上傳圖片
@@ -319,12 +312,13 @@ const ArticleForm = () => {
                   {imageFiles.map((image, index) => (
                     <div key={index} className="image-preview">
                       <img src={image.url} alt={`original-${index}`} />
-                      <Badge bg="info" className="mt-1">
+                      <span className="badge badge-info mt-1">
                         {image.pic_type === "small" ? "小圖" : "大圖"}
-                      </Badge>
+                      </span>
                       <Button
-                        variant="outline-danger"
+                        variant="error"
                         size="sm"
+                        className="btn-outline"
                         onClick={() => handleRemoveImage(index, true)}
                         style={rwd.getButtonStyle()}
                       >
@@ -335,12 +329,13 @@ const ArticleForm = () => {
                   {newImages.map((image, index) => (
                     <div key={index} className="image-preview">
                       <img src={image.url} alt={`new-${index}`} />
-                      <Badge bg="info" className="mt-1">
+                      <span className="badge badge-info mt-1">
                         {image.pic_type === "small" ? "小圖" : "大圖"}
-                      </Badge>
+                      </span>
                       <Button
-                        variant="outline-danger"
+                        variant="error"
                         size="sm"
+                        className="btn-outline"
                         onClick={() => handleRemoveImage(index, false)}
                         style={rwd.getButtonStyle()}
                       >
@@ -349,40 +344,20 @@ const ArticleForm = () => {
                     </div>
                   ))}
                 </div>
-              </Form.Group>
-            </Col>
-          </Row>
-        </Form>
+              </div>
+            </div>
+          </div>
+        </form>
       )}
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
-      <Modal show={showImageModal} onHide={() => setShowImageModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>上傳圖片</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group className="mb-3">
-            <Form.Label>圖片大小</Form.Label>
-            <Form.Select
-              value={imageSize}
-              onChange={(e) => setImageSize(e.target.value)}
-            >
-              <option value="small">小圖</option>
-              <option value="large">大圖</option>
-            </Form.Select>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>選擇圖片</Form.Label>
-            <Form.Control
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
+      <AppModal
+        show={showImageModal}
+        onHide={() => setShowImageModal(false)}
+        title="上傳圖片"
+        size="sm"
+        footer={
           <Button
             variant="secondary"
             onClick={() => setShowImageModal(false)}
@@ -390,9 +365,31 @@ const ArticleForm = () => {
           >
             關閉
           </Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+        }
+      >
+        <Field
+          as="select"
+          label="圖片大小"
+          value={imageSize}
+          onChange={(e) => setImageSize(e.target.value)}
+        >
+          <option value="small">小圖</option>
+          <option value="large">大圖</option>
+        </Field>
+        <div className="form-control w-full mb-4">
+          <label className="label pb-1">
+            <span className="label-text font-medium text-base-content">選擇圖片</span>
+          </label>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            className="file-input file-input-bordered w-full"
+            onChange={handleImageUpload}
+          />
+        </div>
+      </AppModal>
+    </div>
   );
 };
 

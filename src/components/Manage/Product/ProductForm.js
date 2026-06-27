@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Modal, Button, Form, Image, Row, Col, Card, Alert, ProgressBar } from 'react-bootstrap';
+import AppModal from 'components/common/AppModal';
+import { Button, Field } from 'components/common/ui';
 import { FaCamera, FaTrash, FaStar, FaRegStar, FaInfoCircle, FaCheck, FaTimes } from 'react-icons/fa';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
@@ -18,7 +19,7 @@ const ProductForm = ({
     const [validationErrors, setValidationErrors] = useState({});
     const [showHelp, setShowHelp] = useState(false);
     const fileInputRef = useRef(null);
-    
+
     // 重置表單狀態
     useEffect(() => {
         if (show) {
@@ -44,24 +45,24 @@ const ProductForm = ({
     // 處理文件讀取
     const processFiles = (files) => {
         if (!files || files.length === 0) return;
-        
+
         const fileArray = Array.from(files);
         const validImageFiles = fileArray.filter(file => file.type.startsWith('image/'));
-        
+
         if (validImageFiles.length !== fileArray.length) {
             toast.warning('請只上傳圖片檔案');
         }
-        
+
         if (validImageFiles.length === 0) return;
-        
+
         // 檢查文件大小
         const oversizedFiles = validImageFiles.filter(file => file.size > 5 * 1024 * 1024);
         if (oversizedFiles.length > 0) {
             toast.warning('部分圖片超過5MB，已被跳過');
         }
-        
+
         const validFiles = validImageFiles.filter(file => file.size <= 5 * 1024 * 1024);
-        
+
         const promises = validFiles.map((file) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -103,7 +104,7 @@ const ProductForm = ({
         }));
         setImagePreviews(updatedImages);
     };
-    
+
     // 表單欄位變更
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -111,7 +112,7 @@ const ProductForm = ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
-        
+
         // 清除對應欄位的驗證錯誤
         if (validationErrors[name]) {
             setValidationErrors({
@@ -120,27 +121,27 @@ const ProductForm = ({
             });
         }
     };
-    
+
     // 表單提交前驗證
     const validateForm = () => {
         const errors = {};
-        
+
         if (!productData.name.trim()) {
             errors.name = '請輸入產品名稱';
         }
-        
+
         if (!productData.description.trim()) {
             errors.description = '請輸入產品描述';
         }
-        
+
         if (!productData.category) {
             errors.category = '請選擇產品分類';
         }
-        
+
         if (imagePreviews.length === 0) {
             errors.images = '請至少上傳一張產品圖片';
         }
-        
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -159,233 +160,229 @@ const ProductForm = ({
         }
     };
 
+    // 底部按鈕區
+    const footer = (
+        <>
+            <Button variant="secondary" onClick={onClose}>
+                取消
+            </Button>
+            <Button
+                variant="primary"
+                onClick={handleSaveProduct}
+            >
+                {productData.id ? '更新產品' : '建立產品'}
+            </Button>
+        </>
+    );
+
     return (
-        <Modal 
-            show={show} 
-            onHide={onClose} 
-            size="lg" 
-            backdrop="static"
-            centered
+        <AppModal
+            show={show}
+            onHide={onClose}
+            title={productData.id ? '編輯產品' : '新增產品'}
+            size="lg"
+            variant="admin"
+            closeOnBackdrop={false}
+            footer={footer}
         >
-            <Modal.Header closeButton className="bg-primary text-white">
-                <Modal.Title>
-                    {productData.id ? '編輯產品' : '新增產品'}
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Button 
-                    variant="link" 
-                    className="mb-3 text-decoration-none"
-                    onClick={() => setShowHelp(!showHelp)}
-                >
-                    <FaInfoCircle className="me-1" />
-                    {showHelp ? '隱藏填寫說明' : '顯示填寫說明'}
-                </Button>
-                
-                {showHelp && (
-                    <Alert variant="info" className="mb-4">
-                        <Alert.Heading>產品資料填寫說明</Alert.Heading>
-                        <ul className="mb-0">
-                            <li><strong>產品名稱</strong>：應簡潔明確，避免過長或難以理解的名稱，建議在30字以內。</li>
-                            <li><strong>產品簡介</strong>：詳細描述產品特點與用途，可包含規格、特性等重要資訊。</li>
-                            <li><strong>分類</strong>：選擇最符合產品的分類，以便客戶快速尋找。</li>
-                            <li><strong>圖片</strong>：上傳清晰的產品圖片，首張圖片將作為主圖展示。支援拖放上傳。</li>
-                            <li><strong>啟用狀態</strong>：勾選「啟用」表示產品會在前台顯示，取消勾選則不會顯示。</li>
-                        </ul>
-                    </Alert>
-                )}
-                
-                <Form>
-                    <Row>
-                        <Col md={6}>
-                            <Form.Group className="mb-3">
-                                <Form.Label className="fw-bold">產品名稱 <span className="text-danger">*</span></Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="name"
-                                    value={productData.name}
-                                    onChange={handleChange}
-                                    placeholder="輸入產品名稱..."
-                                    className={validationErrors.name ? 'is-invalid' : ''}
-                                    maxLength={100}
-                                />
-                                <Form.Text className="text-muted">
-                                    建議30字以內，目前已輸入 {productData.name.length} 字
-                                </Form.Text>
-                                {validationErrors.name && (
-                                    <div className="invalid-feedback">{validationErrors.name}</div>
-                                )}
-                            </Form.Group>
-                            
-                            <Form.Group className="mb-3">
-                                <Form.Label className="fw-bold">分類 <span className="text-danger">*</span></Form.Label>
-                                <Form.Select
-                                    name="category"
-                                    value={productData.category}
-                                    onChange={handleChange}
-                                    className={validationErrors.category ? 'is-invalid' : ''}
-                                >
-                                    <option value="">-- 選擇分類 --</option>
-                                    {categories.map((category) => (
-                                        <option key={category.id} value={category.id}>
-                                            {category.name}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                                {validationErrors.category && (
-                                    <div className="invalid-feedback">{validationErrors.category}</div>
-                                )}
-                            </Form.Group>
-                            
-                            <Form.Group className="mb-3">
-                                <Form.Label className="fw-bold">狀態</Form.Label>
-                                <div className="d-flex align-items-center p-2 border rounded">
-                                    <Form.Check
-                                        type="switch"
-                                        id="product-status-switch"
-                                        name="is_active"
-                                        checked={productData.is_active}
-                                        onChange={handleChange}
-                                        className="me-2"
-                                    />
-                                    <span>
-                                        {productData.is_active ? (
-                                            <><FaCheck className="text-success me-1" /> 產品已啟用</>
-                                        ) : (
-                                            <><FaTimes className="text-danger me-1" /> 產品未啟用</>
-                                        )}
-                                    </span>
-                                </div>
-                                <Form.Text className="text-muted">
-                                    啟用的產品將顯示在前台，未啟用則不會顯示。
-                                </Form.Text>
-                            </Form.Group>
-                        </Col>
-                        
-                        <Col md={6}>
-                            <Form.Group className="mb-3">
-                                <Form.Label className="fw-bold">產品簡介 <span className="text-danger">*</span></Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    name="description"
-                                    value={productData.description}
-                                    onChange={handleChange}
-                                    placeholder="詳細描述產品的特點、用途、規格等..."
-                                    className={validationErrors.description ? 'is-invalid' : ''}
-                                    style={{ height: '172px' }}
-                                />
-                                {validationErrors.description && (
-                                    <div className="invalid-feedback">{validationErrors.description}</div>
-                                )}
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    
-                    <hr className="my-4" />
-                    
-                    <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold">產品圖片 <span className="text-danger">*</span></Form.Label>
-                        
-                        <div 
-                            className={`upload-area p-4 text-center border rounded mb-3 ${isDragging ? 'border-primary bg-light' : ''} ${validationErrors.images ? 'border-danger' : ''}`}
-                            onDragOver={(e) => {
-                                e.preventDefault();
-                                setIsDragging(true);
-                            }}
-                            onDragLeave={() => setIsDragging(false)}
-                            onDrop={handleDrop}
-                            onClick={() => fileInputRef.current?.click()}
-                            style={{ cursor: 'pointer' }}
+            <Button
+                variant="link"
+                size="sm"
+                className="mb-3 no-underline px-0"
+                onClick={() => setShowHelp(!showHelp)}
+            >
+                <FaInfoCircle className="mr-1" />
+                {showHelp ? '隱藏填寫說明' : '顯示填寫說明'}
+            </Button>
+
+            {showHelp && (
+                <div className="alert alert-info mb-4 block">
+                    <h5 className="font-bold mb-2">產品資料填寫說明</h5>
+                    <ul className="mb-0 list-disc pl-5 space-y-1">
+                        <li><strong>產品名稱</strong>：應簡潔明確，避免過長或難以理解的名稱，建議在30字以內。</li>
+                        <li><strong>產品簡介</strong>：詳細描述產品特點與用途，可包含規格、特性等重要資訊。</li>
+                        <li><strong>分類</strong>：選擇最符合產品的分類，以便客戶快速尋找。</li>
+                        <li><strong>圖片</strong>：上傳清晰的產品圖片，首張圖片將作為主圖展示。支援拖放上傳。</li>
+                        <li><strong>啟用狀態</strong>：勾選「啟用」表示產品會在前台顯示，取消勾選則不會顯示。</li>
+                    </ul>
+                </div>
+            )}
+
+            <form>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <Field
+                            label="產品名稱"
+                            required
+                            type="text"
+                            name="name"
+                            value={productData.name}
+                            onChange={handleChange}
+                            placeholder="輸入產品名稱..."
+                            className={validationErrors.name ? 'is-invalid' : ''}
+                            maxLength={100}
+                            error={validationErrors.name}
+                            help={`建議30字以內，目前已輸入 ${productData.name.length} 字`}
+                        />
+
+                        <Field
+                            as="select"
+                            label="分類"
+                            required
+                            name="category"
+                            value={productData.category}
+                            onChange={handleChange}
+                            className={validationErrors.category ? 'is-invalid' : ''}
+                            error={validationErrors.category}
                         >
-                            <FaCamera size={40} className="mb-3 text-primary" />
-                            <h6>點擊或拖放圖片至此處上傳</h6>
-                            <p className="text-muted mb-0">支援 JPG、PNG 格式，每張圖片最大 5MB</p>
-                            <Form.Control
-                                ref={fileInputRef}
-                                type="file"
-                                multiple
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="d-none"
-                            />
+                            <option value="">-- 選擇分類 --</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </Field>
+
+                        <div className="form-control w-full mb-4">
+                            <label className="label pb-1">
+                                <span className="label-text font-medium text-base-content">狀態</span>
+                            </label>
+                            <div className="flex items-center p-2 border border-base-300 rounded-lg">
+                                <input
+                                    type="checkbox"
+                                    id="product-status-switch"
+                                    name="is_active"
+                                    checked={productData.is_active}
+                                    onChange={handleChange}
+                                    className="toggle toggle-primary mr-2"
+                                />
+                                <span>
+                                    {productData.is_active ? (
+                                        <><FaCheck className="text-success mr-1 inline" /> 產品已啟用</>
+                                    ) : (
+                                        <><FaTimes className="text-error mr-1 inline" /> 產品未啟用</>
+                                    )}
+                                </span>
+                            </div>
+                            <span className="label-text-alt text-base-content/60 mt-1">
+                                啟用的產品將顯示在前台，未啟用則不會顯示。
+                            </span>
                         </div>
-                        
-                        {validationErrors.images && (
-                            <div className="text-danger mb-3">{validationErrors.images}</div>
-                        )}
-                        
-                        {imagePreviews.length > 0 && (
-                            <Card className="shadow-sm">
-                                <Card.Header className="bg-light">
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span className="fw-bold">已上傳圖片 ({imagePreviews.length})</span>
-                                        <Tippy content="第一張圖片將作為主圖顯示">
-                                            <span className="text-muted">
-                                                <FaInfoCircle /> 主圖標示為 <FaStar className="text-warning" />
-                                            </span>
-                                        </Tippy>
-                                    </div>
-                                </Card.Header>
-                                <Card.Body>
-                                    <div className="d-flex flex-wrap">
-                                        {imagePreviews.map((image, index) => (
-                                            <div key={index} className="position-relative me-3 mb-3">
-                                                <Card style={{ width: '150px' }}>
-                                                    <div style={{ height: '150px', overflow: 'hidden' }}>
-                                                        <Image
-                                                            src={image}
-                                                            alt={`預覽圖片 ${index + 1}`}
-                                                            className="w-100 h-100 object-fit-cover"
-                                                        />
-                                                    </div>
-                                                    <Card.Footer className="p-2 d-flex justify-content-between">
-                                                        <Tippy content={index === 0 ? "目前為主圖" : "設為主圖"}>
-                                                            <Button
-                                                                size="sm"
-                                                                variant={index === 0 ? "warning" : "outline-warning"}
-                                                                onClick={() => index !== 0 && handleSetMainImage(index)}
-                                                                disabled={index === 0}
-                                                            >
-                                                                {index === 0 ? <FaStar /> : <FaRegStar />}
-                                                            </Button>
-                                                        </Tippy>
-                                                        <Tippy content="刪除圖片">
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline-danger"
-                                                                onClick={() => handleDeleteImage(index)}
-                                                            >
-                                                                <FaTrash />
-                                                            </Button>
-                                                        </Tippy>
-                                                    </Card.Footer>
-                                                </Card>
-                                                {index === 0 && (
-                                                    <span className="position-absolute top-0 start-0 badge bg-warning m-1">
-                                                        主圖
-                                                    </span>
-                                                )}
+                    </div>
+
+                    <div>
+                        <Field
+                            as="textarea"
+                            label="產品簡介"
+                            required
+                            name="description"
+                            value={productData.description}
+                            onChange={handleChange}
+                            placeholder="詳細描述產品的特點、用途、規格等..."
+                            className={validationErrors.description ? 'is-invalid' : ''}
+                            style={{ height: '172px' }}
+                            error={validationErrors.description}
+                        />
+                    </div>
+                </div>
+
+                <hr className="my-4 border-base-300" />
+
+                <div className="form-control w-full mb-3">
+                    <label className="label pb-1">
+                        <span className="label-text font-medium text-base-content">
+                            產品圖片<span className="text-error ml-0.5">*</span>
+                        </span>
+                    </label>
+
+                    <div
+                        className={`upload-area p-4 text-center border rounded-lg mb-3 ${isDragging ? 'border-primary bg-base-200' : 'border-base-300'} ${validationErrors.images ? 'border-error' : ''}`}
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                            setIsDragging(true);
+                        }}
+                        onDragLeave={() => setIsDragging(false)}
+                        onDrop={handleDrop}
+                        onClick={() => fileInputRef.current?.click()}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <FaCamera size={40} className="mb-3 text-primary mx-auto" />
+                        <h6 className="font-semibold">點擊或拖放圖片至此處上傳</h6>
+                        <p className="text-base-content/60 mb-0">支援 JPG、PNG 格式，每張圖片最大 5MB</p>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                        />
+                    </div>
+
+                    {validationErrors.images && (
+                        <div className="text-error mb-3">{validationErrors.images}</div>
+                    )}
+
+                    {imagePreviews.length > 0 && (
+                        <div className="card card-bordered shadow-sm bg-base-100">
+                            <div className="bg-base-200 px-4 py-3 rounded-t-2xl">
+                                <div className="flex justify-between items-center">
+                                    <span className="font-bold">已上傳圖片 ({imagePreviews.length})</span>
+                                    <Tippy content="第一張圖片將作為主圖顯示">
+                                        <span className="text-base-content/60">
+                                            <FaInfoCircle className="inline" /> 主圖標示為 <FaStar className="text-warning inline" />
+                                        </span>
+                                    </Tippy>
+                                </div>
+                            </div>
+                            <div className="card-body">
+                                <div className="flex flex-wrap">
+                                    {imagePreviews.map((image, index) => (
+                                        <div key={index} className="relative mr-3 mb-3">
+                                            <div className="card card-bordered bg-base-100" style={{ width: '150px' }}>
+                                                <div style={{ height: '150px', overflow: 'hidden' }}>
+                                                    <img
+                                                        src={image}
+                                                        alt={`預覽圖片 ${index + 1}`}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                                <div className="p-2 flex justify-between border-t border-base-300">
+                                                    <Tippy content={index === 0 ? "目前為主圖" : "設為主圖"}>
+                                                        <button
+                                                            type="button"
+                                                            className={`btn btn-sm ${index === 0 ? 'btn-warning' : 'btn-outline btn-warning'}`}
+                                                            onClick={() => index !== 0 && handleSetMainImage(index)}
+                                                            disabled={index === 0}
+                                                        >
+                                                            {index === 0 ? <FaStar /> : <FaRegStar />}
+                                                        </button>
+                                                    </Tippy>
+                                                    <Tippy content="刪除圖片">
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-sm btn-outline btn-error"
+                                                            onClick={() => handleDeleteImage(index)}
+                                                        >
+                                                            <FaTrash />
+                                                        </button>
+                                                    </Tippy>
+                                                </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        )}
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>
-                    取消
-                </Button>
-                <Button
-                    variant="primary"
-                    onClick={handleSaveProduct}
-                >
-                    {productData.id ? '更新產品' : '建立產品'}
-                </Button>
-            </Modal.Footer>
-        </Modal>
+                                            {index === 0 && (
+                                                <span className="absolute top-0 left-0 badge badge-warning m-1">
+                                                    主圖
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </form>
+        </AppModal>
     );
 };
 

@@ -1,18 +1,8 @@
 import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
 import useRWD from 'hooks/useRWD';
-import {
-  Container,
-  Table,
-  Button,
-  Modal,
-  Form,
-  Row,
-  Col,
-  Spinner,
-  Pagination,
-  Badge,
-} from "react-bootstrap";
+import AppModal from "components/common/AppModal";
+import { Button, Spinner } from "components/common/ui";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -170,200 +160,219 @@ const RuleManaPage = () => {
   const totalPages = Math.ceil(rules.length / rulesPerPage);
 
   return (
-    <Container className="admin-container py-4" style={rwd.getContainerStyle()}>
-      <Row className="mb-4 align-items-center">
-        <Col>
-          <h1 className="fw-bold" style={{ fontSize: rwd.getFontSize('title') }}>章程管理-管理章程資料與相關 PDF 文件</h1>
-          <p className="text-muted"></p>
-        </Col>
-        <Col className="text-end">
+    <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
+      <div className="flex items-center mb-4">
+        <div className="flex-1">
+          <h1 className="font-bold" style={{ fontSize: rwd.getFontSize('title') }}>章程管理-管理章程資料與相關 PDF 文件</h1>
+          <p className="text-base-content/60"></p>
+        </div>
+        <div className="text-right">
           <Button
             variant="primary"
             onClick={() => handleShow()}
-            className="rounded-pill px-4"
+            className="rounded-full px-4"
             style={rwd.getButtonStyle()}
           >
-            <i className="bi bi-plus-lg me-2"></i> 新增章程
+            <i className="bi bi-plus-lg mr-2"></i> 新增章程
           </Button>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       {loading ? (
-        <div className="text-center my-5">
-          <Spinner animation="border" variant="primary" />
-          <p className="text-muted mt-2">載入中...</p>
+        <div className="text-center my-12">
+          <Spinner center label="載入中..." />
         </div>
       ) : (
         <>
-          <Table hover responsive className="shadow-sm">
-            <thead className="bg-light">
-              <tr>
-                <th>流水號</th>
-                <th>更新日期</th>
-                <th className="text-center">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentRules.map((rule) => (
-                <tr key={rule.id}>
-                  <td>{rule.id}</td>
-                  <td>{new Date(rule.updated_at).toLocaleString()}</td>
-                  <td className="text-center">
-                    <Button
-                      variant="outline-info"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleView(rule)}
-                      style={rwd.getButtonStyle()}
-                    >
-                      <i className="bi bi-eye"></i> 查看
-                    </Button>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleShow(rule)}
-                      style={rwd.getButtonStyle()}
-                    >
-                      <i className="bi bi-pencil"></i> 編輯
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => handleDelete(rule.id)}
-                      style={rwd.getButtonStyle()}
-                    >
-                      <i className="bi bi-trash"></i> 刪除
-                    </Button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="table shadow-sm">
+              <thead className="bg-base-200">
+                <tr>
+                  <th>流水號</th>
+                  <th>更新日期</th>
+                  <th className="text-center">操作</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {currentRules.map((rule) => (
+                  <tr key={rule.id} className="hover">
+                    <td>{rule.id}</td>
+                    <td>{new Date(rule.updated_at).toLocaleString()}</td>
+                    <td className="text-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mr-2"
+                        onClick={() => handleView(rule)}
+                        style={rwd.getButtonStyle()}
+                      >
+                        <i className="bi bi-eye"></i> 查看
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mr-2"
+                        onClick={() => handleShow(rule)}
+                        style={rwd.getButtonStyle()}
+                      >
+                        <i className="bi bi-pencil"></i> 編輯
+                      </Button>
+                      <Button
+                        variant="error"
+                        size="sm"
+                        className="btn-outline"
+                        onClick={() => handleDelete(rule.id)}
+                        style={rwd.getButtonStyle()}
+                      >
+                        <i className="bi bi-trash"></i> 刪除
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {totalPages > 1 && (
-            <Pagination className="justify-content-center mt-4">
-              <Pagination.Prev
+            <div className="join flex justify-center mt-4">
+              <button
+                className="join-item btn"
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-              />
+              >
+                «
+              </button>
               {[...Array(totalPages)].map((_, index) => (
-                <Pagination.Item
+                <button
                   key={index + 1}
-                  active={index + 1 === currentPage}
+                  className={`join-item btn ${index + 1 === currentPage ? "btn-active btn-primary" : ""}`}
                   onClick={() => setCurrentPage(index + 1)}
                 >
                   {index + 1}
-                </Pagination.Item>
+                </button>
               ))}
-              <Pagination.Next
+              <button
+                className="join-item btn"
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-              />
-            </Pagination>
+              >
+                »
+              </button>
+            </div>
           )}
         </>
       )}
 
-      <Modal show={showModal} onHide={handleClose} size="lg" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{isEditing ? "編輯章程" : "新增章程"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>
-                章程簡介 <span className="text-danger">*</span>
-              </Form.Label>
-              <ReactQuill
-                value={currentRule.intro}
-                onChange={(value) => setCurrentRule((prev) => ({ ...prev, intro: value }))}
-                modules={{
-                  toolbar: rwd.isMobile ? [
-                    [{ header: [1, 2, false] }],
-                    ["bold", "italic"],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    ["clean"],
-                  ] : [
-                    [{ header: [1, 2, false] }],
-                    ["bold", "italic", "underline", "strike"],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    ["link"],
-                    ["clean"],
-                  ],
-                }}
-                placeholder="請輸入章程簡介"
-                className="shadow-sm"
-                style={{ fontSize: rwd.getFontSize('body') }}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>上傳 PDF（上限 5MB）</Form.Label>
-              <Form.Control
-                type="file"
-                accept=".pdf"
-                onChange={handleFileChange}
-                disabled={loading}
-              />
-              {currentRule.file && (
-                <Badge bg="success" className="mt-2">
-                  已選擇: {currentRule.file.name}
-                </Badge>
-              )}
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-secondary" onClick={handleClose} disabled={loading} style={rwd.getButtonStyle()}>
-            <i className="bi bi-x-lg"></i> 取消
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            disabled={loading || !currentRule.intro}
-            style={rwd.getButtonStyle()}
-          >
-            {loading ? (
-              <Spinner size="sm" />
-            ) : (
-              <i className="bi bi-check2"></i>
-            )}{" "}
-            {isEditing ? "更新" : "新增"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <AppModal
+        show={showModal}
+        onHide={handleClose}
+        size="lg"
+        variant="admin"
+        title={isEditing ? "編輯章程" : "新增章程"}
+        icon={<i className="bi bi-file-earmark-text"></i>}
+        footer={
+          <>
+            <Button variant="ghost" onClick={handleClose} disabled={loading} style={rwd.getButtonStyle()}>
+              <i className="bi bi-x-lg"></i> 取消
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              disabled={loading || !currentRule.intro}
+              style={rwd.getButtonStyle()}
+            >
+              {loading ? (
+                <Spinner size="sm" />
+              ) : (
+                <i className="bi bi-check2"></i>
+              )}{" "}
+              {isEditing ? "更新" : "新增"}
+            </Button>
+          </>
+        }
+      >
+        <div>
+          <div className="form-control w-full mb-3">
+            <label className="label pb-1">
+              <span className="label-text font-medium text-base-content">
+                章程簡介 <span className="text-error">*</span>
+              </span>
+            </label>
+            <ReactQuill
+              value={currentRule.intro}
+              onChange={(value) => setCurrentRule((prev) => ({ ...prev, intro: value }))}
+              modules={{
+                toolbar: rwd.isMobile ? [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["clean"],
+                ] : [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link"],
+                  ["clean"],
+                ],
+              }}
+              placeholder="請輸入章程簡介"
+              className="shadow-sm"
+              style={{ fontSize: rwd.getFontSize('body') }}
+            />
+          </div>
+          <div className="form-control w-full mb-3">
+            <label className="label pb-1">
+              <span className="label-text font-medium text-base-content">上傳 PDF（上限 5MB）</span>
+            </label>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              disabled={loading}
+              className="file-input file-input-bordered w-full"
+            />
+            {currentRule.file && (
+              <span className="badge badge-success mt-2">
+                已選擇: {currentRule.file.name}
+              </span>
+            )}
+          </div>
+        </div>
+      </AppModal>
 
-      <Modal show={showViewModal} onHide={handleCloseViewModal} size="lg" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>查看章程</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div
-            className="mb-3 p-3 bg-light rounded"
-            dangerouslySetInnerHTML={{ __html: viewRule?.intro }}
-          />
-          {viewRule?.pdf_file && (
-            <div>
-              <h5>PDF 文件</h5>
-              <embed
-                src={`${process.env.REACT_APP_BASE_URL}${viewRule.pdf_file}`}
-                type="application/pdf"
-                width="100%"
-                height="500px"
-                className="rounded"
-              />
-            </div>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-secondary" onClick={handleCloseViewModal} style={rwd.getButtonStyle()}>
+      <AppModal
+        show={showViewModal}
+        onHide={handleCloseViewModal}
+        size="lg"
+        variant="admin"
+        title="查看章程"
+        icon={<i className="bi bi-eye"></i>}
+        footer={
+          <Button variant="ghost" onClick={handleCloseViewModal} style={rwd.getButtonStyle()}>
             <i className="bi bi-x-lg"></i> 關閉
           </Button>
-        </Modal.Footer>
-      </Modal>
+        }
+      >
+        <div
+          className="mb-3 p-3 bg-base-200 rounded"
+          dangerouslySetInnerHTML={{ __html: viewRule?.intro }}
+        />
+        {viewRule?.pdf_file && (
+          <div>
+            <h5 className="text-lg font-semibold mb-2">PDF 文件</h5>
+            <embed
+              src={`${process.env.REACT_APP_BASE_URL}${viewRule.pdf_file}`}
+              type="application/pdf"
+              width="100%"
+              height="500px"
+              className="rounded"
+            />
+          </div>
+        )}
+      </AppModal>
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-    </Container>
+    </div>
   );
 };
 

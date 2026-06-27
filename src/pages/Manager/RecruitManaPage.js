@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Container, Row, Col, Card, Button, Table, Badge,
-  Pagination, Form, InputGroup, Spinner, Modal, Alert
-} from 'react-bootstrap';
-import {
   PlusCircle, Search, Info, Calendar, CheckCircle,
   XCircle, AlertTriangle, FileText, Edit, Trash2, Eye
 } from 'lucide-react';
@@ -12,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 import RecruitFormModal from 'components/Manage/recruitModal'; // 引入剛才優化的表單元件
+import AppModal from 'components/common/AppModal';
+import { Button } from 'components/common/ui';
 import useRWD from 'hooks/useRWD';
 
 function RecruitManaPage() {
@@ -28,7 +26,7 @@ function RecruitManaPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [jobsPerPage] = useState(5);
   const [selectedJobId, setSelectedJobId] = useState(null);
-  
+
   // 表單數據和輔助狀態
   const [formData, setFormData] = useState({
     id: '',
@@ -90,27 +88,27 @@ function RecruitManaPage() {
   // 過濾職位的函數
   const filterJobs = () => {
     let filtered = jobs;
-    
+
     // 根據搜索詞過濾
     if (searchTerm) {
-      filtered = filtered.filter(job => 
+      filtered = filtered.filter(job =>
         job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     // 根據狀態過濾
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     if (statusFilter !== 'all') {
       filtered = filtered.filter(job => {
         const deadlineDate = new Date(job.deadline);
         deadlineDate.setHours(0, 0, 0, 0);
-        
+
         const releaseDate = new Date(job.release_date);
         releaseDate.setHours(0, 0, 0, 0);
-        
+
         if (statusFilter === 'active') {
           return deadlineDate >= today && releaseDate <= today;
         } else if (statusFilter === 'upcoming') {
@@ -121,7 +119,7 @@ function RecruitManaPage() {
         return true;
       });
     }
-    
+
     setFilteredJobs(filtered);
   };
 
@@ -158,9 +156,9 @@ function RecruitManaPage() {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
-    
+
     setImagesModified(true); // 標記圖片已被修改
-    
+
     const previews = [];
     const base64Images = [];
 
@@ -196,7 +194,7 @@ function RecruitManaPage() {
         phone: isPersonalContact ? undefined : formData.contact?.phone,
       }
     };
-    
+
     // 只有在新增模式或圖片被修改時才添加圖片
     if (formData.id === '' || imagesModified) {
       preparedData.images = selectedImages.map((image) => ({
@@ -204,7 +202,7 @@ function RecruitManaPage() {
         image_type: 'small',
       }));
     }
-    
+
     return preparedData;
   };
 
@@ -212,12 +210,12 @@ function RecruitManaPage() {
   const handleAddJob = (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     let tmp_data = prepareFormData();
     if (isPersonalContact) {
       delete tmp_data['contact'];
     }
-    
+
     Axios()
       .post('/recruit/data/new/', tmp_data)
       .then((res) => {
@@ -227,10 +225,10 @@ function RecruitManaPage() {
         toast.success('新增職位成功！您的職缺已發布');
       })
       .catch((err) => {
-        const errorMsg = err.response?.data 
-          ? (typeof err.response.data === 'object' 
-            ? Object.values(err.response.data).flat().join(', ') 
-            : err.response.data) 
+        const errorMsg = err.response?.data
+          ? (typeof err.response.data === 'object'
+            ? Object.values(err.response.data).flat().join(', ')
+            : err.response.data)
           : '發生未知錯誤';
         toast.error(`新增失敗：${errorMsg}`);
       })
@@ -243,7 +241,7 @@ function RecruitManaPage() {
   const handleEditJob = (id) => {
     setLoading(true);
     setSelectedJobId(id);
-    
+
     Axios()
       .get(`/recruit/data/getOne/`, { params: { id: id } })
       .then((res) => {
@@ -275,21 +273,21 @@ function RecruitManaPage() {
     Object.keys(updated).forEach(key => {
       // 忽略 ID 欄位，這已經添加
       if (key === 'id') return;
-      
+
       // 特殊處理 contact 物件
       if (key === 'contact') {
         if (original.contact && updated.contact) {
           const contactChanges = {};
           let hasChanges = false;
-          
+
           Object.keys(updated.contact).forEach(contactKey => {
-            if (updated.contact[contactKey] !== undefined && 
+            if (updated.contact[contactKey] !== undefined &&
                 original.contact[contactKey] !== updated.contact[contactKey]) {
               contactChanges[contactKey] = updated.contact[contactKey];
               hasChanges = true;
             }
           });
-          
+
           if (hasChanges) {
             changes.contact = contactChanges;
           }
@@ -298,7 +296,7 @@ function RecruitManaPage() {
         }
         return;
       }
-      
+
       // 特殊處理 images 數組 - 只有在標記為修改時才包含
       if (key === 'images') {
         if (imagesModified) {
@@ -306,7 +304,7 @@ function RecruitManaPage() {
         }
         return;
       }
-      
+
       // 比較標準欄位 - 只包含變動的欄位
       if (updated[key] !== undefined && original[key] !== updated[key]) {
         changes[key] = updated[key];
@@ -317,7 +315,7 @@ function RecruitManaPage() {
     if (original.isPersonalContact !== updated.isPersonalContact) {
       changes.isPersonalContact = updated.isPersonalContact;
     }
-    
+
     if (original.isPersonalCompany !== updated.isPersonalCompany) {
       changes.isPersonalCompany = updated.isPersonalCompany;
     }
@@ -329,16 +327,16 @@ function RecruitManaPage() {
   const handleSaveEditJob = (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     let updatedData = prepareFormData();
-    
+
     // 比對前後差異，只送出修改的欄位
     const changedFields = compareChanges(originalData, updatedData);
-    
+
     // 記錄欄位變更資訊（可選）
     console.log('變更的欄位:', Object.keys(changedFields).filter(key => key !== 'id'));
     console.log('圖片是否被修改:', imagesModified);
-    
+
     Axios()
       .patch(`/recruit/data/patch_recruit/`, changedFields)
       .then((res) => {
@@ -348,10 +346,10 @@ function RecruitManaPage() {
         toast.success('編輯成功！職缺資料已更新');
       })
       .catch((err) => {
-        const errorMsg = err.response?.data 
-          ? (typeof err.response.data === 'object' 
-            ? Object.values(err.response.data).flat().join(', ') 
-            : err.response.data) 
+        const errorMsg = err.response?.data
+          ? (typeof err.response.data === 'object'
+            ? Object.values(err.response.data).flat().join(', ')
+            : err.response.data)
           : '發生未知錯誤';
         toast.error(`編輯失敗：${errorMsg}`);
       })
@@ -369,7 +367,7 @@ function RecruitManaPage() {
   // 刪除職位
   const handleDeleteJob = () => {
     setLoading(true);
-    
+
     Axios()
       .delete(`/recruit/data/delete/`, { params: { id: selectedJobId } })
       .then(() => {
@@ -396,13 +394,13 @@ function RecruitManaPage() {
   const getJobStatus = (job) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const releaseDate = new Date(job.release_date);
     releaseDate.setHours(0, 0, 0, 0);
-    
+
     const deadlineDate = new Date(job.deadline);
     deadlineDate.setHours(0, 0, 0, 0);
-    
+
     if (releaseDate > today) {
       return { status: 'upcoming', text: '即將發布', variant: 'info' };
     } else if (deadlineDate < today) {
@@ -410,6 +408,13 @@ function RecruitManaPage() {
     } else {
       return { status: 'active', text: '招募中', variant: 'success' };
     }
+  };
+
+  // 狀態 variant 對應 DaisyUI badge 樣式（純樣式對照，不影響邏輯）
+  const statusBadgeClass = (variant) => {
+    if (variant === 'info') return 'badge-info';
+    if (variant === 'success') return 'badge-success';
+    return 'badge-ghost';
   };
 
   // 分頁邏輯
@@ -421,31 +426,42 @@ function RecruitManaPage() {
   // 生成分頁項
   const renderPagination = () => {
     const pages = [];
-    
+
     for (let i = 1; i <= totalPages; i++) {
       pages.push(
-        <Pagination.Item 
-          key={i} 
-          active={i === currentPage}
+        <button
+          key={i}
+          type="button"
+          className={`join-item btn btn-sm ${i === currentPage ? 'btn-primary' : ''}`}
           onClick={() => setCurrentPage(i)}
         >
           {i}
-        </Pagination.Item>
+        </button>
       );
     }
-    
+
     return (
-      <Pagination className="justify-content-center mt-4">
-        <Pagination.Prev 
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        />
-        {pages}
-        <Pagination.Next 
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        />
-      </Pagination>
+      <div className="flex justify-center mt-4">
+        <div className="join">
+          <button
+            type="button"
+            className="join-item btn btn-sm"
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            «
+          </button>
+          {pages}
+          <button
+            type="button"
+            className="join-item btn btn-sm"
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            »
+          </button>
+        </div>
+      </div>
     );
   };
 
@@ -456,56 +472,57 @@ function RecruitManaPage() {
   };
 
   return (
-    <Container className="admin-container py-4" style={rwd.getContainerStyle()}>
+    <div className="admin-container container mx-auto px-4 py-4" style={rwd.getContainerStyle()}>
       <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} />
-      
+
       {/* 頁面標題和說明 */}
-      <Row className="mb-4">
-        <Col>
-          <h1 className="mb-2">徵才管理</h1>
-          <p className="text-muted">
+      <div className="mb-4">
+        <div>
+          <h1 className="mb-2 text-2xl font-bold">徵才管理</h1>
+          <p className="text-base-content/60">
             在此管理您的所有職缺，新增、編輯或刪除招聘資訊。
-            <Button 
-              variant="link" 
-              className="p-0 ms-2" 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="btn-link p-0 ml-2 align-baseline"
               onClick={() => setShowHelpModal(true)}
             >
               <Info size={18} />
-              <span className="ms-1">使用幫助</span>
+              <span className="ml-1">使用幫助</span>
             </Button>
           </p>
-        </Col>
-      </Row>
-      
+        </div>
+      </div>
+
       {/* 功能區塊 */}
-      <Row className="mb-4">
-        <Col xs={12} md={6} lg={9}>
-          <Card className="shadow-sm mb-3 mb-md-0">
-            <Card.Body>
-              <div className={`d-flex ${rwd.isMobile ? 'flex-column' : 'justify-content-between'} align-items-center`}>
+      <div className="mb-4">
+        <div className="w-full lg:w-3/4">
+          <div className="card card-bordered bg-base-100 shadow-sm mb-3 mb-md-0">
+            <div className="card-body">
+              <div className={`flex ${rwd.isMobile ? 'flex-col' : 'justify-between'} items-center`}>
                 <div className={rwd.isMobile ? 'text-center mb-3' : ''}>
-                  <h5 className="mb-0">職缺總覽</h5>
-                  <small className="text-muted">總共 {jobs.length} 個職缺</small>
+                  <h5 className="mb-0 font-semibold">職缺總覽</h5>
+                  <small className="text-base-content/60">總共 {jobs.length} 個職缺</small>
                 </div>
                 <Button
                   variant="success"
-                  className="d-flex align-items-center"
+                  className="flex items-center"
                   onClick={handleShowAddModal}
                   style={rwd.getButtonStyle()}
                 >
-                  <PlusCircle size={18} className="me-1" />
+                  <PlusCircle size={18} className="mr-1" />
                   新增職位
                 </Button>
               </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 其餘部分保持不變 */}
       {/* 職位列表 */}
-      <Card className="shadow-sm">
-        <Card.Body>
+      <div className="card card-bordered bg-base-100 shadow-sm">
+        <div className="card-body">
           {loading && jobs.length === 0 ? (
             <div className="text-center py-5">
               <LoadingSpinner />
@@ -513,11 +530,11 @@ function RecruitManaPage() {
             </div>
           ) : filteredJobs.length === 0 ? (
             <div className="text-center py-5">
-              <AlertTriangle size={48} className="text-muted mb-3" />
-              <h5>找不到符合的職缺</h5>
-              <p className="text-muted">
-                {jobs.length === 0 
-                  ? '您尚未新增任何職缺，點擊「新增職位」開始建立' 
+              <AlertTriangle size={48} className="text-base-content/60 mb-3 mx-auto" />
+              <h5 className="font-semibold">找不到符合的職缺</h5>
+              <p className="text-base-content/60">
+                {jobs.length === 0
+                  ? '您尚未新增任何職缺，點擊「新增職位」開始建立'
                   : '嘗試調整搜尋條件或篩選選項'}
               </p>
               {jobs.length === 0 && (
@@ -527,15 +544,15 @@ function RecruitManaPage() {
                   className="mt-2"
                   style={rwd.getButtonStyle()}
                 >
-                  <PlusCircle size={18} className="me-1" />
+                  <PlusCircle size={18} className="mr-1" />
                   新增您的第一個職缺
                 </Button>
               )}
             </div>
           ) : (
             <>
-              <div className="table-responsive">
-                <Table hover className="mb-0" style={rwd.getTableStyle()}>
+              <div className="overflow-x-auto">
+                <table className="table table-zebra mb-0 w-full" style={rwd.getTableStyle()}>
                   <thead>
                     <tr>
                       {!rwd.isMobile && <th style={{ width: '5%' }}>ID</th>}
@@ -550,14 +567,14 @@ function RecruitManaPage() {
                   <tbody>
                     {currentJobs.map((job) => {
                       const jobStatus = getJobStatus(job);
-                      
+
                       return (
-                        <tr key={job.id}>
+                        <tr key={job.id} className="hover">
                           {!rwd.isMobile && <td>{job.id}</td>}
-                          <td className="fw-bold">
+                          <td className="font-bold">
                             {job.title}
                             {rwd.isMobile && (
-                              <div className="small text-muted mt-1">
+                              <div className="text-sm text-base-content/60 mt-1">
                                 <div>{job.company_name || '個人公司'}</div>
                                 <div>{formatDate(job.release_date)} - {formatDate(job.deadline)}</div>
                               </div>
@@ -566,65 +583,63 @@ function RecruitManaPage() {
                           {!rwd.isMobile && <td>{job.company_name || '個人公司'}</td>}
                           {!rwd.isMobile && (
                             <td>
-                              <div className="d-flex align-items-center">
-                                <Calendar size={14} className="me-1 text-muted" />
+                              <div className="flex items-center">
+                                <Calendar size={14} className="mr-1 text-base-content/60" />
                                 {formatDate(job.release_date)}
                               </div>
                             </td>
                           )}
                           {!rwd.isMobile && (
                             <td>
-                              <div className="d-flex align-items-center">
-                                <Calendar size={14} className="me-1 text-muted" />
+                              <div className="flex items-center">
+                                <Calendar size={14} className="mr-1 text-base-content/60" />
                                 {formatDate(job.deadline)}
                               </div>
                             </td>
                           )}
                           <td>
-                            <Badge bg={jobStatus.variant} pill>
+                            <span className={`badge ${statusBadgeClass(jobStatus.variant)}`}>
                               {jobStatus.text}
-                            </Badge>
+                            </span>
                           </td>
                           <td>
-                            <div className={`d-flex ${rwd.isMobile ? 'flex-column' : ''}`}>
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                className={rwd.isMobile ? "mb-1 w-100" : "me-1"}
+                            <div className={`flex ${rwd.isMobile ? 'flex-col' : ''}`}>
+                              <button
+                                type="button"
+                                className={`btn btn-sm btn-outline btn-primary ${rwd.isMobile ? 'mb-1 w-full' : 'mr-1'}`}
                                 onClick={() => handleEditJob(job.id)}
                                 title="編輯"
                                 style={rwd.getButtonStyle()}
                               >
                                 <Edit size={16} />
                                 {rwd.isMobile && ' 編輯'}
-                              </Button>
-                              <Button
-                                variant="outline-danger"
-                                size="sm"
-                                className={rwd.isMobile ? "w-100" : ""}
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn btn-sm btn-outline btn-error ${rwd.isMobile ? 'w-full' : ''}`}
                                 onClick={() => confirmDeleteJob(job.id)}
                                 title="刪除"
                                 style={rwd.getButtonStyle()}
                               >
                                 <Trash2 size={16} />
                                 {rwd.isMobile && ' 刪除'}
-                              </Button>
+                              </button>
                             </div>
                           </td>
                         </tr>
                       );
                     })}
                   </tbody>
-                </Table>
+                </table>
               </div>
-              
+
               {/* 分頁 */}
               {totalPages > 1 && renderPagination()}
             </>
           )}
-        </Card.Body>
-      </Card>
-      
+        </div>
+      </div>
+
       {/* 新增職位模態框 */}
       <RecruitFormModal
         show={showAddModal}
@@ -641,7 +656,7 @@ function RecruitManaPage() {
         handleSubmit={handleAddJob}
         isEdit={false}
       />
-      
+
       {/* 編輯職位模態框 */}
       <RecruitFormModal
         show={showEditModal}
@@ -658,130 +673,56 @@ function RecruitManaPage() {
         handleSubmit={handleSaveEditJob}
         isEdit={true}
       />
-      
+
       {/* 刪除確認模態框 */}
-      <Modal 
-        show={showDeleteModal} 
+      <AppModal
+        show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
-        centered
+        title="確認刪除"
+        icon={<AlertTriangle size={20} />}
+        size="md"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setShowDeleteModal(false)}
+              style={rwd.getButtonStyle()}
+            >
+              取消
+            </Button>
+            <Button
+              variant="error"
+              onClick={handleDeleteJob}
+              disabled={loading}
+              style={rwd.getButtonStyle()}
+            >
+              {loading ? (
+                <>
+                  <span className="loading loading-spinner loading-sm mr-1" />
+                  處理中...
+                </>
+              ) : (
+                '確認刪除'
+              )}
+            </Button>
+          </>
+        }
       >
-        <Modal.Header closeButton>
-          <Modal.Title>確認刪除</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Alert variant="warning">
-            <AlertTriangle className="me-2" size={20} />
-            您確定要刪除此職缺嗎？此操作無法復原。
-          </Alert>
-          <p>刪除後，此職缺將不再顯示於網站上，且相關資料將被永久移除。</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowDeleteModal(false)}
-            style={rwd.getButtonStyle()}
-          >
-            取消
-          </Button>
-          <Button
-            variant="danger"
-            onClick={handleDeleteJob}
-            disabled={loading}
-            style={rwd.getButtonStyle()}
-          >
-            {loading ? (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                  className="me-1"
-                />
-                處理中...
-              </>
-            ) : (
-              '確認刪除'
-            )}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      
+        <div className="alert alert-warning">
+          <AlertTriangle className="mr-2" size={20} />
+          您確定要刪除此職缺嗎？此操作無法復原。
+        </div>
+        <p className="mt-3">刪除後，此職缺將不再顯示於網站上，且相關資料將被永久移除。</p>
+      </AppModal>
+
       {/* 使用指南模態框 */}
-      <Modal 
-        show={showHelpModal} 
+      <AppModal
+        show={showHelpModal}
         onHide={handleCloseHelpModal}
+        title="徵才管理使用指南"
+        icon={<Info size={20} />}
         size="lg"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>徵才管理使用指南</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <h5>歡迎使用徵才管理！</h5>
-          <p>本系統協助您輕鬆管理所有招聘職缺。以下是使用本系統的基本步驟：</p>
-          
-          <Alert variant="info" className="mb-4">
-            <h6 className="alert-heading d-flex align-items-center">
-              <Info size={18} className="me-2" />
-              新手小提示
-            </h6>
-            <p className="mb-0">
-              您可以隨時點擊頁面頂部的「使用幫助」來查看此指南。
-            </p>
-          </Alert>
-          
-          <Row className="mb-3">
-            <Col md={6}>
-              <Card>
-                <Card.Body>
-                  <h6 className="d-flex align-items-center">
-                    <PlusCircle size={18} className="me-2 text-success" />
-                    新增職缺
-                  </h6>
-                  <ol>
-                    <li>點擊「新增職位」按鈕</li>
-                    <li>依照步驟填寫職缺資訊</li>
-                    <li>完成所有欄位後發布職缺</li>
-                  </ol>
-                </Card.Body>
-              </Card>
-            </Col>
-            
-            <Col md={6}>
-              <Card>
-                <Card.Body>
-                  <h6 className="d-flex align-items-center">
-                    <Edit size={18} className="me-2 text-primary" />
-                    管理職缺
-                  </h6>
-                  <ol>
-                    <li>在職缺列表中找到您要操作的職缺</li>
-                    <li>點擊「編輯」可修改職缺資訊</li>
-                    <li>點擊「刪除」可移除職缺</li>
-                  </ol>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-          
-          <Card className="mb-3">
-            <Card.Body>
-              <h6 className="d-flex align-items-center">
-                <CheckCircle size={18} className="me-2 text-success" />
-                填寫技巧
-              </h6>
-              <ul>
-                <li><strong>職位名稱</strong>：使用清晰、具體的名稱，如「資深前端工程師」而非「工程師」</li>
-                <li><strong>詳細資料</strong>：包含工作職責、要求技能、福利與工作環境</li>
-                <li><strong>聯絡資訊</strong>：確保提供準確的聯絡方式，方便求職者詢問</li>
-                <li><strong>圖片</strong>：上傳公司環境、團隊活動等相關照片，增加吸引力</li>
-              </ul>
-            </Card.Body>
-          </Card>
-          
-        </Modal.Body>
-        <Modal.Footer>
+        footer={
           <Button
             variant="primary"
             onClick={handleCloseHelpModal}
@@ -789,9 +730,71 @@ function RecruitManaPage() {
           >
             我了解了
           </Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+        }
+      >
+        <h5 className="font-semibold text-lg">歡迎使用徵才管理！</h5>
+        <p>本系統協助您輕鬆管理所有招聘職缺。以下是使用本系統的基本步驟：</p>
+
+        <div className="alert alert-info mb-4 flex-col items-start">
+          <h6 className="alert-heading flex items-center font-semibold">
+            <Info size={18} className="mr-2" />
+            新手小提示
+          </h6>
+          <p className="mb-0">
+            您可以隨時點擊頁面頂部的「使用幫助」來查看此指南。
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div>
+            <div className="card card-bordered bg-base-100">
+              <div className="card-body">
+                <h6 className="flex items-center font-semibold">
+                  <PlusCircle size={18} className="mr-2 text-success" />
+                  新增職缺
+                </h6>
+                <ol className="list-decimal list-inside">
+                  <li>點擊「新增職位」按鈕</li>
+                  <li>依照步驟填寫職缺資訊</li>
+                  <li>完成所有欄位後發布職缺</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="card card-bordered bg-base-100">
+              <div className="card-body">
+                <h6 className="flex items-center font-semibold">
+                  <Edit size={18} className="mr-2 text-primary" />
+                  管理職缺
+                </h6>
+                <ol className="list-decimal list-inside">
+                  <li>在職缺列表中找到您要操作的職缺</li>
+                  <li>點擊「編輯」可修改職缺資訊</li>
+                  <li>點擊「刪除」可移除職缺</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card card-bordered bg-base-100 mb-3">
+          <div className="card-body">
+            <h6 className="flex items-center font-semibold">
+              <CheckCircle size={18} className="mr-2 text-success" />
+              填寫技巧
+            </h6>
+            <ul className="list-disc list-inside">
+              <li><strong>職位名稱</strong>：使用清晰、具體的名稱，如「資深前端工程師」而非「工程師」</li>
+              <li><strong>詳細資料</strong>：包含工作職責、要求技能、福利與工作環境</li>
+              <li><strong>聯絡資訊</strong>：確保提供準確的聯絡方式，方便求職者詢問</li>
+              <li><strong>圖片</strong>：上傳公司環境、團隊活動等相關照片，增加吸引力</li>
+            </ul>
+          </div>
+        </div>
+      </AppModal>
+    </div>
   );
 }
 

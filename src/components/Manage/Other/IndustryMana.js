@@ -1,8 +1,10 @@
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Card, Container, Row, Col, Badge, Alert, InputGroup } from 'react-bootstrap';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AppModal from 'components/common/AppModal';
+import { Button, Spinner } from 'components/common/ui';
+import { Pencil, PlusCircle } from 'lucide-react';
 
 const IndustryCRUD = () => {
   const [industries, setIndustries] = useState([]);
@@ -15,7 +17,7 @@ const IndustryCRUD = () => {
     title: '',
     intro: '',
   });
-  
+
   const validateFields = () => {
     const isValid = currentIndustry.title && currentIndustry.intro;
     if (!currentIndustry.title) {
@@ -26,11 +28,11 @@ const IndustryCRUD = () => {
     }
     return isValid;
   };
-  
+
   useEffect(() => {
     fetchIndustries();
   }, []);
-  
+
   const fetchIndustries = () => {
     setLoading(true);
     Axios()
@@ -109,75 +111,74 @@ const IndustryCRUD = () => {
   };
 
   // 過濾產業資料
-  const filteredIndustries = industries.filter(industry => 
+  const filteredIndustries = industries.filter(industry =>
     industry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     industry.intro.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <Container className="py-4">
-      <Card className="shadow-sm border-0 mb-4">
-        <Card.Header as="h5" className="bg-gradient text-white" style={{ backgroundColor: '#3a75c4' }}>
-          <i className="fas fa-industry me-2"></i>公司產業別管理
-        </Card.Header>
-        <Card.Body>
-          <Alert variant="info" className="d-flex align-items-center mb-4">
-            <i className="fas fa-info-circle me-3 fa-lg"></i>
+    <div className="container mx-auto px-4 py-4">
+      <div className="card card-bordered bg-base-100 shadow-sm mb-4">
+        {/* 卡片標題：深藍漸層 */}
+        <div className="px-4 py-3 text-white text-lg font-semibold rounded-t-2xl bg-gradient-to-r from-[#1e3a5f] to-[#3a75c4]">
+          <i className="fas fa-industry mr-2"></i>公司產業別管理
+        </div>
+        <div className="card-body">
+          <div className="alert alert-info flex items-center mb-4">
+            <i className="fas fa-info-circle mr-3 fa-lg"></i>
             <div>
               <strong>產業別管理功能說明：</strong>
               <p className="mb-0 mt-1">此功能用於管理系統中的產業分類，這些分類將用於系友公司資料的分類。您可以新增、修改和刪除產業別，並提供相關說明以幫助使用者了解每個產業的範圍。</p>
               <p className="mb-0 mt-2">
-                <Badge bg="primary" className="me-1">新增產業別</Badge> 可增加新的產業分類
-                <Badge bg="warning" text="dark" className="mx-1">修改</Badge> 可編輯現有產業資料
-                <Badge bg="danger" className="mx-1">刪除</Badge> 可移除不需要的產業分類
+                <span className="badge badge-primary mr-1">新增產業別</span> 可增加新的產業分類
+                <span className="badge badge-warning mx-1">修改</span> 可編輯現有產業資料
+                <span className="badge badge-error mx-1">刪除</span> 可移除不需要的產業分類
               </p>
             </div>
-          </Alert>
+          </div>
 
-          <Row className="mb-3 align-items-center">
-            <Col md={6}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 items-center">
+            <div>
               <Button
                 variant="primary"
                 onClick={handleAddNew}
-                className="d-flex align-items-center"
-                style={{ backgroundColor: '#3a75c4', borderColor: '#3a75c4' }}
+                className="flex items-center gap-1"
               >
-                <i className="fas fa-plus-circle me-1"></i> 新增產業別
+                <i className="fas fa-plus-circle mr-1"></i> 新增產業別
               </Button>
-            </Col>
-            <Col md={6}>
-              <InputGroup>
-                <InputGroup.Text>
+            </div>
+            <div>
+              <div className="join w-full">
+                <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">
                   <i className="fas fa-search"></i>
-                </InputGroup.Text>
-                <Form.Control
+                </span>
+                <input
+                  className="join-item input input-bordered w-full"
                   placeholder="搜尋產業名稱或簡介..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 {searchTerm && (
-                  <Button 
-                    variant="outline-secondary" 
+                  <button
+                    type="button"
+                    className="join-item btn btn-outline"
                     onClick={() => setSearchTerm('')}
                   >
                     <i className="fas fa-times"></i>
-                  </Button>
+                  </button>
                 )}
-              </InputGroup>
-            </Col>
-          </Row>
+              </div>
+            </div>
+          </div>
 
           {loading ? (
             <div className="text-center my-5">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">載入中...</span>
-              </div>
-              <p className="mt-2">正在載入產業資料...</p>
+              <Spinner center label="正在載入產業資料..." />
             </div>
           ) : (
-            <div className="table-responsive">
-              <Table hover className="align-middle" style={{ borderCollapse: 'separate', borderSpacing: '0 8px' }}>
-                <thead className="bg-light">
+            <div className="overflow-x-auto">
+              <table className="table align-middle" style={{ borderCollapse: 'separate', borderSpacing: '0 8px' }}>
+                <thead className="bg-base-200">
                   <tr>
                     <th style={{ width: '5%' }}>#</th>
                     <th style={{ width: '20%' }}>產業名稱</th>
@@ -189,16 +190,16 @@ const IndustryCRUD = () => {
                   {filteredIndustries.length === 0 ? (
                     <tr>
                       <td colSpan="4" className="text-center py-4">
-                        {searchTerm ? 
+                        {searchTerm ?
                           <div>
-                            <i className="fas fa-search fa-2x text-muted mb-2"></i>
+                            <i className="fas fa-search fa-2x text-base-content/60 mb-2"></i>
                             <p className="mb-0">找不到符合 "{searchTerm}" 的產業資料</p>
                           </div> :
                           <div>
-                            <i className="fas fa-database fa-2x text-muted mb-2"></i>
+                            <i className="fas fa-database fa-2x text-base-content/60 mb-2"></i>
                             <p className="mb-0">尚未新增任何產業資料</p>
-                            <Button 
-                              variant="link" 
+                            <Button
+                              variant="link"
                               onClick={handleAddNew}
                               className="mt-2"
                             >
@@ -210,18 +211,15 @@ const IndustryCRUD = () => {
                     </tr>
                   ) : (
                     filteredIndustries.map((industry, index) => (
-                      <tr key={industry.id} className="border-bottom">
+                      <tr key={industry.id} className="border-b border-base-200">
                         <td>{index + 1}</td>
                         <td>
-                          <Badge 
-                            pill 
-                            bg="light" 
-                            text="dark" 
-                            className="px-3 py-2"
+                          <span
+                            className="badge badge-lg badge-ghost px-3 py-2"
                             style={{ fontSize: '0.9rem', fontWeight: '500' }}
                           >
                             {industry.title}
-                          </Badge>
+                          </span>
                         </td>
                         <td>
                           <div style={{ maxHeight: '80px', overflow: 'auto' }}>
@@ -229,32 +227,32 @@ const IndustryCRUD = () => {
                           </div>
                         </td>
                         <td>
-                          <Button 
-                            variant="outline-warning" 
-                            onClick={() => handleEdit(industry)} 
-                            className="me-2 mb-1"
+                          <Button
+                            variant="outline"
+                            onClick={() => handleEdit(industry)}
+                            className="btn-warning mr-2 mb-1"
                             size="sm"
                           >
-                            <i className="fas fa-edit me-1"></i> 修改
+                            <i className="fas fa-edit mr-1"></i> 修改
                           </Button>
-                          <Button 
-                            variant="outline-danger" 
-                            onClick={() => handleDelete(industry.id)} 
+                          <Button
+                            variant="outline"
+                            onClick={() => handleDelete(industry.id)}
                             size="sm"
-                            className="mb-1"
+                            className="btn-error mb-1"
                           >
-                            <i className="fas fa-trash-alt me-1"></i> 刪除
+                            <i className="fas fa-trash-alt mr-1"></i> 刪除
                           </Button>
                         </td>
                       </tr>
                     ))
                   )}
                 </tbody>
-              </Table>
+              </table>
             </div>
           )}
-          
-          <div className="text-muted mt-3 d-flex justify-content-between align-items-center">
+
+          <div className="text-base-content/60 mt-3 flex justify-between items-center">
             <small>共 {filteredIndustries.length} 筆資料{searchTerm ? `（搜尋結果）` : ''}</small>
             {searchTerm && (
               <Button variant="link" size="sm" onClick={() => setSearchTerm('')}>
@@ -262,106 +260,109 @@ const IndustryCRUD = () => {
               </Button>
             )}
           </div>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
-      <Modal 
-        show={showModal} 
+      <AppModal
+        show={showModal}
         onHide={() => setShowModal(false)}
-        backdrop="static"
-        centered
-      >
-        <Modal.Header closeButton className="border-bottom-0 pb-0">
-          <Modal.Title className="fw-bold">
-            {isEdit ? 
-              <><i className="fas fa-edit me-2 text-warning"></i>修改產業別</> : 
-              <><i className="fas fa-plus-circle me-2 text-primary"></i>新增產業別</>
-            }
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="pt-0">
-          <p className="text-muted mb-3">
-            {isEdit ? 
-              '請編輯以下產業資料，欄位標示 * 為必填項目。' : 
-              '請填寫產業資料，新增後將可用於系友公司資料分類。'
-            }
-          </p>
-          <Form>
-            {/* 產業名稱 */}
-            <Form.Group controlId="industryName" className="mb-3">
-              <Form.Label>
-                <span className="text-danger">*</span> 產業名稱
-              </Form.Label>
-              <Form.Control
-                type="text"
-                value={currentIndustry.title}
-                onChange={(e) =>
-                  setCurrentIndustry({ ...currentIndustry, title: e.target.value })
+        closeOnBackdrop={false}
+        title={isEdit ? '修改產業別' : '新增產業別'}
+        icon={isEdit ? <Pencil size={20} /> : <PlusCircle size={20} />}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setShowModal(false)}>
+              取消
+            </Button>
+            <Button
+              variant={isEdit ? 'accent' : 'primary'}
+              className={isEdit ? 'btn-warning' : ''}
+              onClick={() => {
+                if (validateFields()) {
+                  handleSave();
                 }
-                required
-                placeholder="請輸入產業名稱"
-                maxLength={50}
-                isInvalid={currentIndustry.title === ''}
-              />
-              <Form.Text className="text-muted">
-                最多 50 字，目前已輸入 {currentIndustry.title.length} 字
-              </Form.Text>
-              <Form.Control.Feedback type="invalid">
-                產業名稱為必填項目
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            {/* 產業簡介 */}
-            <Form.Group controlId="industryDescription">
-              <Form.Label>
-                <span className="text-danger">*</span> 產業簡介
-              </Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={4}
-                value={currentIndustry.intro}
-                onChange={(e) =>
-                  setCurrentIndustry({ ...currentIndustry, intro: e.target.value })
-                }
-                required
-                placeholder="請輸入產業簡介，說明此產業的範圍與特點"
-                maxLength={200}
-                isInvalid={currentIndustry.intro === ''}
-                style={{ resize: 'none' }}
-              />
-              <Form.Text className="text-muted d-flex justify-content-between">
-                <span>有助於使用者了解此產業分類</span>
-                <span>{currentIndustry.intro.length}/200 字</span>
-              </Form.Text>
-              <Form.Control.Feedback type="invalid">
-                產業簡介為必填項目
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer className="border-top-0">
-          <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
-            取消
-          </Button>
-          <Button
-            variant={isEdit ? "warning" : "primary"}
-            onClick={() => {
-              if (validateFields()) {
-                handleSave();
+              }}
+            >
+              {isEdit ?
+                <><i className="fas fa-save mr-1"></i>儲存修改</> :
+                <><i className="fas fa-plus mr-1"></i>新增產業</>
               }
-            }}
-          >
-            {isEdit ? 
-              <><i className="fas fa-save me-1"></i>儲存修改</> : 
-              <><i className="fas fa-plus me-1"></i>新增產業</>
-            }
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            </Button>
+          </>
+        }
+      >
+        <p className="text-base-content/60 mb-3">
+          {isEdit ?
+            '請編輯以下產業資料，欄位標示 * 為必填項目。' :
+            '請填寫產業資料，新增後將可用於系友公司資料分類。'
+          }
+        </p>
+        <form>
+          {/* 產業名稱 */}
+          <div className="form-control w-full mb-3">
+            <label className="label pb-1" htmlFor="industryName">
+              <span className="label-text font-medium text-base-content">
+                <span className="text-error">*</span> 產業名稱
+              </span>
+            </label>
+            <input
+              id="industryName"
+              type="text"
+              className={`input input-bordered w-full ${currentIndustry.title === '' ? 'border-error' : ''}`}
+              value={currentIndustry.title}
+              onChange={(e) =>
+                setCurrentIndustry({ ...currentIndustry, title: e.target.value })
+              }
+              required
+              placeholder="請輸入產業名稱"
+              maxLength={50}
+            />
+            <span className="label-text-alt text-base-content/60 mt-1">
+              最多 50 字，目前已輸入 {currentIndustry.title.length} 字
+            </span>
+            {currentIndustry.title === '' && (
+              <span className="label-text-alt text-error mt-1">
+                產業名稱為必填項目
+              </span>
+            )}
+          </div>
+
+          {/* 產業簡介 */}
+          <div className="form-control w-full">
+            <label className="label pb-1" htmlFor="industryDescription">
+              <span className="label-text font-medium text-base-content">
+                <span className="text-error">*</span> 產業簡介
+              </span>
+            </label>
+            <textarea
+              id="industryDescription"
+              rows={4}
+              className={`textarea textarea-bordered w-full ${currentIndustry.intro === '' ? 'border-error' : ''}`}
+              value={currentIndustry.intro}
+              onChange={(e) =>
+                setCurrentIndustry({ ...currentIndustry, intro: e.target.value })
+              }
+              required
+              placeholder="請輸入產業簡介，說明此產業的範圍與特點"
+              maxLength={200}
+              style={{ resize: 'none' }}
+            />
+            <span className="label-text-alt text-base-content/60 mt-1 flex justify-between">
+              <span>有助於使用者了解此產業分類</span>
+              <span>{currentIndustry.intro.length}/200 字</span>
+            </span>
+            {currentIndustry.intro === '' && (
+              <span className="label-text-alt text-error mt-1">
+                產業簡介為必填項目
+              </span>
+            )}
+          </div>
+        </form>
+      </AppModal>
 
       {/* Toastify container */}
       <ToastContainer position="top-right" autoClose={3000} />
-    </Container>
+    </div>
   );
 };
 

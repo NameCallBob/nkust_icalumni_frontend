@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import AppModal from 'components/common/AppModal';
+import { Layers } from 'lucide-react';
 import "css/user/homepage/tabs.css";
 const MAX_VISIBLE_CATEGORIES = 5; // 設定最多顯示多少個分類
 
@@ -13,48 +14,49 @@ const TabsComponent = ({ categories, onCategorySelect, activeCategory }) => {
   return (
     <div className="button-tabs">
       {categories.slice(0, MAX_VISIBLE_CATEGORIES).map((category) => (
-        <Button
-          variant={category.id === activeCategory ? "primary" : "outline-primary"}
+        <button
+          type="button"
           className={`tab-button ${category.id === activeCategory ? "active-tab" : ""}`}
           key={category.id}
           onClick={() => handleCategoryClick(category.id)}
         >
           {category.title}
-        </Button>
+        </button>
       ))}
       {categories.length > MAX_VISIBLE_CATEGORIES && (
-        <Button
-          variant="outline-secondary"
+        <button
+          type="button"
           className="tab-button"
           onClick={() => setShowModal(true)}
         >
           其他
-        </Button>
+        </button>
       )}
 
       {/* Modal to show all categories */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>選擇分類</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="modal-category-list">
-            {categories.map((category) => (
-              <Button
-                variant={category.id === activeCategory ? "primary" : "outline-primary"}
-                className={`modal-category-button ${category.id === activeCategory ? "active-tab" : ""}`}
-                key={category.id}
-                onClick={() => {
-                  handleCategoryClick(category.id);
-                  setShowModal(false);
-                }}
-              >
-                {category.title}
-              </Button>
-            ))}
-          </div>
-        </Modal.Body>
-      </Modal>
+      <AppModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        title="選擇分類"
+        icon={<Layers size={20} />}
+        size="sm"
+      >
+        <div className="modal-category-list">
+          {categories.map((category) => (
+            <button
+              type="button"
+              className={`modal-category-button ${category.id === activeCategory ? "active-tab" : ""}`}
+              key={category.id}
+              onClick={() => {
+                handleCategoryClick(category.id);
+                setShowModal(false);
+              }}
+            >
+              {category.title}
+            </button>
+          ))}
+        </div>
+      </AppModal>
     </div>
   );
 };

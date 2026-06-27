@@ -1,24 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Carousel, Modal, Button } from "react-bootstrap";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import {
   ZoomIn,
   ZoomOut,
   Download,
   ChevronLeft,
   ChevronRight,
-  X,
   Info,
   Grid,
   Globe,
 } from "lucide-react";
 import Axios from "common/Axios";
+import AppModal from "components/common/AppModal";
 import LoadingSpinner from "components/LoadingSpinner";
 import { handleImageError, getImageSrc } from "../../../utils/imageDefaults";
 
 /**
  * 增強版照片輪播元件 v2.1
  * 修改功能：
- * 1. 移除複雜的自定義控制器，改用標準 Bootstrap 左右控制器。
+ * 1. 移除複雜的自定義控制器，改用 Swiper 左右控制器。
  * 2. 新增右上角圖庫按鈕，點擊後以全螢幕網格模式顯示所有照片。
  * 3. 調整輪播標題位置，避免與控制器重疊。
  * 4. 優化整體樣式與使用者體驗。
@@ -254,18 +258,24 @@ function Slide() {
         </div>
       ) : (
         <>
-          <Carousel
-            ref={carouselRef}
-            interval={4000}
-            pause="hover"
-            indicators={slideImage.length > 1}
-            controls={slideImage.length > 1}
-            activeIndex={currentSlide}
-            onSelect={(selectedIndex) => setCurrentSlide(selectedIndex)}
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            navigation={slideImage.length > 1}
+            pagination={slideImage.length > 1 ? { clickable: true } : false}
+            autoplay={{
+              delay: 4000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            loop={slideImage.length > 1}
+            onSwiper={(s) => {
+              carouselRef.current = s;
+            }}
+            onSlideChange={(s) => setCurrentSlide(s.realIndex)}
             className="enhanced-carousel-v2"
           >
             {slideImage.map((slide, index) => (
-              <Carousel.Item key={slide.id}>
+              <SwiperSlide key={slide.id}>
                 <div className="slide-image-container-v2">
                   <div className="image-wrapper-v2">
                     <img
@@ -297,15 +307,15 @@ function Slide() {
                     )}
                   </div>
                   {(slide.title || slide.description) && (
-                    <Carousel.Caption className="enhanced-caption">
+                    <div className="enhanced-caption">
                       {slide.title && <h3>{slide.title}</h3>}
                       {slide.description && <p>{slide.description}</p>}
-                    </Carousel.Caption>
+                    </div>
                   )}
                 </div>
-              </Carousel.Item>
+              </SwiperSlide>
             ))}
-          </Carousel>
+          </Swiper>
 
           {slideImage.length > 1 && (
             <button
@@ -317,147 +327,156 @@ function Slide() {
             </button>
           )}
 
-          <Modal
+          {/* 所有照片網格 Modal */}
+          <AppModal
             show={showAllPhotosModal}
             onHide={() => setShowAllPhotosModal(false)}
-            centered
+            title="所有照片"
+            icon={<Grid size={20} />}
             size="xl"
-            dialogClassName="all-photos-modal"
+            variant="showcase"
           >
-            <Modal.Header closeButton>
-              <Modal.Title>所有照片</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <div className="thumbnails-wrapper">
-                {slideImage.map((slide, index) => (
-                  <div
-                    key={slide.id}
-                    className={`thumbnail-item ${index === currentSlide ? "active" : ""}`}
-                    onClick={() => {
-                      setCurrentSlide(index);
-                      setShowAllPhotosModal(false);
-                    }}
-                  >
-                    <img
-                      loading="lazy"
-                      src={getImageSrc(
-                        slide.image.startsWith("/images/")
-                          ? slide.image
-                          : process.env.REACT_APP_BASE_URL + slide.image,
-                        "activity",
-                      )}
-                      alt={slide.title || `縮略圖 ${index + 1}`}
-                      onError={(e) => handleImageError(e, "activity")}
-                    />
-                    <div className="thumbnail-overlay">
-                      <span>{index + 1}</span>
-                    </div>
-                    {slide.link_url && (
-                      <button
-                        className="link-icon-top-left thumbnail-link-icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(slide.link_url, "_blank", "noopener,noreferrer");
-                        }}
-                        title="前往連結"
-                      >
-                        <Globe size={isMobile ? 14 : 18} />
-                      </button>
+            <div className="thumbnails-wrapper">
+              {slideImage.map((slide, index) => (
+                <div
+                  key={slide.id}
+                  className={`thumbnail-item ${index === currentSlide ? "active" : ""}`}
+                  onClick={() => {
+                    setCurrentSlide(index);
+                    // 同步移動主輪播至所選張數
+                    carouselRef.current?.slideToLoop?.(index);
+                    setShowAllPhotosModal(false);
+                  }}
+                >
+                  <img
+                    loading="lazy"
+                    src={getImageSrc(
+                      slide.image.startsWith("/images/")
+                        ? slide.image
+                        : process.env.REACT_APP_BASE_URL + slide.image,
+                      "activity",
                     )}
+                    alt={slide.title || `縮略圖 ${index + 1}`}
+                    onError={(e) => handleImageError(e, "activity")}
+                  />
+                  <div className="thumbnail-overlay">
+                    <span>{index + 1}</span>
                   </div>
-                ))}
-              </div>
-            </Modal.Body>
-          </Modal>
+                  {slide.link_url && (
+                    <button
+                      className="link-icon-top-left thumbnail-link-icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(slide.link_url, "_blank", "noopener,noreferrer");
+                      }}
+                      title="前往連結"
+                    >
+                      <Globe size={isMobile ? 14 : 18} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </AppModal>
         </>
       )}
 
-      <Modal
+      {/* 圖片檢視 Modal */}
+      <AppModal
         show={showModal}
         onHide={handleCloseModal}
-        centered
         size="xl"
-        dialogClassName="image-viewer-modal"
-        contentClassName="bg-dark"
-      >
-        <Modal.Header className="bg-dark text-white border-0">
-          <div className="d-flex justify-content-between align-items-center w-100">
-            <div className="image-counter">
+        variant="showcase"
+        title={
+          <div className="d-flex align-items-center control-buttons">
+            <div className="image-counter mr-2 text-white">
               {slideImage.length > 1 && (
                 <span>
                   {selectedIndex + 1} / {slideImage.length}
                 </span>
               )}
             </div>
-            <div className="control-buttons">
-              <Button
-                variant="outline-light"
-                size="sm"
-                className="mx-1"
-                onClick={toggleInfo}
-                title="顯示/隱藏資訊"
-              >
-                <Info size={18} />
-              </Button>
-              <Button
-                variant="outline-light"
-                size="sm"
-                className="mx-1"
-                onClick={handleZoomIn}
-                title="放大"
-              >
-                <ZoomIn size={18} />
-              </Button>
-              <Button
-                variant="outline-light"
-                size="sm"
-                className="mx-1"
-                onClick={handleZoomOut}
-                title="縮小"
-              >
-                <ZoomOut size={18} />
-              </Button>
-              <Button
-                variant="outline-light"
-                size="sm"
-                className="mx-1"
-                onClick={handleDownload}
-                title="下載圖片"
-              >
-                <Download size={18} />
-              </Button>
-              <Button
-                variant="outline-light"
-                size="sm"
-                className="mx-1"
-                onClick={handleCloseModal}
-                title="關閉"
-              >
-                <X size={18} />
-              </Button>
-            </div>
+            <button
+              className="btn btn-ghost btn-sm text-white mx-1"
+              onClick={toggleInfo}
+              title="顯示/隱藏資訊"
+            >
+              <Info size={18} />
+            </button>
+            <button
+              className="btn btn-ghost btn-sm text-white mx-1"
+              onClick={handleZoomIn}
+              title="放大"
+            >
+              <ZoomIn size={18} />
+            </button>
+            <button
+              className="btn btn-ghost btn-sm text-white mx-1"
+              onClick={handleZoomOut}
+              title="縮小"
+            >
+              <ZoomOut size={18} />
+            </button>
+            <button
+              className="btn btn-ghost btn-sm text-white mx-1"
+              onClick={handleDownload}
+              title="下載圖片"
+            >
+              <Download size={18} />
+            </button>
           </div>
-        </Modal.Header>
-        <Modal.Body className="p-0 bg-dark text-white position-relative">
+        }
+        footer={
+          <div className="zoom-controls w-full flex justify-center items-center">
+            <button
+              className="btn btn-sm btn-circle mx-2"
+              disabled={zoomLevel <= 0.5}
+              onClick={handleZoomOut}
+            >
+              -
+            </button>
+            <div className="zoom-slider-container mx-2">
+              <input
+                type="range"
+                min="0.5"
+                max="3"
+                step="0.25"
+                value={zoomLevel}
+                onChange={(e) => {
+                  setZoomLevel(parseFloat(e.target.value));
+                  setPosition({ x: 0, y: 0 });
+                }}
+                className="range range-primary range-xs zoom-slider"
+              />
+            </div>
+            <button
+              className="btn btn-sm btn-circle mx-2"
+              disabled={zoomLevel >= 3}
+              onClick={handleZoomIn}
+            >
+              +
+            </button>
+          </div>
+        }
+      >
+        <div className="relative bg-neutral text-white image-viewer-body">
           <div className="image-viewer-container" onWheel={handleWheel}>
             {selectedImage && (
               <>
                 {slideImage.length > 1 && (
                   <>
-                    <Button
-                      variant="dark"
-                      className="nav-button prev-button"
+                    <button
+                      className="nav-button prev-button btn btn-circle border-0 text-white"
                       onClick={handlePrevImage}
                     >
                       <ChevronLeft size={24} />
-                    </Button>
-                    <Button
-                      variant="dark"
-                      className="nav-button next-button"
+                    </button>
+                    <button
+                      className="nav-button next-button btn btn-circle border-0 text-white"
                       onClick={handleNextImage}
                     >
                       <ChevronRight size={24} />
-                    </Button>
+                    </button>
                   </>
                 )}
                 <div
@@ -516,42 +535,8 @@ function Slide() {
           <div className="zoom-level-indicator">
             {zoomLevel !== 1 && `${Math.round(zoomLevel * 100)}%`}
           </div>
-        </Modal.Body>
-        <Modal.Footer className="bg-dark text-white border-0">
-          <div className="zoom-controls w-100 d-flex justify-content-center">
-            <Button
-              variant={zoomLevel <= 0.5 ? "secondary" : "outline-light"}
-              disabled={zoomLevel <= 0.5}
-              onClick={handleZoomOut}
-              className="mx-2"
-            >
-              -
-            </Button>
-            <div className="zoom-slider-container mx-2">
-              <input
-                type="range"
-                min="0.5"
-                max="3"
-                step="0.25"
-                value={zoomLevel}
-                onChange={(e) => {
-                  setZoomLevel(parseFloat(e.target.value));
-                  setPosition({ x: 0, y: 0 });
-                }}
-                className="zoom-slider"
-              />
-            </div>
-            <Button
-              variant={zoomLevel >= 3 ? "secondary" : "outline-light"}
-              disabled={zoomLevel >= 3}
-              onClick={handleZoomIn}
-              className="mx-2"
-            >
-              +
-            </Button>
-          </div>
-        </Modal.Footer>
-      </Modal>
+        </div>
+      </AppModal>
 
       <style jsx>{`
         .enhanced-slide-container {
@@ -593,6 +578,11 @@ function Slide() {
           pointer-events: none;
         }
         .enhanced-caption {
+          position: absolute;
+          left: 0;
+          right: 0;
+          z-index: 5;
+          text-align: center;
           background-color: rgba(0, 0, 0, 0.6);
           color: white;
           padding: ${isMobile ? "10px" : "15px"};
@@ -643,7 +633,7 @@ function Slide() {
           width: ${isMobile ? "14px" : "18px"};
           height: ${isMobile ? "14px" : "18px"};
         }
-        
+
         .thumbnail-control-top-right {
           position: absolute;
           top: ${isMobile ? "15px" : "20px"};
@@ -669,11 +659,6 @@ function Slide() {
           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .all-photos-modal .modal-body {
-          max-height: 80vh;
-          overflow-y: auto;
-        }
-
         .thumbnails-wrapper {
           display: grid;
           grid-template-columns: repeat(
@@ -682,7 +667,7 @@ function Slide() {
           );
           gap: ${isMobile ? "15px" : "25px"};
           width: 100%;
-          padding: 20px 0;
+          padding: 20px;
         }
         .thumbnail-item {
           position: relative;
@@ -734,38 +719,39 @@ function Slide() {
           opacity: 1;
         }
 
-        :global(.enhanced-carousel-v2 .carousel-control-prev),
-        :global(.enhanced-carousel-v2 .carousel-control-next) {
-          width: ${isMobile ? "10%" : "5%"};
+        /* Swiper 控制器樣式（深藍/高級風） */
+        :global(.enhanced-carousel-v2 .swiper-button-prev),
+        :global(.enhanced-carousel-v2 .swiper-button-next) {
+          color: #fff;
           opacity: 0.5;
           transition: opacity 0.3s ease;
         }
-        :global(.enhanced-carousel-v2:hover .carousel-control-prev),
-        :global(.enhanced-carousel-v2:hover .carousel-control-next) {
-          opacity: 0.8;
+        :global(.enhanced-carousel-v2:hover .swiper-button-prev),
+        :global(.enhanced-carousel-v2:hover .swiper-button-next) {
+          opacity: 0.85;
         }
-        :global(.enhanced-carousel-v2 .carousel-control-prev-icon),
-        :global(.enhanced-carousel-v2 .carousel-control-next-icon) {
+        :global(.enhanced-carousel-v2 .swiper-button-prev::after),
+        :global(.enhanced-carousel-v2 .swiper-button-next::after) {
+          font-size: ${isMobile ? "20px" : "26px"};
           background-color: rgba(0, 0, 0, 0.3);
           border-radius: 50%;
-          padding: ${isMobile ? "18px" : "22px"};
-          background-size: 50%;
+          padding: ${isMobile ? "14px" : "18px"};
         }
-        :global(.enhanced-carousel-v2 .carousel-indicators [data-bs-target]) {
+        :global(.enhanced-carousel-v2 .swiper-pagination-bullet) {
           background-color: #fff;
           opacity: 0.7;
-          border-radius: 50%;
           width: 10px;
           height: 10px;
           margin: 0 5px;
         }
-        :global(.enhanced-carousel-v2 .carousel-indicators .active) {
+        :global(.enhanced-carousel-v2 .swiper-pagination-bullet-active) {
           opacity: 1;
           transform: scale(1.2);
+          background-color: #1e3a8a;
         }
 
-        .image-viewer-modal {
-          max-width: 95vw;
+        .image-viewer-body {
+          position: relative;
         }
         .nav-button {
           position: absolute;
@@ -773,9 +759,11 @@ function Slide() {
           transform: translateY(-50%);
           z-index: 10;
           opacity: 0.7;
+          background-color: rgba(0, 0, 0, 0.6);
         }
         .nav-button:hover {
           opacity: 1;
+          background-color: rgba(0, 0, 0, 0.8);
         }
         .prev-button {
           left: 10px;

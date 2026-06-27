@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Row, Col, Carousel, Modal, Spinner } from 'react-bootstrap';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import { ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import Axios from 'common/Axios';
+import AppModal from 'components/common/AppModal';
 import LoadingSpinner from 'components/LoadingSpinner';
 import SEO from 'SEO';
 
@@ -44,25 +50,25 @@ const ImageSlider = ({ images, title }) => {
   if (!images || images.length === 0) {
     return null;
   }
-  
+
   return (
     <>
       {/* 只有當有標題且有圖片時才顯示標題 */}
-      {title && <h4 className="mt-4 mb-3">{title}</h4>}
-      
+      {title && <h4 className="mt-4 mb-3 text-lg font-semibold">{title}</h4>}
+
       {/* 改進的輪播效果 */}
       <div className="image-slider-container">
-        <Carousel 
-          interval={null} 
-          indicators={images.length > 1}
-          controls={images.length > 1}
+        <Swiper
+          modules={[Navigation, Pagination]}
+          navigation={images.length > 1}
+          pagination={images.length > 1 ? { clickable: true } : false}
           className="image-slider rounded shadow-sm"
         >
           {images.map((image, index) => (
-            <Carousel.Item key={index}>
+            <SwiperSlide key={index}>
               <div className="image-container">
                 <img
-                  className="d-block w-100"
+                  className="block w-full"
                   src={image}
                   alt={`圖片-${index + 1}`}
                   style={{
@@ -79,68 +85,66 @@ const ImageSlider = ({ images, title }) => {
                   }}
                 />
               </div>
-            </Carousel.Item>
+            </SwiperSlide>
           ))}
-        </Carousel>
+        </Swiper>
         {images.length > 1 && (
-          <p className="text-muted text-center mt-2">
+          <p className="text-base-content/60 text-center mt-2">
             <small>點擊圖片可放大查看 ({currentIndex + 1}/{images.length})</small>
           </p>
         )}
       </div>
 
       {/* 改進的放大模式 */}
-      <Modal 
-        show={showModal} 
-        onHide={handleCloseModal} 
-        centered 
+      <AppModal
+        show={showModal}
+        onHide={handleCloseModal}
         size="xl"
-        className="image-zoom-modal"
+        variant="showcase"
+        title="圖片詳情"
+        icon={<ImageIcon size={18} />}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>圖片詳情</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-0 bg-dark">
-          {modalImage && (
-            <div className="position-relative">
-              <img 
-                src={modalImage} 
-                alt="放大圖片" 
-                style={{ 
-                  width: '100%',
-                  maxHeight: '80vh',
-                  objectFit: 'contain'
-                }} 
-              />
-              
-              {images.length > 1 && (
-                <>
-                  {/* 上一張/下一張按鈕 */}
-                  <button 
-                    className="carousel-control-prev" 
-                    onClick={handlePrev}
-                    style={{ width: '10%' }}
-                  >
-                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                  </button>
-                  <button 
-                    className="carousel-control-next" 
-                    onClick={handleNext}
-                    style={{ width: '10%' }}
-                  >
-                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                  </button>
-                  
-                  {/* 圖片計數器 */}
-                  <div className="position-absolute bottom-0 start-50 translate-middle-x pb-3 text-white">
-                    {currentIndex + 1} / {images.length}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </Modal.Body>
-      </Modal>
+        {modalImage && (
+          <div className="relative bg-black">
+            <img
+              src={modalImage}
+              alt="放大圖片"
+              style={{
+                width: '100%',
+                maxHeight: '80vh',
+                objectFit: 'contain',
+              }}
+            />
+
+            {images.length > 1 && (
+              <>
+                {/* 上一張/下一張按鈕 */}
+                <button
+                  type="button"
+                  className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center justify-center h-full w-[10%] text-white/80 hover:text-white transition-colors"
+                  onClick={handlePrev}
+                  aria-label="上一張"
+                >
+                  <ChevronLeft size={40} />
+                </button>
+                <button
+                  type="button"
+                  className="absolute top-1/2 right-0 -translate-y-1/2 flex items-center justify-center h-full w-[10%] text-white/80 hover:text-white transition-colors"
+                  onClick={handleNext}
+                  aria-label="下一張"
+                >
+                  <ChevronRight size={40} />
+                </button>
+
+                {/* 圖片計數器 */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pb-3 text-white">
+                  {currentIndex + 1} / {images.length}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </AppModal>
     </>
   );
 };
@@ -169,7 +173,7 @@ const EventDetail = () => {
         const large = eventData.images
           .filter(img => img.pic_type === 'large')
           .map(img => process.env.REACT_APP_BASE_URL + img.image);
-          
+
         const small = eventData.images
           .filter(img => img.pic_type === 'small')
           .map(img => process.env.REACT_APP_BASE_URL + img.image);
@@ -191,62 +195,58 @@ const EventDetail = () => {
   }, [id]);
 
   if (loading) return <LoadingSpinner />;
-  
+
   if (error) {
     return (
-      <Container className="mt-5 text-center">
-        <div className="alert alert-danger">{error}</div>
-      </Container>
+      <div className="container mx-auto px-4 mt-5 text-center">
+        <div className="alert alert-error">{error}</div>
+      </div>
     );
   }
 
   if (!event) {
     return (
-      <Container className="mt-5 text-center">
+      <div className="container mx-auto px-4 mt-5 text-center">
         <div className="alert alert-warning">找不到活動資訊</div>
-      </Container>
+      </div>
     );
   }
 
   return (
-    <Container className="my-4 pb-5">
+    <div className="container mx-auto px-4 my-4 pb-5">
       <SEO
         main={false}
         title={event.title}
         description="深入了解智慧商務系友會各個成員的背景、專長與成就，促進交流與合作。"
         keywords={["智慧商務", "系友詳細", "會員資訊"]}
       />
-      
+
       {/* 活動標題區塊 */}
-      <Row>
-        <Col>
-          <h1 className="mb-3 fw-bold">{event.title}</h1>
-          <hr className="my-4" />
-        </Col>
-      </Row>
-      
+      <div>
+        <h1 className="mb-3 font-bold text-3xl">{event.title}</h1>
+        <hr className="my-4" />
+      </div>
+
       {/* 活動內容區塊 */}
-      <Row>
-        <Col>
-          <div
-            dangerouslySetInnerHTML={{ __html: event.content }}
-            className="event-content my-4"
-          ></div>
-        </Col>
-      </Row>
+      <div>
+        <div
+          dangerouslySetInnerHTML={{ __html: event.content }}
+          className="event-content my-4"
+        ></div>
+      </div>
 
       {/* 大圖展示區塊 - 只有存在大圖時才渲染 */}
-      <ImageSlider 
-        images={largeImages} 
-        title={largeImages.length > 0 ? "大圖展示" : null} 
+      <ImageSlider
+        images={largeImages}
+        title={largeImages.length > 0 ? "大圖展示" : null}
       />
 
       {/* 活動圖片展示區塊 - 只有存在小圖時才渲染 */}
-      <ImageSlider 
-        images={smallImages} 
-        title={smallImages.length > 0 ? "活動圖片展示" : null} 
+      <ImageSlider
+        images={smallImages}
+        title={smallImages.length > 0 ? "活動圖片展示" : null}
       />
-    </Container>
+    </div>
   );
 };
 
