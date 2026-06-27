@@ -56,17 +56,20 @@ export default function DataTable({
       </div>
 
       {/* 手機卡片 */}
-      <div className="md:hidden space-y-3">
+      <div className="md:hidden space-y-3 w-full max-w-full overflow-hidden">
         {data.map((row, i) => (
           <div
             key={keyOf(row, i)}
-            className={`rounded-2xl border border-base-300/70 bg-base-100 p-4 shadow-sm ${onRowClick ? 'active:bg-base-200' : ''}`}
+            className={`w-full max-w-full overflow-hidden rounded-2xl border border-base-300/70 bg-base-100 p-4 shadow-sm ${onRowClick ? 'active:bg-base-200' : ''}`}
             onClick={onRowClick ? () => onRowClick(row) : undefined}
           >
             {columns.filter((c) => !c.hideOnMobile).map((c) => (
-              <div key={c.key} className="flex justify-between gap-3 py-1.5 border-b border-base-200 last:border-0">
+              <div
+                key={c.key}
+                className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 py-2 border-b border-base-200 last:border-0"
+              >
                 <span className="text-xs font-medium text-base-content/50 shrink-0">{c.header}</span>
-                <span className="text-sm text-right text-base-content">
+                <span className="min-w-0 text-sm text-right text-base-content break-words [&_*]:break-words">
                   {c.render ? c.render(row, i) : row[c.key]}
                 </span>
               </div>

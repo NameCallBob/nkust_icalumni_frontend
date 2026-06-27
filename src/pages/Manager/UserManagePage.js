@@ -278,39 +278,19 @@ function UserManagement() {
                 <LoadingSpinner></LoadingSpinner>
               </div>
             ) : (
-              <div style={rwd.getContainerStyle()}>
-                {rwd.isMobile ? (
-                  <div style={{
-                    overflowX: 'auto',
-                    WebkitOverflowScrolling: 'touch',
-                    msOverflowStyle: '-ms-autohiding-scrollbar',
-                    scrollbarWidth: 'thin'
-                  }}>
-                    <div style={{ minWidth: '800px' }}>
-                      <UserTable
-                        users={users}
-                        handleShowModal={handleShowModal}
-                        handleEdit={handleEdit}
-                        handlePaymentStatus={handlePaymentStatus}
-                        handleToggleActive={handleToggleActive}
-                        handleDelete={handleDelete}
-                        handlePassword={handlePassword}
-                        style={rwd.getTableStyle()}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <UserTable
-                    users={users}
-                    handleShowModal={handleShowModal}
-                    handleEdit={handleEdit}
-                    handlePaymentStatus={handlePaymentStatus}
-                    handleToggleActive={handleToggleActive}
-                    handleDelete={handleDelete}
-                    handlePassword={handlePassword}
-                    style={rwd.getTableStyle()}
-                  />
-                )}
+              // UserTable 內含 DataTable，已自帶 RWD（桌機表格 / 手機卡片），
+              // 不再用 minWidth:800 的橫向捲動 wrapper（舊設計殘留，會造成手機溢出）。
+              <div className="w-full min-w-0">
+                <UserTable
+                  users={users}
+                  handleShowModal={handleShowModal}
+                  handleEdit={handleEdit}
+                  handlePaymentStatus={handlePaymentStatus}
+                  handleToggleActive={handleToggleActive}
+                  handleDelete={handleDelete}
+                  handlePassword={handlePassword}
+                  style={rwd.getTableStyle()}
+                />
               </div>
             )}
           </Card>
