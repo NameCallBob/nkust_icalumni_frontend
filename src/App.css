@@ -1,26 +1,29 @@
 /* ============================================
-   主應用程式樣式 - 科技感設計系統
+   App 基礎樣式（模組化後的精簡版）
+   設計原則：
+   - 僅保留「設計 token」與「App 結構/字體」基礎。
+   - 不再有任何全域元件選擇器（.btn/.card/.modal/.table/.badge/.alert/h1~h6 等）——
+     這些一律交給 DaisyUI + Tailwind，避免污染 Modal 與各元件。
    ============================================ */
 
-/* 引入核心設計系統 */
+/* 設計 token（單一來源）+ 動畫 keyframes（無元素選擇器，安全） */
 @import './css/core/variables.css';
-@import './css/core/theme.css';
 @import './css/core/animations.css';
-@import './css/core/responsive.css';
-@import './css/core/home-enhanced.css';
 
-/* 自定義字型 */
+/* 自定義字型（保留供特殊用途，但全站預設為 Noto Sans TC） */
 @font-face {
   font-family: 'MyCustomFont';
-  src: url('/src/css/YuPearl-Medium.ttf') format('woff');
+  src: url('/src/css/YuPearl-Medium.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
-/* 基礎設定 */
-html, body {
+/* App 結構基礎 */
+html,
+body {
   height: 100%;
-  font-family: var(--font-primary, 'Noto Sans TC', sans-serif);
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
   scroll-behavior: smooth;
 }
 
@@ -28,258 +31,6 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-/* 圖片樣式增強 */
-.fixed-image {
-  width: 30%;
-  height: 30%;
-  object-fit: contain;
-  transition: transform var(--duration-base, 300ms) var(--ease-out);
-}
-
-.fixed-image:hover {
-  transform: scale(1.05);
-}
-
-
-/* 全局標題設定 - 科技感優化 */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading, 'MyCustomFont','Noto Sans TC', 'Helvetica Neue', sans-serif);
-  margin-bottom: var(--spacing-md, 1rem);
-  line-height: var(--lh-tight, 1.3);
-  color: var(--color-gray-900, #2c3e50);
-  font-weight: var(--fw-bold, 700);
-  position: relative;
-}
-
-/* h2 - 主標題科技感設計 */
-h2 {
-  font-size: var(--fs-2xl, 2rem);
-  font-weight: var(--fw-bold, 700);
-  margin-top: var(--spacing-2xl, 2.5rem);
-  padding-bottom: var(--spacing-sm, 0.5rem);
-  border-bottom: 2px solid transparent;
-  background: linear-gradient(90deg, var(--color-primary, #5E72E4) 30%, transparent 100%);
-  background-position: bottom;
-  background-size: 100% 2px;
-  background-repeat: no-repeat;
-  transition: all var(--duration-base, 300ms);
-}
-
-h2:hover {
-  background-size: 100% 3px;
-}
-
-/* h3 - 次標題科技感 */
-h3 {
-  font-size: var(--fs-xl, 1.75rem);
-  font-weight: var(--fw-semibold, 600);
-  margin-top: var(--spacing-xl, 2rem);
-  color: var(--color-gray-800, #34495e);
-  display: inline-block;
-  position: relative;
-}
-
-h3::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--gradient-primary);
-  transition: width var(--duration-base, 300ms);
-}
-
-h3:hover::after {
-  width: 100%;
-}
-
-/* h4 - 小標題科技感 */
-h4 {
-  font-size: var(--fs-lg, 1.5rem);
-  font-weight: var(--fw-semibold, 600);
-  margin-top: var(--spacing-lg, 1.5rem);
-  background: linear-gradient(135deg, var(--color-primary, #5E72E4), var(--color-accent, #764BA2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* h5 - 微標題 */
-h5 {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-top: 1.25rem;
-  color: #5a6a7a;
-}
-
-/* 響應式調整 */
-@media (max-width: 768px) {
-  h2 { font-size: 1.75rem; }
-  h3 { font-size: 1.5rem; }
-  h4 { font-size: 1.25rem; }
-  h5 { font-size: 1.1rem; }
-}
-
-
-/* 懸浮效果增強 */
-.hover-lift {
-  transition: transform var(--duration-base, 0.3s) var(--ease-out),
-              box-shadow var(--duration-base, 0.3s) var(--ease-out);
-  position: relative;
-}
-
-.hover-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0,0,0,0.1)),
-              var(--glow-primary, 0 0 30px rgba(94, 114, 228, 0.2));
-}
-
-.hover-lift::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--gradient-primary);
-  transform: scaleX(0);
-  transition: transform var(--duration-base, 0.3s);
-}
-
-.hover-lift:hover::before {
-  transform: scaleX(1);
-}
-
-/* RWD表格滑動解決方案 - 科技感優化 */
-@media (max-width: 768px) {
-  .table-responsive {
-    overflow-x: auto !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-    max-width: 100%;
-    max-height: 70vh;
-    display: block;
-    margin-bottom: var(--spacing-md, 1rem);
-    box-shadow: var(--shadow-md);
-    position: relative;
-    background: var(--glass-white-solid);
-    backdrop-filter: var(--backdrop-blur);
-    border-radius: var(--radius-lg);
-  }
-
-  .table-responsive table {
-    min-width: 600px;
-    width: 100%;
-  }
-  
-  /* 防止表格內容被壓縮 */
-  .table-responsive th,
-  .table-responsive td {
-    white-space: nowrap;
-    padding: 0.75rem 0.5rem;
-    font-size: 0.9rem;
-  }
-  
-  /* 增強表格滑動指示 */
-  .table-responsive:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 5px;
-    background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.1));
-    pointer-events: none;
-  }
-
-  /* 優化按鈕在RWD下的顯示 */
-  .table-responsive .btn {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.9rem;
-    margin: 0.25rem;
-  }
-
-  /* 固定表頭 */
-  .table-responsive thead {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-color: #f8f9fa;
-  }
-
-  /* 優化表格容器 */
-  .table-container {
-    position: relative;
-    height: 100%;
-    min-height: 300px; /* 確保有最小高度 */
-  }
-}
-
-/* 桌面端表格樣式 */
-@media (min-width: 769px) {
-  .table-responsive {
-    overflow: visible;
-    width: 100%;
-    display: table;
-  }
-  
-  .table-responsive table {
-    width: 100%;
-  }
-
-  .table-responsive th,
-  .table-responsive td {
-    padding: 1rem;
-  }
-}
-
-/* 通用表格樣式優化 - 科技感設計 */
-.table {
-  margin-bottom: var(--spacing-md, 1rem);
-  border-collapse: separate;
-  border-spacing: 0;
-  background: var(--glass-white-solid);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-}
-
-.table thead th {
-  background: var(--gradient-primary);
-  color: white;
-  border-bottom: none;
-  font-weight: var(--fw-semibold, 600);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: var(--spacing-md, 1rem);
-}
-
-.table tbody tr {
-  transition: all var(--duration-fast, 150ms);
-  border-bottom: 1px solid var(--color-gray-200);
-}
-
-.table tbody tr:hover {
-  background: linear-gradient(90deg, rgba(94, 114, 228, 0.05) 0%, rgba(94, 114, 228, 0.02) 100%);
-  transform: scale(1.01);
-  box-shadow: var(--shadow-sm);
-}
-
-/* 確保表格內容不會被截斷 */
-.table td {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 當滑鼠懸停時顯示完整內容 */
-.table td:hover {
-  white-space: normal;
-  word-break: break-word;
 }
 
 /* Toast 層級提升，避免被 Nav 遮擋 */
