@@ -133,7 +133,9 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
 
     try {
       // 發送重設密碼請求
+      // 後端（資安修補 HIGH-1）要求驗證碼必須綁定 email，故一併送出
       const response = await Axios().post('/basic/forgot_verify', {
+        "email": email,
         "code": code,
         "new_password": newPassword
       });
@@ -151,8 +153,14 @@ const ResetPassword = ({ email, onBack, onResetSuccess }) => {
         }, 2000);
       }
     } catch (error) {
-      // 處理錯誤
-      const errorMessage = error.response?.data?.message || '驗證碼錯誤或已過期';
+      // 處理錯誤：後端錯誤可能在 error（字串或陣列，如密碼強度驗證）或 message 欄位
+      const data = error.response?.data;
+      let errorMessage = '驗證碼錯誤或已過期';
+      if (data) {
+        if (Array.isArray(data.error)) errorMessage = data.error.join('、');
+        else if (data.error) errorMessage = data.error;
+        else if (data.message) errorMessage = data.message;
+      }
       setError(errorMessage);
     } finally {
       // 結束載入狀態

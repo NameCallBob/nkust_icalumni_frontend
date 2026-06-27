@@ -21,8 +21,8 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#1976d2",
-  "background_color": "#f5f5f5",
+  "theme_color": "#112c63",
+  "background_color": "#0a1d44",
   "categories": ["education", "business", "networking"],
   "lang": "zh-TW",
   "orientation": "portrait-primary"

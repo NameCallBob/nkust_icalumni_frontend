@@ -1,45 +1,61 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body {
-            margin: 0;
-            width: 1200px;
-            height: 630px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            color: white;
-        }
-        .main-title {
-            font-size: 48px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .sub-title {
-            font-size: 40px;
-            font-weight: bold;
-            margin-bottom: 30px;
-        }
-        .english {
-            font-size: 24px;
-            color: #e5e7eb;
-            margin-bottom: 15px;
-        }
-        .slogan {
-            font-size: 20px;
-            color: #9ca3af;
-        }
-    </style>
-</head>
+<!doctype html>
+<html lang="zh-TW"><head><meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1200px; height:630px; }
+  body{
+    position:relative; overflow:hidden;
+    background:radial-gradient(130% 130% at 50% -10%, #20407e 0%, #112a60 48%, #081a3d 100%);
+    font-family:'Songti TC','Songti SC','STSong',serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:#fff;
+  }
+  .watermark{ position:absolute; right:-30px; bottom:-120px; font-size:560px; line-height:1;
+    color:#fff; opacity:.04; user-select:none; }
+  .frame{ position:absolute; inset:34px; border:1px solid rgba(212,175,55,.32); }
+  .frame::before,.frame::after,.frame>i::before,.frame>i::after{
+    content:""; position:absolute; width:46px; height:46px; border:2px solid #d4af37; }
+  .frame::before{ top:-2px; left:-2px; border-right:none; border-bottom:none; }
+  .frame::after{ top:-2px; right:-2px; border-left:none; border-bottom:none; }
+  .frame>i::before{ bottom:-2px; left:-2px; border-right:none; border-top:none; }
+  .frame>i::after{ bottom:-2px; right:-2px; border-left:none; border-top:none; }
+
+  .stage{ position:relative; z-index:2; text-align:center; }
+  .emblem{ width:96px; height:96px; display:block; margin:0 auto 22px; }
+  .uni{ font-size:34px; font-weight:500; letter-spacing:.30em; margin-left:.30em; color:#e9eef9; }
+  .title{ font-size:84px; font-weight:600; letter-spacing:.10em; margin:14px 0 6px; margin-left:.10em;
+    background:linear-gradient(180deg,#fbe9a8,#e6c75d 45%,#c79a32);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 3px 12px rgba(0,0,0,.30)); }
+  .divider{ display:flex; align-items:center; justify-content:center; gap:18px; margin:24px 0 22px; }
+  .divider .line{ width:150px; height:1px; background:linear-gradient(90deg,transparent,#d4af37); }
+  .divider .line.r{ background:linear-gradient(90deg,#d4af37,transparent); }
+  .divider .dot{ width:9px; height:9px; transform:rotate(45deg); background:linear-gradient(135deg,#f3dd8e,#c79a32); }
+  .en{ font-family:'PingFang TC',sans-serif; font-weight:300; font-size:25px;
+    letter-spacing:.22em; margin-left:.22em; color:#aebfe0; }
+  .slogan{ font-family:'PingFang TC',sans-serif; font-weight:300; font-size:24px;
+    letter-spacing:.40em; margin-left:.40em; color:#cdb96a; margin-top:16px; }
+</style></head>
 <body>
-    <div class="main-title">國立高雄科技大學</div>
-    <div class="sub-title">智慧商務系系友會</div>
-    <div class="english">NKUST iCommerce Alumni Association</div>
+  <div class="watermark">智</div>
+  <div class="frame"><i></i></div>
+  <div class="stage">
+    <svg class="emblem" viewBox="0 0 120 120" fill="none">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f7e6a6"/><stop offset="1" stop-color="#c79a32"/></linearGradient></defs>
+      <g stroke="url(#g)" stroke-width="2.4" stroke-linecap="round">
+        <line x1="60" y1="10" x2="60" y2="22"/><line x1="39" y1="16" x2="44" y2="26"/>
+        <line x1="81" y1="16" x2="76" y2="26"/><line x1="24" y1="30" x2="33" y2="37"/>
+        <line x1="96" y1="30" x2="87" y2="37"/></g>
+      <path d="M37 52 A23 23 0 0 1 83 52" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M18 62 C 36 55, 53 56, 60 64 C 67 56, 84 55, 102 62 L 102 95 C 84 88, 67 87, 60 95 C 53 87, 36 88, 18 95 Z"
+            stroke="url(#g)" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="60" y1="64" x2="60" y2="95" stroke="url(#g)" stroke-width="2.4"/>
+    </svg>
+    <div class="uni">國立高雄科技大學</div>
+    <div class="title">智慧商務系系友會</div>
+    <div class="divider"><span class="line"></span><span class="dot"></span><span class="line r"></span></div>
+    <div class="en">NKUST iCommerce Alumni Association</div>
     <div class="slogan">聯繫校友 · 共創未來</div>
-</body>
-</html>
+  </div>
+</body></html>

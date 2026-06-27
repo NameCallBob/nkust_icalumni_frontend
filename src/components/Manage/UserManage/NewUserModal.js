@@ -224,7 +224,13 @@ function NewUserModal({
   const handleSimpleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await handleAddUser(false, { "email":simple_email,"is_superuser":simple_userType });
+    try {
+      await handleAddUser(false, { "email":simple_email,"is_superuser":simple_userType });
+      // 後端（資安修補 MED-5）不再以郵件寄送明文密碼，使用者需自行用「忘記密碼」設定密碼
+      toast.success("帳號已建立！請通知該使用者至登入頁點選「忘記密碼」設定自己的密碼（系統不會寄送密碼）。");
+    } catch (error) {
+      toast.error("建立失敗，請確認 Email 是否正確或已存在。");
+    }
     setLoading(false);
   };
 
@@ -488,6 +494,9 @@ function NewUserModal({
             <option value="N">否</option>
             <option value="Y">是</option>
           </Field>
+          <div className="alert alert-info py-2 my-2" style={{ fontSize: "0.85rem" }}>
+            ℹ️ 基於安全考量，系統不會以郵件寄送密碼。帳號建立後，請通知使用者至登入頁點選「忘記密碼」，輸入此 Email 取得驗證碼並設定自己的密碼。
+          </div>
           <Button variant="primary" type="submit" disabled={loading}>
             {loading ? <Spinner size="sm" /> : '新增帳號'}
           </Button>

@@ -1,17 +1,59 @@
-<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
-        </linearGradient>
-    </defs>
-    <rect width="1200" height="630" fill="url(#grad)"/>
-    <text x="600" y="250" font-family="Arial, sans-serif" font-size="48" font-weight="bold"
-          text-anchor="middle" fill="white">國立高雄科技大學</text>
-    <text x="600" y="320" font-family="Arial, sans-serif" font-size="40" font-weight="bold"
-          text-anchor="middle" fill="white">智慧商務系系友會</text>
-    <text x="600" y="400" font-family="Arial, sans-serif" font-size="24"
-          text-anchor="middle" fill="#e5e7eb">NKUST iCommerce Alumni Association</text>
-    <text x="600" y="450" font-family="Arial, sans-serif" font-size="20"
-          text-anchor="middle" fill="#9ca3af">聯繫校友 · 共創未來</text>
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="-10%" r="130%">
+      <stop offset="0%" stop-color="#20407e"/>
+      <stop offset="48%" stop-color="#112a60"/>
+      <stop offset="100%" stop-color="#081a3d"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fbe9a8"/>
+      <stop offset="45%" stop-color="#e6c75d"/>
+      <stop offset="100%" stop-color="#c79a32"/>
+    </linearGradient>
+    <linearGradient id="fadeL" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#d4af37"/>
+    </linearGradient>
+    <linearGradient id="fadeR" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="980" y="560" font-family="'Songti TC',serif" font-size="560"
+        fill="#ffffff" fill-opacity="0.04" text-anchor="middle">智</text>
+
+  <!-- frame -->
+  <rect x="34" y="34" width="1132" height="562" fill="none" stroke="#d4af37" stroke-opacity="0.32"/>
+  <path d="M34 80 V34 H80 M1120 34 H1166 V80 M1166 550 V596 H1120 M80 596 H34 V550"
+        fill="none" stroke="#d4af37" stroke-width="2"/>
+
+  <!-- emblem: sunrise over open book -->
+  <g transform="translate(600,108) scale(0.8)" stroke="url(#gold)" fill="none" stroke-linecap="round">
+    <g stroke-width="2.4">
+      <line x1="0" y1="-50" x2="0" y2="-38"/>
+      <line x1="-21" y1="-44" x2="-16" y2="-34"/>
+      <line x1="21" y1="-44" x2="16" y2="-34"/>
+      <line x1="-36" y1="-30" x2="-27" y2="-23"/>
+      <line x1="36" y1="-30" x2="27" y2="-23"/>
+    </g>
+    <path d="M-23 -8 A23 23 0 0 1 23 -8" stroke-width="3"/>
+    <path d="M-42 2 C -24 -5, -7 -4, 0 4 C 7 -4, 24 -5, 42 2 L 42 35 C 24 28, 7 27, 0 35 C -7 27, -24 28, -42 35 Z"
+          stroke-width="3" stroke-linejoin="round"/>
+    <line x1="0" y1="4" x2="0" y2="35" stroke-width="2.4"/>
+  </g>
+
+  <text x="600" y="248" text-anchor="middle" font-family="'Songti TC',serif" font-weight="500"
+        font-size="34" letter-spacing="10" fill="#e9eef9">國立高雄科技大學</text>
+  <text x="600" y="350" text-anchor="middle" font-family="'Songti TC',serif" font-weight="600"
+        font-size="84" letter-spacing="8" fill="url(#gold)">智慧商務系系友會</text>
+
+  <line x1="450" y1="405" x2="565" y2="405" stroke="url(#fadeL)"/>
+  <line x1="635" y1="405" x2="750" y2="405" stroke="url(#fadeR)"/>
+  <rect x="594" y="399" width="12" height="12" transform="rotate(45 600 405)" fill="url(#gold)"/>
+
+  <text x="600" y="462" text-anchor="middle" font-family="'PingFang TC',sans-serif" font-weight="300"
+        font-size="25" letter-spacing="5" fill="#aebfe0">NKUST iCommerce Alumni Association</text>
+  <text x="600" y="512" text-anchor="middle" font-family="'PingFang TC',sans-serif" font-weight="300"
+        font-size="24" letter-spacing="12" fill="#cdb96a">聯繫校友 · 共創未來</text>
 </svg>

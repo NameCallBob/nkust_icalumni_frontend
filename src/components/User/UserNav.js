@@ -1,184 +1,187 @@
 import React, { useState, useEffect } from 'react';
-import logo from 'assets/logo.png'; // 請替換為你的 logo 圖片路徑
-import 'css/nav.css'; // 我們會建立這個檔案來包含所有自定義樣式
+import logo from 'assets/logo.png';
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
-import { BsChevronDown, BsBoxArrowInRight } from 'react-icons/bs';
+import { ChevronDown, LogIn, Menu, X } from 'lucide-react';
 
 /**
- * 現代化深藍色系友會導航欄 - 改進版
- * @returns JSX
+ * 現代化深藍系友會導覽列（Tailwind/DaisyUI 重構，移除 css/nav.css 依賴）
+ * 保留：捲動狀態、下拉(intro/member)、手機展開等全部互動邏輯與連結。
  */
+const INTRO_LINKS = [
+  { href: '/IC/intro', label: '簡介' },
+  { href: '/IC/constitution', label: '章程' },
+  { href: '/IC/structure', label: '組織' },
+  { href: '/IC/joinUs', label: '入會方式' },
+  { href: '/IC/contactUs', label: '聯絡我們' },
+];
+const NAV_LINKS = [
+  { href: '/alumniList', label: '系友們' },
+  { href: '/search', label: '公司查詢' },
+  { href: '/recruit', label: '徵才啟示' },
+];
+
 function UserNav() {
-    const [scrolled, setScrolled] = useState(false);
-    const [activeDropdown, setActiveDropdown] = useState(null);
-    const [expanded, setExpanded] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [expanded, setExpanded] = useState(false);
 
-    // 監聽滾動事件，當頁面滾動時改變導航欄樣式
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 50) {
-                setScrolled(true);
-            } else {
-                setScrolled(false);
-            }
-        };
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
+  const handleDropdownEnter = (id) => {
+    if (window.innerWidth >= 992) setActiveDropdown(id);
+  };
+  const handleDropdownLeave = () => {
+    if (window.innerWidth >= 992) setActiveDropdown(null);
+  };
+  const handleNavItemClick = () => {
+    if (window.innerWidth < 992) setExpanded(false);
+  };
+  const handleDropdownToggle = (id) => {
+    setActiveDropdown(activeDropdown === id ? null : id);
+  };
+  const handleDropdownItemClick = () => {
+    setActiveDropdown(null);
+    setExpanded(false);
+  };
 
-    // 處理下拉選單的滑鼠懸停事件
-    const handleDropdownEnter = (id) => {
-        if (window.innerWidth >= 992) { // 只在桌面版啟用懸停效果
-            setActiveDropdown(id);
-        }
-    };
+  return (
+    <>
+      <header
+        className={`fixed top-0 inset-x-0 z-[1030] transition-all duration-300 ${
+          scrolled
+            ? 'bg-[#0f172a]/95 backdrop-blur shadow-lg'
+            : 'bg-gradient-to-r from-[#1e3a8a] to-[#0f172a]'
+        }`}
+      >
+        <div className="mx-auto max-w-7xl px-4">
+          <nav className="flex h-16 items-center justify-between">
+            {/* 品牌 */}
+            <a href="/" className="flex items-center gap-2.5 min-w-0">
+              <img
+                src={getImageSrc(logo, 'default')}
+                className="h-10 w-10 rounded-lg bg-white object-contain p-0.5 shrink-0"
+                alt="智商系友會LOGO"
+                onError={(e) => handleImageError(e, 'default')}
+              />
+              <div className="hidden min-[480px]:flex flex-col leading-tight text-white">
+                <span className="font-serif font-bold text-base">智商系友會</span>
+                <span className="text-[10px] tracking-wider text-white/60">Alumni Association</span>
+              </div>
+            </a>
 
-    const handleDropdownLeave = () => {
-        if (window.innerWidth >= 992) {
-            setActiveDropdown(null);
-        }
-    };
+            {/* 手機選單鈕 */}
+            <button
+              type="button"
+              aria-label="Toggle navigation"
+              aria-expanded={expanded}
+              className="min-[992px]:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg text-white hover:bg-white/10"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
 
-    // 處理導航項目點擊事件（在移動設備上自動關閉菜單）
-    const handleNavItemClick = () => {
-        if (window.innerWidth < 992) {
-            setExpanded(false);
-        }
-    };
+            {/* 桌機選單 */}
+            <div className="hidden min-[992px]:flex items-center gap-1">
+              {/* 系友會介紹 */}
+              <div
+                className="relative"
+                onMouseEnter={() => handleDropdownEnter('intro')}
+                onMouseLeave={handleDropdownLeave}
+              >
+                <button
+                  type="button"
+                  className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white"
+                  onClick={() => handleDropdownToggle('intro')}
+                >
+                  系友會介紹 <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+                {activeDropdown === 'intro' && (
+                  <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-base-200 bg-base-100 py-1.5 shadow-xl">
+                    {INTRO_LINKS.map((l) => (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        className="block px-4 py-2 text-sm text-base-content hover:bg-primary/10 hover:text-primary"
+                        onClick={handleDropdownItemClick}
+                      >
+                        {l.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-    // 手動切換下拉菜單（用於移動設備）
-    const handleDropdownToggle = (id) => {
-        if (window.innerWidth < 992) {
-            setActiveDropdown(activeDropdown === id ? null : id);
-        }
-    };
+              {NAV_LINKS.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white"
+                  onClick={handleNavItemClick}
+                >
+                  {l.label}
+                </a>
+              ))}
 
-    // 處理下拉選單項目點擊事件，確保在移動設備上關閉菜單
-    const handleDropdownItemClick = () => {
-        if (window.innerWidth < 992) {
-            setActiveDropdown(null);
-            setExpanded(false);
-        }
-    };
-
-    return (
-        <>
-            {/* 導航欄 */}
-            <div className={`navbar-wrapper ${scrolled ? 'scrolled' : ''}`}>
-                <div className="w-full px-3 lg:px-4">
-                    <nav className="custom-navbar relative flex items-center justify-between h-full">
-                        <a href="/" className="navbar-brand-custom mr-0">
-                            <div className="logo-container">
-                                <img
-                                    src={getImageSrc(logo, 'default')}
-                                    className="logo-img"
-                                    alt="智商系友會LOGO"
-                                    style={{ backgroundColor: '#ffffff' }}
-                                    onError={(e) => handleImageError(e, 'default')}
-                                />
-                                <div className="brand-text hidden min-[576px]:flex">
-                                    <span className="brand-main">智商系友會</span>
-                                    <span className="brand-sub">Alumni Association</span>
-                                </div>
-                            </div>
-                        </a>
-
-                        <button
-                            type="button"
-                            aria-controls="basic-navbar-nav"
-                            aria-expanded={expanded}
-                            aria-label="Toggle navigation"
-                            className="custom-toggler ml-auto min-[992px]:hidden"
-                            onClick={() => setExpanded(!expanded)}
-                        >
-                            <span className="navbar-toggler-icon custom-toggler-icon inline-block w-[1.5em] h-[1.5em] bg-no-repeat bg-center bg-contain"></span>
-                        </button>
-
-                        <div
-                            id="basic-navbar-nav"
-                            className={`navbar-collapse ${expanded ? 'show flex' : 'hidden'} min-[992px]:!flex min-[992px]:items-center`}
-                        >
-                            <div className="nav-items ml-auto">
-                                {/* 系友會介紹下拉選單 */}
-                                <div
-                                    className={`nav-item-wrapper ${activeDropdown === 'intro' ? 'active' : ''}`}
-                                    onMouseEnter={() => handleDropdownEnter('intro')}
-                                    onMouseLeave={handleDropdownLeave}
-                                >
-                                    <div className={`custom-dropdown ${activeDropdown === 'intro' ? 'show' : ''}`}>
-                                        <button
-                                            type="button"
-                                            id="intro-dropdown"
-                                            className="dropdown-toggle flex items-center"
-                                            onClick={() => handleDropdownToggle('intro')}
-                                        >
-                                            <span className="nav-link-text">系友會介紹</span>
-                                            <BsChevronDown className="ml-1 text-xs" />
-                                        </button>
-                                        {activeDropdown === 'intro' && (
-                                            <div className="dropdown-content min-[992px]:absolute min-[992px]:top-full min-[992px]:right-0 min-[992px]:z-[1050]">
-                                                <a href="/IC/intro" className="dropdown-item-custom block" onClick={handleDropdownItemClick}>簡介</a>
-                                                <a href="/IC/constitution" className="dropdown-item-custom block" onClick={handleDropdownItemClick}>章程</a>
-                                                <a href="/IC/structure" className="dropdown-item-custom block" onClick={handleDropdownItemClick}>組織</a>
-                                                <a href="/IC/joinUs" className="dropdown-item-custom block" onClick={handleDropdownItemClick}>入會方式</a>
-                                                <a href="/IC/contactUs" className="dropdown-item-custom block" onClick={handleDropdownItemClick}>聯絡我們</a>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* 一般導航連結 */}
-                                <a href="/alumniList" className="nav-link-custom" onClick={handleNavItemClick}>
-                                    <span className="nav-link-text">系友們</span>
-                                </a>
-
-                                <a href="/search" className="nav-link-custom" onClick={handleNavItemClick}>
-                                    <span className="nav-link-text">公司查詢</span>
-                                </a>
-
-                                <a href="/recruit" className="nav-link-custom" onClick={handleNavItemClick}>
-                                    <span className="nav-link-text">徵才啟示</span>
-                                </a>
-
-
-                                {/* 系友專區下拉選單 */}
-                                <div
-                                    className={`nav-item-wrapper ${activeDropdown === 'member' ? 'active' : ''}`}
-                                    onMouseEnter={() => handleDropdownEnter('member')}
-                                    onMouseLeave={handleDropdownLeave}
-                                >
-                                    <div className={`custom-dropdown ${activeDropdown === 'member' ? 'show' : ''}`}>
-                                        <button
-                                            type="button"
-                                            id="member-dropdown"
-                                            className="dropdown-toggle flex items-center"
-                                            onClick={() => handleDropdownToggle('member')}
-                                        >
-                                            <span className="nav-link-text">系友專區</span>
-                                            <BsChevronDown className="ml-1 text-xs" />
-                                        </button>
-                                        {activeDropdown === 'member' && (
-                                            <div className="dropdown-content min-[992px]:absolute min-[992px]:top-full min-[992px]:right-0 min-[992px]:z-[1050]">
-                                                <a href="/login" className="dropdown-item-custom block" onClick={handleDropdownItemClick}>
-                                                    <BsBoxArrowInRight className="mr-2 inline-block" />登入
-                                                </a>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
+              {/* 系友專區 */}
+              <div
+                className="relative"
+                onMouseEnter={() => handleDropdownEnter('member')}
+                onMouseLeave={handleDropdownLeave}
+              >
+                <button
+                  type="button"
+                  className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white"
+                  onClick={() => handleDropdownToggle('member')}
+                >
+                  系友專區 <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+                {activeDropdown === 'member' && (
+                  <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-base-200 bg-base-100 py-1.5 shadow-xl">
+                    <a
+                      href="/login"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-base-content hover:bg-primary/10 hover:text-primary"
+                      onClick={handleDropdownItemClick}
+                    >
+                      <LogIn className="h-4 w-4" /> 登入
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
+          </nav>
+        </div>
 
-            {/* 導航欄佔位元素，防止內容被覆蓋 */}
-            <div className="navbar-spacer"></div>
-        </>
-    );
+        {/* 手機展開選單 */}
+        {expanded && (
+          <div className="min-[992px]:hidden border-t border-white/10 bg-[#0f172a]/98 backdrop-blur px-4 py-3">
+            <div className="text-white/50 text-xs px-2 pt-2 pb-1">系友會介紹</div>
+            {INTRO_LINKS.map((l) => (
+              <a key={l.href} href={l.href} className="block rounded-lg px-3 py-2.5 text-white/90 hover:bg-white/10" onClick={handleDropdownItemClick}>
+                {l.label}
+              </a>
+            ))}
+            <div className="my-2 h-px bg-white/10" />
+            {NAV_LINKS.map((l) => (
+              <a key={l.href} href={l.href} className="block rounded-lg px-3 py-2.5 text-white/90 hover:bg-white/10" onClick={handleNavItemClick}>
+                {l.label}
+              </a>
+            ))}
+            <div className="my-2 h-px bg-white/10" />
+            <a href="/login" className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-white/90 hover:bg-white/10" onClick={handleDropdownItemClick}>
+              <LogIn className="h-4 w-4" /> 登入
+            </a>
+          </div>
+        )}
+      </header>
+
+      {/* 佔位，避免內容被固定導覽列覆蓋 */}
+      <div className="h-16" />
+    </>
+  );
 }
 
 export default UserNav;

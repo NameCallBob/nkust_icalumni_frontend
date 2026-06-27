@@ -1,15 +1,20 @@
-<svg width="180" height="180" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-        <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
-        </linearGradient>
-    </defs>
-    <rect width="180" height="180" rx="36" ry="36" fill="url(#iconGrad)"/>
-    <text x="90" y="70" font-family="Arial, sans-serif" font-size="20" font-weight="bold"
-          text-anchor="middle" fill="white">高科大</text>
-    <text x="90" y="100" font-family="Arial, sans-serif" font-size="16" font-weight="bold"
-          text-anchor="middle" fill="white">智慧商務</text>
-    <text x="90" y="125" font-family="Arial, sans-serif" font-size="14"
-          text-anchor="middle" fill="#e5e7eb">系友會</text>
+<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="20%" r="120%">
+      <stop offset="0%" stop-color="#234887"/>
+      <stop offset="52%" stop-color="#122c63"/>
+      <stop offset="100%" stop-color="#0a1d44"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fbe9a8"/>
+      <stop offset="45%" stop-color="#e6c75d"/>
+      <stop offset="100%" stop-color="#c79a32"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="40" ry="40" fill="url(#bg)"/>
+  <circle cx="90" cy="90" r="70" fill="none" stroke="#d4af37" stroke-width="1.4" stroke-opacity="0.2"/>
+  <circle cx="90" cy="90" r="62" fill="none" stroke="#d4af37" stroke-width="2.2"/>
+  <text x="90" y="92" text-anchor="middle" dominant-baseline="central"
+        font-family="'Songti TC','Songti SC',serif" font-weight="600" font-size="86"
+        fill="url(#gold)">智</text>
 </svg>

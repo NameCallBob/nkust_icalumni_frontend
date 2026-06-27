@@ -78,23 +78,11 @@ const Login = () => {
       toast.error('請輸入有效的電子郵件地址');
       return;
     }
-    
-    // 查詢此郵箱是否註冊過，並顯示個性化歡迎訊息
-    Axios()
-      .get(`/basic/check-user?email=${encodeURIComponent(email)}`)
-      .then((res) => {
-        if (res.data.exists) {
-          setWelcomeMessage(`歡迎回來，${res.data.name || '系友'}！`);
-        } else {
-          setWelcomeMessage('歡迎回來！');
-        }
-        setLoginStage('password');
-      })
-      .catch((err) => {
-        // 即使出錯也進入密碼階段，但不顯示個性化訊息
-        setWelcomeMessage('歡迎回來！');
-        setLoginStage('password');
-      });
+
+    // [資安對齊] 不再向後端查詢「此 Email 是否註冊」——該行為等同帳號列舉，
+    // 後端刻意不提供此端點。直接進入密碼階段，顯示通用歡迎訊息。
+    setWelcomeMessage('歡迎回來！');
+    setLoginStage('password');
   };
 
   const handleBackToEmail = () => {
@@ -151,17 +139,27 @@ const Login = () => {
       })
       .catch((err) => {
         setIsLoading(false);
-        
+
+        // [資安對齊] 後端對登入加了節流（10 次/分），超過會回 429。
+        // 依 Retry-After 標頭設定冷卻倒數，與後端機制一致。
+        if (err.response && err.response.status === 429) {
+          const retryAfter = parseInt(err.response.headers?.['retry-after'], 10);
+          const wait = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : BLOCK_TIME_SECONDS;
+          setBlockTimeLeft(wait);
+          toast.error(`嘗試次數過多，請於 ${wait} 秒後再試。`);
+          return;
+        }
+
         if (err.response && err.response.status === 403) {
           toast.warn("此帳號未啟用或您未繳費");
         } else {
           toast.error('帳號密碼不匹配，請再試一次。');
         }
-        
-        // 更新登入嘗試次數與封鎖時間
+
+        // 更新登入嘗試次數與封鎖時間（前端額外的本地保護）
         const currentAttempts = parseInt(localStorage.getItem('loginAttempts') || '0', 10) + 1;
         localStorage.setItem('loginAttempts', currentAttempts);
-        
+
         if (currentAttempts >= 5) {
           const currentTime = Math.floor(Date.now() / 1000);
           localStorage.setItem('lastAttemptTime', currentTime);
