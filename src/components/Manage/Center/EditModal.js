@@ -971,7 +971,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
           </Button>
         ) : (
           <Button
-            variant="success"
+            variant="primary"
             onClick={handleSubmit}
             disabled={loading || isSubmitting}
             loading={loading}

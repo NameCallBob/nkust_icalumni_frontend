@@ -421,7 +421,7 @@ const ICDepartmentLanding = () => {
               <BsPeople className="mr-2" />
               系友名單
             </Link>
-            <Link to="/recruit" className="btn btn-success btn-lg w-full rounded-xl">
+            <Link to="/recruit" className="btn btn-primary btn-lg w-full rounded-xl">
               <BsBriefcaseFill className="mr-2" />
               職涯機會
             </Link>

@@ -423,7 +423,7 @@ const CareerProspects = () => {
                 <BsBriefcase />
                 查看職缺
               </Link>
-              <Link to="/IC/contactUs" className="btn btn-success btn-lg w-full gap-2">
+              <Link to="/IC/contactUs" className="btn btn-primary btn-lg w-full gap-2">
                 <BsTelephone />
                 職涯諮詢
               </Link>

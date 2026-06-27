@@ -515,7 +515,7 @@ const RecruitFormModal = ({
         </Button>
       ) : (
         <Button
-          variant="success"
+          variant="primary"
           type="submit"
           form="recruitForm"
           loading={isLoading}

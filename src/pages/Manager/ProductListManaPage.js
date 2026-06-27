@@ -297,7 +297,7 @@ const ProductManagement = () => {
 
                         <Tippy content="新增產品到系統">
                             <Button
-                                variant="success"
+                                variant="primary"
                                 onClick={() => {
                                     resetProductFormData();
                                     setShowProductModal(true);

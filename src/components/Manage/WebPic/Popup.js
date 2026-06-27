@@ -169,7 +169,7 @@ const PopupAdManager = () => {
 
       <div className="flex justify-between items-center my-4">
         <Button
-          variant="success"
+          variant="primary"
           onClick={() => handleShowModal()}
           className="flex items-center"
         >

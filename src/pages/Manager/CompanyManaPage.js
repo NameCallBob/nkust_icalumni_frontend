@@ -464,7 +464,7 @@ const CompanyForm = () => {
             </Button>
 
             <Button
-              variant="success"
+              variant="primary"
               type="submit"
               size={rwd.isMobile ? "md" : "lg"}
               className="w-full font-bold sm:w-auto"
