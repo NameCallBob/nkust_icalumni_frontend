@@ -38,7 +38,8 @@ function RecruitPage() {
         params: { id: job.id },
       })
       .then((res) => {
-        setSelectedJob(res.data);
+        // 合併列表已有欄位（如 company_name）作為後備，避免詳情回傳缺欄位時顯示空白
+        setSelectedJob({ ...job, ...res.data });
       })
       .catch((err) => {
         setError('載入職位詳情時發生錯誤，請稍後再試');
@@ -375,7 +376,7 @@ function RecruitPage() {
                   立即應徵
                 </a>
               )}
-              <Button variant="outline" size="sm" onClick={handleClose}>
+              <Button variant="ghost" size="sm" onClick={handleClose}>
                 關閉
               </Button>
             </>
