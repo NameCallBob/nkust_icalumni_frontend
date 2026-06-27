@@ -9,3 +9,4 @@ export { default as StatCard } from './StatCard';
 export { default as DataTable } from './DataTable';
 export { default as Toolbar } from './Toolbar';
 export { default as Badge } from './Badge';
+export { default as AdminPage } from './AdminPage';

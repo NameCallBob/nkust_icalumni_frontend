@@ -32,12 +32,14 @@ const ThankYouModal = ({ show, handleClose }) => {
       </div>
 
       <div className="text-center">
-        <p className="text-base-content/60">
-          完成資料登錄後，您將可以：
-          • 上傳個人、公司照片
-          • 添加招募資訊
-          • 登入各種商品
-        </p>
+        <p className="text-base-content/60 mb-2">完成資料登錄後，您將可以：</p>
+        <div className="flex justify-center">
+          <ul className="text-left text-base-content/60 list-disc list-inside">
+            <li>上傳個人、公司照片</li>
+            <li>添加招募資訊</li>
+            <li>登入各種商品</li>
+          </ul>
+        </div>
       </div>
     </AppModal>
   );

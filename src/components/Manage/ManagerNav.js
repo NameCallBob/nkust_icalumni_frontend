@@ -153,18 +153,15 @@ function ManagerNav() {
             <nav className="fixed top-0 inset-x-0 z-[1030] w-full bg-gradient-to-r from-[#0f172a] via-[#16264a] to-[#1e3a8a] shadow-[0_4px_20px_-6px_rgba(15,23,42,0.6)] border-b border-white/10">
                 <div className="mx-auto w-full max-w-[1400px] px-3 lg:px-6">
                     <div className="flex h-16 items-center justify-between gap-3">
-                        {/* Logo 區塊 */}
-                        <a href="/" className="flex items-center gap-3 shrink-0 group">
-                            <span className="flex items-center justify-center h-10 w-10 rounded-xl bg-white/95 shadow-sm ring-1 ring-white/30 overflow-hidden">
-                                <img
-                                    src={logo}
-                                    className="h-8 w-8 object-contain"
-                                    alt="智商系友會LOGO"
-                                />
-                            </span>
-                            <span className="hidden sm:flex flex-col leading-tight">
-                                <span className="text-sm font-semibold text-white tracking-wide">智商系友會</span>
-                                <span className="text-[11px] font-medium text-[#d6b25e]">後台管理系統</span>
+                        {/* Logo 區塊：完整橫向 logo + 後台管理系統標記 */}
+                        <a href="/" className="flex items-center gap-3 min-w-0 shrink group">
+                            <img
+                                src={logo}
+                                className="h-9 w-auto max-w-[50vw] sm:max-w-[300px] object-contain rounded-lg bg-white px-2 py-1 shadow-sm"
+                                alt="國立高雄科技大學 智慧商務系系友會"
+                            />
+                            <span className="hidden lg:inline-flex items-center rounded-md bg-[#d6b25e]/15 px-2 py-0.5 text-[11px] font-medium text-[#d6b25e] whitespace-nowrap">
+                                後台管理系統
                             </span>
                         </a>
 

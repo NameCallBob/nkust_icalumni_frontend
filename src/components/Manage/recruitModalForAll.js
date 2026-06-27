@@ -356,7 +356,7 @@ const RecruitFormModal = ({
                   詳細資料說明 <span className="text-error ml-0.5">*</span>
                 </span>
               </label>
-              <div className="border border-base-300 rounded-lg" style={{ minHeight: '300px' }}>
+              <div className="border border-base-300 rounded-lg min-h-[300px]">
                 <ReactQuill
                   value={formData.intro || ''}
                   onChange={handleQuillChange}
@@ -422,12 +422,7 @@ const RecruitFormModal = ({
                       <img
                         src={typeof src === 'string' ? src : (src.image ? process.env.REACT_APP_BASE_URL + src.image : src)}
                         alt="預覽照片"
-                        className="rounded-lg border border-base-300 bg-base-100 p-1"
-                        style={{
-                          width: '120px',
-                          height: '120px',
-                          objectFit: 'cover',
-                        }}
+                        className="w-[120px] h-[120px] object-cover rounded-lg border border-base-300 bg-base-100 p-1"
                       />
                     </div>
                   ))}

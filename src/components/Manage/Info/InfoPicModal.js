@@ -58,7 +58,7 @@ const UploadImageModal = ({ show, onClose, onUploadSuccess , page_type }) => {
       variant="admin"
       footer={
         <>
-          <Button variant="secondary" onClick={onClose} disabled={isUploading}>
+          <Button variant="ghost" onClick={onClose} disabled={isUploading}>
             取消
           </Button>
           <Button variant="primary" onClick={handleUpload} disabled={isUploading}>
@@ -85,17 +85,14 @@ const UploadImageModal = ({ show, onClose, onUploadSuccess , page_type }) => {
       </Field>
 
       {/* 選擇圖片檔案 */}
-      <div className="form-control w-full mb-4">
-        <label className="label pb-1">
-          <span className="label-text font-medium text-base-content">選擇圖片檔案</span>
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="file-input file-input-bordered w-full"
-        />
-      </div>
+      <Field
+        as="input"
+        type="file"
+        label="選擇圖片檔案"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="file-input file-input-bordered"
+      />
     </AppModal>
   );
 };

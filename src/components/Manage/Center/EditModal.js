@@ -579,14 +579,9 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
 
     if (shouldShowArrow()) {
       return (
-        <div className="absolute" style={{
-          right: '-30px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 1000
-        }}>
+        <div className="absolute -right-7 top-1/2 -translate-y-1/2 z-[1000]">
           <div className="text-error">
-            <BsArrowLeftCircleFill style={{ fontSize: '1.5rem' }} />
+            <BsArrowLeftCircleFill className="text-2xl" />
           </div>
         </div>
       );
@@ -861,14 +856,10 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                       <img
                         src={formData.photo.startsWith('data:') ? formData.photo : process.env.REACT_APP_BASE_URL+formData.photo}
                         alt="預覽"
-                        className="rounded-lg border border-base-300 p-1"
-                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                        className="rounded-lg border border-base-300 p-1 w-[100px] h-[100px] object-cover"
                       />
                     ) : (
-                      <div
-                        className="bg-base-200 flex items-center justify-center"
-                        style={{ width: '100px', height: '100px', border: '1px dashed #ccc' }}
-                      >
+                      <div className="bg-base-200 flex items-center justify-center w-[100px] h-[100px] border border-dashed border-base-300 rounded-lg">
                         <span className="text-base-content/50">無照片</span>
                       </div>
                     )}
@@ -897,28 +888,22 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
               </div>
 
               {/* 自我介紹 */}
-              <div className="form-control w-full mb-4 relative">
-                <label className="label pb-1">
-                  <span className="label-text font-medium text-base-content">自我介紹（選填）</span>
-                </label>
-                <textarea
-                  className={`textarea textarea-bordered w-full ${((submitAttempted && errors.intro) || apiErrors.intro) ? 'border-error' : ''}`}
+              <div className="relative">
+                <Field
+                  as="textarea"
                   rows={4}
+                  label="自我介紹（選填）"
                   name="intro"
                   value={formData.intro}
                   onChange={handleChange}
                   onFocus={() => handleFocus("intro")}
                   onBlur={handleBlur}
+                  error={((submitAttempted && errors.intro) || apiErrors.intro) ? (errors.intro || apiErrors.intro) : undefined}
                   placeholder="請輸入有關於您的自我介紹，可說明專長、職業以利於被搜尋到"
                   maxLength={200}
                 />
                 <RequiredFieldArrow fieldName="intro" />
-                {((submitAttempted && errors.intro) || apiErrors.intro) && (
-                  <span className="label-text-alt text-error mt-1 block">
-                    {errors.intro || apiErrors.intro}
-                  </span>
-                )}
-                <span className="label-text-alt text-base-content/60 block text-right">
+                <span className="label-text-alt text-base-content/60 block text-right -mt-2 mb-2">
                   {formData.intro ? formData.intro.length : 0}/200
                 </span>
               </div>
@@ -951,9 +936,9 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
 
   // 底部按鈕
   const footer = (
-    <div className="w-full flex justify-between">
+    <div className="w-full flex justify-between gap-2">
       <Button
-        variant="outline"
+        variant="ghost"
         onClick={activeStep > 1 ? handlePrevStep : handleClose}
         disabled={loading}
       >

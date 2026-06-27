@@ -2,15 +2,14 @@ import Axios from "common/Axios";
 import React, { useState, useEffect } from "react";
 import AppModal from "components/common/AppModal";
 import { Button, Field, Spinner } from "components/common/ui";
-import { Award } from "lucide-react";
 import {
-  BsXLg,
-  BsArrowRight,
-  BsArrowLeft,
-  BsCheck2,
-  BsSearch,
-  BsCheckLg,
-} from "react-icons/bs";
+  Award,
+  X,
+  ArrowRight,
+  ArrowLeft,
+  Check,
+  Search,
+} from "lucide-react";
 
 const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
   const [step, setStep] = useState(1);
@@ -80,7 +79,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
   const footer = (
     <>
       <Button variant="ghost" onClick={resetForm}>
-        <BsXLg /> 取消
+        <X size={16} /> 取消
       </Button>
       {step === 1 && (
         <Button
@@ -88,24 +87,20 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
           disabled={!selectedMember || loading}
           onClick={handleNextStep}
         >
-          <BsArrowRight /> 下一步
+          <ArrowRight size={16} /> 下一步
         </Button>
       )}
       {step === 2 && (
         <>
-          <Button
-            variant="outline"
-            onClick={() => setStep(1)}
-            className="mr-2"
-          >
-            <BsArrowLeft /> 上一步
+          <Button variant="outline" onClick={() => setStep(1)}>
+            <ArrowLeft size={16} /> 上一步
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
             disabled={!alumniData.highlight}
           >
-            <BsCheck2 /> 新增
+            <Check size={16} /> 新增
           </Button>
         </>
       )}
@@ -127,7 +122,10 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
       {step === 1 && (
         <>
           <div className="relative mb-3">
-            <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50"
+            />
             <input
               className="input input-bordered w-full pl-9"
               placeholder="輸入名稱查詢..."
@@ -170,7 +168,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
                               size="sm"
                               onClick={() => setSelectedMember(member)}
                             >
-                              <BsCheckLg />{" "}
+                              <Check size={16} />{" "}
                               {selectedMember?.id === member.id ? "已選" : "選擇"}
                             </Button>
                           </td>

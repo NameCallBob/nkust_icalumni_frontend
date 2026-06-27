@@ -168,7 +168,7 @@ const PwdUpdateModal = ({ show, handleClose, onSuccess }) => {
       size="md"
       footer={
         <>
-          <Button variant="secondary" onClick={handleModalClose} disabled={loading}>
+          <Button variant="ghost" onClick={handleModalClose} disabled={loading}>
             取消
           </Button>
           <Button

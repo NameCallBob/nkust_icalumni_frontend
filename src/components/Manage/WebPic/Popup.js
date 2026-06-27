@@ -205,11 +205,11 @@ const PopupAdManager = () => {
           <table className="table table-zebra w-full">
             <thead>
               <tr>
-                <th style={{ width: '5%' }}>#</th>
-                <th style={{ width: '30%' }}>廣告預覽</th>
-                <th style={{ width: '15%' }}>狀態</th>
-                <th style={{ width: '15%' }}>上傳日期</th>
-                <th style={{ width: '35%' }}>操作</th>
+                <th className="w-[5%]">#</th>
+                <th className="w-[30%]">廣告預覽</th>
+                <th className="w-[15%]">狀態</th>
+                <th className="w-[15%]">上傳日期</th>
+                <th className="w-[35%]">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -217,12 +217,11 @@ const PopupAdManager = () => {
                 <tr key={ad.id} className="hover">
                   <td>{index + 1}</td>
                   <td>
-                    <div className="thumbnail-container" style={{ width: '200px', height: '120px', overflow: 'hidden' }}>
+                    <div className="w-[200px] max-w-full h-[120px] overflow-hidden">
                       <img
                         src={ad.image || "https://via.placeholder.com/300x150.png?text=No+Image+Available"}
                         alt="廣告圖片"
-                        className="rounded"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+                        className="rounded w-full h-full object-cover cursor-pointer"
                         onClick={() => showImagePreview(ad)}
                       />
                     </div>
@@ -295,7 +294,7 @@ const PopupAdManager = () => {
         title={currentAd ? "編輯彈出廣告" : "新增彈出廣告"}
         icon={<FaImage size={18} />}
         footer={
-          <div className="w-full flex justify-between">
+          <div className="w-full flex justify-end gap-2">
             <Button
               variant="ghost"
               onClick={() => setShowModal(false)}
@@ -325,8 +324,7 @@ const PopupAdManager = () => {
                   <img
                     src={formData.image}
                     alt="預覽"
-                    className="mb-3 rounded mx-auto"
-                    style={{ maxHeight: '300px' }}
+                    className="mb-3 rounded mx-auto max-h-[300px]"
                   />
                   <div className="absolute top-0 right-0 m-2">
                     <button
@@ -423,8 +421,7 @@ const PopupAdManager = () => {
               <img
                 src={adToDelete.image || "https://via.placeholder.com/300x150.png?text=No+Image+Available"}
                 alt="廣告圖片"
-                className="rounded mt-2 mx-auto"
-                style={{ maxHeight: '150px' }}
+                className="rounded mt-2 mx-auto max-h-[150px]"
               />
             </div>
           )}
@@ -444,7 +441,7 @@ const PopupAdManager = () => {
         icon={<FaEye size={18} />}
         footer={
           <div className="w-full flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => setPreviewImage(null)}>
+            <Button variant="ghost" onClick={() => setPreviewImage(null)}>
               關閉
             </Button>
             {previewImage && (
@@ -466,8 +463,7 @@ const PopupAdManager = () => {
             <img
               src={previewImage.image || "https://via.placeholder.com/800x600.png?text=No+Image+Available"}
               alt="廣告圖片"
-              className="rounded mx-auto"
-              style={{ maxHeight: '70vh' }}
+              className="rounded mx-auto max-h-[70vh]"
             />
           )}
         </div>

@@ -9,3 +9,13 @@
   --modal-header-bg: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
   --modal-backdrop: rgba(8, 15, 40, 0.55);
 }
+
+/* 全站統一字體：Noto Sans TC */
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+}

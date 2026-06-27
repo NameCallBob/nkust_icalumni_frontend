@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { KeyRound } from 'lucide-react';
 import AppModal from 'components/common/AppModal';
-import { Button } from 'components/common/ui';
+import { Button, Field } from 'components/common/ui';
 
 function ChangePasswordModal({ showModal, handleClose, handleChangePassword }) {
   const [newPassword, setNewPassword] = useState('');
@@ -42,42 +42,46 @@ function ChangePasswordModal({ showModal, handleClose, handleChangePassword }) {
       icon={<KeyRound size={20} />}
       size="sm"
       variant="admin"
+      footer={
+        <>
+          <Button variant="ghost" type="button" onClick={handleClose}>
+            取消
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            form="passwordUpdateForm"
+            loading={loading}
+            disabled={loading}
+          >
+            修改密碼
+          </Button>
+        </>
+      }
     >
       {errorMessage && (
-        <div className="alert alert-error mb-3">{errorMessage}</div>
+        <div className="alert alert-error mb-4">{errorMessage}</div>
       )}
-      <form onSubmit={handleSubmit}>
-        <div className="form-control w-full mb-3">
-          <label className="label pb-1" htmlFor="formNewPassword">
-            <span className="label-text font-medium text-base-content">新密碼</span>
-          </label>
-          <input
-            id="formNewPassword"
-            type="password"
-            className="input input-bordered w-full"
-            placeholder="輸入新密碼"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-        </div>
+      <form id="passwordUpdateForm" onSubmit={handleSubmit}>
+        <Field
+          as="input"
+          id="formNewPassword"
+          label="新密碼"
+          type="password"
+          placeholder="輸入新密碼"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
 
-        <div className="form-control w-full mb-3">
-          <label className="label pb-1" htmlFor="formConfirmPassword">
-            <span className="label-text font-medium text-base-content">重複新密碼</span>
-          </label>
-          <input
-            id="formConfirmPassword"
-            type="password"
-            className="input input-bordered w-full"
-            placeholder="再次輸入新密碼"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-
-        <Button variant="primary" type="submit" loading={loading} disabled={loading}>
-          修改密碼
-        </Button>
+        <Field
+          as="input"
+          id="formConfirmPassword"
+          label="重複新密碼"
+          type="password"
+          placeholder="再次輸入新密碼"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
       </form>
     </AppModal>
   );

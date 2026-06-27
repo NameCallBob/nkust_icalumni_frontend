@@ -1,7 +1,6 @@
 import Axios from 'common/Axios';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { FileSpreadsheet } from 'lucide-react';
 import AppModal from 'components/common/AppModal';
 import { Button } from 'components/common/ui';
@@ -141,26 +140,26 @@ const UploadExcelModal = ({ show, handleClose }) => {
         }
       >
         {/* 選擇 Excel 檔案區塊 */}
-        <div className="form-control w-full mb-3">
+        <div className="form-control w-full mb-4">
           <label className="label pb-1">
             <span className="label-text font-medium text-base-content">
               選擇您的Excel（只接受 *.xlsx）
             </span>
           </label>
-          <p>範例如下：</p>
+          <p className="text-sm text-base-content/60 mb-2">範例如下：</p>
           <img
             src={ExampleImage}
-            style={{ height: '200px' }}
-            alt=""
+            className="h-[200px] w-auto max-w-full rounded-lg border border-base-300 mb-2"
+            alt="Excel 範例"
           />
           <input
             type="file"
             onChange={handleFileChange}
-            className="file-input file-input-bordered w-full mt-2"
+            className="file-input file-input-bordered w-full"
           />
         </div>
 
-        <Button variant="secondary" onClick={handleUpload} loading={loading} className="mb-3">
+        <Button variant="primary" onClick={handleUpload} loading={loading} className="mb-4">
           上傳
         </Button>
 

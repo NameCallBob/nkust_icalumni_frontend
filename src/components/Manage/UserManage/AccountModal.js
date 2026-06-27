@@ -5,7 +5,6 @@ import { BsArrowUp, BsArrowDown } from "react-icons/bs";
 import { toast } from "react-toastify";
 import AppModal from "components/common/AppModal";
 import { Button, Field, Spinner } from "components/common/ui";
-import 'css/manage/private_modal.css'
 
 const AccountManageModal = ({ show, handleClose }) => {
   const [users, setUsers] = useState([]);
@@ -238,26 +237,28 @@ const AccountManageModal = ({ show, handleClose }) => {
                   <tbody>
                     {users.map((user) => (
                       <tr key={user.id}>
-                        <td className={user.is_active ? "email-active" : "email-inactive"}>
+                        <td className={`font-medium ${user.is_active ? "text-success" : "text-error"}`}>
                           {user.email}
                         </td>
                         <td>{user.is_active ? "啟用" : "停用"}</td>
                         <td>{formatDate(user.date_joined)}</td>
                         <td>
-                          <button
-                            type="button"
-                            className="btn btn-warning btn-sm mr-2"
-                            onClick={() => setSelectedUserId(user.id)}
-                          >
-                            編輯
-                          </button>
-                          <Button
-                            variant="error"
-                            size="sm"
-                            onClick={() => handleDelete(user.id)}
-                          >
-                            刪除
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => setSelectedUserId(user.id)}
+                            >
+                              編輯
+                            </Button>
+                            <Button
+                              variant="error"
+                              size="sm"
+                              onClick={() => handleDelete(user.id)}
+                            >
+                              刪除
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -317,12 +318,11 @@ const AccountManageModal = ({ show, handleClose }) => {
               disabled
               readOnly
             />
-            <div className="flex justify-between">
+            <div className="flex flex-wrap justify-between gap-2">
               {isEditMode && (
                 <>
-                  <button
-                    type="button"
-                    className="btn btn-warning"
+                  <Button
+                    variant="secondary"
                     onClick={handlePasswordChange}
                     disabled={actionLoading === "password"}
                   >
@@ -331,7 +331,7 @@ const AccountManageModal = ({ show, handleClose }) => {
                     ) : (
                       "更改密碼"
                     )}
-                  </button>
+                  </Button>
                   <Button
                     variant="secondary"
                     onClick={() => handleToggleActive(selectedUserId, formData.isActive)}

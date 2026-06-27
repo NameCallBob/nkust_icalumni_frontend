@@ -9,8 +9,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        // 全站統一使用 Noto Sans TC（含原本用 font-serif 的標題）
         sans: ['Noto Sans TC', 'Microsoft JhengHei', 'sans-serif'],
-        serif: ['Noto Serif TC', 'Playfair Display', 'Times New Roman', 'serif'],
+        serif: ['Noto Sans TC', 'Microsoft JhengHei', 'sans-serif'],
       },
       colors: {
         navy: {

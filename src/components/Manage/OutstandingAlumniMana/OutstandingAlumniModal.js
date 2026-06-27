@@ -93,7 +93,7 @@ const AddOutstandingAlumniModal = ({ show, onClose, onSubmit }) => {
       )}
       {step === 2 && (
         <>
-          <Button variant="outline" onClick={() => setStep(1)} className="mr-2">
+          <Button variant="outline" onClick={() => setStep(1)}>
             <BsArrowLeft /> 上一步
           </Button>
           <Button

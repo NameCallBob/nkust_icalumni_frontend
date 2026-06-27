@@ -180,7 +180,10 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
       closeOnBackdrop={!loading}
       footer={
         <>
-          <Button variant="secondary" onClick={handleClear} disabled={loading}>
+          <Button variant="ghost" onClick={onHide} disabled={loading}>
+            取消
+          </Button>
+          <Button variant="ghost" onClick={handleClear} disabled={loading}>
             清除
           </Button>
           <Button variant="primary" onClick={handleUpload} disabled={loading}>
@@ -192,9 +195,6 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
             ) : (
               "上傳"
             )}
-          </Button>
-          <Button variant="error" onClick={onHide} disabled={loading}>
-            取消
           </Button>
         </>
       }
@@ -223,13 +223,16 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
       />
 
       <div
-        className={`upload-area ${dragActive ? 'drag-active' : ''}`}
+        className={`flex flex-col items-center justify-center p-8 min-h-[200px] rounded-lg border-2 border-dashed cursor-pointer transition-all duration-300 ${
+          dragActive
+            ? 'border-primary bg-primary/5'
+            : 'border-base-300 bg-base-200'
+        }`}
         onDragEnter={handleDrag}
         onDragOver={handleDrag}
         onDragLeave={handleDrag}
         onDrop={handleDrop}
         onClick={openFileSelector}
-        style={uploadAreaStyle(dragActive)}
       >
         <input
           ref={fileInputRef}
@@ -237,12 +240,12 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
           multiple
           onChange={handleFileChange}
           accept="image/jpeg,image/png,image/gif"
-          style={{ display: 'none' }}
+          className="hidden"
           disabled={loading}
         />
 
-        <FiUpload size={32} color="#6c757d" />
-        <p className="mt-3">拖曳照片至此處或點擊上傳</p>
+        <FiUpload size={32} className="text-base-content/40" />
+        <p className="mt-3 text-base-content">拖曳照片至此處或點擊上傳</p>
         <small className="text-base-content/60">
           支援 JPG、PNG、GIF 格式，單檔大小不超過 5MB
         </small>
@@ -263,23 +266,26 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
             </div>
           )}
 
-          <div style={previewContainerStyle}>
+          <div className="flex flex-wrap justify-start gap-3">
             {selectedFiles.map((file, index) => (
-              <div key={index} style={previewItemStyle}>
+              <div
+                key={index}
+                className="relative w-28 h-28 sm:w-[150px] sm:h-[150px] rounded-lg overflow-hidden shadow-md"
+              >
                 <img
                   src={URL.createObjectURL(file)}
                   alt={`Preview ${index}`}
-                  style={previewImageStyle}
+                  className="w-full h-full object-cover"
                 />
-                <div style={previewOverlayStyle}>
-                  <p style={fileNameStyle}>{file.name}</p>
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-1 p-2 bg-black/60 text-white">
+                  <p className="m-0 max-w-[80%] truncate text-xs">{file.name}</p>
                   {!loading && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         removeFile(index);
                       }}
-                      style={removeButtonStyle}
+                      className="flex items-center justify-center p-1 rounded-full text-white hover:bg-white/20 transition-colors"
                       title="移除此照片"
                     >
                       <FiX />
@@ -293,83 +299,6 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
       )}
     </AppModal>
   );
-};
-
-// 上傳區域樣式
-const uploadAreaStyle = (dragActive) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '2rem',
-  border: `2px dashed ${dragActive ? '#2684FF' : '#ced4da'}`,
-  borderRadius: '0.5rem',
-  backgroundColor: dragActive ? 'rgba(38, 132, 255, 0.05)' : '#f8f9fa',
-  cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  minHeight: '200px',
-});
-
-// 預覽容器樣式
-const previewContainerStyle = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '15px',
-  justifyContent: 'flex-start',
-};
-
-// 預覽項目樣式
-const previewItemStyle = {
-  position: 'relative',
-  width: '150px',
-  height: '150px',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-};
-
-// 預覽圖片樣式
-const previewImageStyle = {
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
-};
-
-// 預覽覆蓋層樣式
-const previewOverlayStyle = {
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  right: 0,
-  padding: '8px',
-  backgroundColor: 'rgba(0,0,0,0.6)',
-  color: 'white',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-};
-
-// 檔案名稱樣式
-const fileNameStyle = {
-  margin: 0,
-  fontSize: '0.75rem',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  maxWidth: '80%',
-};
-
-// 移除按鈕樣式
-const removeButtonStyle = {
-  background: 'none',
-  border: 'none',
-  color: 'white',
-  cursor: 'pointer',
-  padding: '4px',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
 };
 
 export default PhotoUploadModal;

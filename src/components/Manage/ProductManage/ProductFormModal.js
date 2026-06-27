@@ -59,12 +59,17 @@ function ProductFormModal({ product, show, handleClose }) {
             icon={<Package size={18} />}
             variant="admin"
             footer={
-                <Button variant="primary" type="submit" form="productForm">
-                    {product ? '更新產品' : '新增產品'}
-                </Button>
+                <div className="flex justify-end gap-2">
+                    <Button variant="ghost" type="button" onClick={() => handleClose(null)}>
+                        取消
+                    </Button>
+                    <Button variant="primary" type="submit" form="productForm">
+                        {product ? '更新產品' : '新增產品'}
+                    </Button>
+                </div>
             }
         >
-            <form id="productForm" onSubmit={handleSubmit}>
+            <form id="productForm" onSubmit={handleSubmit} className="flex flex-col gap-1">
                 <Field
                     as="input"
                     type="text"
@@ -91,13 +96,13 @@ function ProductFormModal({ product, show, handleClose }) {
                 />
 
                 {/* 圖片預覽區塊 */}
-                <div className="image-previews flex flex-wrap">
+                <div className="flex flex-wrap gap-2 mt-2">
                     {previews.map((preview, index) => (
                         <img
                             key={index}
                             src={preview}
                             alt={`preview ${index}`}
-                            style={{ width: '100px', height: '100px', margin: '5px' }}
+                            className="w-24 h-24 rounded-lg border border-base-300 object-cover"
                         />
                     ))}
                 </div>

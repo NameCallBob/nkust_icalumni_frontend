@@ -59,18 +59,14 @@ function UserNav() {
       >
         <div className="mx-auto max-w-7xl px-4">
           <nav className="flex h-16 items-center justify-between">
-            {/* 品牌 */}
-            <a href="/" className="flex items-center gap-2.5 min-w-0">
+            {/* 品牌：完整橫向 logo（含系友會名稱），以白底圓角承載使其於深藍底清晰 */}
+            <a href="/" className="flex items-center min-w-0 shrink">
               <img
                 src={getImageSrc(logo, 'default')}
-                className="h-10 w-10 rounded-lg bg-white object-contain p-0.5 shrink-0"
-                alt="智商系友會LOGO"
+                className="h-9 sm:h-11 w-auto max-w-[62vw] sm:max-w-[420px] object-contain rounded-lg bg-white px-2.5 py-1 shadow-sm"
+                alt="國立高雄科技大學 智慧商務系系友會"
                 onError={(e) => handleImageError(e, 'default')}
               />
-              <div className="hidden min-[480px]:flex flex-col leading-tight text-white">
-                <span className="font-serif font-bold text-base">智商系友會</span>
-                <span className="text-[10px] tracking-wider text-white/60">Alumni Association</span>
-              </div>
             </a>
 
             {/* 手機選單鈕 */}

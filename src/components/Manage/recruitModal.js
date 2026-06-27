@@ -403,12 +403,12 @@ const RecruitFormModal = ({
                   詳細資料說明<span className="text-error ml-0.5">*</span>
                 </span>
               </label>
-              <div className="border" style={{ minHeight: '300px' }}>
+              <div className="border border-base-300 rounded-lg overflow-hidden min-h-[300px]">
                 <ReactQuill
                   value={formData.intro || ''}
                   onChange={handleQuillChange}
                   placeholder="請詳細描述此職位..."
-                  style={{ height: '250px' }}
+                  className="h-[250px]"
                 />
               </div>
               {validated && stepErrors.intro && (
@@ -464,18 +464,13 @@ const RecruitFormModal = ({
             {imagePreviews.length > 0 && (
               <div>
                 <p>已選擇的圖片：</p>
-                <div className="flex flex-wrap">
+                <div className="flex flex-wrap gap-2">
                   {imagePreviews.map((src, index) => (
-                    <div key={index} className="relative mr-2 mb-2">
+                    <div key={index} className="relative">
                       <img
                         src={typeof src === 'string' ? src : (src.image ? process.env.REACT_APP_BASE_URL + src.image : src)}
                         alt="預覽照片"
-                        className="rounded border border-base-300"
-                        style={{
-                          width: '120px',
-                          height: '120px',
-                          objectFit: 'cover',
-                        }}
+                        className="rounded-lg border border-base-300 w-[120px] h-[120px] object-cover"
                       />
                     </div>
                   ))}
@@ -496,7 +491,7 @@ const RecruitFormModal = ({
       {/* 禁用按鈕當正在提交時 */}
       {currentStep > 0 && (
         <Button
-          variant="secondary"
+          variant="ghost"
           onClick={handlePrev}
           disabled={isLoading}
         >
