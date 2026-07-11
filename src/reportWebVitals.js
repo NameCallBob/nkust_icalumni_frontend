@@ -94,11 +94,11 @@ const collectCustomMetrics = (callback) => {
   }
 
   // React 組件載入時間
-  const reactLoadStart = performance.mark('react-load-start');
+  performance.mark('react-load-start');
 
   // 在 React 完全載入後測量
   setTimeout(() => {
-    const reactLoadEnd = performance.mark('react-load-end');
+    performance.mark('react-load-end');
     const measure = performance.measure('react-load-time', 'react-load-start', 'react-load-end');
 
     if (measure) {

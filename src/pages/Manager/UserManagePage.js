@@ -1,23 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Users } from 'lucide-react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { AdminPage, Card, Spinner } from '@/components/ui';
+import { memberService } from '@/services';
+
 import UserFilter from 'components/Manage/UserManage/UserFilter';
 import UserTable from 'components/Manage/UserManage/UserTable';
 import NewUserModal from 'components/Manage/UserManage/NewUserModal';
 import ChangePasswordModal from 'components/Manage/UserManage/PasswordUpdateModal';
-import Axios from 'common/Axios';
-import LoadingSpinner from 'components/LoadingSpinner';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import AccountManageModal from 'components/Manage/UserManage/AccountModal';
 import UploadExcelModal from 'components/Manage/UserManage/MemberExcelModal';
-import useRWD from 'hooks/useRWD';
-import { PageHeader, Card } from 'components/common/ui';
-import { Users } from 'lucide-react';
+
 /**
- * 使用者管理元件
- * @returns
+ * 使用者管理頁面
+ * 端點（皆透過 memberService，路徑/method/payload 與原本一致）：
+ *  - GET    /member/search/                    memberService.search
+ *  - GET    /member/admin/tableOutput_all/     memberService.adminTableAll
+ *  - GET    /member/admin/getOne/              memberService.adminGetOne
+ *  - POST   /member/admin/newUser_basic/       memberService.adminNewBasic
+ *  - POST   /member/admin/newUser_email/       memberService.adminNewEmail
+ *  - PATCH  /member/admin/partial_change/      memberService.adminPartialChange
+ *  - PATCH  /member/admin/switch_active/       memberService.adminSwitchActive
+ *  - PATCH  /member/admin/switch_paid/         memberService.adminSwitchPaid
+ *  - PATCH  /member/admin/update_password/     memberService.adminUpdatePassword
+ *  - DELETE /member/admin/delete/              memberService.adminDelete
  */
 function UserManagement() {
-  const rwd = useRWD();
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
     gender: '',
@@ -43,13 +53,61 @@ function UserManagement() {
     setShowPasswordModal(true);
   };
 
+  const handleAxiosError = useCallback((error) => {
+    if (error.response) {
+      const { status, data } = error.response;
+      let errorDetails = '';
+
+      // 計算錯誤訊息數量
+      const countErrors = (obj) =>
+        Object.values(obj).reduce((sum, val) => {
+          if (Array.isArray(val)) return sum + val.length;
+          if (typeof val === 'object' && val !== null) return sum + countErrors(val);
+          if (typeof val === 'string') return sum + 1;
+          return sum;
+        }, 0);
+
+      // 提取錯誤訊息
+      const extractErrors = (obj) =>
+        Object.entries(obj)
+          .flatMap(([key, val]) => {
+            if (Array.isArray(val)) return val.map((message) => `${key}: ${message}`);
+            if (typeof val === 'object' && val !== null) return extractErrors(val);
+            if (typeof val === 'string') return `${key}: ${val}`;
+            return [];
+          })
+          .join('\n');
+
+      const errorCount = data && typeof data === 'object' ? countErrors(data) : 0;
+      if (errorCount > 0 && errorCount <= 3) {
+        errorDetails = extractErrors(data);
+      }
+
+      switch (status) {
+        case 400:
+          toast.error(errorDetails || '請求錯誤，請檢查輸入的資料');
+          break;
+        case 401:
+          toast.error('未授權，請重新登入');
+          break;
+        case 403:
+          toast.error('無權限執行此操作');
+          break;
+        default:
+          toast.error(errorDetails || '發生未知錯誤，請稍後再試');
+      }
+    } else {
+      toast.error('伺服器無回應，請稍後再試');
+    }
+  }, []);
+
   const applyFilters = async () => {
     setLoading(true);
     try {
       const cleanFilters = Object.fromEntries(
-        Object.entries(filters).filter(([key, value]) => value !== '')
+        Object.entries(filters).filter(([, value]) => value !== '')
       );
-      const res = await Axios().get("/member/search/", { params: cleanFilters });
+      const res = await memberService.search(cleanFilters);
       setUsers(res.data.results);
     } catch (error) {
       handleAxiosError(error);
@@ -58,68 +116,11 @@ function UserManagement() {
     }
   };
 
-  const handleAxiosError = (error) => {
-    if (error.response) {
-      const { status, data } = error.response;
-      let errorDetails = "";
-
-      // 計算錯誤訊息數量
-      const countErrors = (obj) =>
-        Object.values(obj).reduce((sum, val) => {
-          if (Array.isArray(val)) return sum + val.length; // 如果是陣列，累加長度
-          if (typeof val === "object" && val !== null) return sum + countErrors(val); // 如果是物件，遞迴計算
-          if (typeof val === "string") return sum + 1; // 如果是字串，計算為 1 條錯誤
-          return sum;
-        }, 0);
-
-      // 提取錯誤訊息（新增對字串型別的支援）
-      const extractErrors = (obj) =>
-        Object.entries(obj)
-          .flatMap(([key, val]) => {
-            if (Array.isArray(val)) return val.map((message) => `${key}: ${message}`);
-            if (typeof val === "object" && val !== null) return extractErrors(val);
-            if (typeof val === "string") return `${key}: ${val}`;
-            return [];
-          })
-          .join("\n");
-
-      // 計算錯誤訊息數量
-      const errorCount = data && typeof data === "object" ? countErrors(data) : 0;
-
-      // 提取少量錯誤詳細資訊
-      if (errorCount > 0 && errorCount <= 3) {
-        errorDetails = extractErrors(data);
-      }
-
-      // 根據 HTTP 狀態碼處理
-      switch (status) {
-        case 400:
-          toast.error(
-            errorDetails || "請求錯誤，請檢查輸入的資料"
-          );
-          break;
-        case 401:
-          toast.error("未授權，請重新登入");
-          break;
-        case 403:
-          toast.error("無權限執行此操作");
-          break;
-        default:
-          toast.error(
-            errorDetails || "發生未知錯誤，請稍後再試"
-          );
-      }
-    } else {
-      toast.error("伺服器無回應，請稍後再試");
-    }
-  };
-
-
-  const handlePaymentStatus = async (id, isPaid) => {
+  const handlePaymentStatus = async (id) => {
     setLoading(true);
     try {
-      await Axios().patch("/member/admin/switch_paid/", { member_id: id });
-      toast.success("繳費狀態切換成功");
+      await memberService.adminSwitchPaid({ member_id: id });
+      toast.success('繳費狀態切換成功');
       fetchUsers();
     } catch (error) {
       handleAxiosError(error);
@@ -128,11 +129,11 @@ function UserManagement() {
     }
   };
 
-  const handleToggleActive = async (id, isActive) => {
+  const handleToggleActive = async (id) => {
     setLoading(true);
     try {
-      await Axios().patch("/member/admin/switch_active/", { member_id: id });
-      toast.success("帳號狀態切換成功");
+      await memberService.adminSwitchActive({ member_id: id });
+      toast.success('帳號狀態切換成功');
       fetchUsers();
     } catch (error) {
       handleAxiosError(error);
@@ -144,8 +145,8 @@ function UserManagement() {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await Axios().delete("/member/admin/delete/", { data: { member_id: id } });
-      toast.success("刪除成功");
+      await memberService.adminDelete({ member_id: id });
+      toast.success('刪除成功');
       fetchUsers();
     } catch (error) {
       handleAxiosError(error);
@@ -157,8 +158,8 @@ function UserManagement() {
   const handleChangePassword = async (password) => {
     setLoading(true);
     try {
-      await Axios().patch("/member/admin/update_password/", { member_id: userId, password: password });
-      toast.success("密碼修改成功");
+      await memberService.adminUpdatePassword({ member_id: userId, password });
+      toast.success('密碼修改成功');
     } catch (error) {
       handleAxiosError(error);
     } finally {
@@ -168,24 +169,22 @@ function UserManagement() {
     }
   };
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await Axios().get("/member/admin/tableOutput_all/");
+      const res = await memberService.adminTableAll();
       setUsers(res.data);
     } catch (error) {
       handleAxiosError(error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleAxiosError]);
 
-  const fetchUserData = async (id) => {
+  const fetchUserData = useCallback(async (id) => {
     setLoading(true);
     try {
-      const res = await Axios().get(`/member/admin/getOne/`, {
-        params: { "member_id": id }
-      });
+      const res = await memberService.adminGetOne({ member_id: id });
       return res.data;
     } catch (error) {
       handleAxiosError(error);
@@ -193,11 +192,11 @@ function UserManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleAxiosError]);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -209,35 +208,21 @@ function UserManagement() {
     setShowModal(true);
   };
 
-  const handleCloseACModal = () => {
-    setAcModal(false);
-  };
-
-  const handleShowACModal = () => {
-    setAcModal(true);
-  };
-  const handleShowExcelModal = () => {
-    setExcelModal(true)
-  }
-  const handleCloseExcelModal = () => {
-    setExcelModal(false)
-  }
   const handleAddUser = async (complex, info) => {
     setLoading(true);
     try {
       if (complex) {
         if (userId) {
-          let tmp_info = info;
-          tmp_info['member_id'] = userId;
-          await Axios().patch(`/member/admin/partial_change/`, tmp_info);
-          toast.success("帳號編輯成功");
+          const tmp_info = { ...info, member_id: userId };
+          await memberService.adminPartialChange(tmp_info);
+          toast.success('帳號編輯成功');
         } else {
-          await Axios().post("/member/admin/newUser_basic/", info);
-          toast.success("複雜帳號新增成功");
+          await memberService.adminNewBasic(info);
+          toast.success('複雜帳號新增成功');
         }
       } else {
-        await Axios().post("/member/admin/newUser_email/", info);
-        toast.success("簡單帳號新增成功");
+        await memberService.adminNewEmail(info);
+        toast.success('簡單帳號新增成功');
       }
       fetchUsers();
     } catch (error) {
@@ -249,49 +234,39 @@ function UserManagement() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <PageHeader
-        title="使用者管理"
-        subtitle="管理校友會帳號、繳費與啟用狀態，並可批次匯入系友資料"
-        icon={<Users className="h-5 w-5" />}
-      />
-
+    <AdminPage
+      title="使用者管理"
+      description="管理校友會帳號、繳費與啟用狀態，並可批次匯入系友資料"
+      icon={Users}
+    >
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <aside className="lg:col-span-4 xl:col-span-3">
-          <Card padding="md" className="lg:sticky lg:top-6">
+          <div className="lg:sticky lg:top-6">
             <UserFilter
               filters={filters}
               setFilters={setFilters}
               applyFilters={applyFilters}
               handleAddUser_easy={() => handleShowModal(false)}
               handleAddUser_complex={() => handleShowModal(true)}
-              handleAccountModal={() =>handleShowACModal() }
-              handleExcelModal={() => handleShowExcelModal()}
+              handleAccountModal={() => setAcModal(true)}
+              handleExcelModal={() => setExcelModal(true)}
             />
-          </Card>
+          </div>
         </aside>
 
         <section className="lg:col-span-8 xl:col-span-9">
-          <Card padding={rwd.isMobile ? 'sm' : 'md'}>
+          <Card className="p-4 sm:p-6">
             {loading ? (
-              <div className="flex min-h-[240px] items-center justify-center">
-                <LoadingSpinner></LoadingSpinner>
-              </div>
+              <Spinner center label="載入使用者中" />
             ) : (
-              // UserTable 內含 DataTable，已自帶 RWD（桌機表格 / 手機卡片），
-              // 不再用 minWidth:800 的橫向捲動 wrapper（舊設計殘留，會造成手機溢出）。
-              <div className="w-full min-w-0">
-                <UserTable
-                  users={users}
-                  handleShowModal={handleShowModal}
-                  handleEdit={handleEdit}
-                  handlePaymentStatus={handlePaymentStatus}
-                  handleToggleActive={handleToggleActive}
-                  handleDelete={handleDelete}
-                  handlePassword={handlePassword}
-                  style={rwd.getTableStyle()}
-                />
-              </div>
+              <UserTable
+                users={users}
+                handleEdit={handleEdit}
+                handlePaymentStatus={handlePaymentStatus}
+                handleToggleActive={handleToggleActive}
+                handleDelete={handleDelete}
+                handlePassword={handlePassword}
+              />
             )}
           </Card>
         </section>
@@ -309,19 +284,16 @@ function UserManagement() {
       <ChangePasswordModal
         showModal={showPasswordModal}
         handleClose={() => {
-          setShowPasswordModal(false); setUserId(null);
+          setShowPasswordModal(false);
+          setUserId(null);
         }}
         handleChangePassword={handleChangePassword}
       />
-      <AccountManageModal
-        show={showAcModal}
-        handleClose={handleCloseACModal}
-      />
-      <UploadExcelModal
-        show={showExcelModal}
-        handleClose={() => {handleCloseExcelModal()}}
-      />
-    </div>
+
+      <AccountManageModal show={showAcModal} handleClose={() => setAcModal(false)} />
+
+      <UploadExcelModal show={showExcelModal} handleClose={() => setExcelModal(false)} />
+    </AdminPage>
   );
 }
 

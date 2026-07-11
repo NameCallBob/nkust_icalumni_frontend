@@ -1,11 +1,20 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import Axios from 'common/Axios';
-import 'react-toastify/dist/ReactToastify.css';
-import LoadingSpinner from 'components/LoadingSpinner';
-import { FiUpload, FiX, FiImage } from 'react-icons/fi';
-import AppModal from 'components/common/AppModal';
-import { Button, Field, ModalSection } from 'components/common/ui';
+import { Upload, X, ImageIcon } from 'lucide-react';
+import Axios from '@/common/Axios';
+import {
+  Button,
+  Field,
+  Alert,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui';
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
 
 const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -18,10 +27,7 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-
-  const validateFiles = (files) => {
+  const validateFiles = useCallback((files) => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
 
@@ -37,7 +43,7 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
     }
     setError('');
     return true;
-  };
+  }, []);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -55,7 +61,7 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
+        reader.onerror = (err) => reject(err);
       });
     });
 
@@ -87,7 +93,7 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
         convertFilesToBase64(files);
       }
     }
-  }, []);
+  }, [validateFiles]);
 
   const openFileSelector = () => {
     fileInputRef.current.click();
@@ -107,19 +113,19 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
     let apiname;
 
     if (!title.trim()) {
-      setError("請填寫照片標題");
+      setError('請填寫照片標題');
       return;
     }
 
     if (!base64Files.length) {
-      setError("請選擇要上傳的照片");
+      setError('請選擇要上傳的照片');
       return;
     }
 
-    if (type === "自身照片") {
-      apiname = "/picture/self-images/new/";
-    } else if (type === "公司照片") {
-      apiname = "/picture/company-images/new/";
+    if (type === '自身照片') {
+      apiname = '/picture/self-images/new/';
+    } else if (type === '公司照片') {
+      apiname = '/picture/company-images/new/';
     }
 
     setLoading(true);
@@ -130,16 +136,17 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
       const total = base64Files.length;
       let completed = 0;
 
-      const uploadPromises = base64Files.map((base64, index) => {
+      const uploadPromises = base64Files.map((base64) => {
         const photoData = {
           image: base64,
           title,
           description,
-          "active": true,
+          active: true,
         };
 
-        return Axios().post(apiname, photoData)
-          .then(response => {
+        return Axios()
+          .post(apiname, photoData)
+          .then((response) => {
             completed++;
             setUploadProgress(Math.round((completed / total) * 100));
             return response;
@@ -147,13 +154,13 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
       });
 
       await Promise.all(uploadPromises);
-      toast.success("照片上傳成功！");
+      toast.success('照片上傳成功！');
       onUpload();
       handleClear();
       onHide();
-    } catch (error) {
-      toast.error("照片上傳失敗，請稍後再試");
-      setError("上傳過程中發生錯誤，請檢查網路連線並重試");
+    } catch (err) {
+      toast.error('照片上傳失敗，請稍後再試');
+      setError('上傳過程中發生錯誤，請檢查網路連線並重試');
     } finally {
       setLoading(false);
     }
@@ -168,140 +175,166 @@ const PhotoUploadModal = ({ show, onHide, onUpload, type }) => {
     setUploadProgress(0);
   };
 
+  const handleDropzoneKeyDown = (e) => {
+    if (loading) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openFileSelector();
+    }
+  };
+
   return (
-    <AppModal
-      show={show}
-      onHide={loading ? null : onHide}
-      size="lg"
-      variant="admin"
-      title={type === "自身照片" ? "上傳個人照片" : "上傳公司照片"}
-      icon={<FiImage size={18} />}
-      hideClose={loading}
-      closeOnBackdrop={!loading}
-      footer={
-        <>
+    <Dialog
+      open={show}
+      onOpenChange={(v) => {
+        if (!v && !loading) onHide();
+      }}
+    >
+      <DialogContent className="max-w-2xl" preventQuickClose hideClose={loading}>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ImageIcon className="h-5 w-5 text-primary" />
+            {type === '自身照片' ? '上傳個人照片' : '上傳公司照片'}
+          </DialogTitle>
+        </DialogHeader>
+
+        {error && <Alert variant="destructive">{error}</Alert>}
+
+        {/* 照片資訊 */}
+        <section className="space-y-4">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+            照片資訊
+          </h3>
+
+          <Field
+            as="input"
+            type="text"
+            label="標題"
+            required
+            placeholder="請輸入照片標題"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            disabled={loading}
+          />
+
+          <Field
+            as="textarea"
+            rows={3}
+            label="描述"
+            placeholder="請輸入照片描述（選填）"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            disabled={loading}
+          />
+        </section>
+
+        {/* 選擇照片 */}
+        <section className="space-y-4">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Upload className="h-4 w-4 text-muted-foreground" />
+            選擇照片
+          </h3>
+
+          <div
+            role="button"
+            tabIndex={loading ? -1 : 0}
+            aria-disabled={loading || undefined}
+            aria-label="拖曳照片至此處或點擊上傳"
+            className={`flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+              dragActive ? 'border-primary bg-primary/5' : 'border-border bg-muted'
+            } ${loading ? 'pointer-events-none opacity-60' : ''}`}
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            onClick={openFileSelector}
+            onKeyDown={handleDropzoneKeyDown}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              accept="image/jpeg,image/png,image/gif"
+              className="hidden"
+              disabled={loading}
+            />
+
+            <Upload className="h-8 w-8 text-muted-foreground" />
+            <p className="mt-3 text-foreground">拖曳照片至此處或點擊上傳</p>
+            <small className="text-muted-foreground">
+              支援 JPG、PNG、GIF 格式，單檔大小不超過 5MB
+            </small>
+          </div>
+
+          {selectedFiles.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm text-foreground">
+                已選擇 {selectedFiles.length} 張照片：
+              </p>
+
+              {loading && uploadProgress > 0 && (
+                <div className="mb-3">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                  <div className="mt-1 text-center text-sm text-muted-foreground">
+                    {uploadProgress}%
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap justify-start gap-3">
+                {selectedFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="relative h-28 w-28 overflow-hidden rounded-lg shadow-md sm:h-[150px] sm:w-[150px]"
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`預覽 ${index + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-1 bg-black/60 p-2 text-white">
+                      <p className="m-0 max-w-[80%] truncate text-xs">{file.name}</p>
+                      {!loading && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(index);
+                          }}
+                          className="flex items-center justify-center rounded-full p-1 text-white transition-colors hover:bg-white/20"
+                          aria-label="移除此照片"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+
+        <DialogFooter>
           <Button variant="ghost" onClick={onHide} disabled={loading}>
             取消
           </Button>
           <Button variant="ghost" onClick={handleClear} disabled={loading}>
             清除
           </Button>
-          <Button variant="primary" onClick={handleUpload} disabled={loading}>
-            {loading ? (
-              <>
-                <LoadingSpinner />
-                <span className="ml-2">上傳中...</span>
-              </>
-            ) : (
-              "上傳"
-            )}
+          <Button variant="default" onClick={handleUpload} loading={loading}>
+            {loading ? '上傳中...' : '上傳'}
           </Button>
-        </>
-      }
-    >
-      {error && <div className="alert alert-error mb-3">{error}</div>}
-
-      <ModalSection title="照片資訊" icon={<FiImage size={16} />}>
-        <Field
-          as="input"
-          type="text"
-          label="標題"
-          required
-          placeholder="請輸入照片標題"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          disabled={loading}
-        />
-
-        <Field
-          as="textarea"
-          rows={3}
-          label="描述"
-          placeholder="請輸入照片描述（選填）"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          disabled={loading}
-        />
-      </ModalSection>
-
-      <ModalSection title="選擇照片" icon={<FiUpload size={16} />}>
-        <div
-          className={`flex flex-col items-center justify-center p-8 min-h-[200px] rounded-lg border-2 border-dashed cursor-pointer transition-all duration-300 ${
-            dragActive
-              ? 'border-primary bg-primary/5'
-              : 'border-base-300 bg-base-200'
-          }`}
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-          onClick={openFileSelector}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            accept="image/jpeg,image/png,image/gif"
-            className="hidden"
-            disabled={loading}
-          />
-
-          <FiUpload size={32} className="text-base-content/40" />
-          <p className="mt-3 text-base-content">拖曳照片至此處或點擊上傳</p>
-          <small className="text-base-content/60">
-            支援 JPG、PNG、GIF 格式，單檔大小不超過 5MB
-          </small>
-        </div>
-
-        {selectedFiles.length > 0 && (
-          <div className="mt-4">
-            <p className="mb-2">已選擇 {selectedFiles.length} 張照片：</p>
-
-            {loading && uploadProgress > 0 && (
-              <div className="mb-3">
-                <progress
-                  className="progress progress-info w-full"
-                  value={uploadProgress}
-                  max="100"
-                />
-                <div className="text-center text-sm mt-1">{uploadProgress}%</div>
-              </div>
-            )}
-
-            <div className="flex flex-wrap justify-start gap-3">
-              {selectedFiles.map((file, index) => (
-                <div
-                  key={index}
-                  className="relative w-28 h-28 sm:w-[150px] sm:h-[150px] rounded-lg overflow-hidden shadow-md"
-                >
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${index}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-1 p-2 bg-black/60 text-white">
-                    <p className="m-0 max-w-[80%] truncate text-xs">{file.name}</p>
-                    {!loading && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFile(index);
-                        }}
-                        className="flex items-center justify-center p-1 rounded-full text-white hover:bg-white/20 transition-colors"
-                        title="移除此照片"
-                      >
-                        <FiX />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </ModalSection>
-    </AppModal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

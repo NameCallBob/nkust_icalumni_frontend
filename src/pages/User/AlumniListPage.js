@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
     Search, SlidersHorizontal, GraduationCap, Briefcase,
-    AlertTriangle, Trophy, ChevronRight, ChevronLeft,
-    ChevronsLeft, ChevronsRight, Info, Building2, RotateCcw
+    AlertTriangle, Trophy, Award, ChevronRight, Info, Building2, RotateCcw
 } from 'lucide-react';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import Axios from 'common/Axios';
-import LoadingSpinner from 'components/LoadingSpinner';
 import FeaturedAlumni from 'components/User/alumni/FeaturedAlumni';
-import { Button, Spinner, Card, Badge, EmptyState } from 'components/common/ui';
+import {
+    Button, Spinner, Card, Badge, EmptyState, Alert, Input, Pagination,
+    Tabs, TabsList, TabsTrigger,
+} from '@/components/ui';
+import { cn } from '@/lib/utils';
 import SEO from 'SEO';
-import { debounce } from 'lodash';
 import { handleImageError, getImageSrc } from '../../utils/imageDefaults';
 
 const AlumniListPage = () => {
+    const navigate = useNavigate();
+
     const [parentKey, setParentKey] = useState('級別');
     const [childKey, setChildKey] = useState('全部');  // 級別預設為 '全部'
     const [childOptions, setChildOptions] = useState([]);
@@ -91,7 +92,7 @@ const AlumniListPage = () => {
     };
 
     // 從後端獲取系友資料 (具備錯誤處理與空結果處理)
-    const fetchAlumniList_normal = (parent, child) => {
+    const fetchAlumniList_normal = (parent, child, page = currentPage) => {
         setLoading(true);
         setError(null);
         setEmptyResult(false);
@@ -99,7 +100,7 @@ const AlumniListPage = () => {
 
         // 構建查詢參數
         let params = {
-            page: currentPage,
+            page: page,
             page_size: itemsPerPage
         };
 
@@ -115,15 +116,16 @@ const AlumniListPage = () => {
 
         Axios().get(endpoint, { params })
             .then((res) => {
-                if (res.data && Array.isArray(res.data)) {
-                    setAlumniList(res.data);
-                    setTotalPages(Math.ceil(res.data.length / itemsPerPage));
-                    setEmptyResult(res.data.length === 0);
-                } else if (res.data && res.data.results) {
-                    // 處理分頁 API 回傳格式
+                if (res.data && res.data.results) {
+                    // 分頁 API 回傳格式：以回應的 count 計算總頁數
                     setAlumniList(res.data.results);
-                    setTotalPages(Math.ceil(res.data.count / itemsPerPage));
+                    setTotalPages(Math.max(1, Math.ceil(res.data.count / itemsPerPage)));
                     setEmptyResult(res.data.results.length === 0);
+                } else if (res.data && Array.isArray(res.data)) {
+                    // 後端回傳純陣列（無分頁 count）：沿用原本以陣列長度估算的邏輯
+                    setAlumniList(res.data);
+                    setTotalPages(Math.max(1, Math.ceil(res.data.length / itemsPerPage)));
+                    setEmptyResult(res.data.length === 0);
                 } else {
                     setAlumniList([]);
                     setEmptyResult(true);
@@ -145,14 +147,12 @@ const AlumniListPage = () => {
         const schoolAlumniPromise = Axios().get('member/school-outstanding-alumni/featured/')
             .then(res => res.data.results || [])
             .catch(err => {
-                // console.error('Error fetching school outstanding alumni:', err);
                 return []; // Return empty array on failure
             });
 
         const departmentAlumniPromise = Axios().get('member/outstanding-alumni/featured/')
             .then(res => res.data.results || [])
             .catch(err => {
-                // console.error('Error fetching department outstanding alumni:', err);
                 return []; // Return empty array on failure
             });
 
@@ -169,11 +169,6 @@ const AlumniListPage = () => {
             });
     };
 
-    // 防抖處理的搜索功能
-    const debouncedSearch = debounce(() => {
-        performSearch();
-    }, 500);
-
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
         if (e.target.value.length === 0) {
@@ -182,7 +177,7 @@ const AlumniListPage = () => {
         }
     };
 
-    const performSearch = () => {
+    const performSearch = (page = currentPage) => {
         setLoading(true);
         setError(null);
         setEmptyResult(false);
@@ -192,26 +187,26 @@ const AlumniListPage = () => {
         Axios().get("member/any/alumni-search/", {
             params: {
                 q: searchTerm,
-                page: currentPage,
+                page: page,
                 page_size: itemsPerPage
             }
         })
             .then((res) => {
-                if (res.data && Array.isArray(res.data)) {
-                    setAlumniList(res.data);
-                    setTotalPages(Math.ceil(res.data.length / itemsPerPage));
-                    setEmptyResult(res.data.length === 0);
-                } else if (res.data && res.data.results) {
+                if (res.data && res.data.results) {
                     setAlumniList(res.data.results);
-                    setTotalPages(Math.ceil(res.data.count / itemsPerPage));
+                    setTotalPages(Math.max(1, Math.ceil(res.data.count / itemsPerPage)));
                     setEmptyResult(res.data.results.length === 0);
+                } else if (res.data && Array.isArray(res.data)) {
+                    // 純陣列（無分頁 count）：沿用原本以陣列長度估算的邏輯
+                    setAlumniList(res.data);
+                    setTotalPages(Math.max(1, Math.ceil(res.data.length / itemsPerPage)));
+                    setEmptyResult(res.data.length === 0);
                 } else {
                     setAlumniList([]);
                     setEmptyResult(true);
                 }
             })
             .catch((error) => {
-                // console.error('Error fetching search results:', error);
                 setError('搜尋時發生錯誤，請稍後再試。');
                 setAlumniList([]);
             })
@@ -248,9 +243,9 @@ const AlumniListPage = () => {
         }, 100);
 
         if (isSearching) {
-            performSearch();
+            performSearch(pageNumber);
         } else {
-            fetchAlumniList_normal(parentKey, childKey);
+            fetchAlumniList_normal(parentKey, childKey, pageNumber);
         }
     };
 
@@ -271,6 +266,10 @@ const AlumniListPage = () => {
         setShowFilterInfo(!showFilterInfo);
     };
 
+    const goToAlumni = (id) => {
+        if (id != null) navigate(`/alumni/${id}`);
+    };
+
     // 初始化數據
     useEffect(() => {
         setLoading(true);
@@ -282,7 +281,6 @@ const AlumniListPage = () => {
                 await fetchAlumniList_normal(parentKey, childKey);
                 await fetchAlumniList_outstanding();
             } catch (error) {
-                // console.error('Error fetching initial data:', error);
                 setError('獲取初始資料時發生錯誤，請重新整理頁面。');
             } finally {
                 setLoading(false);
@@ -290,10 +288,23 @@ const AlumniListPage = () => {
         };
 
         fetchInitialData();
+        // 僅在掛載時以初始 parentKey/childKey 執行一次；後續切換由
+        // handleParentKeyChange / handleChildKeyChange 自行觸發 fetch，
+        // 若把它們列為依賴會導致每次切換 tab 都重複打兩次 API。
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const renderPosition = (position) => {
+        if (!position) return '職位未提供';
+        if (typeof position === 'string') return position;
+        if (typeof position === 'object') {
+            return String(position.title || position.name || '職位未提供');
+        }
+        return '職位未提供';
+    };
+
     return (
-        <div className="min-h-screen bg-base-200/40">
+        <div className="min-h-screen bg-background">
             <SEO
                 main={false}
                 title="系友列表 | 智慧商務系友會"
@@ -302,215 +313,205 @@ const AlumniListPage = () => {
             />
 
             {/* Page Header - Navy hero */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4 }}
-                className="relative overflow-hidden bg-gradient-to-br from-[#1e3a8a] via-[#162e6e] to-[#0f172a]"
-            >
-                <div className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_top_right,white,transparent_55%)]" />
-                <div className="relative mx-auto max-w-6xl px-6 py-16 sm:py-20 text-center">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--brand-navy-deep))] via-[hsl(var(--brand-navy))] to-[hsl(var(--primary))]">
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_top_right,white,transparent_55%)]" />
+                <div className="relative mx-auto max-w-6xl px-6 py-16 text-center sm:py-20">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-brand-gold">
                         Alumni Directory
                     </p>
-                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+                    <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
                         系友名錄
                     </h1>
-                    <p className="mx-auto mt-4 max-w-xl text-sm sm:text-base text-white/70">
+                    <p className="mx-auto mt-4 max-w-xl text-sm text-white/70 sm:text-base">
                         探索並連結我們出色的校友網絡
                     </p>
-                    <div className="mx-auto mt-6 h-1 w-16 rounded-full bg-gradient-to-r from-secondary to-primary" />
+                    <div className="mx-auto mt-6 h-1 w-16 rounded-full bg-gradient-to-r from-brand-gold to-brand-blue" />
                 </div>
-            </motion.div>
+            </div>
 
-            <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+            <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 sm:py-12">
 
-                {/* 傑出校友區塊 */}
+                {/* 傑出校友區塊 — 金色調，深色底 */}
                 {featuredSchool && featuredSchool.length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#162e6e] p-6 sm:p-9 shadow-md"
+                    <section
+                        aria-labelledby="featured-school-heading"
+                        className="rounded-2xl border-l-4 border-brand-gold bg-gradient-to-br from-[hsl(var(--brand-navy-deep))] to-[hsl(var(--brand-navy))] p-6 shadow-card sm:p-9"
                     >
                         <div className="mb-7 flex items-center gap-3">
-                            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/15 text-secondary">
+                            <span aria-hidden="true" className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gold/15 text-brand-gold">
                                 <Trophy className="h-6 w-6" />
                             </span>
                             <div>
-                                <h2 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight">傑出校友</h2>
-                                <div className="mt-1 h-0.5 w-10 rounded-full bg-secondary/70" />
+                                <h2 id="featured-school-heading" className="text-xl font-bold tracking-tight text-white sm:text-2xl">傑出校友</h2>
+                                <p className="mt-1 text-xs text-white/60">本校傑出校友代表</p>
+                                <div className="mt-1.5 h-0.5 w-10 rounded-full bg-brand-gold/70" />
                             </div>
                         </div>
-                        <FeaturedAlumni featuredAlumni={featuredSchool} />
-                    </motion.div>
+                        <FeaturedAlumni featuredAlumni={featuredSchool} accent="gold" />
+                    </section>
                 )}
 
-                {/* 傑出系友區塊 */}
+                {/* 傑出系友區塊 — 藍色調，淺色卡片底，與校友區塊做視覺區隔 */}
                 {featured && featured.length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        className="rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#162e6e] p-6 sm:p-9 shadow-md"
+                    <section
+                        aria-labelledby="featured-dept-heading"
+                        className="rounded-2xl border-l-4 border-brand-blue bg-card p-6 shadow-card sm:p-9"
                     >
                         <div className="mb-7 flex items-center gap-3">
-                            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-secondary/15 text-secondary">
-                                <Trophy className="h-6 w-6" />
+                            <span aria-hidden="true" className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue">
+                                <Award className="h-6 w-6" />
                             </span>
                             <div>
-                                <h2 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight">傑出系友</h2>
-                                <div className="mt-1 h-0.5 w-10 rounded-full bg-secondary/70" />
+                                <h2 id="featured-dept-heading" className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">傑出系友</h2>
+                                <p className="mt-1 text-xs text-muted-foreground">智慧商務系傑出系友代表</p>
+                                <div className="mt-1.5 h-0.5 w-10 rounded-full bg-brand-blue/70" />
                             </div>
                         </div>
-                        <FeaturedAlumni featuredAlumni={featured} />
-                    </motion.div>
+                        <FeaturedAlumni featuredAlumni={featured} accent="blue" />
+                    </section>
                 )}
 
                 {/* 搜尋與篩選區塊 */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                >
-                    <Card padding="lg">
-                        <div className="mb-5 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2.5">
-                                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                    <SlidersHorizontal className="h-5 w-5" />
-                                </span>
-                                <h3 className="font-serif text-lg sm:text-xl font-bold text-base-content">尋找系友</h3>
-                            </div>
-                            <button
-                                type="button"
-                                className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-primary transition hover:bg-primary/10"
-                                onClick={toggleFilterInfo}
-                            >
-                                <Info className="h-4 w-4" />
-                                篩選說明
-                            </button>
+                <Card className="p-6 sm:p-8">
+                    <div className="mb-5 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                            <span aria-hidden="true" className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <SlidersHorizontal className="h-5 w-5" />
+                            </span>
+                            <h3 className="text-lg font-bold text-foreground sm:text-xl">尋找系友</h3>
                         </div>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-primary"
+                            onClick={toggleFilterInfo}
+                            aria-expanded={showFilterInfo}
+                        >
+                            <Info className="h-4 w-4" />
+                            篩選說明
+                        </Button>
+                    </div>
 
-                        {showFilterInfo && (
-                            <div className="mb-5 rounded-xl border border-info/20 bg-info/5 px-4 py-3 text-sm leading-relaxed text-base-content/70" role="alert">
+                    {showFilterInfo && (
+                        <Alert variant="info" className="mb-5">
+                            <Info className="h-4 w-4" />
+                            <div className="text-sm leading-relaxed">
                                 您可以透過「級別」查看不同屆別的系友，或透過「職位」篩選特定職務的系友。
                                 也可以直接在搜尋框中輸入關鍵字，查找特定系友、公司或專長。
                             </div>
-                        )}
+                        </Alert>
+                    )}
 
-                        {/* 搜尋框 */}
-                        <form className="mb-6" onKeyDown={handleEnterPress}>
-                            <div className="relative">
-                                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-base-content/40" />
-                                <input
-                                    type="text"
-                                    placeholder="搜尋系友、公司、專長、產品..."
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                    className="h-12 w-full rounded-xl border border-base-300 bg-base-100 pl-12 pr-24 text-base-content outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                                />
-                                {isSearching && searchQuery && (
-                                    <button
-                                        type="button"
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 rounded-lg bg-base-200 px-3 py-1.5 text-sm font-medium text-base-content/70 transition hover:bg-base-300"
-                                        onClick={resetSearch}
-                                    >
-                                        <RotateCcw className="h-3.5 w-3.5" />
-                                        重置
-                                    </button>
-                                )}
-                            </div>
-                        </form>
-
-                        {/* 父級 Tabs */}
-                        <div className="mb-5 inline-flex rounded-xl bg-base-200 p-1" role="tablist">
-                            <button
-                                type="button"
-                                role="tab"
-                                className={`inline-flex items-center gap-2 rounded-lg px-4 sm:px-5 py-2 text-sm font-semibold transition ${parentKey === '級別' ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/60 hover:text-base-content'}`}
-                                onClick={() => handleParentKeyChange('級別')}
-                            >
-                                <GraduationCap className="h-4 w-4" />
-                                級別
-                            </button>
-                            <button
-                                type="button"
-                                role="tab"
-                                className={`inline-flex items-center gap-2 rounded-lg px-4 sm:px-5 py-2 text-sm font-semibold transition ${parentKey === '職位' ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/60 hover:text-base-content'}`}
-                                onClick={() => handleParentKeyChange('職位')}
-                            >
-                                <Briefcase className="h-4 w-4" />
-                                職位
-                            </button>
+                    {/* 搜尋框 */}
+                    <form className="mb-6" onKeyDown={handleEnterPress} onSubmit={(e) => e.preventDefault()} role="search">
+                        <div className="relative">
+                            <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                type="text"
+                                aria-label="搜尋系友"
+                                placeholder="搜尋系友、公司、專長、產品..."
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                className="h-12 pl-12 pr-24"
+                            />
+                            {isSearching && searchQuery && (
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="sm"
+                                    className="absolute right-2.5 top-1/2 -translate-y-1/2"
+                                    onClick={resetSearch}
+                                >
+                                    <RotateCcw className="h-3.5 w-3.5" />
+                                    重置
+                                </Button>
+                            )}
                         </div>
+                    </form>
 
-                        {/* 子級 Tabs */}
-                        {loading && !alumniList.length ? (
-                            <div className="flex justify-center py-4">
-                                <Spinner size="md" />
-                            </div>
-                        ) : error ? (
-                            <div className="flex items-center gap-2 rounded-xl border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert">
-                                <AlertTriangle className="h-4 w-4 shrink-0" />
-                                {error}
-                            </div>
-                        ) : (
-                            <div className="flex flex-wrap gap-2" role="tablist">
-                                {childOptions.map((option) => (
+                    {/* 父級 Tabs（級別 / 職位） */}
+                    <div className="mb-5">
+                        <Tabs value={parentKey} onValueChange={handleParentKeyChange}>
+                            <TabsList>
+                                <TabsTrigger value="級別">
+                                    <GraduationCap className="h-4 w-4" />
+                                    級別
+                                </TabsTrigger>
+                                <TabsTrigger value="職位">
+                                    <Briefcase className="h-4 w-4" />
+                                    職位
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
+
+                    {/* 子級篩選 */}
+                    {loading && !alumniList.length ? (
+                        <div className="flex justify-center py-4">
+                            <Spinner size="md" />
+                        </div>
+                    ) : error ? (
+                        <Alert variant="destructive">
+                            <AlertTriangle className="h-4 w-4" />
+                            <div>{error}</div>
+                        </Alert>
+                    ) : (
+                        <div className="flex flex-wrap gap-2" role="group" aria-label="篩選條件">
+                            {childOptions.map((option) => {
+                                const active = childKey === option.value;
+                                return (
                                     <button
                                         type="button"
-                                        role="tab"
                                         key={option.value}
-                                        className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${childKey === option.value ? 'border-primary bg-primary text-primary-content shadow-sm' : 'border-base-300 bg-base-100 text-base-content/70 hover:border-primary/40 hover:text-primary'}`}
+                                        aria-pressed={active}
+                                        className={cn(
+                                            'inline-flex min-h-[44px] items-center rounded-full border px-4 py-2 text-sm font-medium transition-colors',
+                                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                                            active
+                                                ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                                                : 'border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-primary'
+                                        )}
                                         onClick={() => handleChildKeyChange(option.value)}
                                     >
                                         {option.label}
                                     </button>
-                                ))}
-                            </div>
-                        )}
-                    </Card>
-                </motion.div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </Card>
 
                 {/* 系友列表區塊 */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                    className="alumni-grid-section"
-                >
+                <div className="alumni-grid-section">
                     {isSearching && (
                         <div className="mb-5 flex flex-wrap items-center gap-3">
-                            <Badge variant="primary" className="text-sm">
+                            <Badge variant="default" className="text-sm">
                                 搜尋：「{searchQuery}」{alumniList.length > 0 ? ` · ${alumniList.length} 位系友` : ''}
                             </Badge>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={resetSearch}
-                            >
+                            <Button variant="outline" size="sm" onClick={resetSearch}>
                                 清除搜尋
                             </Button>
                         </div>
                     )}
 
                     {loading && alumniList.length > 0 ? (
-                        <Card padding="lg">
+                        <Card className="p-6 sm:p-8">
                             <Spinner size="lg" center label="載入系友資料中..." />
                         </Card>
                     ) : error ? (
-                        <div className="flex items-center gap-2 rounded-xl border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert">
-                            <AlertTriangle className="h-4 w-4 shrink-0" />
-                            {error}
-                        </div>
+                        <Alert variant="destructive">
+                            <AlertTriangle className="h-4 w-4" />
+                            <div>{error}</div>
+                        </Alert>
                     ) : emptyResult ? (
-                        <Card padding="lg">
+                        <Card className="p-6 sm:p-8">
                             <EmptyState
-                                icon={<AlertTriangle className="h-8 w-8" />}
+                                icon={AlertTriangle}
                                 title="沒有找到符合條件的系友"
                                 description="請嘗試其他搜尋條件或篩選方式"
                                 action={isSearching ? (
-                                    <Button variant="primary" onClick={resetSearch}>
+                                    <Button variant="default" onClick={resetSearch}>
                                         查看所有系友
                                     </Button>
                                 ) : null}
@@ -518,153 +519,73 @@ const AlumniListPage = () => {
                         </Card>
                     ) : (
                         <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                                 {alumniList.map((alumni) => (
-                                    <motion.div
+                                    <div
                                         key={alumni.id}
-                                        whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                                        className="h-full"
+                                        role="link"
+                                        tabIndex={0}
+                                        aria-label={`查看 ${alumni.name || '系友'} 的介紹`}
+                                        onClick={() => goToAlumni(alumni.id)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                goToAlumni(alumni.id);
+                                            }
+                                        }}
+                                        className="group h-full cursor-pointer overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-card transition-shadow hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                     >
-                                        <Card
-                                            hover
-                                            padding="none"
-                                            className="group h-full cursor-pointer overflow-hidden"
-                                            onClick={() => window.location.href = `/alumni/${alumni.id}`}
-                                        >
-                                            <div className="flex h-full">
-                                                <div className="relative w-2/5 shrink-0 overflow-hidden bg-base-200">
-                                                    <div className="aspect-[3/4] h-full w-full">
-                                                        <img
-                                                            src={getImageSrc(alumni.photo ? process.env.REACT_APP_BASE_URL + alumni.photo : null, 'avatar')}
-                                                            alt={alumni.name}
-                                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                            style={{ backgroundColor: '#f8fafc' }}
-                                                            onError={(e) => handleImageError(e, 'avatar')}
-                                                        />
-                                                    </div>
-                                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0f172a]/25 to-transparent" />
+                                        <div className="flex h-full">
+                                            <div className="relative w-2/5 shrink-0 overflow-hidden bg-muted">
+                                                <div className="aspect-[3/4] h-full w-full">
+                                                    <img
+                                                        src={getImageSrc(alumni.photo ? process.env.REACT_APP_BASE_URL + alumni.photo : null, 'avatar')}
+                                                        alt={alumni.name || '系友照片'}
+                                                        loading="lazy"
+                                                        className="h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
+                                                        onError={(e) => handleImageError(e, 'avatar')}
+                                                    />
                                                 </div>
-                                                <div className="flex w-3/5 flex-col p-4 sm:p-5">
-                                                    <h3 className="font-serif text-base sm:text-lg font-bold text-base-content truncate">
-                                                        {alumni.name || '未提供姓名'}
-                                                    </h3>
-                                                    <p className="mt-1 text-sm text-primary font-medium line-clamp-2">
-                                                        {(() => {
-                                                            if (!alumni.position) {
-                                                                return '職位未提供';
-                                                            }
-                                                            if (typeof alumni.position === 'string') {
-                                                                return alumni.position;
-                                                            }
-                                                            if (typeof alumni.position === 'object' && alumni.position !== null) {
-                                                                return String(alumni.position.title || alumni.position.name || '職位未提供');
-                                                            }
-                                                            return '職位未提供';
-                                                        })()}
-                                                    </p>
-                                                    <div className="mt-2">
-                                                        <Badge variant="secondary">
-                                                            {alumni.graduate && alumni.graduate.grade ? `${alumni.graduate.grade}級` : '級別未提供'}
-                                                        </Badge>
+                                                <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[hsl(var(--brand-navy-deep))]/25 to-transparent" />
+                                            </div>
+                                            <div className="flex w-3/5 flex-col p-4 sm:p-5">
+                                                <h3 className="truncate text-base font-bold text-foreground sm:text-lg">
+                                                    {alumni.name || '未提供姓名'}
+                                                </h3>
+                                                <p className="mt-1 line-clamp-2 text-sm font-medium text-primary">
+                                                    {renderPosition(alumni.position)}
+                                                </p>
+                                                <div className="mt-2">
+                                                    <Badge variant="secondary">
+                                                        {alumni.graduate && alumni.graduate.grade ? `${alumni.graduate.grade}級` : '級別未提供'}
+                                                    </Badge>
+                                                </div>
+                                                {alumni.company && (
+                                                    <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                        <Building2 aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+                                                        <span className="truncate">{alumni.company}</span>
                                                     </div>
-                                                    {alumni.company && (
-                                                        <div className="mt-2 flex items-center gap-1.5 text-xs text-base-content/60">
-                                                            <Building2 className="h-3.5 w-3.5 shrink-0" />
-                                                            <span className="truncate">{alumni.company}</span>
-                                                        </div>
-                                                    )}
-                                                    <div className="mt-auto pt-3 flex items-center gap-1 text-sm font-semibold text-primary transition group-hover:gap-2">
-                                                        查看介紹
-                                                        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                                                    </div>
+                                                )}
+                                                <div className="mt-auto flex items-center gap-1 pt-3 text-sm font-semibold text-primary transition-all group-hover:gap-2">
+                                                    查看介紹
+                                                    <ChevronRight aria-hidden="true" className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-0.5" />
                                                 </div>
                                             </div>
-                                        </Card>
-                                    </motion.div>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
 
-                            {/* 分頁按鈕 */}
-                            {totalPages > 1 && (
-                                <div className="join mt-10 flex justify-center">
-                                    <button
-                                        type="button"
-                                        className="join-item btn btn-sm sm:btn-md"
-                                        onClick={() => handlePageChange(1)}
-                                        disabled={currentPage === 1}
-                                        aria-label="第一頁"
-                                    >
-                                        <ChevronsLeft className="h-4 w-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="join-item btn btn-sm sm:btn-md"
-                                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                        disabled={currentPage === 1}
-                                        aria-label="上一頁"
-                                    >
-                                        <ChevronLeft className="h-4 w-4" />
-                                    </button>
-
-                                    {[...Array(totalPages)].map((_, index) => {
-                                        const pageNumber = index + 1;
-                                        // 只顯示當前頁附近的頁碼
-                                        if (
-                                            pageNumber === 1 ||
-                                            pageNumber === totalPages ||
-                                            (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-                                        ) {
-                                            return (
-                                                <button
-                                                    type="button"
-                                                    key={pageNumber}
-                                                    className={`join-item btn btn-sm sm:btn-md ${pageNumber === currentPage ? 'btn-active btn-primary' : ''}`}
-                                                    onClick={() => handlePageChange(pageNumber)}
-                                                >
-                                                    {pageNumber}
-                                                </button>
-                                            );
-                                        } else if (
-                                            (pageNumber === currentPage - 2 && currentPage > 3) ||
-                                            (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
-                                        ) {
-                                            return (
-                                                <button
-                                                    type="button"
-                                                    key={`ellipsis-${pageNumber}`}
-                                                    className="join-item btn btn-sm sm:btn-md btn-disabled"
-                                                    disabled
-                                                >
-                                                    …
-                                                </button>
-                                            );
-                                        }
-                                        return null;
-                                    })}
-
-                                    <button
-                                        type="button"
-                                        className="join-item btn btn-sm sm:btn-md"
-                                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                        disabled={currentPage === totalPages}
-                                        aria-label="下一頁"
-                                    >
-                                        <ChevronRight className="h-4 w-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="join-item btn btn-sm sm:btn-md"
-                                        onClick={() => handlePageChange(totalPages)}
-                                        disabled={currentPage === totalPages}
-                                        aria-label="最後一頁"
-                                    >
-                                        <ChevronsRight className="h-4 w-4" />
-                                    </button>
-                                </div>
-                            )}
+                            {/* 分頁 */}
+                            <Pagination
+                                className="mt-10"
+                                page={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={handlePageChange}
+                            />
                         </>
                     )}
-                </motion.div>
+                </div>
 
             </div>
         </div>

@@ -1,21 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   PlusCircle, Search, Info, Calendar, CheckCircle,
-  AlertTriangle, Edit, Trash2, Briefcase
+  AlertTriangle, Edit, Trash2, Briefcase,
 } from 'lucide-react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import Axios from 'common/Axios';
-import RecruitFormModal from 'components/Manage/recruitModal'; // 引入剛才優化的表單元件
-import AppModal from 'components/common/AppModal';
+import RecruitFormModal from 'components/Manage/recruitModal';
 import {
-  Button, Card, PageHeader, Toolbar, DataTable, Badge, EmptyState, Field,
-} from 'components/common/ui';
+  AdminPage, Button, Card, CardContent, Badge, EmptyState, Spinner, Pagination,
+  Input,
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+  ConfirmDialog,
+} from '@/components/ui';
+import { recruitService } from '@/services';
+import { useIsMobile } from '@/hooks/useMediaQuery';
 
 function RecruitManaPage() {
+  const isMobile = useIsMobile();
+
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -32,46 +40,21 @@ function RecruitManaPage() {
     title: '',
     release_date: '',
     deadline: '',
-    contact: {
-      name: '',
-      phone: '',
-      email: '',
-    },
+    contact: { name: '', phone: '', email: '' },
     intro: '',
-    company_name: ''
+    company_name: '',
   });
-  // 新增：保存原始資料，用於比對
   const [originalData, setOriginalData] = useState(null);
   const [isPersonalContact, setIsPersonalContact] = useState(false);
   const [isPersonalCompany, setIsPersonalCompany] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
-  // 新增：標記圖片是否被修改
   const [imagesModified, setImagesModified] = useState(false);
 
-  // 查詢是否為新用戶，顯示幫助模態框
-  useEffect(() => {
-    const hasSeenHelp = localStorage.getItem('hasSeenRecruiterHelp');
-    if (!hasSeenHelp) {
-      setShowHelpModal(true);
-    }
-  }, []);
-
-  // 載入職位數據
-  useEffect(() => {
-    loadJobs();
-  }, []);
-
-  // 當搜索詞或狀態過濾器改變時，過濾職位
-  useEffect(() => {
-    filterJobs();
-  }, [searchTerm, statusFilter, jobs]);
-
-  // 載入職位數據的函數
+  // 載入職位數據（端點：GET /recruit/data/tableOutput_admin/）
   const loadJobs = () => {
     setLoading(true);
-    Axios()
-      .get('/recruit/data/tableOutput_admin/')
+    recruitService.myTableAdmin()
       .then((res) => {
         setJobs(res.data.results);
       })
@@ -84,79 +67,83 @@ function RecruitManaPage() {
       });
   };
 
-  // 過濾職位的函數
-  const filterJobs = () => {
+  const filterJobs = useCallback(() => {
     let filtered = jobs;
 
-    // 根據搜索詞過濾
     if (searchTerm) {
-      filtered = filtered.filter(job =>
+      filtered = filtered.filter((job) =>
         job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // 根據狀態過濾
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(job => {
+      filtered = filtered.filter((job) => {
         const deadlineDate = new Date(job.deadline);
         deadlineDate.setHours(0, 0, 0, 0);
-
         const releaseDate = new Date(job.release_date);
         releaseDate.setHours(0, 0, 0, 0);
 
-        if (statusFilter === 'active') {
-          return deadlineDate >= today && releaseDate <= today;
-        } else if (statusFilter === 'upcoming') {
-          return releaseDate > today;
-        } else if (statusFilter === 'expired') {
-          return deadlineDate < today;
-        }
+        if (statusFilter === 'active') return deadlineDate >= today && releaseDate <= today;
+        if (statusFilter === 'upcoming') return releaseDate > today;
+        if (statusFilter === 'expired') return deadlineDate < today;
         return true;
       });
     }
 
     setFilteredJobs(filtered);
-  };
+  }, [jobs, searchTerm, statusFilter]);
 
-  // 重置表單
+  // 查詢是否為新用戶，顯示幫助模態框
+  useEffect(() => {
+    const hasSeenHelp = localStorage.getItem('hasSeenRecruiterHelp');
+    if (!hasSeenHelp) setShowHelpModal(true);
+  }, []);
+
+  useEffect(() => {
+    loadJobs();
+  }, []);
+
+  useEffect(() => {
+    filterJobs();
+  }, [filterJobs]);
+
+  // 篩選改變時回到第一頁
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
   const resetForm = () => {
     setFormData({
       id: '',
       title: '',
       release_date: '',
       deadline: '',
-      contact: {
-        name: '',
-        phone: '',
-        email: '',
-      },
+      contact: { name: '', phone: '', email: '' },
       intro: '',
-      company_name: ''
+      company_name: '',
     });
-    setOriginalData(null); // 同時重置原始資料
+    setOriginalData(null);
     setIsPersonalContact(false);
     setIsPersonalCompany(false);
     setSelectedImages([]);
     setImagePreviews([]);
-    setImagesModified(false); // 重置圖片修改標記
+    setImagesModified(false);
   };
 
-  // 打開新增模態框
   const handleShowAddModal = () => {
     resetForm();
     setShowAddModal(true);
   };
 
-  // 處理圖片變更
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
-    setImagesModified(true); // 標記圖片已被修改
+    setImagesModified(true);
 
     const previews = [];
     const base64Images = [];
@@ -175,12 +162,10 @@ function RecruitManaPage() {
     });
   };
 
-  // 處理富文本編輯器變更
   const handleQuillChange = (value) => {
     setFormData((prevData) => ({ ...prevData, intro: value }));
   };
 
-  // 統一的表單提交資料
   const prepareFormData = () => {
     const preparedData = {
       ...formData,
@@ -191,13 +176,12 @@ function RecruitManaPage() {
         name: isPersonalContact ? undefined : formData.contact?.name,
         email: isPersonalContact ? undefined : formData.contact?.email,
         phone: isPersonalContact ? undefined : formData.contact?.phone,
-      }
+      },
     };
 
-    // 只有在新增模式或圖片被修改時才添加圖片
     if (formData.id === '' || imagesModified) {
       preparedData.images = selectedImages.map((image) => ({
-        image: image,
+        image,
         image_type: 'small',
       }));
     }
@@ -205,9 +189,10 @@ function RecruitManaPage() {
     return preparedData;
   };
 
-  // 新增職位
+  // 新增職位（端點：POST /recruit/data/new/）
   const handleAddJob = (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     let tmp_data = prepareFormData();
@@ -236,7 +221,7 @@ function RecruitManaPage() {
       });
   };
 
-  // 編輯職位
+  // 編輯職位（端點：GET /recruit/data/getOne/?id=）
   const handleEditJob = (id) => {
     setLoading(true);
     setSelectedJobId(id);
@@ -245,16 +230,15 @@ function RecruitManaPage() {
       .get(`/recruit/data/getOne/`, { params: { id: id } })
       .then((res) => {
         setFormData(res.data);
-        // 保存原始資料的深拷貝，用於後續比對
         setOriginalData(JSON.parse(JSON.stringify(res.data)));
         setIsPersonalContact(res.data.isPersonalContact);
         setIsPersonalCompany(res.data.isPersonalCompany);
         setSelectedImages(res.data.images || []);
         setImagePreviews(res.data.images || []);
-        setImagesModified(false); // 重置圖片修改標記
+        setImagesModified(false);
         setShowEditModal(true);
       })
-      .catch((err) => {
+      .catch(() => {
         toast.error('載入職缺資料失敗，請稍後再試');
       })
       .finally(() => {
@@ -266,20 +250,17 @@ function RecruitManaPage() {
   const compareChanges = (original, updated) => {
     if (!original) return updated;
 
-    const changes = { id: updated.id }; // 確保 ID 欄位存在
+    const changes = { id: updated.id };
 
-    // 比較頂層欄位
-    Object.keys(updated).forEach(key => {
-      // 忽略 ID 欄位，這已經添加
+    Object.keys(updated).forEach((key) => {
       if (key === 'id') return;
 
-      // 特殊處理 contact 物件
       if (key === 'contact') {
         if (original.contact && updated.contact) {
           const contactChanges = {};
           let hasChanges = false;
 
-          Object.keys(updated.contact).forEach(contactKey => {
+          Object.keys(updated.contact).forEach((contactKey) => {
             if (updated.contact[contactKey] !== undefined &&
                 original.contact[contactKey] !== updated.contact[contactKey]) {
               contactChanges[contactKey] = updated.contact[contactKey];
@@ -287,34 +268,26 @@ function RecruitManaPage() {
             }
           });
 
-          if (hasChanges) {
-            changes.contact = contactChanges;
-          }
+          if (hasChanges) changes.contact = contactChanges;
         } else if (updated.contact) {
           changes.contact = updated.contact;
         }
         return;
       }
 
-      // 特殊處理 images 數組 - 只有在標記為修改時才包含
       if (key === 'images') {
-        if (imagesModified) {
-          changes.images = updated.images;
-        }
+        if (imagesModified) changes.images = updated.images;
         return;
       }
 
-      // 比較標準欄位 - 只包含變動的欄位
       if (updated[key] !== undefined && original[key] !== updated[key]) {
         changes[key] = updated[key];
       }
     });
 
-    // 確保 isPersonalContact 和 isPersonalCompany 欄位如有變更也被包含
     if (original.isPersonalContact !== updated.isPersonalContact) {
       changes.isPersonalContact = updated.isPersonalContact;
     }
-
     if (original.isPersonalCompany !== updated.isPersonalCompany) {
       changes.isPersonalCompany = updated.isPersonalCompany;
     }
@@ -322,24 +295,18 @@ function RecruitManaPage() {
     return changes;
   };
 
-  // 保存編輯職位 - 改為使用 PATCH API
+  // 保存編輯職位（端點：PATCH /recruit/data/patch_recruit/）
   const handleSaveEditJob = (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     let updatedData = prepareFormData();
-
-    // 比對前後差異，只送出修改的欄位
     const changedFields = compareChanges(originalData, updatedData);
-
-    // 記錄欄位變更資訊（可選）
-    console.log('變更的欄位:', Object.keys(changedFields).filter(key => key !== 'id'));
-    console.log('圖片是否被修改:', imagesModified);
 
     Axios()
       .patch(`/recruit/data/patch_recruit/`, changedFields)
       .then((res) => {
-        // 更新本地資料
         setJobs(jobs.map((job) => (job.id === formData.id ? res.data : job)));
         setShowEditModal(false);
         toast.success('編輯成功！職缺資料已更新');
@@ -357,15 +324,14 @@ function RecruitManaPage() {
       });
   };
 
-  // 打開刪除確認模態框
   const confirmDeleteJob = (id) => {
     setSelectedJobId(id);
     setShowDeleteModal(true);
   };
 
-  // 刪除職位
+  // 刪除職位（端點：DELETE /recruit/data/delete/?id= ；保留原 query 傳法）
   const handleDeleteJob = () => {
-    setLoading(true);
+    setDeleting(true);
 
     Axios()
       .delete(`/recruit/data/delete/`, { params: { id: selectedJobId } })
@@ -378,18 +344,17 @@ function RecruitManaPage() {
         toast.error(`刪除失敗：${err.response?.status === 404 ? '找不到此職缺' : '請稍後再試'}`);
       })
       .finally(() => {
-        setLoading(false);
+        setDeleting(false);
         setSelectedJobId(null);
       });
   };
 
-  // 關閉幫助模態框並設置localStorage
   const handleCloseHelpModal = () => {
     setShowHelpModal(false);
     localStorage.setItem('hasSeenRecruiterHelp', 'true');
   };
 
-  // 計算職位狀態
+  // 計算職位狀態 → 固定 Badge variant
   const getJobStatus = (job) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -400,13 +365,14 @@ function RecruitManaPage() {
     const deadlineDate = new Date(job.deadline);
     deadlineDate.setHours(0, 0, 0, 0);
 
-    if (releaseDate > today) {
-      return { status: 'upcoming', text: '即將發布', variant: 'info' };
-    } else if (deadlineDate < today) {
-      return { status: 'expired', text: '已截止', variant: 'secondary' };
-    } else {
-      return { status: 'active', text: '招募中', variant: 'success' };
-    }
+    if (releaseDate > today) return { text: '即將發布', variant: 'info' };
+    if (deadlineDate < today) return { text: '已截止', variant: 'soft-muted' };
+    return { text: '招募中', variant: 'soft-success' };
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString('zh-TW', options);
   };
 
   // 分頁邏輯
@@ -415,224 +381,162 @@ function RecruitManaPage() {
   const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
   const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
-  // 生成分頁項
-  const renderPagination = () => {
-    const pages = [];
-
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(
-        <button
-          key={i}
-          type="button"
-          className={`join-item btn btn-sm ${i === currentPage ? 'btn-primary' : ''}`}
-          onClick={() => setCurrentPage(i)}
-        >
-          {i}
-        </button>
-      );
-    }
-
-    return (
-      <div className="flex justify-center mt-4">
-        <div className="join">
-          <button
-            type="button"
-            className="join-item btn btn-sm"
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            «
-          </button>
-          {pages}
-          <button
-            type="button"
-            className="join-item btn btn-sm"
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            »
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  // 格式化日期顯示
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return new Date(dateString).toLocaleDateString('zh-TW', options);
-  };
-
-  // 表格欄位定義（純展示，資料來源仍為既有 state）
-  const columns = [
-    {
-      key: 'id',
-      header: 'ID',
-      hideOnMobile: true,
-      className: 'w-16 text-base-content/50',
-      render: (job) => `#${job.id}`,
-    },
-    {
-      key: 'title',
-      header: '職位名稱',
-      render: (job) => (
-        <span className="font-semibold text-base-content">{job.title}</span>
-      ),
-    },
-    {
-      key: 'company_name',
-      header: '公司',
-      render: (job) => job.company_name || '個人公司',
-    },
-    {
-      key: 'release_date',
-      header: '發布日期',
-      render: (job) => (
-        <span className="inline-flex items-center gap-1.5 text-base-content/80">
-          <Calendar size={14} className="text-base-content/40" />
-          {formatDate(job.release_date)}
-        </span>
-      ),
-    },
-    {
-      key: 'deadline',
-      header: '截止日期',
-      render: (job) => (
-        <span className="inline-flex items-center gap-1.5 text-base-content/80">
-          <Calendar size={14} className="text-base-content/40" />
-          {formatDate(job.deadline)}
-        </span>
-      ),
-    },
-    {
-      key: 'status',
-      header: '狀態',
-      render: (job) => {
-        const jobStatus = getJobStatus(job);
-        return <Badge variant={jobStatus.variant}>{jobStatus.text}</Badge>;
-      },
-    },
-    {
-      key: 'actions',
-      header: '操作',
-      className: 'text-right',
-      render: (job) => (
-        <div className="flex flex-wrap justify-end gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleEditJob(job.id)}
-            title="編輯"
-          >
-            <Edit size={15} className="mr-1" />
-            編輯
-          </Button>
-          <Button
-            variant="error"
-            size="sm"
-            onClick={() => confirmDeleteJob(job.id)}
-            title="刪除"
-          >
-            <Trash2 size={15} className="mr-1" />
-            刪除
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  const isInitialLoading = loading && jobs.length === 0;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} />
-
-      {/* 頁面標題 */}
-      <PageHeader
-        title="徵才管理"
-        subtitle="在此管理您的所有職缺，新增、編輯或刪除招聘資訊。"
-        icon={<Briefcase size={22} />}
-        actions={
-          <>
-            <Button variant="ghost" onClick={() => setShowHelpModal(true)}>
-              <Info size={18} className="mr-1" />
-              使用幫助
-            </Button>
-            <Button variant="primary" onClick={handleShowAddModal}>
-              <PlusCircle size={18} className="mr-1" />
-              新增職位
-            </Button>
-          </>
-        }
-      />
-
+    <AdminPage
+      title="徵才管理"
+      description="在此管理您的所有職缺，新增、編輯或刪除招聘資訊。"
+      icon={Briefcase}
+      actions={
+        <>
+          <Button variant="ghost" onClick={() => setShowHelpModal(true)}>
+            <Info className="h-4 w-4" />
+            使用幫助
+          </Button>
+          <Button variant="default" onClick={handleShowAddModal}>
+            <PlusCircle className="h-4 w-4" />
+            新增職位
+          </Button>
+        </>
+      }
+    >
       {/* 搜尋 / 篩選列 */}
-      <Toolbar
-        left={
-          <>
+      <Card className="mb-4">
+        <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative w-full sm:w-72">
-              <Search
-                size={16}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40"
-              />
-              <Field
-                className="pl-9 mb-0"
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="pl-9"
                 placeholder="搜尋職位名稱或公司"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Field
-              as="select"
-              className="mb-0 w-full sm:w-44"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">全部狀態</option>
-              <option value="active">招募中</option>
-              <option value="upcoming">即將發布</option>
-              <option value="expired">已截止</option>
-            </Field>
-          </>
-        }
-        right={
-          <span className="text-sm text-base-content/60">
-            共 <span className="font-semibold text-base-content">{filteredJobs.length}</span> 個職缺
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-44" aria-label="狀態篩選">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全部狀態</SelectItem>
+                <SelectItem value="active">招募中</SelectItem>
+                <SelectItem value="upcoming">即將發布</SelectItem>
+                <SelectItem value="expired">已截止</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <span className="text-sm text-muted-foreground">
+            共 <span className="font-semibold text-foreground">{filteredJobs.length}</span> 個職缺
           </span>
-        }
-      />
+        </CardContent>
+      </Card>
 
       {/* 職位列表 */}
-      <Card padding="none">
-        <DataTable
-          columns={columns}
-          data={currentJobs}
-          rowKey={(job) => job.id}
-          loading={loading && jobs.length === 0}
-          empty={
-            <EmptyState
-              icon={<AlertTriangle className="h-8 w-8" />}
-              title="找不到符合的職缺"
-              description={
-                jobs.length === 0
-                  ? '您尚未新增任何職缺，點擊「新增職位」開始建立'
-                  : '嘗試調整搜尋條件或篩選選項'
-              }
-              action={
-                jobs.length === 0 ? (
-                  <Button variant="primary" onClick={handleShowAddModal}>
-                    <PlusCircle size={18} className="mr-1" />
-                    新增您的第一個職缺
-                  </Button>
-                ) : null
-              }
-            />
-          }
-        />
-
-        {/* 分頁 */}
-        {filteredJobs.length > 0 && totalPages > 1 && (
-          <div className="border-t border-base-300/70 px-4 py-3">
-            {renderPagination()}
+      <Card>
+        {isInitialLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <Spinner />
           </div>
+        ) : filteredJobs.length === 0 ? (
+          <EmptyState
+            icon={<AlertTriangle className="h-8 w-8" />}
+            title="找不到符合的職缺"
+            description={
+              jobs.length === 0
+                ? '您尚未新增任何職缺，點擊「新增職位」開始建立'
+                : '嘗試調整搜尋條件或篩選選項'
+            }
+            action={
+              jobs.length === 0 ? (
+                <Button variant="default" onClick={handleShowAddModal}>
+                  <PlusCircle className="h-4 w-4" />
+                  新增您的第一個職缺
+                </Button>
+              ) : null
+            }
+          />
+        ) : (
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {!isMobile && <TableHead className="w-16">ID</TableHead>}
+                  <TableHead>職位名稱</TableHead>
+                  {!isMobile && <TableHead>公司</TableHead>}
+                  {!isMobile && <TableHead>發布日期</TableHead>}
+                  <TableHead>截止日期</TableHead>
+                  <TableHead>狀態</TableHead>
+                  <TableHead className="text-right">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentJobs.map((job) => {
+                  const jobStatus = getJobStatus(job);
+                  return (
+                    <TableRow key={job.id}>
+                      {!isMobile && (
+                        <TableCell className="text-muted-foreground">#{job.id}</TableCell>
+                      )}
+                      <TableCell className="font-semibold text-foreground">{job.title}</TableCell>
+                      {!isMobile && (
+                        <TableCell>{job.company_name || '個人公司'}</TableCell>
+                      )}
+                      {!isMobile && (
+                        <TableCell>
+                          <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                            <Calendar className="h-3.5 w-3.5" />
+                            {formatDate(job.release_date)}
+                          </span>
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {formatDate(job.deadline)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={jobStatus.variant}>{jobStatus.text}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex flex-wrap justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditJob(job.id)}
+                            title="編輯"
+                          >
+                            <Edit className="h-4 w-4" />
+                            編輯
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => confirmDeleteJob(job.id)}
+                            title="刪除"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            刪除
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+
+            {totalPages > 1 && (
+              <div className="border-t px-4 py-3">
+                <Pagination
+                  page={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
+          </>
         )}
       </Card>
 
@@ -670,124 +574,87 @@ function RecruitManaPage() {
         isEdit={true}
       />
 
-      {/* 刪除確認模態框 */}
-      <AppModal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        title="確認刪除"
-        icon={<AlertTriangle size={20} />}
-        size="md"
-        footer={
-          <>
-            <Button
-              variant="secondary"
-              onClick={() => setShowDeleteModal(false)}
-            >
-              取消
-            </Button>
-            <Button
-              variant="error"
-              onClick={handleDeleteJob}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span className="loading loading-spinner loading-sm mr-1" />
-                  處理中...
-                </>
-              ) : (
-                '確認刪除'
-              )}
-            </Button>
-          </>
-        }
-      >
-        <div className="alert alert-warning">
-          <AlertTriangle className="mr-2" size={20} />
-          您確定要刪除此職缺嗎？此操作無法復原。
-        </div>
-        <p className="mt-3">刪除後，此職缺將不再顯示於網站上，且相關資料將被永久移除。</p>
-      </AppModal>
+      {/* 刪除確認 */}
+      <ConfirmDialog
+        open={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
+        title="確認刪除此職缺？"
+        description="刪除後，此職缺將不再顯示於網站上，且相關資料將被永久移除，此操作無法復原。"
+        confirmText="確認刪除"
+        cancelText="取消"
+        destructive
+        loading={deleting}
+        onConfirm={handleDeleteJob}
+      />
 
-      {/* 使用指南模態框 */}
-      <AppModal
-        show={showHelpModal}
-        onHide={handleCloseHelpModal}
-        title="徵才管理使用指南"
-        icon={<Info size={20} />}
-        size="lg"
-        footer={
-          <Button
-            variant="primary"
-            onClick={handleCloseHelpModal}
-          >
-            我了解了
-          </Button>
-        }
-      >
-        <h5 className="font-semibold text-lg">歡迎使用徵才管理！</h5>
-        <p>本系統協助您輕鬆管理所有招聘職缺。以下是使用本系統的基本步驟：</p>
+      {/* 使用指南 */}
+      <Dialog open={showHelpModal} onOpenChange={(v) => { if (!v) handleCloseHelpModal(); }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-primary" />
+              徵才管理使用指南
+            </DialogTitle>
+            <DialogDescription>
+              本系統協助您輕鬆管理所有招聘職缺，以下是使用的基本步驟。
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="alert alert-info mb-4 flex-col items-start">
-          <h6 className="alert-heading flex items-center font-semibold">
-            <Info size={18} className="mr-2" />
-            新手小提示
-          </h6>
-          <p className="mb-0">
-            您可以隨時點擊頁面頂部的「使用幫助」來查看此指南。
-          </p>
-        </div>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Card>
+                <CardContent className="space-y-2 p-4">
+                  <h4 className="flex items-center gap-2 font-semibold text-foreground">
+                    <PlusCircle className="h-4 w-4 text-success" />
+                    新增職缺
+                  </h4>
+                  <ol className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
+                    <li>點擊「新增職位」按鈕</li>
+                    <li>依照步驟填寫職缺資訊</li>
+                    <li>完成所有欄位後發布職缺</li>
+                  </ol>
+                </CardContent>
+              </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-          <div>
-            <div className="card card-bordered bg-base-100">
-              <div className="card-body">
-                <h6 className="flex items-center font-semibold">
-                  <PlusCircle size={18} className="mr-2 text-success" />
-                  新增職缺
-                </h6>
-                <ol className="list-decimal list-inside">
-                  <li>點擊「新增職位」按鈕</li>
-                  <li>依照步驟填寫職缺資訊</li>
-                  <li>完成所有欄位後發布職缺</li>
-                </ol>
-              </div>
+              <Card>
+                <CardContent className="space-y-2 p-4">
+                  <h4 className="flex items-center gap-2 font-semibold text-foreground">
+                    <Edit className="h-4 w-4 text-primary" />
+                    管理職缺
+                  </h4>
+                  <ol className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
+                    <li>在職缺列表中找到您要操作的職缺</li>
+                    <li>點擊「編輯」可修改職缺資訊</li>
+                    <li>點擊「刪除」可移除職缺</li>
+                  </ol>
+                </CardContent>
+              </Card>
             </div>
+
+            <Card>
+              <CardContent className="space-y-2 p-4">
+                <h4 className="flex items-center gap-2 font-semibold text-foreground">
+                  <CheckCircle className="h-4 w-4 text-success" />
+                  填寫技巧
+                </h4>
+                <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
+                  <li><span className="font-medium text-foreground">職位名稱</span>：使用清晰、具體的名稱，如「資深前端工程師」而非「工程師」</li>
+                  <li><span className="font-medium text-foreground">詳細資料</span>：包含工作職責、要求技能、福利與工作環境</li>
+                  <li><span className="font-medium text-foreground">聯絡資訊</span>：確保提供準確的聯絡方式，方便求職者詢問</li>
+                  <li><span className="font-medium text-foreground">圖片</span>：上傳公司環境、團隊活動等相關照片，增加吸引力</li>
+                </ul>
+              </CardContent>
+            </Card>
           </div>
 
-          <div>
-            <div className="card card-bordered bg-base-100">
-              <div className="card-body">
-                <h6 className="flex items-center font-semibold">
-                  <Edit size={18} className="mr-2 text-primary" />
-                  管理職缺
-                </h6>
-                <ol className="list-decimal list-inside">
-                  <li>在職缺列表中找到您要操作的職缺</li>
-                  <li>點擊「編輯」可修改職缺資訊</li>
-                  <li>點擊「刪除」可移除職缺</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card card-bordered bg-base-100 mb-3">
-          <div className="card-body">
-            <h6 className="flex items-center font-semibold">
-              <CheckCircle size={18} className="mr-2 text-success" />
-              填寫技巧
-            </h6>
-            <ul className="list-disc list-inside">
-              <li><strong>職位名稱</strong>：使用清晰、具體的名稱，如「資深前端工程師」而非「工程師」</li>
-              <li><strong>詳細資料</strong>：包含工作職責、要求技能、福利與工作環境</li>
-              <li><strong>聯絡資訊</strong>：確保提供準確的聯絡方式，方便求職者詢問</li>
-              <li><strong>圖片</strong>：上傳公司環境、團隊活動等相關照片，增加吸引力</li>
-            </ul>
-          </div>
-        </div>
-      </AppModal>
-    </div>
+          <DialogFooter>
+            <Button variant="default" onClick={handleCloseHelpModal}>
+              我了解了
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </AdminPage>
   );
 }
 

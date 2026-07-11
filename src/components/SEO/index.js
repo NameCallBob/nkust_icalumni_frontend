@@ -4,7 +4,8 @@
  */
 
 // 核心組件
-export { default as StructuredDataProvider, withStructuredData, useStructuredData } from './StructuredDataProvider';
+import StructuredDataProvider, { withStructuredData, useStructuredData } from './StructuredDataProvider';
+export { StructuredDataProvider, withStructuredData, useStructuredData };
 
 // 基礎 Schema 組件
 export { default as EducationalOrganizationSchema } from './EducationalOrganizationSchema';

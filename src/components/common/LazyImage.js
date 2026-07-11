@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DEFAULT_IMAGES, getImageSrc } from '../../utils/imageDefaults';
+import { DEFAULT_IMAGES } from '../../utils/imageDefaults';
 
 /**
  * LazyImage 元件 - 提供圖片延遲載入與 SEO 優化
@@ -27,7 +27,6 @@ const LazyImage = ({
   imageType = 'default'
 }) => {
   const [imageSrc, setImageSrc] = useState(placeholder);
-  const [imageRef, setImageRef] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -56,13 +55,14 @@ const LazyImage = ({
       }
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
+    const node = imgRef.current;
+    if (node) {
+      observer.observe(node);
     }
 
     return () => {
-      if (imgRef.current) {
-        observer.unobserve(imgRef.current);
+      if (node) {
+        observer.unobserve(node);
       }
     };
   }, [src, loading]);
@@ -90,7 +90,7 @@ const LazyImage = ({
         setIsLoaded(true);
       };
     }
-  }, [isInView, src, srcSet, placeholder]);
+  }, [isInView, src, srcSet, placeholder, imageType]);
 
   return (
     <img

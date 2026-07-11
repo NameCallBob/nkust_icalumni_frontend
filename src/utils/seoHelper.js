@@ -302,7 +302,7 @@ export const validateSeoFields = (seoData) => {
   return missingFields;
 };
 
-export default {
+const seoHelper = {
   slugify,
   truncateText,
   generateMetaDescription,
@@ -315,3 +315,5 @@ export default {
   generateShareUrl,
   validateSeoFields
 };
+
+export default seoHelper;

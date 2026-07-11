@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { hydrate, render } from 'react-dom';
+import { hydrate } from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals, { reportAdvancedWebVitals } from './reportWebVitals';

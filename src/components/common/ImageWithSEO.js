@@ -24,7 +24,6 @@ const ImageWithSEO = ({
   // 產生不同尺寸的圖片 URL
   const generateSrcSet = (baseUrl, format) => {
     const sizes = [320, 640, 768, 1024, 1366, 1920];
-    const extension = baseUrl.substring(baseUrl.lastIndexOf('.'));
     const urlWithoutExt = baseUrl.substring(0, baseUrl.lastIndexOf('.'));
 
     return sizes

@@ -1,44 +1,64 @@
-import React, { useState, useEffect } from "react";
-import Axios from "common/Axios";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { modes } from "react-transition-group/SwitchTransition";
-import { UserPlus } from "lucide-react";
-import AppModal from "components/common/AppModal";
-import { Button, Field, Spinner, ModalSection, ModalGrid } from "components/common/ui";
+import React, { useState, useEffect } from 'react';
+import { UserPlus, Eye, EyeOff, Info } from 'lucide-react';
+import { toast } from 'react-toastify';
 
-function NewUserModal({
-  showModal,
-  handleClose,
-  isComplex,
-  userId,
-  handleAddUser,
-  fetchUserData,
-}) {
-  const [simple_email, setSimpleEmail] = useState("");
-  const [simple_userType,setUserType] = useState("N");
+import { validatePassword, PASSWORD_HINT } from 'utils/validatePassword';
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  Button,
+  Field,
+  Label,
+  Switch,
+  Spinner,
+  Alert,
+  AlertDescription,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui';
+import { positionService } from '@/services';
+
+/**
+ * 新增 / 編輯帳號 Modal。
+ * API 由父層 handleAddUser 執行（端點與 payload 完全不變）：
+ *  - 編輯：PATCH /member/admin/partial_change/  （payload = 變更欄位 + member_id）
+ *  - 新增完整：POST /member/admin/newUser_basic/
+ *  - 新增簡單：POST /member/admin/newUser_email/  （payload = { email, is_superuser }）
+ * 職位清單：GET /member/position/get-all/（positionService.all）。
+ */
+function NewUserModal({ showModal, handleClose, isComplex, userId, handleAddUser, fetchUserData }) {
+  const [simple_email, setSimpleEmail] = useState('');
+  const [simple_userType, setUserType] = useState('N');
   const [formData, setFormData] = useState({
-    name: "",
-    gender: "",
-    mobile_phone: "",
-    home_phone: "",
-    address: "",
-    position: { title: "" },
+    name: '',
+    gender: '',
+    mobile_phone: '',
+    home_phone: '',
+    address: '',
+    position: { title: '' },
     photo: null,
-    graduate: { school: "", grade: "", student_id: "" },
-    private_input: { email: "", password: "" },
+    graduate: { school: '', grade: '', student_id: '' },
+    private_input: { email: '', password: '' },
     is_paid: false,
     is_show: false,
-    birth_date: "", // 新增出生日期
+    birth_date: '',
   });
-  const [originalData, setOriginalData] = useState(null); // 用於儲存原始資料
+  const [originalData, setOriginalData] = useState(null);
   const [positions, setPositions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({}); // 儲存錯誤訊息
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [hint, setHint] = useState('');
 
-  /**
-   * 進行資料更改前後判斷
-   */
+  /** 送出前計算差異欄位（編輯用）。 */
   const getModifiedFields = () => {
     if (!originalData) return formData;
 
@@ -51,443 +71,405 @@ function NewUserModal({
             modifiedData[key][subKey] = formData[key][subKey];
           }
         });
-      } else {
-        if (formData[key] !== (originalData[key] || '')) {
-          modifiedData[key] = formData[key];
-        }
+      } else if (formData[key] !== (originalData[key] || '')) {
+        modifiedData[key] = formData[key];
       }
     });
 
-    // 刪掉原本就沒有再前端的資料
-    delete modifiedData['intro']
-    delete modifiedData['notice_type']
-    delete modifiedData['photo']
+    delete modifiedData['intro'];
+    delete modifiedData['notice_type'];
+    delete modifiedData['photo'];
 
     return modifiedData;
   };
 
-  const [hint ,setHint] = useState("")
-
-  const handleFocus = (field) => {
-    switch (field) {
-      case "is_show":
-        setHint("選擇是否讓使用者呈現於官網");
-        break;
-      case "name":
-        setHint("請輸入您的真實姓名，例如：王小明，最多 50 個字。");
-        break;
-      case "gender":
-        setHint("請選擇您的性別，例如：男性、女性或其他。");
-        break;
-      case "birth_date":
-        setHint("請選擇出生日期，例如：1990-01-01。");
-        break;
-      case "mobile_phone":
-        setHint("請輸入有效的行動電話號碼，例如：0912345678。");
-        break;
-      case "home_phone":
-        setHint("請輸入市內電話號碼，例如：07-1234567。");
-        break;
-      case "address":
-        setHint("請輸入詳細住址，例如：高雄市鼓山區博愛一路123號。");
-        break;
-      case "email":
-        setHint("請輸入有效的電子郵件，例如：user@example.com。");
-        break;
-      case "password":
-        setHint("請設定帳號密碼，至少 8 個字元。");
-        break;
-      case "school":
-        setHint("請輸入就學學校，例如：國立高雄科技大學 智慧商務系。");
-        break;
-      case "grade":
-        setHint("請輸入入學學年，例如：113。");
-        break;
-      case "student_id":
-        setHint("請輸入學號，例如：S12345678。");
-        break;
-      default:
-        setHint("");
-        break;
-    }
+  const HINTS = {
+    is_show: '選擇是否讓使用者呈現於官網',
+    name: '請輸入您的真實姓名，例如：王小明，最多 50 個字。',
+    gender: '請選擇您的性別，例如：男性、女性或其他。',
+    birth_date: '請選擇出生日期，例如：1990-01-01。',
+    mobile_phone: '請輸入有效的行動電話號碼，例如：0912345678。',
+    home_phone: '請輸入市內電話號碼，例如：07-1234567。',
+    address: '請輸入詳細住址，例如：高雄市鼓山區博愛一路123號。',
+    email: '請輸入有效的電子郵件，例如：user@example.com。',
+    password: PASSWORD_HINT,
+    school: '請輸入就學學校，例如：國立高雄科技大學 智慧商務系。',
+    grade: '請輸入入學學年，例如：113。',
+    student_id: '請輸入學號，例如：S12345678。',
   };
+  const handleFocus = (field) => setHint(HINTS[field] || '');
+  const handleBlur = () => setHint('');
 
-  const handleBlur = () => {
-    setHint(""); // 失焦時清空提示
-  };
-
-
-
-  // 從後端獲取資料
+  // 取回編輯資料 + 職位清單
   useEffect(() => {
     const fetchData = async () => {
       if (userId) {
-        // 編輯
         setLoading(true);
         const data = await fetchUserData(userId);
         if (data) {
           const initializedData = {
             ...data,
-            graduate: data.graduate || { school: "", grade: "", student_id: "" },
-            position: data.position || { title: "" },
-            private_input: data.private || { email: "", password: null },
-            birth_date: data.birth_date || "", // 初始化出生日期
+            graduate: data.graduate || { school: '', grade: '', student_id: '' },
+            position: data.position || { title: '' },
+            private_input: data.private || { email: '', password: null },
+            birth_date: data.birth_date || '',
           };
           setFormData(initializedData);
-          setOriginalData(initializedData); // 儲存原始資料
+          setOriginalData(initializedData);
           setSimpleEmail(data.email);
         }
         setLoading(false);
       } else {
         setFormData({
-          name: "",
-          gender: "",
-          mobile_phone: "",
-          home_phone: "",
-          address: "",
-          position: { title: "" },
-          graduate: { school: "國立高雄科技大學智慧商務系", grade: "", student_id: "" },
-          private_input: { email: "", password: "" },
+          name: '',
+          gender: '',
+          mobile_phone: '',
+          home_phone: '',
+          address: '',
+          position: { title: '' },
+          graduate: { school: '國立高雄科技大學智慧商務系', grade: '', student_id: '' },
+          private_input: { email: '', password: '' },
           is_paid: false,
+          is_show: false,
         });
-        setSimpleEmail("");
+        setOriginalData(null);
+        setSimpleEmail('');
       }
+      setErrors({});
     };
     fetchData();
 
-    Axios()
-      .get("member/position/get-all/")
-      .then((res) => {
-        setPositions(res.data);
-      })
-      .catch((error) => console.error("Error fetching positions:", error));
-  }, [userId]);
+    positionService
+      .all()
+      .then((res) => setPositions(res.data))
+      .catch((error) => console.error('Error fetching positions:', error));
+  }, [userId, fetchUserData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "school" || name === "grade" || name === "student_id") {
-      // 處理學校相關資料
-      setFormData((prev) => ({
-        ...prev,
-        graduate: { ...prev.graduate, [name]: value },
-      }));
-    } else if (name === "position") {
-      // 處理系友會職位
-      setFormData((prev) => ({
-        ...prev,
-        position: positions.find((pos) => pos.id === parseInt(value)) || {
-          title: "",
-        },
-      }));
-    } else if (name === "email" || name === "password"){
-      // 處理隱私資料
-      setFormData((prev) => ({
-        ...prev,
-        private_input: { ...prev.private_input, [name]: value },
-      }));
+    if (name === 'school' || name === 'grade' || name === 'student_id') {
+      setFormData((prev) => ({ ...prev, graduate: { ...prev.graduate, [name]: value } }));
+    } else if (name === 'email' || name === 'password') {
+      setFormData((prev) => ({ ...prev, private_input: { ...prev.private_input, [name]: value } }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  /**
-   * 處裡使用者輸入所有帳號資料的創建帳號方式
-   * @param {*} e
-   */
-  const handleComplexSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const modifiedData = getModifiedFields();
-    try {
-      const response = await handleAddUser(true, modifiedData);
-
-    // 假設 `handleAddUser` 返回成功時有明確標誌，例如 `response.success`
-    if (response && response.success) {
-      setErrors({}); // 清空錯誤
-      handleClose(); // 成功後關閉模態框
-      toast.success("帳號保存成功！");
-    }
-    } catch (error) {
-      if (error.response && error.response.data) {
-        console.log(error.response.data)
-        setErrors(error.response.data); // 設置錯誤訊息
-        toast.error("請檢查輸入資料！");
-      }
-    }
-    setLoading(false);
+  const handlePositionChange = (idStr) => {
+    setFormData((prev) => ({
+      ...prev,
+      position: positions.find((pos) => pos.id === parseInt(idStr, 10)) || { title: '' },
+    }));
   };
 
-  /**
-   *  處理使用者僅輸入電子郵件的創建帳號方式
-   */
+  const handleComplexSubmit = async (e) => {
+    e.preventDefault();
+    if (!userId) {
+      const pwdResult = validatePassword(formData.private_input?.password);
+      if (!pwdResult.valid) {
+        setErrors((prev) => ({ ...prev, private_input: { password: [pwdResult.message] } }));
+        toast.error(pwdResult.message);
+        return;
+      }
+    }
+    setLoading(true);
+    try {
+      await handleAddUser(true, getModifiedFields());
+    } catch (error) {
+      if (error?.response?.data) setErrors(error.response.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSimpleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await handleAddUser(false, { "email":simple_email,"is_superuser":simple_userType });
-      // 後端（資安修補 MED-5）不再以郵件寄送明文密碼，使用者需自行用「忘記密碼」設定密碼
-      toast.success("帳號已建立！請通知該使用者至登入頁點選「忘記密碼」設定自己的密碼（系統不會寄送密碼）。");
-    } catch (error) {
-      toast.error("建立失敗，請確認 Email 是否正確或已存在。");
+      await handleAddUser(false, { email: simple_email, is_superuser: simple_userType });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const footer = loading ? null : (
-    <>
-      <Button variant="ghost" onClick={handleClose}>
-        取消
-      </Button>
-      <Button
-        variant="primary"
-        type="submit"
-        form={isComplex ? "newuser-complex-form" : "newuser-simple-form"}
-        disabled={loading}
-      >
-        {isComplex ? "保存" : "新增帳號"}
-      </Button>
-    </>
-  );
+  const selectedPositionId =
+    positions.find((pos) => pos.title === formData.position?.title)?.id;
 
   return (
-    <AppModal
-      show={showModal}
-      onHide={handleClose}
-      size="lg"
-      variant="admin"
-      title={userId ? "編輯帳號" : isComplex ? "新增複雜帳號" : "新增簡單帳號"}
-      icon={<UserPlus size={18} />}
-      footer={footer}
-    >
-      {/* 輸入提示區域 */}
-      {hint && (
-        <div className="p-2 mb-3 bg-base-200 text-base-content/70 border border-base-300 rounded">
-          {hint}
-        </div>
-      )}
-      {/* 表單內容 */}
-      {loading ? (
-        <Spinner center />
-      ) : isComplex ? (
-        <form id="newuser-complex-form" onSubmit={handleComplexSubmit}>
-          <ModalSection title="基本資訊">
-            <ModalGrid cols={2}>
-              <Field
-                label="姓名"
-                type="text"
-                name="name"
-                value={formData.name}
-                onFocus={() => handleFocus("name")}
-                onChange={handleChange}
-                placeholder="輸入姓名"
-                error={errors.name && errors.name[0]}
-              />
-              <Field
-                as="select"
-                label="性別"
-                name="gender"
-                onFocus={() => handleFocus("gender")}
-                value={formData.gender}
-                onChange={handleChange}
-                error={errors.gender && errors.gender[0]}
-              >
-                <option value="">選擇性別</option>
-                <option value="M">男性</option>
-                <option value="F">女性</option>
-                <option value="O">其他</option>
-              </Field>
-              <Field
-                label="出生日期"
-                type="date"
-                name="birth_date"
-                value={formData.birth_date}
-                onFocus={() => handleFocus("birth_data")}
-                onChange={handleChange}
-                placeholder="選擇出生日期"
-                error={errors.birth_date && errors.birth_date[0]}
-              />
-            </ModalGrid>
-          </ModalSection>
+    <Dialog open={showModal} onOpenChange={(v) => !v && !loading && handleClose()}>
+      <DialogContent className="max-w-2xl" preventQuickClose>
+        <DialogHeader>
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <UserPlus className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div className="space-y-1.5">
+              <DialogTitle>{userId ? '編輯帳號' : isComplex ? '新增完整帳號' : '新增簡單帳號'}</DialogTitle>
+              <DialogDescription>
+                {isComplex ? '填寫完整系友資料，欄位聚焦時下方會顯示格式提示。' : '僅需輸入 Email 即可建立帳號。'}
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
 
-          <ModalSection title="聯絡資訊">
-            <ModalGrid cols={2}>
-              <Field
-                label="行動電話"
-                type="text"
-                name="mobile_phone"
-                value={formData.mobile_phone}
-                onChange={handleChange}
-                onFocus={() => handleFocus("mobile_phone")}
-                placeholder="輸入行動電話"
-                error={errors.mobile_phone && errors.mobile_phone[0]}
-              />
-              <Field
-                label="市內電話"
-                type="text"
-                name="home_phone"
-                value={formData.home_phone}
-                onFocus={() => handleFocus("home_phone")}
-                onChange={handleChange}
-                placeholder="輸入市內電話"
-                error={errors.home_phone && errors.home_phone[0]}
-              />
-              <Field
-                label="住址"
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                onFocus={() => handleFocus("address")}
-                placeholder="輸入住址"
-                error={errors.address && errors.address[0]}
-              />
-            </ModalGrid>
-          </ModalSection>
+        {hint && (
+          <Alert variant="info">
+            <Info className="h-4 w-4" />
+            <AlertDescription>{hint}</AlertDescription>
+          </Alert>
+        )}
 
-          <ModalSection title="學籍與職位">
-            <ModalGrid cols={2}>
-              <Field
-                as="select"
-                label="職位"
-                name="position"
-                value={
-                  positions.find(
-                    (pos) => pos.title === formData.position.title
-                  )?.id || ""
-                }
-                onChange={handleChange}
-              >
-                <option value="">選擇職位</option>
-                {positions.map((position) => (
-                  <option key={position.id} value={position.id}>
-                    {position.title}
-                  </option>
-                ))}
-              </Field>
-              <Field
-                label="就學學校"
-                type="text"
-                name="school"
-                value={formData.graduate.school}
-                onChange={handleChange}
-                onFocus={() => handleFocus("school")}
-                placeholder="輸入就學學校"
-                error={errors.graduate?.school && errors.graduate.school[0]}
-              />
-              <Field
-                label="入學學年"
-                type="text"
-                name="grade"
-                value={formData.graduate.grade}
-                onFocus={() => handleFocus("grade")}
-                onChange={handleChange}
-                placeholder="輸入入學學年"
-                error={errors.graduate?.year && errors.graduate.year[0]}
-              />
-              <Field
-                label="學號"
-                type="text"
-                name="student_id"
-                value={formData.graduate.student_id}
-                onChange={handleChange}
-                onFocus={() => handleFocus("student_id")}
-                placeholder="輸入學號"
-                error={errors.graduate?.student_id && errors.graduate.student_id[0]}
-              />
-            </ModalGrid>
-          </ModalSection>
-
-          <ModalSection title="其他資訊">
-            <ModalGrid cols={2}>
-              <Field
-                label="電子郵件"
-                type="text"
-                name="email"
-                value={formData.private_input.email}
-                onChange={handleChange}
-                placeholder="輸入電子郵件"
-                onFocus={() => handleFocus("email")}
-                error={errors.private_input?.email && errors.private_input.email[0]}
-              />
-              {!userId && (
+        {loading ? (
+          <Spinner center />
+        ) : isComplex ? (
+          <form id="newuser-complex-form" className="space-y-6" onSubmit={handleComplexSubmit}>
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">基本資訊</h3>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field
-                  label="帳號密碼"
-                  type="text"
-                  name="password"
-                  value={formData.private_input.password}
+                  label="姓名"
+                  name="name"
+                  value={formData.name}
+                  onFocus={() => handleFocus('name')}
+                  onBlur={handleBlur}
                   onChange={handleChange}
-                  placeholder="輸入帳號密碼"
-                  onFocus={() => handleFocus("password")}
+                  placeholder="輸入姓名"
+                  error={errors.name && errors.name[0]}
                 />
-              )}
-            </ModalGrid>
-            <div className="form-control mb-3">
-              <label className="label cursor-pointer justify-start gap-3">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-primary"
-                  name="is_paid"
-                  checked={formData.is_paid}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      is_paid: e.target.checked,
-                    }))
-                  }
+                <div className="space-y-1.5">
+                  <Label htmlFor="nu-gender">性別</Label>
+                  <Select
+                    value={formData.gender || undefined}
+                    onValueChange={(v) => setFormData((prev) => ({ ...prev, gender: v }))}
+                  >
+                    <SelectTrigger id="nu-gender" onFocus={() => handleFocus('gender')} onBlur={handleBlur}>
+                      <SelectValue placeholder="選擇性別" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="M">男性</SelectItem>
+                      <SelectItem value="F">女性</SelectItem>
+                      <SelectItem value="O">其他</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Field
+                  label="出生日期"
+                  type="date"
+                  name="birth_date"
+                  value={formData.birth_date}
+                  onFocus={() => handleFocus('birth_date')}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  error={errors.birth_date && errors.birth_date[0]}
                 />
-                <span className="label-text">是否繳費</span>
-              </label>
-            </div>
-            <div className="form-control mb-3">
-              <label className="label cursor-pointer justify-start gap-3">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-primary"
-                  name="is_show"
-                  checked={formData.is_show}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      is_show: e.target.checked,
-                    }))
-                  }
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">聯絡資訊</h3>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field
+                  label="行動電話"
+                  name="mobile_phone"
+                  value={formData.mobile_phone}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus('mobile_phone')}
+                  onBlur={handleBlur}
+                  placeholder="輸入行動電話"
+                  error={errors.mobile_phone && errors.mobile_phone[0]}
                 />
-                <span className="label-text">是否展現於官網</span>
-              </label>
-            </div>
-          </ModalSection>
-        </form>
-      ) : (
-        // 簡單帳號表單
-        <form id="newuser-simple-form" onSubmit={handleSimpleSubmit}>
-          <ModalSection title="帳號資訊">
+                <Field
+                  label="市內電話"
+                  name="home_phone"
+                  value={formData.home_phone}
+                  onFocus={() => handleFocus('home_phone')}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  placeholder="輸入市內電話"
+                  error={errors.home_phone && errors.home_phone[0]}
+                />
+                <Field
+                  label="住址"
+                  name="address"
+                  className="sm:col-span-2"
+                  value={formData.address}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus('address')}
+                  onBlur={handleBlur}
+                  placeholder="輸入住址"
+                  error={errors.address && errors.address[0]}
+                />
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">學籍與職位</h3>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="nu-position">職位</Label>
+                  <Select
+                    value={selectedPositionId ? String(selectedPositionId) : undefined}
+                    onValueChange={handlePositionChange}
+                  >
+                    <SelectTrigger id="nu-position">
+                      <SelectValue placeholder="選擇職位" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {positions.map((position) => (
+                        <SelectItem key={position.id} value={String(position.id)}>
+                          {position.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Field
+                  label="就學學校"
+                  name="school"
+                  value={formData.graduate.school}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus('school')}
+                  onBlur={handleBlur}
+                  placeholder="輸入就學學校"
+                  error={errors.graduate?.school && errors.graduate.school[0]}
+                />
+                <Field
+                  label="入學學年"
+                  name="grade"
+                  value={formData.graduate.grade}
+                  onFocus={() => handleFocus('grade')}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  placeholder="輸入入學學年"
+                  error={errors.graduate?.year && errors.graduate.year[0]}
+                />
+                <Field
+                  label="學號"
+                  name="student_id"
+                  value={formData.graduate.student_id}
+                  onChange={handleChange}
+                  onFocus={() => handleFocus('student_id')}
+                  onBlur={handleBlur}
+                  placeholder="輸入學號"
+                  error={errors.graduate?.student_id && errors.graduate.student_id[0]}
+                />
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">其他資訊</h3>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field
+                  label="電子郵件"
+                  name="email"
+                  value={formData.private_input.email}
+                  onChange={handleChange}
+                  placeholder="輸入電子郵件"
+                  onFocus={() => handleFocus('email')}
+                  onBlur={handleBlur}
+                  error={errors.private_input?.email && errors.private_input.email[0]}
+                />
+                {!userId && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="nu-password">帳號密碼</Label>
+                    <div className="flex items-center gap-2">
+                      <Field
+                        id="nu-password"
+                        className="flex-1"
+                        type={showPassword ? 'text' : 'password'}
+                        name="password"
+                        autoComplete="new-password"
+                        value={formData.private_input.password}
+                        onChange={handleChange}
+                        placeholder="輸入帳號密碼"
+                        onFocus={() => handleFocus('password')}
+                        onBlur={handleBlur}
+                        error={errors.private_input?.password && errors.private_input.password[0]}
+                      />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        className="h-11 w-11 shrink-0"
+                        onClick={() => setShowPassword((s) => !s)}
+                        aria-label={showPassword ? '隱藏密碼' : '顯示密碼'}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between rounded-md border p-3">
+                <Label htmlFor="nu-is-paid" className="cursor-pointer">是否繳費</Label>
+                <Switch
+                  id="nu-is-paid"
+                  checked={!!formData.is_paid}
+                  onCheckedChange={(v) => setFormData((prev) => ({ ...prev, is_paid: v }))}
+                />
+              </div>
+              <div className="flex items-center justify-between rounded-md border p-3">
+                <Label htmlFor="nu-is-show" className="cursor-pointer">是否展現於官網</Label>
+                <Switch
+                  id="nu-is-show"
+                  checked={!!formData.is_show}
+                  onFocus={() => handleFocus('is_show')}
+                  onBlur={handleBlur}
+                  onCheckedChange={(v) => setFormData((prev) => ({ ...prev, is_show: v }))}
+                />
+              </div>
+            </section>
+          </form>
+        ) : (
+          <form id="newuser-simple-form" className="space-y-4" onSubmit={handleSimpleSubmit}>
             <Field
               label="電子郵件"
               type="email"
               value={simple_email}
               onChange={(e) => setSimpleEmail(e.target.value)}
               placeholder="輸入電子郵件"
-              onFocus={() => handleFocus("email")}
+              onFocus={() => handleFocus('email')}
+              onBlur={handleBlur}
             />
-
-            <Field
-              as="select"
-              label="是否為管理員"
-              name="is_superuser"
-              value={simple_userType}
-              onChange={(e) => setUserType(e.target.value)}
-            >
-              <option value="N">否</option>
-              <option value="Y">是</option>
-            </Field>
-            <div className="alert alert-info py-2 my-2 text-sm">
-              ℹ️ 基於安全考量，系統不會以郵件寄送密碼。帳號建立後，請通知使用者至登入頁點選「忘記密碼」，輸入此 Email 取得驗證碼並設定自己的密碼。
+            <div className="space-y-1.5">
+              <Label htmlFor="nu-superuser">是否為管理員</Label>
+              <Select value={simple_userType} onValueChange={setUserType}>
+                <SelectTrigger id="nu-superuser">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="N">否</SelectItem>
+                  <SelectItem value="Y">是</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </ModalSection>
-        </form>
-      )}
-    </AppModal>
+            <Alert variant="info">
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                基於安全考量，系統不會以郵件寄送密碼。帳號建立後，請通知使用者至登入頁點選「忘記密碼」，輸入此 Email 取得驗證碼並設定自己的密碼。
+              </AlertDescription>
+            </Alert>
+          </form>
+        )}
+
+        {!loading && (
+          <DialogFooter>
+            <Button variant="outline" type="button" onClick={handleClose}>
+              取消
+            </Button>
+            <Button
+              variant="default"
+              type="submit"
+              form={isComplex ? 'newuser-complex-form' : 'newuser-simple-form'}
+            >
+              {isComplex ? '保存' : '新增帳號'}
+            </Button>
+          </DialogFooter>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
