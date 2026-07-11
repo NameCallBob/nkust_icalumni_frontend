@@ -2,6 +2,7 @@ import { Container, Spinner, Alert, Carousel } from 'react-bootstrap';
 
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 
 const LeaderPage = () => {
   const [slides, setSlides] = useState({ largeImages: [], smallImages: [] });
@@ -26,7 +27,7 @@ const LeaderPage = () => {
         const largeImages = pic_response.filter((img) => img.image_type === 'large');
         const smallImages = pic_response.filter((img) => img.image_type === 'small');
 
-        setBodyContent(response.description)
+        setBodyContent(DOMPurify.sanitize(response.description))
         setSlides({ largeImages, smallImages });
         setIsLoading(false);
       } catch (err) {

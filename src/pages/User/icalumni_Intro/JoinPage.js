@@ -2,6 +2,7 @@ import { Container, Spinner, Alert, Carousel } from 'react-bootstrap';
 import Axios from 'common/Axios';
 import React, { useState, useEffect } from 'react';
 import SEO from "SEO";
+import DOMPurify from 'dompurify';
 
 const JoinUsPage = () => {
   const [slides, setSlides] = useState({ largeImages: [], smallImages: [] });
@@ -28,7 +29,7 @@ const JoinUsPage = () => {
 
 
         // 使用 DOMPurify 淨化 HTML 內容以防止 XSS 攻擊
-        setBodyContent(response.description)
+        setBodyContent(DOMPurify.sanitize(response.description))
         setSlides({ largeImages, smallImages });
         setIsLoading(false);
       } catch (err) {

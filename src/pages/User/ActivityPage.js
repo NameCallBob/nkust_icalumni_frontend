@@ -5,6 +5,7 @@ import { Container, Row, Col, Carousel ,Modal} from 'react-bootstrap';
 import Axios from 'common/Axios';
 import LoadingSpinner from 'components/LoadingSpinner';
 import SEO from 'SEO';
+import DOMPurify from 'dompurify';
 
 const ImageSlider = ({ images }) => {
     const [showModal, setShowModal] = useState(false);
@@ -104,7 +105,7 @@ const ImageSlider = ({ images }) => {
         <Row>
           <Col>
             <div
-              dangerouslySetInnerHTML={{ __html: event.content }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.content) }}
               className="mt-3"
             ></div>
           </Col>

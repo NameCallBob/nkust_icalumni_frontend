@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 import Axios from "common/Axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SEO from "SEO";
+import DOMPurify from 'dompurify';
 
 const AlumniAssociationBylaws = () => {
   const [pdfFile, setPdfFile] = useState(null);
@@ -15,7 +16,7 @@ const AlumniAssociationBylaws = () => {
       try {
         // 從後端獲取 PDF 文件和介紹內容
         const response = await Axios().get("info/constitutions/latest/");
-        setBodyContent(response.data.description);
+        setBodyContent(DOMPurify.sanitize(response.data.description));
         setPdfFile(`${process.env.REACT_APP_BASE_URL}${response.data.pdf_file}`);
         setLoading(false);
       } catch (err) {

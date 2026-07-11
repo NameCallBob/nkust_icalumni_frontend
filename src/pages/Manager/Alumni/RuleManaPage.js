@@ -3,6 +3,7 @@ import React, { useState ,useEffect } from 'react';
 import { Container, Table, Button, Modal, Form } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import DOMPurify from 'dompurify';
 
 const RuleManaPage = () => {
   // 狀態管理
@@ -262,7 +263,7 @@ const handleView = (rule) => {
         <Modal.Body>
           <div
             className="mb-3"
-            dangerouslySetInnerHTML={{ __html: viewRule.intro }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(viewRule.intro) }}
           />
           {viewRule.pdf_file && (
             <div>
