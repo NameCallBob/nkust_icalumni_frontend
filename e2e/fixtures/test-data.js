@@ -71,10 +71,12 @@ const MOCK_RESPONSES = {
 };
 
 // ── 測試帳號 ──
+// 真實帳號密碼一律由環境變數提供，絕不寫進版本控制。
+// live 模式請用：TEST_EMAIL=... TEST_PASSWORD=... npx playwright test
 const TEST_CREDENTIALS = {
   valid: {
-    email: process.env.TEST_EMAIL || 'c110156220@nkust.edu.tw',
-    password: process.env.TEST_PASSWORD || '***REMOVED-CREDENTIAL***',
+    email: process.env.TEST_EMAIL || 'admin@demo.local',
+    password: process.env.TEST_PASSWORD || 'Demo#1234',
   },
   invalid: {
     email: 'notexist@fake.com',
