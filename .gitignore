@@ -1,40 +1,81 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# See https://help.github.com/articles/ignoring-files/
 
-# dependencies
+# ─────────────────────────────────────────────
+# 機密與環境變數（最高優先，絕不可提交）
+# ─────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# 金鑰、憑證
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*credential*
+*secret*
+service-account*.json
+
+# E2E 登入後的 storage state：live 模式會寫入真實 JWT。
+# auth.setup.js 每次執行都會重新產生，不需要納入版控。
+e2e/fixtures/auth-state.json
+
+# 資料庫傾印
+*.sql
+*.sql.gz
+*.dump
+
+# ─────────────────────────────────────────────
+# 相依套件
+# ─────────────────────────────────────────────
 /node_modules
+e2e/node_modules/
 /.pnp
 .pnp.js
 
-# testing
-/coverage
-
-# production
+# ─────────────────────────────────────────────
+# 建置產物（含 source map，會洩漏完整原始碼）
+# ─────────────────────────────────────────────
 /build
+/icalumni
 /alumni
+*.js.map
+*.css.map
 
-# misc
-.DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# ─────────────────────────────────────────────
+# 測試與稽核產出
+# ─────────────────────────────────────────────
+/coverage
+e2e/test-results/
+e2e/reports/
+playwright-report/
+test-results/
+_shots/
+.cache/
 
+# ─────────────────────────────────────────────
+# 日誌
+# ─────────────────────────────────────────────
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# 輸出web
-
-/build
-/icalumni
-
-# 任一壓縮檔
+# ─────────────────────────────────────────────
+# 壓縮檔
+# ─────────────────────────────────────────────
 *.zip
+*.tar
+*.tar.gz
 
-
-e2e/node_modules/
-e2e/test-results/
-e2e/reports/
-.cache/
-_shots/
+# ─────────────────────────────────────────────
+# 編輯器與作業系統
+# ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+.claude/settings.local.json
