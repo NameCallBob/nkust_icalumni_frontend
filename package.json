@@ -53,7 +53,13 @@
     "build": "craco build",
     "postbuild": "node scripts/prerender.mjs",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test:ci": "craco test --watchAll=false --ci",
+    "test:coverage": "craco test --watchAll=false --coverage",
+    "lint": "eslint src --ext .js,.jsx --max-warnings=68",
+    "e2e": "npm --prefix e2e test",
+    "e2e:smoke": "npm --prefix e2e run test:smoke",
+    "lint:strict": "eslint src --ext .js,.jsx --max-warnings=0"
   },
   "eslintConfig": {
     "extends": [
@@ -82,5 +88,43 @@
     "prettier": "3.6.2",
     "puppeteer": "^25.2.1",
     "tailwindcss": "^3.4.10"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/index.js",
+      "!src/reportWebVitals.js",
+      "!src/setupTests.js",
+      "!src/**/*.test.{js,jsx}",
+      "!src/assets/**"
+    ],
+    "coverageReporters": [
+      "text-summary",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "src/utils/seoHelper.js": {
+        "statements": 80,
+        "branches": 70,
+        "functions": 80,
+        "lines": 80
+      },
+      "src/utils/imageDefaults.js": {
+        "statements": 80,
+        "branches": 70,
+        "functions": 80,
+        "lines": 80
+      },
+      "src/hooks/useRWD.js": {
+        "statements": 70,
+        "branches": 60,
+        "functions": 60,
+        "lines": 70
+      }
+    },
+    "moduleNameMapper": {
+      "^axios$": "axios/dist/node/axios.cjs"
+    }
   }
 }
