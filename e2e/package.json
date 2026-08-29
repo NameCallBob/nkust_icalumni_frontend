@@ -19,7 +19,11 @@
     "test:debug": "playwright test --debug",
     "report": "playwright show-report reports/html",
     "codegen": "playwright codegen http://localhost:3000",
-    "install-browsers": "playwright install --with-deps chromium firefox"
+    "install-browsers": "playwright install --with-deps chromium firefox",
+    "test:a11y": "playwright test tests/a11y/",
+    "test:seo": "playwright test tests/seo/",
+    "test:security": "playwright test tests/security/",
+    "test:quality": "playwright test --grep \"@a11y|@seo|@security\""
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0"

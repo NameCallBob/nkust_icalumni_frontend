@@ -49,7 +49,7 @@ module.exports = defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    // ── Desktop Chrome：主要測試平台 ──
+    // ── Desktop Chrome：主要測試平台（需要登入狀態的測試都跑在這裡）──
     {
       name: 'chromium',
       use: {
@@ -57,7 +57,10 @@ module.exports = defineConfig({
         storageState: 'fixtures/auth-state.json',
       },
       dependencies: ['auth-setup'],
-      testIgnore: /auth\.setup\.js/,
+      // a11y / seo / security 三組完全不需要登入態，讓它們只在 no-auth
+      // project 跑一次即可；否則同一批測試會在兩個 project 各跑一遍，
+      // 整體時間翻倍而不會多驗到任何東西。
+      testIgnore: [/auth\.setup\.js/, '**/a11y/**', '**/seo/**', '**/security/**'],
     },
 
     // ── Firefox：跨瀏覽器相容測試 ──
