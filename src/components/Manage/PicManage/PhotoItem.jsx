@@ -54,7 +54,7 @@ const PhotoItem = ({ photo, type, refresh }) => {
     >
       <div className="relative bg-slate-100">
         <img
-          src={`${process.env.REACT_APP_BASE_URL}${photo.image}`}
+          src={`${import.meta.env.VITE_BASE_URL}${photo.image}`}
           className="aspect-[4/3] w-full object-cover"
           alt={photo.title}
         />

@@ -31,7 +31,7 @@ export function attachCsrfHeader(config) {
 
 function Axios() {
   const res = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL,
+    baseURL: import.meta.env.VITE_BASE_URL,
     timeout: 10000, // Timeout set to 10 seconds
     withCredentials: true,
     headers: {

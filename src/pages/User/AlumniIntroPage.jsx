@@ -72,7 +72,7 @@ const ProfilePage = () => {
     if (!images || images.length === 0) return [];
 
     return images.map((image, index) => ({
-      src: `${process.env.REACT_APP_BASE_URL}${image.image}`,
+      src: `${import.meta.env.VITE_BASE_URL}${image.image}`,
       width: 4,
       height: 3,
       title: image.title,
@@ -86,7 +86,7 @@ const ProfilePage = () => {
     if (!images || images.length === 0) return [];
 
     return images.map(image => ({
-      src: `${process.env.REACT_APP_BASE_URL}${image.image}`,
+      src: `${import.meta.env.VITE_BASE_URL}${image.image}`,
       title: image.title,
       description: image.description
     }));
@@ -201,7 +201,7 @@ const ProfilePage = () => {
                   <div className="text-center">
                     <div className="mx-auto h-44 w-44 sm:h-52 sm:w-52 rounded-full overflow-hidden ring-4 ring-white/90 shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
                       <img
-                        src={profileData.photo ? process.env.REACT_APP_BASE_URL + profileData.photo : 'https://via.placeholder.com/300x300/e9ecef/495057?text=No+Photo'}
+                        src={profileData.photo ? import.meta.env.VITE_BASE_URL + profileData.photo : 'https://via.placeholder.com/300x300/e9ecef/495057?text=No+Photo'}
                         className="h-full w-full object-cover"
                         alt={profileData.name || '系友'}
                         onError={(e) => {
@@ -397,7 +397,7 @@ const ProfilePage = () => {
                           <div className="md:col-span-4">
                             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }} className="overflow-hidden rounded-xl border border-base-300/70 shadow-sm">
                               <img
-                                src={profileData.company.photo ? `${process.env.REACT_APP_BASE_URL}${profileData.company.photo}` : 'https://via.placeholder.com/400x300/e9ecef/495057?text=No+Company+Photo'}
+                                src={profileData.company.photo ? `${import.meta.env.VITE_BASE_URL}${profileData.company.photo}` : 'https://via.placeholder.com/400x300/e9ecef/495057?text=No+Company+Photo'}
                                 className="w-full h-48 md:h-56 object-cover"
                                 alt={profileData.company.name || '公司'}
                                 onError={(e) => {

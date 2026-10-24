@@ -175,7 +175,7 @@ const SlideManager = () => {
       render: (slide) => (
         <div className="h-14 w-24 overflow-hidden rounded-lg border border-base-300/70 bg-base-200">
           <img
-            src={process.env.REACT_APP_BASE_URL + slide.image}
+            src={import.meta.env.VITE_BASE_URL + slide.image}
             alt={slide.title}
             className="h-full w-full cursor-pointer object-cover transition-transform hover:scale-105"
             onClick={() => showImagePreview(slide)}
@@ -414,7 +414,7 @@ const SlideManager = () => {
               {(formData.image || (currentSlide && currentSlide.image)) ? (
                 <div className="relative">
                   <img
-                    src={formData.image || (process.env.REACT_APP_BASE_URL + currentSlide.image)}
+                    src={formData.image || (import.meta.env.VITE_BASE_URL + currentSlide.image)}
                     alt="預覽"
                     className="mb-3 rounded mx-auto"
                     style={{ maxHeight: '300px' }}
@@ -518,7 +518,7 @@ const SlideManager = () => {
             <div className="mt-3 text-base-content/60">
               <p><strong>標題：</strong> {slideToDelete.title}</p>
               <img
-                src={process.env.REACT_APP_BASE_URL + slideToDelete.image}
+                src={import.meta.env.VITE_BASE_URL + slideToDelete.image}
                 alt={slideToDelete.title}
                 className="rounded mt-2 mx-auto"
                 style={{ maxHeight: '150px' }}
@@ -552,7 +552,7 @@ const SlideManager = () => {
           {previewImage && (
             <>
               <img
-                src={process.env.REACT_APP_BASE_URL + previewImage.image}
+                src={import.meta.env.VITE_BASE_URL + previewImage.image}
                 alt={previewImage.title}
                 className="rounded mx-auto"
                 style={{ maxHeight: '60vh' }}

@@ -24,7 +24,7 @@ const ProductList = ({
     // 獲取圖片URL，處理字符串或對象類型的圖片
     const getImageUrl = (image) => {
         if (!image) return '/placeholder.png';
-        return typeof image === 'string' ? image : process.env.REACT_APP_BASE_URL + image.image;
+        return typeof image === 'string' ? image : import.meta.env.VITE_BASE_URL + image.image;
     };
 
     // 格式化日期顯示

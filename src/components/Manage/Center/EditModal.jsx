@@ -858,7 +858,7 @@ const MemberModal = ({ show, handleClose, isEditMode, handleSave, parentData, lo
                   <div className="mr-3">
                     {formData.photo ? (
                       <img
-                        src={formData.photo.startsWith('data:') ? formData.photo : process.env.REACT_APP_BASE_URL+formData.photo}
+                        src={formData.photo.startsWith('data:') ? formData.photo : import.meta.env.VITE_BASE_URL+formData.photo}
                         alt="預覽"
                         className="rounded-lg border border-base-300 p-1 w-[100px] h-[100px] object-cover"
                       />

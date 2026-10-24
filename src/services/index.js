@@ -34,5 +34,5 @@ export const infoService = {
 export function mediaUrl(path) {
   if (!path) return '';
   if (/^(https?:)?\/\//i.test(path) || path.startsWith('data:')) return path;
-  return `${process.env.REACT_APP_BASE_URL || ''}${path}`;
+  return `${import.meta.env.VITE_BASE_URL || ''}${path}`;
 }

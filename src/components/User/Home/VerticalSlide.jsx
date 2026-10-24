@@ -22,7 +22,7 @@ const CompanyCard = ({ company, onClick, index }) => {
 
   // 安全地獲取 photo URL
   const photoUrl = company && company.photo
-    ? `${process.env.REACT_APP_BASE_URL}${company.photo}`
+    ? `${import.meta.env.VITE_BASE_URL}${company.photo}`
     : DEFAULT_IMAGES.company;
 
   // 卡片樣式

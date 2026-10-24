@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { HelpCircle, ChevronLeft, ChevronRight, Briefcase } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import AppModal from 'components/common/AppModal';
@@ -10,6 +10,10 @@ const RecruitFormModal = ({
   onHide,
   formData,
   setFormData,
+  isPersonalContact,
+  setIsPersonalContact,
+  isPersonalCompany,
+  setIsPersonalCompany,
   handleQuillChange,
   imagePreviews,
   handleImageChange,
@@ -59,7 +63,7 @@ const RecruitFormModal = ({
           errors.title = "請輸入職位名稱";
         }
 
-        if (!formData.company_name?.trim()) {
+        if (!isPersonalCompany && !formData.company_name?.trim()) {
           isValid = false;
           errors.company_name = "請輸入公司名稱";
         }
@@ -82,22 +86,24 @@ const RecruitFormModal = ({
         break;
 
       case 1: // 聯絡資訊
-        if (!formData.contact?.name?.trim()) {
-          isValid = false;
-          errors.contactName = "請輸入聯絡人姓名";
-        }
+        if (!isPersonalContact) {
+          if (!formData.contact?.name?.trim()) {
+            isValid = false;
+            errors.contactName = "請輸入聯絡人姓名";
+          }
 
-        if (!formData.contact?.email?.trim()) {
-          isValid = false;
-          errors.contactEmail = "請輸入聯絡人 Email";
-        } else if (!/\S+@\S+\.\S+/.test(formData.contact.email)) {
-          isValid = false;
-          errors.contactEmail = "請輸入有效的 Email 地址";
-        }
+          if (!formData.contact?.email?.trim()) {
+            isValid = false;
+            errors.contactEmail = "請輸入聯絡人 Email";
+          } else if (!/\S+@\S+\.\S+/.test(formData.contact.email)) {
+            isValid = false;
+            errors.contactEmail = "請輸入有效的 Email 地址";
+          }
 
-        if (!formData.contact?.phone?.trim()) {
-          isValid = false;
-          errors.contactPhone = "請輸入聯絡人電話";
+          if (!formData.contact?.phone?.trim()) {
+            isValid = false;
+            errors.contactPhone = "請輸入聯絡人電話";
+          }
         }
         break;
 
@@ -203,12 +209,13 @@ const RecruitFormModal = ({
     switch(currentStep) {
       case 0: // 職缺基本資訊
         return (
-          <ModalSection title={steps[0].title} icon={steps[0].icon}>
+          <div className="step-form">
             <div className="alert alert-info mb-3">
               <HelpCircle size={20} />
               <span>{steps[0].description}</span>
             </div>
 
+            {/* 職位名稱 */}
             <Field
               label="職位名稱"
               required
@@ -216,21 +223,40 @@ const RecruitFormModal = ({
               name="title"
               value={formData.title || ''}
               onChange={e => setFormData({...formData, title: e.target.value})}
-              placeholder="例如：前端工程師、行銷專員、專案經理"
-              error={validated && stepErrors.title ? (stepErrors.title || "請輸入職位名稱") : undefined}
+              error={validated ? stepErrors.title : ''}
               help="一個清晰的職位名稱將吸引更多合適的求職者"
+              placeholder="例如：前端工程師、行銷專員、專案經理"
             />
 
-            <Field
-              label="公司名稱"
-              required
-              type="text"
-              name="company_name"
-              value={formData.company_name || ''}
-              onChange={e => setFormData({...formData, company_name: e.target.value})}
-              placeholder="請輸入公司名稱"
-              error={validated && stepErrors.company_name ? (stepErrors.company_name || "請輸入公司名稱") : undefined}
-            />
+            {/* 使用我的公司資料 */}
+            <div className="form-control mb-3">
+              <label className="label cursor-pointer justify-start gap-2 pb-1">
+                <input
+                  type="checkbox"
+                  id="isPersonalCompany"
+                  className="checkbox checkbox-primary"
+                  checked={isPersonalCompany}
+                  onChange={() => setIsPersonalCompany(!isPersonalCompany)}
+                />
+                <span className="label-text">使用我的公司資料</span>
+              </label>
+              <span className="label-text-alt text-base-content/60 ml-7">
+                勾選後將使用您的公司資料，無需再次填寫
+              </span>
+            </div>
+
+            {!isPersonalCompany && (
+              <Field
+                label="公司名稱"
+                required
+                type="text"
+                name="company_name"
+                value={formData.company_name || ''}
+                onChange={e => setFormData({...formData, company_name: e.target.value})}
+                error={validated ? stepErrors.company_name : ''}
+                placeholder="請輸入公司名稱"
+              />
+            )}
 
             <ModalGrid cols={2}>
               <Field
@@ -240,7 +266,7 @@ const RecruitFormModal = ({
                 name="release_date"
                 value={formData.release_date || ''}
                 onChange={e => setFormData({...formData, release_date: e.target.value})}
-                error={validated && stepErrors.release_date ? (stepErrors.release_date || "請選擇發布日期") : undefined}
+                error={validated ? stepErrors.release_date : ''}
                 help="職缺開始顯示的日期"
               />
 
@@ -251,86 +277,107 @@ const RecruitFormModal = ({
                 name="deadline"
                 value={formData.deadline || ''}
                 onChange={e => setFormData({...formData, deadline: e.target.value})}
-                error={validated && stepErrors.deadline ? (stepErrors.deadline || "請選擇截止日期") : undefined}
+                error={validated ? stepErrors.deadline : ''}
                 help="職缺停止顯示的日期"
               />
             </ModalGrid>
-          </ModalSection>
+          </div>
         );
 
       case 1: // 聯絡資訊
         return (
-          <ModalSection title={steps[1].title} icon={steps[1].icon}>
+          <div className="step-form">
             <div className="alert alert-info mb-3">
               <HelpCircle size={20} />
               <span>{steps[1].description}</span>
             </div>
 
-            <Field
-              label="聯絡人姓名"
-              required
-              type="text"
-              name="contact.name"
-              value={(formData.contact?.name) || ''}
-              onChange={e => setFormData({
-                ...formData,
-                contact: {...formData.contact, name: e.target.value}
-              })}
-              placeholder="請輸入聯絡人姓名"
-              error={validated && stepErrors.contactName ? (stepErrors.contactName || "請輸入聯絡人姓名") : undefined}
-            />
-
-            {/* 聯絡人 Email：保留 @ 前綴（原 InputGroup） */}
-            <div className="form-control w-full mb-4">
-              <label className="label pb-1">
-                <span className="label-text font-medium text-base-content">
-                  聯絡人 Email <span className="text-error ml-0.5">*</span>
-                </span>
-              </label>
-              <div className="join w-full">
-                <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">@</span>
+            {/* 使用我的聯絡資料 */}
+            <div className="form-control mb-3">
+              <label className="label cursor-pointer justify-start gap-2 pb-1">
                 <input
-                  className={`join-item input input-bordered w-full ${validated && stepErrors.contactEmail ? 'border-error' : ''}`}
-                  type="email"
-                  name="contact.email"
-                  value={(formData.contact?.email) || ''}
-                  onChange={e => setFormData({
-                    ...formData,
-                    contact: {...formData.contact, email: e.target.value}
-                  })}
-                  placeholder="example@company.com"
+                  type="checkbox"
+                  id="isPersonalContact"
+                  className="checkbox checkbox-primary"
+                  checked={isPersonalContact}
+                  onChange={() => setIsPersonalContact(!isPersonalContact)}
                 />
-              </div>
-              {validated && stepErrors.contactEmail ? (
-                <span className="label-text-alt text-error mt-1">
-                  {stepErrors.contactEmail || "請輸入有效的 Email 地址"}
-                </span>
-              ) : (
-                <span className="label-text-alt text-base-content/60 mt-1">
-                  此 Email 將用於接收求職者的應徵訊息
-                </span>
-              )}
+                <span className="label-text">使用我的聯絡資料</span>
+              </label>
+              <span className="label-text-alt text-base-content/60 ml-7">
+                勾選後將使用您的聯絡資料，無需再次填寫
+              </span>
             </div>
 
-            <Field
-              label="聯絡人電話"
-              required
-              type="text"
-              name="contact.phone"
-              value={(formData.contact?.phone) || ''}
-              onChange={e => setFormData({
-                ...formData,
-                contact: {...formData.contact, phone: e.target.value}
-              })}
-              placeholder="例如：02-12345678 或 0912-345-678"
-              error={validated && stepErrors.contactPhone ? (stepErrors.contactPhone || "請輸入聯絡人電話") : undefined}
-            />
-          </ModalSection>
+            {!isPersonalContact && (
+              <>
+                <Field
+                  label="聯絡人姓名"
+                  required
+                  type="text"
+                  name="contact.name"
+                  value={(formData.contact?.name) || ''}
+                  onChange={e => setFormData({
+                    ...formData,
+                    contact: {...formData.contact, name: e.target.value}
+                  })}
+                  error={validated ? stepErrors.contactName : ''}
+                  placeholder="請輸入聯絡人姓名"
+                />
+
+                {/* 聯絡人 Email（含 @ 前綴） */}
+                <div className="form-control w-full mb-4">
+                  <label className="label pb-1">
+                    <span className="label-text font-medium text-base-content">
+                      聯絡人 Email<span className="text-error ml-0.5">*</span>
+                    </span>
+                  </label>
+                  <div className="join w-full">
+                    <span className="join-item flex items-center px-3 bg-base-200 border border-base-300">@</span>
+                    <input
+                      type="email"
+                      name="contact.email"
+                      value={(formData.contact?.email) || ''}
+                      onChange={e => setFormData({
+                        ...formData,
+                        contact: {...formData.contact, email: e.target.value}
+                      })}
+                      placeholder="example@company.com"
+                      className={`input input-bordered join-item w-full ${validated && stepErrors.contactEmail ? 'border-error' : ''}`}
+                    />
+                  </div>
+                  {validated && stepErrors.contactEmail ? (
+                    <span className="label-text-alt text-error mt-1">
+                      {stepErrors.contactEmail || "請輸入有效的 Email 地址"}
+                    </span>
+                  ) : (
+                    <span className="label-text-alt text-base-content/60 mt-1">
+                      此 Email 將用於接收求職者的應徵訊息
+                    </span>
+                  )}
+                </div>
+
+                <Field
+                  label="聯絡人電話"
+                  required
+                  type="text"
+                  name="contact.phone"
+                  value={(formData.contact?.phone) || ''}
+                  onChange={e => setFormData({
+                    ...formData,
+                    contact: {...formData.contact, phone: e.target.value}
+                  })}
+                  error={validated ? stepErrors.contactPhone : ''}
+                  placeholder="例如：02-12345678 或 0912-345-678"
+                />
+              </>
+            )}
+          </div>
         );
 
       case 2: // 職缺詳細說明
         return (
-          <ModalSection title={steps[2].title} icon={steps[2].icon}>
+          <div className="step-form">
             <div className="alert alert-info mb-3">
               <HelpCircle size={20} />
               <span>{steps[2].description}</span>
@@ -338,7 +385,7 @@ const RecruitFormModal = ({
 
             <ModalSection title="填寫技巧">
               <p>優秀的職缺說明應包含以下部分：</p>
-              <ul className="list-disc pl-5">
+              <ul className="list-disc list-inside">
                 <li>職責範圍：此職位的主要工作內容</li>
                 <li>資格要求：應徵者需具備的技能與經驗</li>
                 <li>工作福利：提供的薪資範圍、獎金制度或其他福利</li>
@@ -346,19 +393,19 @@ const RecruitFormModal = ({
               </ul>
             </ModalSection>
 
-            {/* 詳細資料說明：保留 ReactQuill 編輯器 */}
-            <div className="form-control w-full mb-3">
+            {/* 詳細資料說明（ReactQuill） */}
+            <div className="form-control w-full mb-4">
               <label className="label pb-1">
                 <span className="label-text font-medium text-base-content">
-                  詳細資料說明 <span className="text-error ml-0.5">*</span>
+                  詳細資料說明<span className="text-error ml-0.5">*</span>
                 </span>
               </label>
-              <div className="border border-base-300 rounded-lg min-h-[300px]">
+              <div className="border border-base-300 rounded-lg overflow-hidden min-h-[300px]">
                 <ReactQuill
                   value={formData.intro || ''}
                   onChange={handleQuillChange}
                   placeholder="請詳細描述此職位..."
-                  style={{ height: '250px' }}
+                  className="h-[250px]"
                 />
               </div>
               {validated && stepErrors.intro && (
@@ -370,12 +417,12 @@ const RecruitFormModal = ({
                 使用上方的編輯工具可以格式化文字，添加列表、標題等
               </span>
             </div>
-          </ModalSection>
+          </div>
         );
 
       case 3: // 上傳圖片
         return (
-          <ModalSection title={steps[3].title} icon={steps[3].icon}>
+          <div className="step-form">
             <div className="alert alert-info mb-3">
               <HelpCircle size={20} />
               <span>{steps[3].description}</span>
@@ -383,7 +430,7 @@ const RecruitFormModal = ({
 
             <ModalSection title="圖片上傳指南">
               <p>您可以上傳與職缺相關的圖片，例如：</p>
-              <ul className="list-disc pl-5">
+              <ul className="list-disc list-inside">
                 <li>公司環境照片</li>
                 <li>團隊活動照片</li>
                 <li>相關產品或服務照片</li>
@@ -391,16 +438,17 @@ const RecruitFormModal = ({
               <p className="mb-0">建議上傳清晰、專業的圖片，尺寸不超過 2MB</p>
             </ModalSection>
 
+            {/* 上傳照片 */}
             <div className="form-control w-full mb-3">
               <label className="label pb-1">
                 <span className="label-text font-medium text-base-content">上傳照片</span>
               </label>
               <input
-                className="file-input file-input-bordered w-full"
                 type="file"
                 multiple
                 accept="image/*"
                 onChange={handleImageChange}
+                className="file-input file-input-bordered w-full"
               />
               <span className="label-text-alt text-base-content/60 mt-1">
                 可選擇多張圖片一起上傳
@@ -410,20 +458,20 @@ const RecruitFormModal = ({
             {imagePreviews.length > 0 && (
               <div>
                 <p>已選擇的圖片：</p>
-                <div className="flex flex-wrap">
+                <div className="flex flex-wrap gap-2">
                   {imagePreviews.map((src, index) => (
-                    <div key={index} className="relative mr-2 mb-2">
+                    <div key={index} className="relative">
                       <img
-                        src={typeof src === 'string' ? src : (src.image ? process.env.REACT_APP_BASE_URL + src.image : src)}
+                        src={typeof src === 'string' ? src : (src.image ? import.meta.env.VITE_BASE_URL + src.image : src)}
                         alt="預覽照片"
-                        className="w-[120px] h-[120px] object-cover rounded-lg border border-base-300 bg-base-100 p-1"
+                        className="rounded-lg border border-base-300 w-[120px] h-[120px] object-cover"
                       />
                     </div>
                   ))}
                 </div>
               </div>
             )}
-          </ModalSection>
+          </div>
         );
 
       default:
@@ -431,7 +479,7 @@ const RecruitFormModal = ({
     }
   };
 
-  // 底部按鈕區
+  // 底部按鈕區（放入 AppModal 的 footer）
   const footer = (
     <>
       {/* 禁用按鈕當正在提交時 */}
@@ -458,7 +506,7 @@ const RecruitFormModal = ({
         <Button
           variant="primary"
           type="submit"
-          form="recruit-form"
+          form="recruitForm"
           loading={isLoading}
           disabled={isLoading}
         >
@@ -477,13 +525,16 @@ const RecruitFormModal = ({
       size="lg"
       variant="admin"
       title={isEdit ? "編輯職位" : "新增職位"}
-      steps={steps.map(s => s.title)}
-      currentStep={currentStep}
+      icon={<Briefcase size={18} />}
       closeOnBackdrop={false}
+      steps={steps.map(step => step.title)}
+      currentStep={currentStep}
       footer={footer}
     >
-      <form id="recruit-form" noValidate onSubmit={handleFormSubmit}>
-        {renderStepContent()}
+      <form id="recruitForm" noValidate onSubmit={handleFormSubmit}>
+        <ModalSection title={steps[currentStep].title} icon={steps[currentStep].icon}>
+          {renderStepContent()}
+        </ModalSection>
       </form>
     </AppModal>
   );

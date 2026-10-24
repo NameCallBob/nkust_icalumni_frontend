@@ -58,7 +58,7 @@ const ArticleForm = () => {
       setImageFiles(
         article.images.map((img) => ({
           id: img.id,
-          url: `${process.env.REACT_APP_BASE_URL}${img.image}`,
+          url: `${import.meta.env.VITE_BASE_URL}${img.image}`,
           pic_type: img.pic_type,
         }))
       );

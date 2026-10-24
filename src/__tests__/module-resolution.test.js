@@ -12,8 +12,11 @@
  * utils/validatePassword），導致分支無法建置。這些模組已重新撰寫補上，
  * `KNOWN_MISSING_MODULES` 因此清空；日後若有新的斷掉 import，第一個測試會立刻失敗。
  */
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SRC_DIR = path.resolve(__dirname, '..');
 const SOURCE_EXTENSIONS = ['.js', '.jsx'];
@@ -35,7 +38,7 @@ function collectSourceFiles(dir, collected = []) {
       collectSourceFiles(fullPath, collected);
     } else if (
       SOURCE_EXTENSIONS.includes(path.extname(entry.name)) &&
-      !entry.name.endsWith('.test.js')
+      !/\.test\.jsx?$/.test(entry.name)
     ) {
       collected.push(fullPath);
     }

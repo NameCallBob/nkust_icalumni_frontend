@@ -154,7 +154,7 @@ const ContactInfo = ({ company, handleInputChange, handleFileChange }) => {
                   />
                 ) : company.photo_url ? (
                   <img
-                    src={process.env.REACT_APP_BASE_URL + company.photo_url}
+                    src={import.meta.env.VITE_BASE_URL + company.photo_url}
                     alt="公司照片"
                     className="h-auto max-w-full"
                     style={{ maxWidth: "100%", maxHeight: "250px", objectFit: "contain" }}
@@ -180,7 +180,7 @@ const ContactInfo = ({ company, handleInputChange, handleFileChange }) => {
                   />
                 ) : company.photo_url ? (
                   <img
-                    src={process.env.REACT_APP_BASE_URL + company.photo_url}
+                    src={import.meta.env.VITE_BASE_URL + company.photo_url}
                     className="h-auto max-w-full rounded-lg"
                     style={{ width: "100%", height: "250px", objectFit: "cover", borderRadius: "8px" }}
                     alt="網站顯示效果預覽"

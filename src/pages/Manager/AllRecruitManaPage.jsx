@@ -895,7 +895,7 @@ function AllRecruitManaPage() {
                     {viewingJob.images.map((img, index) => (
                       <img
                         key={index}
-                        src={typeof img === 'string' ? img : (img.image ? process.env.REACT_APP_BASE_URL + img.image : img)}
+                        src={typeof img === 'string' ? img : (img.image ? import.meta.env.VITE_BASE_URL + img.image : img)}
                         alt={`職缺圖片 ${index + 1}`}
                         className="rounded-xl border border-base-300 bg-base-100 p-1"
                         style={{ width: '120px', height: '120px', objectFit: 'cover' }}

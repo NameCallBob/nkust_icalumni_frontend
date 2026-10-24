@@ -9,14 +9,16 @@
  *     → 前端絕不能再送 "Bearer None" / "Bearer undefined" 之類的標頭
  *   - CORS_ALLOW_CREDENTIALS=True 且允許 x-csrftoken 標頭 → 前端需 withCredentials
  */
+import { vi } from 'vitest';
+import { AxiosHeaders } from 'axios';
 import Axios, { getCsrfToken, attachCsrfHeader } from '../Axios';
 import PicAxios from '../PicAxios';
 import { saveSession, syncSession, clearSession } from '../session';
 
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    success: jest.fn(), error: jest.fn(), warning: jest.fn(),
-    warn: jest.fn(), info: jest.fn(),
+    success: vi.fn(), error: vi.fn(), warning: vi.fn(),
+    warn: vi.fn(), info: vi.fn(),
   },
 }));
 
@@ -26,7 +28,7 @@ afterEach(clearCookie);
 /** 取出實例上第一個 request 攔截器並對 config 執行（模擬 axios 發送前的流程）。 */
 const runRequest = async (instance, config) => {
   const handler = instance.interceptors.request.handlers[0];
-  const headers = new (require('axios').AxiosHeaders)();
+  const headers = new AxiosHeaders();
   return handler.fulfilled({ headers, ...config });
 };
 
@@ -82,7 +84,7 @@ describe('X-CSRFToken 請求攔截器', () => {
 
   it('attachCsrfHeader 可單獨使用', () => {
     document.cookie = 'csrftoken=zzz; path=/';
-    const headers = new (require('axios').AxiosHeaders)();
+    const headers = new AxiosHeaders();
     expect(attachCsrfHeader({ method: 'patch', headers }).headers.get('X-CSRFToken')).toBe('zzz');
   });
 });

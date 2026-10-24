@@ -95,7 +95,7 @@ const ProductDetailModal = ({ product, show, onClose }) => {
                                         <div className="h-[300px] bg-base-200 flex items-center justify-center relative">
                                             <img
                                                 src={getImageSrc(
-                                                    typeof image === 'string' ? image : process.env.REACT_APP_BASE_URL + image.image,
+                                                    typeof image === 'string' ? image : import.meta.env.VITE_BASE_URL + image.image,
                                                     'product'
                                                 )}
                                                 alt={`產品圖片 ${index + 1}`}
@@ -202,10 +202,10 @@ const ProductDetailModal = ({ product, show, onClose }) => {
                                 <Card key={index} padding="none" hover className="overflow-hidden">
                                     <div className="h-[200px] overflow-hidden relative">
                                         <img
-                                            src={typeof image === 'string' ? image : process.env.REACT_APP_BASE_URL + image.image}
+                                            src={typeof image === 'string' ? image : import.meta.env.VITE_BASE_URL + image.image}
                                             alt={`產品圖片 ${index + 1}`}
                                             className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-                                            onClick={() => window.open(typeof image === 'string' ? image : process.env.REACT_APP_BASE_URL + image.image, '_blank')}
+                                            onClick={() => window.open(typeof image === 'string' ? image : import.meta.env.VITE_BASE_URL + image.image, '_blank')}
                                         />
                                         {index === 0 && (
                                             <span className="absolute top-2 left-2 inline-flex items-center rounded-full bg-[#a0781c] px-2.5 py-0.5 text-xs font-semibold text-white shadow">

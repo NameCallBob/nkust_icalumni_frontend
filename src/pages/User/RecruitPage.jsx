@@ -436,7 +436,7 @@ function RecruitPage() {
                         <div className="aspect-video w-full overflow-hidden bg-base-200">
                           <img
                             className="h-full w-full object-cover"
-                            src={getImageSrc(process.env.REACT_APP_BASE_URL + image.image, 'company')}
+                            src={getImageSrc(import.meta.env.VITE_BASE_URL + image.image, 'company')}
                             alt={`${selectedJob.company_name} 環境照片 ${index + 1}`}
                             onError={(e) => handleImageError(e, 'company')}
                           />

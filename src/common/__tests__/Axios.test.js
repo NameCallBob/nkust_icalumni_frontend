@@ -5,17 +5,18 @@
  * 各種 HTTP 錯誤怎麼呈現給使用者。任何一項改壞，症狀都是「某些操作莫名其妙
  * 失敗但沒有錯誤訊息」——最難除錯的那種。
  */
+import { vi } from 'vitest';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Axios from '../Axios';
 
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
-    warning: jest.fn(),
-    warn: jest.fn(),
-    info: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
   },
 }));
 

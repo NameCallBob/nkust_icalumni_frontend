@@ -2,7 +2,7 @@
 // Tailwind v3 + DaisyUI v4 — NKUST 校友系統深藍主題
 // Bootstrap 已完全移除 → preflight 開啟，提供完整 CSS base reset（新 UI 設計地基）。
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './index.html'],
   corePlugins: {
     preflight: true,
   },

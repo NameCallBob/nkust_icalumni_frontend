@@ -5,13 +5,14 @@
  * 直接拖垮瀏覽器的地方：預設圖本身也載不出來時，`onError` 會再次觸發，
  * 若沒有防護就是無限迴圈。這裡把那道防護釘死。
  */
+import { vi } from 'vitest';
 import { DEFAULT_IMAGES, handleImageError, getImageSrc, createSafeImage } from '../imageDefaults';
 
 /** 模擬一個 <img> 的 error 事件。 */
 const errorEventFor = (currentSrc) => ({
   target: {
     src: currentSrc,
-    classList: { add: jest.fn() },
+    classList: { add: vi.fn() },
   },
 });
 

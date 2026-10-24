@@ -30,7 +30,7 @@ if (rootElement.hasChildNodes()) {
 // 基礎 Web Vitals 監控
 reportWebVitals((metric) => {
   // 在開發環境下輸出詳細信息
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('Web Vitals:', metric);
   }
 
@@ -39,7 +39,7 @@ reportWebVitals((metric) => {
 });
 
 // 進階效能監控（生產環境）
-if (process.env.NODE_ENV === 'production') {
+if (import.meta.env.PROD) {
   reportAdvancedWebVitals((metric) => {
     // 發送到分析服務
     console.log('Advanced Web Vitals:', metric);

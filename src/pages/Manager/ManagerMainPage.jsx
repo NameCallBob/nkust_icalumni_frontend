@@ -129,7 +129,7 @@ function MemberCenter() {
                 ></div>
                 <div className="absolute inset-x-0 -bottom-12 flex justify-center">
                     <img
-                        src={loading || error ? 'https://placehold.co/400' : process.env.REACT_APP_BASE_URL + userData.photo}
+                        src={loading || error ? 'https://placehold.co/400' : import.meta.env.VITE_BASE_URL + userData.photo}
                         alt={userData.name}
                         className="rounded-full border-4 border-white shadow-md bg-white"
                         style={{ width: '120px', height: '120px', objectFit: 'cover' }}

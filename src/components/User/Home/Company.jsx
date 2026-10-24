@@ -66,7 +66,7 @@ function Company() {
                         loading="lazy"
                         src={getImageSrc(
                           company.photo
-                            ? process.env.REACT_APP_BASE_URL + company.photo
+                            ? import.meta.env.VITE_BASE_URL + company.photo
                             : null,
                           "company",
                         )}

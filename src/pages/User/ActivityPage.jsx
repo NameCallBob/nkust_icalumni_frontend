@@ -177,11 +177,11 @@ const EventDetail = () => {
         // 分離大小圖片並添加完整URL路徑
         const large = eventData.images
           .filter(img => img.pic_type === 'large')
-          .map(img => process.env.REACT_APP_BASE_URL + img.image);
+          .map(img => import.meta.env.VITE_BASE_URL + img.image);
 
         const small = eventData.images
           .filter(img => img.pic_type === 'small')
-          .map(img => process.env.REACT_APP_BASE_URL + img.image);
+          .map(img => import.meta.env.VITE_BASE_URL + img.image);
 
         setEvent(eventData);
         setLargeImages(large);

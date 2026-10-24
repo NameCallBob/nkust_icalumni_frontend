@@ -64,7 +64,7 @@ function Slide() {
     if (!image) return fallbackImage.image;
     return image.startsWith("/images/")
       ? image
-      : process.env.REACT_APP_BASE_URL + image;
+      : import.meta.env.VITE_BASE_URL + image;
   };
 
   // 處理圖片點擊，如果有連結則跳轉，否則顯示模態框

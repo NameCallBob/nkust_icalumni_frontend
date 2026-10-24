@@ -5,35 +5,35 @@
  * （嘗試次數、封鎖倒數、記住帳號）疊在一起的地方。這些狀態存在 localStorage、
  * 跨頁面存活，靠人工測很難把每個組合走過一遍。
  */
+import { vi } from 'vitest';
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import Axios from 'common/Axios';
 import LoginPage from '../LoginPage';
 
-jest.mock('common/Axios');
-jest.mock('react-toastify', () => ({
+vi.mock('common/Axios');
+vi.mock('react-toastify', () => ({
   ToastContainer: () => null,
   toast: {
-    success: jest.fn(), error: jest.fn(), warning: jest.fn(),
-    warn: jest.fn(), info: jest.fn(),
+    success: vi.fn(), error: vi.fn(), warning: vi.fn(),
+    warn: vi.fn(), info: vi.fn(),
   },
 }));
-// eslint-disable-next-line import/first
-const { toast } = require('react-toastify');
 // react-helmet 在 jsdom 下會對 document.head 做真實操作，與被測邏輯無關。
-jest.mock('SEO', () => () => null);
+vi.mock('SEO', () => ({ default: () => null }));
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+const mockNavigate = vi.hoisted(() => vi.fn());
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useNavigate: () => mockNavigate,
 }));
 
 /** 建一個可控的 axios 替身。 */
-const mockApi = ({ post = jest.fn().mockResolvedValue({ data: {} }) } = {}) => {
-  const instance = { post, get: jest.fn().mockResolvedValue({ data: {} }) };
+const mockApi = ({ post = vi.fn().mockResolvedValue({ data: {} }) } = {}) => {
+  const instance = { post, get: vi.fn().mockResolvedValue({ data: {} }) };
   Axios.mockReturnValue(instance);
   return instance;
 };
@@ -46,13 +46,13 @@ const renderLoginPage = () =>
   );
 
 beforeEach(() => {
-  jest.useFakeTimers({ advanceTimers: true });
+  vi.useFakeTimers({ shouldAdvanceTime: true });
   mockApi();
 });
 
 afterEach(() => {
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
+  vi.runOnlyPendingTimers();
+  vi.useRealTimers();
 });
 
 describe('初次載入', () => {
@@ -123,7 +123,7 @@ describe('登入流程', () => {
   it('登入失敗會累加本地嘗試次數', async () => {
     // 前端的封鎖是「後端節流之外的額外一層」，它完全依賴這個計數器；
     // 計數沒累加的話，前端封鎖等於不存在。
-    mockApi({ post: jest.fn().mockRejectedValue({ response: { status: 400 } }) });
+    mockApi({ post: vi.fn().mockRejectedValue({ response: { status: 400 } }) });
 
     renderLoginPage();
     await fillAndSubmit({ email: 'someone@example.invalid', password: 'wrong' });
@@ -137,7 +137,7 @@ describe('登入流程', () => {
     // 後端登入節流是 10 次/分；前端要能正確反映那個等待時間，
     // 否則使用者會一直重試、一直被擋，卻不知道要等多久。
     mockApi({
-      post: jest.fn().mockRejectedValue({
+      post: vi.fn().mockRejectedValue({
         response: { status: 429, headers: { 'retry-after': '42' } },
       }),
     });
@@ -154,7 +154,7 @@ describe('登入流程', () => {
 
   it('登入成功會清掉先前的失敗紀錄', async () => {
     window.localStorage.setItem('loginAttempts', '3');
-    mockApi({ post: jest.fn().mockResolvedValue({ data: { message: 'OK', is_super: false } }) });
+    mockApi({ post: vi.fn().mockResolvedValue({ data: { message: 'OK', is_super: false } }) });
 
     renderLoginPage();
     await fillAndSubmit({ email: 'someone@example.invalid', password: 'correct' });
@@ -168,7 +168,7 @@ describe('登入流程', () => {
 describe('憑證處理（HttpOnly cookie 契約）', () => {
   it('登入成功後不把任何 token 存進 localStorage，只存顯示用資訊', async () => {
     // 後端 SEC-015：登入回應只有 { message, is_super }，token 在 HttpOnly Set-Cookie。
-    mockApi({ post: jest.fn().mockResolvedValue({ data: { message: 'OK', is_super: true } }) });
+    mockApi({ post: vi.fn().mockResolvedValue({ data: { message: 'OK', is_super: true } }) });
     window.localStorage.setItem('jwt', 'None'); // 舊版殘留
 
     renderLoginPage();

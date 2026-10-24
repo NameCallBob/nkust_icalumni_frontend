@@ -1,4 +1,4 @@
-// 供編輯器/工具讀取；實際 build 由 craco.config.js 注入。
+// Vite 會自動讀取此檔（CRA 時代需靠 craco 注入，現在不需要）。
 module.exports = {
   plugins: {
     tailwindcss: {},

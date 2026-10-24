@@ -1,4 +1,4 @@
-// Jest 全域設定——每個測試檔執行前都會先跑這支。
+// Vitest 全域設定（vite.config.js 的 test.setupFiles）——每個測試檔執行前都會先跑這支。
 //
 // 這裡做三件事：
 //   1. 載入 jest-dom 的自訂 matcher（toBeInTheDocument、toHaveTextContent…）
@@ -6,6 +6,7 @@
 //      —— 缺了它們，元件在測試中會以 TypeError 崩潰，測到的是「假的失敗」
 //   3. 封鎖對外網路，並在每個測試後清乾淨全域狀態
 import '@testing-library/jest-dom';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 
 // ── jsdom 缺少的瀏覽器 API ────────────────────────────────────────────
 // 任何用到 CSS media query 的元件（含多數 UI 套件）都會呼叫 matchMedia。
@@ -53,7 +54,7 @@ Element.prototype.scrollIntoView = Element.prototype.scrollIntoView || (() => {}
 // 單元測試不該打真的 API：慢、不穩、而且可能對正式資料產生副作用。
 // 需要網路互動的測試請 mock 掉 axios（見 src/common/__tests__/Axios.test.js）。
 // 端對端的真實流量測試屬於 e2e/（Playwright）的範圍。
-global.fetch = jest.fn(() => {
+global.fetch = vi.fn(() => {
   throw new Error(
     '測試嘗試呼叫 fetch()。單元測試不得打真實網路——請 mock 該模組，' +
       '或把這個情境移到 e2e/ 的 Playwright 測試。'
@@ -62,11 +63,11 @@ global.fetch = jest.fn(() => {
 
 // ── 每個測試之間互相隔離 ─────────────────────────────────────────────
 afterEach(() => {
-  // localStorage 活在整個 jest 環境裡，不清會讓「登入狀態」外洩到下一個測試，
+  // localStorage 活在整個測試環境裡，不清會讓「登入狀態」外洩到下一個測試，
   // 症狀是單獨跑會過、整批跑就掛。
   window.localStorage.clear();
   window.sessionStorage.clear();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 // 讓 console.error / console.warn 在測試中變成明顯的訊號而不是雜訊。

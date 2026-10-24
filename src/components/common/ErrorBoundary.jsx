@@ -99,7 +99,7 @@ class ErrorBoundary extends React.Component {
   }
 
   renderDebug() {
-    if (process.env.NODE_ENV !== 'development' || !this.state.error) {
+    if (!import.meta.env.DEV || !this.state.error) {
       return null;
     }
 

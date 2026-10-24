@@ -15,7 +15,7 @@ const SimpleCard = ({ company, onClick }) => {
 
   const photoUrl =
     company && company.photo
-      ? `${process.env.REACT_APP_BASE_URL}${company.photo}`
+      ? `${import.meta.env.VITE_BASE_URL}${company.photo}`
       : DEFAULT_IMAGES.company;
 
   return (

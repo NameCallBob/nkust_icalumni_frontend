@@ -1,4 +1,5 @@
 /** UI 元件庫煙霧測試：確認 API 與呼叫端的用法相符（props、無障礙名稱、互動）。 */
+import { vi } from 'vitest';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -18,7 +19,7 @@ describe('cn', () => {
 
 describe('Button', () => {
   it('loading 時禁用並不觸發 onClick', async () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     render(<Button loading onClick={onClick}>送出</Button>);
     const btn = screen.getByRole('button', { name: /送出/ });
     expect(btn).toBeDisabled();
@@ -47,7 +48,7 @@ describe('Pagination', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
   it('點頁碼與上下頁會回呼', async () => {
-    const onPageChange = jest.fn();
+    const onPageChange = vi.fn();
     render(<Pagination page={2} totalPages={5} onPageChange={onPageChange} />);
     await userEvent.click(screen.getByRole('button', { name: '下一頁' }));
     expect(onPageChange).toHaveBeenLastCalledWith(3);
@@ -59,8 +60,8 @@ describe('Pagination', () => {
 
 describe('ConfirmDialog', () => {
   it('確認鈕觸發 onConfirm，取消鈕關閉', async () => {
-    const onConfirm = jest.fn();
-    const onOpenChange = jest.fn();
+    const onConfirm = vi.fn();
+    const onOpenChange = vi.fn();
     render(
       <ConfirmDialog open onOpenChange={onOpenChange} title="確認刪除？" confirmText="刪除" onConfirm={onConfirm} destructive />
     );
@@ -90,7 +91,7 @@ describe('其他元件', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('壞了');
   });
   it('Switch 切換呼叫 onCheckedChange', async () => {
-    const onCheckedChange = jest.fn();
+    const onCheckedChange = vi.fn();
     render(<Switch aria-label="繳費" checked={false} onCheckedChange={onCheckedChange} />);
     await userEvent.click(screen.getByRole('switch', { name: '繳費' }));
     expect(onCheckedChange).toHaveBeenCalledWith(true);

@@ -82,7 +82,7 @@ const PosterModal = () => {
           {posterImages.map((image, index) => (
             <SwiperSlide key={index}>
               <img
-                src={process.env.REACT_APP_BASE_URL + image.image} // 假設 API 回傳的物件有 `image` 欄位
+                src={import.meta.env.VITE_BASE_URL + image.image} // 假設 API 回傳的物件有 `image` 欄位
                 alt={`Poster ${index + 1}`}
                 className="block w-full max-h-[70vh] object-contain bg-base-200"
                 onError={() => {

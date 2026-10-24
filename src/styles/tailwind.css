@@ -1,4 +1,4 @@
-/* Tailwind 入口 — 需在 src/index.js 以 `import './styles/tailwind.css';` 載入。
+/* Tailwind 入口 — 需在 src/index.jsx 以 `import './styles/tailwind.css';` 載入。
    preflight 於 tailwind.config.js 暫時關閉（過渡期保護 Bootstrap）。 */
 @tailwind base;
 @tailwind components;

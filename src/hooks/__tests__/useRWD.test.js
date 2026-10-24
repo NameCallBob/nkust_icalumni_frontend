@@ -4,6 +4,7 @@
  * 它決定了表格用卡片還是捲動、按鈕要不要滿版、一列放幾張卡。斷點判斷錯了不會
  * 有任何錯誤訊息，只會在某些螢幕尺寸下版面壞掉——而那正是最難靠人工發現的問題。
  */
+import { vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import useRWD from '../useRWD';
 
@@ -58,7 +59,7 @@ describe('斷點判斷', () => {
 
 describe('卸載後不再監聽 resize', () => {
   it('移除事件監聽器（否則每次換頁都會累積一個 listener）', () => {
-    const removeSpy = jest.spyOn(window, 'removeEventListener');
+    const removeSpy = vi.spyOn(window, 'removeEventListener');
     const { unmount } = renderHook(() => useRWD());
 
     unmount();

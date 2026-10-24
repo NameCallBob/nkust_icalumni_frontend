@@ -384,7 +384,7 @@ const RuleManaPage = () => {
           <div>
             <h5 className="text-lg font-semibold mb-2">PDF 文件</h5>
             <embed
-              src={`${process.env.REACT_APP_BASE_URL}${viewRule.pdf_file}`}
+              src={`${import.meta.env.VITE_BASE_URL}${viewRule.pdf_file}`}
               type="application/pdf"
               width="100%"
               height="500px"

@@ -11,7 +11,7 @@ import "./App.css"
 
 // 核心導航組件 - 立即載入
 import UserNav from 'components/User/UserNav';
-import ManagerNav from 'components/Manage/ManagerNav.js';
+import ManagerNav from 'components/Manage/ManagerNav';
 
 // 使用 React.lazy() 進行代碼分割 - 使用者端頁面
 const Home = React.lazy(() => import('pages/User/HomePage'));

@@ -161,7 +161,7 @@ const ProductDisplay = ({ memberId }) => {
                     objectFit: "cover", // 防止圖片變形
                   }}
                   className="block w-full"
-                  src={process.env.REACT_APP_BASE_URL + photo}
+                  src={import.meta.env.VITE_BASE_URL + photo}
                   alt={`Product Image ${index + 1}`}
                 />
               </SwiperSlide>
@@ -290,7 +290,7 @@ const ProductDisplay = ({ memberId }) => {
                         height: '500px', // 固定高度
                         objectFit: 'cover', // 防止圖片變形
                     }}
-                      src={process.env.REACT_APP_BASE_URL + photo}
+                      src={import.meta.env.VITE_BASE_URL + photo}
                       alt={`Product Image ${index + 1}`}
                     />
                   </SwiperSlide>

@@ -539,7 +539,7 @@ const AlumniListPage = () => {
                                             <div className="relative w-2/5 shrink-0 overflow-hidden bg-muted">
                                                 <div className="aspect-[3/4] h-full w-full">
                                                     <img
-                                                        src={getImageSrc(alumni.photo ? process.env.REACT_APP_BASE_URL + alumni.photo : null, 'avatar')}
+                                                        src={getImageSrc(alumni.photo ? import.meta.env.VITE_BASE_URL + alumni.photo : null, 'avatar')}
                                                         alt={alumni.name || '系友照片'}
                                                         loading="lazy"
                                                         className="h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
