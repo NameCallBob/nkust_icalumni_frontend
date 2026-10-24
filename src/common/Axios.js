@@ -2,21 +2,45 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+/** 這些 method 不會改動資料，後端不要求 CSRF token。 */
+const SAFE_METHODS = ["get", "head", "options", "trace"];
+
+/** 從 document.cookie 讀出後端種下的 csrftoken（CSRF_COOKIE_HTTPONLY=False，JS 讀得到）。 */
+export function getCsrfToken() {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+/**
+ * 後端（SEC-015）認證契約：
+ * - JWT 在 HttpOnly cookie `access_token`，由瀏覽器自動附帶，前端不再碰 token，
+ *   所以必須 withCredentials（前後端不同網域，否則 cookie 不會送出）。
+ * - 不得再送 Authorization 標頭：後端 CookieJWTAuthentication 只要看到該標頭就
+ *   以它為準，送 "Bearer None" 之類的假值會讓原本有效的 cookie 被判為無效（401）。
+ * - 非安全 method（POST/PUT/PATCH/DELETE）必須帶 X-CSRFToken，值取自 csrftoken cookie。
+ */
+export function attachCsrfHeader(config) {
+  const method = (config.method || "get").toLowerCase();
+  if (!SAFE_METHODS.includes(method)) {
+    const token = getCsrfToken();
+    if (token) config.headers.set("X-CSRFToken", token);
+  }
+  return config;
+}
+
 function Axios() {
-  const token = window.localStorage.getItem("jwt");
-
-  // If no token is found, we use 'None' (can adjust based on API behavior)
-  const jwt = token ? `Bearer ${token}` : "None";
-
   const res = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
     timeout: 10000, // Timeout set to 10 seconds
+    withCredentials: true,
     headers: {
-      Authorization: jwt,
       "Content-Type": "application/json",
       Accept: "*/*",
     },
   });
+
+  res.interceptors.request.use(attachCsrfHeader);
 
   // Interceptor for handling token expiration and other status codes
   res.interceptors.response.use(

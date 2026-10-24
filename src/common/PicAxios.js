@@ -1,27 +1,23 @@
 import axios from "axios"
-import { Navigate } from "react-router-dom"
+import { attachCsrfHeader } from "./Axios"
 
-
+// 認證方式與 Axios.js 相同（HttpOnly cookie + X-CSRFToken），不再使用 localStorage 的 jwt。
 function PicAxios(){
-  // const navigate = useNavigate()
-  if (window.localStorage.getItem('jwt') === null){
-  window.localStorage.setItem('jwt','None')
-  }
-  let jwt = `Bearer ${(window.localStorage.getItem('jwt'))}`
   const res = axios.create(
     {
       baseURL: process.env.REACT_APP_BASE_URL,
       timeout:10000,
+      withCredentials: true,
       headers:{
-        'Authorization':jwt,
         'Content-Type':'Application/json',
         'Accept':'*/*',
-        'Access-Control-Allow-Origin':'*'
       }
     }
   )
 
-  // 攔截器，攔截jwtToken失效
+  res.interceptors.request.use(attachCsrfHeader);
+
+  // 攔截器，攔截憑證失效
   res.interceptors.response.use(
     function (res) {
       return res;
@@ -29,7 +25,6 @@ function PicAxios(){
     function (err) {
       if (err.response && err.response.status === 401) {
         alert("您的憑證已失效，請重新登入");
-        <Navigate to="/LoginPage"/>;
       }
       return Promise.reject(err);
     }

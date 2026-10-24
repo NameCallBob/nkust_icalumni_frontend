@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Axios from 'common/Axios';
+import { saveSession, syncSession, clearSession } from 'common/session';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -44,23 +45,20 @@ const Login = () => {
       }
     }
 
-    // 檢查是否已登入
-    if (window.localStorage.getItem('jwt') != "None"){
-      Axios().post("api/token/verify/",{
-        "token":window.localStorage.getItem('jwt')
-      })
+    // 檢查是否已登入：憑證在 HttpOnly cookie，前端看不到 token，
+    // 改問後端 GET /basic/whoami（200 = cookie 仍有效，401 = 未登入或已過期）。
+    Axios().get("/basic/whoami")
       .then((res) => {
+        syncSession({ isSuper: res.data?.is_super });
         toast.success('已登入，自動跳轉');
         setTimeout(() => {
           navigator('/alumni/manage/');
         }, 600);
       })
-      .catch((err) => {
-        // console.log(err);
-        // 清除失效的 token
-        window.localStorage.removeItem('jwt');
+      .catch(() => {
+        // 未登入：清掉舊版殘留的本地登入資訊即可
+        clearSession();
       });
-    }
   }, []);
 
   useEffect(() => {
@@ -109,15 +107,8 @@ const Login = () => {
         
         localStorage.removeItem('loginAttempts');
         localStorage.removeItem('lastAttemptTime');
-        window.localStorage.setItem('jwt', res.data.token);
-        window.localStorage.setItem('super', res.data.is_super);
-
-        const issuedAt = Math.floor(Date.now() / 1000);
-        const validityDuration = 14400;
-        const expiry = issuedAt + validityDuration;
-
-        localStorage.setItem('issuedAt', issuedAt);
-        localStorage.setItem('expiry', expiry);
+        // token 已由後端寫入 HttpOnly cookie（回應 body 只有 message / is_super），前端不保存。
+        saveSession({ isSuper: res.data?.is_super });
 
         // 使用優雅的成功訊息
         toast.success('歡迎回到系友平台，尊榮系友！', {

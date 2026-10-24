@@ -165,14 +165,11 @@ describe('登入流程', () => {
   });
 });
 
-describe('憑證處理', () => {
-  it('後端回應沒有 token 時，仍會寫入字串 "undefined"（已知的前後端落差）', async () => {
-    // 詳見 src/common/__tests__/auth-contract.test.js。
-    // 後端 SEC-015 之後登入回應只有 { message, is_super }，
-    // LoginPage 卻仍執行 localStorage.setItem('jwt', res.data.token)。
-    // 這條測試把落差固定在 CI 上；前端完成 cookie 遷移後，
-    // 改成斷言 localStorage 完全不含 jwt。
-    mockApi({ post: jest.fn().mockResolvedValue({ data: { message: 'OK', is_super: false } }) });
+describe('憑證處理（HttpOnly cookie 契約）', () => {
+  it('登入成功後不把任何 token 存進 localStorage，只存顯示用資訊', async () => {
+    // 後端 SEC-015：登入回應只有 { message, is_super }，token 在 HttpOnly Set-Cookie。
+    mockApi({ post: jest.fn().mockResolvedValue({ data: { message: 'OK', is_super: true } }) });
+    window.localStorage.setItem('jwt', 'None'); // 舊版殘留
 
     renderLoginPage();
 
@@ -190,7 +187,29 @@ describe('憑證處理', () => {
     fireEvent.click(submitButtons[submitButtons.length - 1]);
 
     await waitFor(() => {
-      expect(window.localStorage.getItem('jwt')).toBe('undefined');
+      expect(window.localStorage.getItem('super')).toBe('true');
     });
+    expect(window.localStorage.getItem('jwt')).toBeNull();
+    expect(Number(window.localStorage.getItem('expiry'))).toBeGreaterThan(Date.now() / 1000);
+  });
+
+  it('載入時以 GET /basic/whoami 判斷登入狀態，而不是 token/verify', async () => {
+    const api = mockApi();
+    renderLoginPage();
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/basic/whoami'));
+    expect(api.post).not.toHaveBeenCalledWith('api/token/verify/', expect.anything());
+  });
+
+  it('whoami 回 401 時清掉本地殘留的登入資訊且不跳轉', async () => {
+    const api = mockApi();
+    api.get.mockRejectedValue({ response: { status: 401 } });
+    window.localStorage.setItem('expiry', '1');
+    window.localStorage.setItem('super', 'true');
+
+    renderLoginPage();
+
+    await waitFor(() => expect(window.localStorage.getItem('expiry')).toBeNull());
+    expect(window.localStorage.getItem('super')).toBeNull();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

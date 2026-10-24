@@ -41,21 +41,14 @@ describe('實例設定', () => {
     expect(Axios().defaults.headers['Content-Type']).toBe('application/json');
   });
 
-  it('每次呼叫都重新讀取憑證', () => {
-    // 工廠函數而非單例的意義就在這裡：登入後不必重新整理頁面就能帶上新憑證。
-    window.localStorage.setItem('jwt', 'first-token');
-    expect(Axios().defaults.headers.Authorization).toBe('Bearer first-token');
-
-    window.localStorage.setItem('jwt', 'second-token');
-    expect(Axios().defaults.headers.Authorization).toBe('Bearer second-token');
+  it('不送 Authorization 標頭（憑證由 HttpOnly cookie 自動附帶）', () => {
+    // 送出 "Bearer None" 之類假值會讓後端忽略有效的 cookie 並回 401。
+    window.localStorage.setItem('jwt', 'stale-token');
+    expect(Axios().defaults.headers.Authorization).toBeUndefined();
   });
 
-  it('沒有憑證時不得送出 "Bearer undefined" 或 "Bearer null"', () => {
-    // 送出字面上的 "undefined" 會讓後端試圖解析它，錯誤訊息會變得很難懂。
-    window.localStorage.removeItem('jwt');
-    const auth = Axios().defaults.headers.Authorization;
-    expect(auth).not.toContain('undefined');
-    expect(auth).not.toContain('null');
+  it('withCredentials 為 true', () => {
+    expect(Axios().defaults.withCredentials).toBe(true);
   });
 });
 
@@ -137,6 +130,7 @@ describe('401 未授權的處理', () => {
     // 也不會被帶去重新登入。若日後把那段註解打開，這條測試會失敗——
     // 屆時改寫成「401 會清除憑證並導向登入頁」即可。
     window.localStorage.setItem('jwt', 'expired-token');
+    window.localStorage.setItem('super', 'true');
 
     await runRejected(Axios(), { response: { status: 401 } });
 

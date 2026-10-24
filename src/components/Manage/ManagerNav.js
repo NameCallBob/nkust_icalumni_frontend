@@ -6,6 +6,8 @@ import {
   Info, Globe, Menu, X, ChevronDown
 } from 'lucide-react';
 import logo from 'assets/logo.png';
+import Axios from 'common/Axios';
+import { clearSession } from 'common/session';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -22,7 +24,9 @@ function ManagerNav() {
 
     // 登出處理函數
     const handleLogout = () => {
-        window.localStorage.setItem("jwt", "");
+        // HttpOnly cookie 無法由 JS 刪除，必須請後端 Set-Cookie 覆蓋成過期；失敗也照樣清本地狀態。
+        Axios().post("/basic/logout").catch(() => {});
+        clearSession();
         toast.success("已登出，期待再見到您!", {
             position: 'top-right',
             autoClose: 2000
