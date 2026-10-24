@@ -25,6 +25,19 @@ module.exports = {
           600: '#a0781c',
           400: '#c9a84c',
         },
+        // shadcn 風格語意 token（src/components/ui 使用）。
+        // primary/secondary/success/warning/info 由 DaisyUI 主題「nkust」提供，這裡只補它沒有的。
+        background: '#ffffff',
+        foreground: '#0f172a',
+        card: '#ffffff',
+        muted: { DEFAULT: '#f1f5f9', foreground: '#64748b' },
+        border: '#e2e8f0',
+        ring: '#1e3a8a',
+        destructive: { DEFAULT: '#dc2626', foreground: '#ffffff' },
+        'primary-foreground': '#ffffff',
+        'brand-navy': '#1e3a8a',
+        'brand-navy-deep': '#0f172a',
+        'brand-gold': '#c9a84c',
       },
       boxShadow: {
         modal: '0 24px 60px -12px rgba(15,23,42,.45), 0 4px 16px rgba(30,58,138,.15)',

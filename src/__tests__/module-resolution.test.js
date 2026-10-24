@@ -7,15 +7,10 @@
  * 只顯示第一個失敗的模組。這支測試在幾十毫秒內掃完整個 src/，一次列出**全部**
  * 解析不到的 import，並指出是哪些檔案引用了它們。
  *
- * ⚠️ 目前的狀態
- * -------------
- * `ui-rebuild-shadcn` 分支上有 5 個檔案 import 了一組**從未被提交進版控**的
- * 模組（`@/components/ui`、`@/services`、`@/lib/utils`、`@/hooks/useMediaQuery`）。
- * 也就是說這個分支的 HEAD **無法建置**。
- *
- * 這些已知的缺漏列在 `KNOWN_MISSING_MODULES` 裡凍結現況——用意不是說它沒問題，
- * 而是讓「**新增**的斷掉 import」能立刻被抓到，而不是被既有的紅燈淹沒。
- * 補上那些檔案之後，`test_known_missing_list_is_not_stale` 會失敗並提醒把清單清空。
+ * 曆史：`ui-rebuild-shadcn` 分支曾有 6 個檔案 import 一組從未進版控的模組
+ * （@/components/ui、@/services、@/lib/utils、@/hooks/useMediaQuery、
+ * utils/validatePassword），導致分支無法建置。這些模組已重新撰寫補上，
+ * `KNOWN_MISSING_MODULES` 因此清空；日後若有新的斷掉 import，第一個測試會立刻失敗。
  */
 const fs = require('fs');
 const path = require('path');
@@ -29,14 +24,7 @@ const RESOLVE_EXTENSIONS = ['', '.js', '.jsx', '.json', '/index.js', '/index.jsx
  *
  * 這份清單只能變短。補齊檔案後請一併把它從這裡移除。
  */
-const KNOWN_MISSING_MODULES = new Set([
-  '@/components/ui',
-  '@/services',
-  '@/lib/utils',
-  '@/hooks/useMediaQuery',
-  // 這支用的是 jsconfig baseUrl 的絕對路徑寫法（不是 @/ 別名），同樣未進版控。
-  'utils/validatePassword',
-]);
+const KNOWN_MISSING_MODULES = new Set([]);
 
 /** 遞迴列出 src/ 底下所有原始碼檔案（略過測試與靜態資源）。 */
 function collectSourceFiles(dir, collected = []) {
