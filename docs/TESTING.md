@@ -4,7 +4,7 @@
 
 | 層 | 工具 | 回答的問題 | 需要網路 |
 |---|---|---|---|
-| 單元／元件 | Jest + React Testing Library | 這段邏輯本身對不對？ | 否 |
+| 單元／元件 | Vitest（jsdom）+ React Testing Library | 這段邏輯本身對不對？ | 否 |
 | 端對端（E2E） | Playwright | 真實瀏覽器裡整條流程走得通嗎？ | 是（打正式站） |
 
 ---
@@ -36,7 +36,8 @@ E2E 需要先安裝瀏覽器：`npm --prefix e2e run install-browsers`。
 | 改壞 SEO 標題／描述的產生邏輯 | `src/utils/__tests__/seoHelper.test.js` |
 | 移除圖片載入失敗的無限迴圈防護 | `src/utils/__tests__/imageDefaults.test.js` |
 | 動到 RWD 斷點 | `src/hooks/__tests__/useRWD.test.js` |
-| 改壞 API 錯誤處理或憑證帶法 | `src/common/__tests__/Axios.test.js` |
+| 改壞 API 錯誤處理或憑證帶法 | `src/common/__tests__/Axios.test.js`、`auth-contract.test.js`（cookie / CSRF 攔截器） |
+| 改壞 UI 元件庫的 API | `src/components/ui/__tests__/ui.test.js` |
 | 動到登入流程的本地封鎖邏輯 | `src/pages/User/__tests__/LoginPage.test.js` |
 | 忘記清除 setInterval | `src/components/__tests__/LoadingSpinner.test.js` |
 
@@ -54,7 +55,7 @@ E2E 需要先安裝瀏覽器：`npm --prefix e2e run install-browsers`。
 
 ### 覆蓋率門檻
 
-門檻定義在 `package.json` 的 `jest.coverageThreshold`，**只針對已補上測試的
+門檻定義在 `vite.config.mjs` 的 `test.coverage.thresholds`（`npm run test:coverage` 未達標會以非 0 結束），**只針對已補上測試的
 核心模組**（`seoHelper` / `imageDefaults` / `useRWD`），不對整個 `src` 設全域門檻。
 
 理由：現有的大型頁面元件尚未補測試，設全域門檻只會逼人寫「render 一次然後
@@ -66,7 +67,7 @@ assert 沒爆炸」這種沒有價值的測試來衝數字。之後每替一個�
 `npm run lint` 目前是 `--max-warnings=67`，釘住既有的警告數量：
 
 - **新增**警告 → CI 失敗
-- 既有的 68 個不會擋住所有人
+- 既有的 67 個不會擋住所有人
 
 清掉幾個就把數字調低幾個。**這個數字只能往下走。**
 想看完整清單：`npm run lint:strict`。
@@ -132,59 +133,35 @@ BASE_URL=http://localhost:3000 API_URL=http://127.0.0.1:8000 npm test
 
 ---
 
-## 🚨 已知問題（一）：`ui-rebuild-shadcn` 分支無法建置
+## 已解決：`ui-rebuild-shadcn` 分支無法建置
 
-`npm run build` 目前會失敗。原因是 UI 重構過程中，有 6 個檔案 import 了一組
-**從未被提交進版控**的模組：
+歷史：UI 重構時有 6 個檔案 import 了從未進版控的模組（`@/components/ui`、`@/services`、
+`@/hooks/useMediaQuery`、`@/lib/utils`、`utils/validatePassword`），所有 ref 與 worktree 都找不到，
+**無法復原**。現已依呼叫端用法與重構前（`6db0bec^`）的原始 API 呼叫**重新撰寫**
+（`src/components/ui/`、`src/services/`、`src/lib/`、`src/hooks/useMediaQuery.js`、
+`src/utils/validatePassword.js`）。這些是新寫的程式，視覺細節需要人工比對舊設計稿。
 
-| 缺少的模組 | 被誰引用 |
-|---|---|
-| `@/components/ui` | `PhotoUploadModal`、`NewUserModal`、`RecruitManaPage`、`UserManagePage`、`AlumniListPage`、`RulePage` |
-| `@/services` | `NewUserModal`、`RecruitManaPage`、`UserManagePage`、`RulePage` |
-| `@/hooks/useMediaQuery` | `RecruitManaPage`、`RulePage` |
-| `@/lib/utils` | `AlumniListPage` |
-| `utils/validatePassword` | `NewUserModal` |
-
-`git log --all --diff-filter=A` 查不到這些檔案曾經被加入過任何分支，
-所以它們應該還躺在某個 worktree 或未提交的工作目錄裡。
-
-`src/__tests__/module-resolution.test.js` 會在幾十毫秒內把完整清單印出來
-（`npm run test:ci` 就看得到），比等一分鐘的 build 快得多。補齊檔案之後，
-記得把 `KNOWN_MISSING_MODULES` 清空——那支測試會提醒你。
-
-順帶一提，`@/` 這個別名本身也還沒設定：`jsconfig.json` 只有 `baseUrl: "src"`，
-`craco.config.js` 也沒有 webpack alias。補檔案的同時要一併加上，例如：
-
-```js
-// craco.config.js
-const path = require('path');
-module.exports = {
-  webpack: { alias: { '@': path.resolve(__dirname, 'src') } },
-  // ...既有的 style 設定
-};
-```
+`src/__tests__/module-resolution.test.js` 仍會在幾十毫秒內列出所有解析不到的 import；
+`KNOWN_MISSING_MODULES` 現已清空，日後有新的斷掉 import 會直接失敗。
 
 ---
 
-## ⚠️ 已知問題（二）：前端與後端的認證機制不一致
+## 已對齊：前端與後端的認證機制（含一項未驗證風險）
 
-見 `src/common/__tests__/auth-contract.test.js`。
+後端 SEC-015 的契約：JWT 在 HttpOnly cookie `access_token`，寫入請求需 `X-CSRFToken`
+（值取自 `csrftoken` cookie），登入狀態以 `GET /basic/whoami` 判斷，登出為 `POST /basic/logout`。
+前端已對齊（`src/common/Axios.js`、`session.js`、`LoginPage`、`ManagerNav`），
+驗收條件見 `src/common/__tests__/auth-contract.test.js`。
 
-後端在 SEC-015 把 JWT 從「回應 body 交付、前端存 localStorage」改成
-「HttpOnly cookie + CSRF double-submit」，但前端尚未跟上：
+另一個要注意的行為：後端只要看到 `Authorization` 標頭就以它為準、不看 cookie，
+所以前端**不得**再送 `Bearer None` / `Bearer undefined` 這類假值。
 
-| 項目 | 後端現況 | 前端現況 |
-|---|---|---|
-| token 交付 | 只透過 `Set-Cookie`（HttpOnly） | 讀 `res.data.token` 存 localStorage |
-| 跨網域 cookie | 需要 `withCredentials: true` | 未設定 |
-| 寫入請求 CSRF | 需要 `X-CSRFToken` 標頭 | 未送出 |
-| 登入狀態判斷 | `GET /basic/whoami` | 讀 localStorage |
-
-實際後果：登入回應沒有 `token` 欄位 → `localStorage.setItem('jwt', undefined)`
-→ 存進字面上的字串 `"undefined"` → 後續請求送出 `Authorization: Bearer undefined`。
-
-`auth-contract.test.js` 用一組 `it.skip` 列出了遷移的驗收條件；
-遷移時把 `.skip` 拿掉，它們就變成「改對了沒有」的檢查清單。
+**未驗證的風險**：`csrftoken` cookie 是後端網域種下的。若正式環境前後端是不同網域
+（`nkusticalumni.org` ↔ `nkust-alumni-api.binbinbob.work`），前端 JS 的 `document.cookie`
+讀不到它（後端也沒設 `CSRF_COOKIE_DOMAIN`、沒有在 body 回傳 token），
+寫入請求就帶不上 `X-CSRFToken` 而被後端回 403。本機開發（`localhost:3000` ↔ `localhost:8000`，
+cookie 不分 port）不受影響。上線前請在 staging 驗證；若確實如此，需後端配合
+（共用上層網域 + `CSRF_COOKIE_DOMAIN`，或讓 `/basic/whoami`、login 回應帶出 token）。
 
 ---
 

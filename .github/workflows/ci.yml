@@ -32,7 +32,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -45,16 +45,11 @@ jobs:
       - name: ESLint (no new warnings)
         run: npm run lint
 
-      # ⚠️ 這一步目前會失敗：ui-rebuild-shadcn 分支有 6 個檔案 import 了
-      # 從未進版控的模組（@/components/ui、@/services、@/lib/utils、
-      # @/hooks/useMediaQuery、utils/validatePassword）。
-      # 刻意保持為阻擋性檢查——把它改成 continue-on-error 只會讓「分支不能建置」
-      # 這件事被藏起來。完整清單見 docs/TESTING.md，或跑 npm run test:ci
-      # （module-resolution 測試會在幾十毫秒內列出來）。
+      # Vite 建置；postbuild 會跑 SEO 預渲染（puppeteer 需要 Chrome，CI 環境若沒有請見 README）。
       - name: Production build (catches syntax / compile errors)
         run: npm run build
 
-      # 覆蓋率門檻定義在 package.json 的 jest.coverageThreshold，
+      # 覆蓋率門檻定義在 vite.config.mjs 的 test.coverage.thresholds，
       # 只針對已補上測試的核心模組（工具函數、hook）設限，
       # 不對整個 src 設全域門檻——那只會逼人寫沒有價值的假測試。
       - name: Unit tests with coverage
@@ -81,7 +76,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Audit production dependencies
@@ -105,7 +100,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: e2e/package-lock.json
 
@@ -148,7 +143,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: e2e/package-lock.json
 
