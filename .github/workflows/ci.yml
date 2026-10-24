@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 警告數採「棘輪」策略：package.json 的 lint script 釘住目前的 68 個
+      # 警告數採「棘輪」策略：package.json 的 lint script 釘住目前的 67 個
       # 既有警告，**新增**的警告會讓 CI 失敗。清掉幾個就把 --max-warnings
       # 調低幾個——這個數字只能往下走。
       # 想看完整清單：npm run lint:strict

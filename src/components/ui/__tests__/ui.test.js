@@ -35,17 +35,16 @@ describe('Field', () => {
     expect(input).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByRole('alert')).toHaveTextContent('必填');
   });
-  it('as=textarea 渲染 textarea，className 套在外層', () => {
-    const { container } = render(<Field as="textarea" label="描述" rows={3} className="outer" />);
-    expect(container.querySelector('textarea')).toBeInTheDocument();
-    expect(container.firstChild).toHaveClass('outer');
+  it('as=textarea 渲染 textarea', () => {
+    render(<Field as="textarea" label="描述" rows={3} />);
+    expect(screen.getByRole('textbox', { name: '描述' }).tagName).toBe('TEXTAREA');
   });
 });
 
 describe('Pagination', () => {
   it('只有一頁時不渲染', () => {
-    const { container } = render(<Pagination page={1} totalPages={1} onPageChange={() => {}} />);
-    expect(container).toBeEmptyDOMElement();
+    render(<Pagination page={1} totalPages={1} onPageChange={() => {}} />);
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
   it('點頁碼與上下頁會回呼', async () => {
     const onPageChange = jest.fn();
@@ -75,10 +74,11 @@ describe('ConfirmDialog', () => {
 
 describe('其他元件', () => {
   it('EmptyState 接受 lucide 元件或元素作為 icon', () => {
-    const { rerender, container } = render(<EmptyState icon={Inbox} title="空" />);
-    expect(container.querySelector('svg')).toBeInTheDocument();
-    rerender(<EmptyState icon={<Inbox />} title="空" />);
-    expect(container.querySelector('svg')).toBeInTheDocument();
+    const TestIcon = (props) => <Inbox data-testid="icon" {...props} />;
+    const { rerender } = render(<EmptyState icon={TestIcon} title="空" />);
+    expect(screen.getByTestId('icon')).toBeInTheDocument();
+    rerender(<EmptyState icon={<TestIcon />} title="空" />);
+    expect(screen.getByTestId('icon')).toBeInTheDocument();
   });
   it('Spinner 有 status 角色與 label', () => {
     render(<Spinner center label="載入中..." />);

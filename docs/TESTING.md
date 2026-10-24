@@ -63,7 +63,7 @@ assert 沒爆炸」這種沒有價值的測試來衝數字。之後每替一個�
 
 ### ESLint 棘輪
 
-`npm run lint` 目前是 `--max-warnings=68`，釘住既有的警告數量：
+`npm run lint` 目前是 `--max-warnings=67`，釘住既有的警告數量：
 
 - **新增**警告 → CI 失敗
 - 既有的 68 個不會擋住所有人
