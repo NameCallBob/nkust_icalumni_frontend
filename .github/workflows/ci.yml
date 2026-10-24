@@ -6,10 +6,8 @@ name: CI
 # 單元測試完全離線（jsdom + mock），不會打到任何真實服務。
 # 會打正式站的 E2E 是獨立的手動 job，見底部。
 
+# CI 已停用自動觸發（2026-10），僅保留手動執行；GitHub Actions 亦已在 repo 設定關閉。
 on:
-  pull_request:
-  push:
-    branches: [main, develop]
   workflow_dispatch:
     inputs:
       run_e2e:
